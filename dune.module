@@ -6,4 +6,4 @@ Module: dune-localfunctions
 Version: 0.1
 Maintainer: dune@dune-project.org
 #depending on
-Depends: dune-common (>=1.2), dune-istl
+Depends: dune-common (>=1.2)

@@ -1,0 +1,71 @@
+==== DESIGN ====
+
+== Interface for the locale basis ==
+
+Starting from the interface presented by Peter, we decided the
+follwing changes:
+
+- max differentiation order must be exported:
+  enum { diffOrder=1 };
+
+- Local* -> C0Local* for consistency
+
+- CnLocalBasisInterface added
+
+- dimension() -> size()
+
+- value -> evaluate rename
+
+- std::vector  will stay as it is right now
+
+- interpolate():
+  -- method must be modes into the Layout class
+  -- Function f is assumed to be sufficiently smooth
+  -- remove entity, f is a locale function
+  -- the method for evaluation of f is also called evaluate()  
+
+- order() will stay as it is right now, although it does not cover all
+  situations.
+
+- jacobian() will also stay as it is right now.
+
+- Ck : adds generic evaluate interface
+
+- virtual methods? Must be tested...
+
+
+== Interface for the layout of the degrees of freedom ==
+
+- new class: LocalCoefficients
+  -- contains std::vector<LocalIndex>
+  -- evaluate (what used to be interpolate)
+
+- interpolate() is moved here and is renamed to evaluate()
+
+- LocalFiniteElement ?
+  -- LocalBasis
+  -- LocalCoefficients
+  -- GeometryType, or Referenzelement ?
+
+==== IMPLEMENTATION ====
+
+== directory structure, name, etc. ==
+
+- module only depends on dune-common
+- the maps don't belong into this module!
+- new module will be named "dune-localfunctions"
+- namespace: Dune::
+- tests
+- commit mails via dune-commit
+
+== responsibilities ==
+
+- Christian will setup the initial modul
+- Peter merges his existing code
+- Discussion
+- Aggrement
+- Oliver adds tests
+- Everybody adds his favorid basis funktions
+  -- Carsten: Argyriselement
+
+

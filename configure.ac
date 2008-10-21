@@ -27,6 +27,7 @@ LIBS="$DUNE_LIBS"
 AC_CONFIG_FILES([
 		Makefile
 		lib/Makefile
+                dune-localfunctions.pc
 		])
 AC_OUTPUT
 # finally print the summary information

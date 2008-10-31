@@ -3,7 +3,7 @@
 #ifndef DUNE_P0LOCALBASIS_HH
 #define DUNE_P0LOCALBASIS_HH
 
-#include "localbasis.hh"
+#include "../localbasis.hh"
 
 /**@ingroup LocalBasisImplementation
    \brief Constant shape function

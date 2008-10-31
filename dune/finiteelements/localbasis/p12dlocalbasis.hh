@@ -3,7 +3,7 @@
 #ifndef DUNE_P12DLOCALBASIS_HH
 #define DUNE_P12DLOCALBASIS_HH
 
-#include "localbasis.hh"
+#include "../localbasis.hh"
 
 /**@ingroup LocalBasisImplementation
    \brief Linear Lagrange shape functions on the triangle.

@@ -3,7 +3,7 @@
 #ifndef DUNE_PK2DLOCALBASIS_HH
 #define DUNE_PK2DLOCALBASIS_HH
 
-#include "localbasis.hh"
+#include "../localbasis.hh"
 
 /**@ingroup LocalBasisImplementation
    \brief Lagrange shape functions of arbitrary order on the reference triangle.

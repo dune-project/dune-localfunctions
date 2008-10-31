@@ -3,7 +3,7 @@
 #ifndef DUNE_Q22DLOCALBASIS_HH
 #define DUNE_Q22DLOCALBASIS_HH
 
-#include "localbasis.hh"
+#include "../localbasis.hh"
 
 /**@ingroup LocalBasisImplementation
    \brief Lagrange shape functions of order 2 on the reference quadrilateral.

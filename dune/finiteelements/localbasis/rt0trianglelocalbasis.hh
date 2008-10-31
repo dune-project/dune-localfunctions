@@ -3,7 +3,7 @@
 #ifndef DUNE_RT0TRIANGLELOCALBASIS_HH
 #define DUNE_RT0TRIANGLELOCALBASIS_HH
 
-#include "localbasis.hh"
+#include "../localbasis.hh"
 
 /**@ingroup LocalBasisImplementation
    \brief Lowest order Raviart-Thomas shape functions on the reference triangle.

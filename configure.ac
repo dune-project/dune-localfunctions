@@ -26,6 +26,9 @@ LIBS="$DUNE_LIBS"
 
 AC_CONFIG_FILES([
 		Makefile
+                dune/Makefile
+                dune/finiteelements/Makefile
+                dune/finiteelements/common/Makefile
 		lib/Makefile
                 dune-localfunctions.pc
 		])

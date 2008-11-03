@@ -16,11 +16,11 @@ namespace Dune
 
          \nosubgrouping
    */
-  class RT0TriangleLocalCoefficients : public LocalCoefficientsInterface<RT0TriangleLocalCoefficients>
+  class RT02DLocalCoefficients : public LocalCoefficientsInterface<RT02DLocalCoefficients>
   {
   public:
     //! \brief Standard constructor
-    RT0TriangleLocalCoefficients () : li(3)
+    RT02DLocalCoefficients () : li(3)
     {
       for (int i=0; i<3; i++)
         li[i] = LocalIndex(i,1,0);

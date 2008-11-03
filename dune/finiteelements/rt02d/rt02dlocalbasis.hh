@@ -16,24 +16,25 @@ namespace Dune
          \nosubgrouping
    */
   template<class D, class R>
-  class RT0TriangleLocalBasis :
+  class RT02DLocalBasis :
     public C1LocalBasisInterface<
         C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,2,Dune::FieldVector<R,2>,
             Dune::FieldVector<Dune::FieldVector<R,2>,2> >,
-        RT0TriangleLocalBasis<D,R> >
+        RT02DLocalBasis<D,R> >
   {
   public:
-    typedef C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,2,Dune::FieldVector<R,2> > Traits;
+    typedef C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,2,Dune::FieldVector<R,2>,
+        Dune::FieldVector<Dune::FieldVector<R,2>,2> > Traits;
 
     //! \brief Standard constructor
-    RT0TriangleLocalBasis ()
+    RT02DLocalBasis ()
     {
       sqrt2 = sqrt(2.0);
       sign0 = sign1 = sign2 = 1;
     }
 
     //! \brief Make set numer s, where 0<=s<8
-    RT0TriangleLocalBasis (unsigned int s)
+    RT02DLocalBasis (unsigned int s)
     {
       sqrt2 = sqrt(2.0);
       sign0 = sign1 = sign2 = 1;

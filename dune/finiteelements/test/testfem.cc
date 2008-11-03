@@ -11,6 +11,7 @@
 #include "../pk2d.hh"
 #include "../q12d.hh"
 #include "../q22d.hh"
+#include "../rt02d.hh"
 
 class Func
 {
@@ -31,6 +32,7 @@ int main(int argc, char** argv)
   Dune::Pk2DLocalFiniteElement<double,double,5> pk2dlfem(3);
   Dune::Q12DLocalFiniteElement<double,double> q12dlfem;
   Dune::Q22DLocalFiniteElement<double,double> q22dlfem;
+  Dune::RT02DLocalFiniteElement<double,double> rt02dlfem;
 
   std::vector<double> c;
 

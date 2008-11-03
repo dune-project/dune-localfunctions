@@ -20,7 +20,7 @@ namespace Dune
     {
       typename LB::Traits::DomainType x;
       typename LB::Traits::RangeType y;
-      typedef typename LB::Traits::DomainType D;
+      typedef typename LB::Traits::DomainFieldType D;
       out.resize(N);
       int n=0;
       for (int j=0; j<=k; j++)

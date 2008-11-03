@@ -16,12 +16,12 @@ namespace Dune
   template<class D, class R, unsigned int k>
   class Pk2DLocalFiniteElement : LocalFiniteElementInterface<
                                      LocalFiniteElementTraits<Pk2DLocalBasis<D,R,k>,Pk2DLocalCoefficients<k>,
-                                         P12DLocalInterpolation<Pk2DLocalBasis<D,R,k> > >,
+                                         Pk2DLocalInterpolation<Pk2DLocalBasis<D,R,k> > >,
                                      Pk2DLocalFiniteElement<D,R,k> >
   {
   public:
     typedef LocalFiniteElementTraits<Pk2DLocalBasis<D,R,k>,Pk2DLocalCoefficients<k>,
-        P12DLocalInterpolation<Pk2DLocalBasis<D,R,k> > > Traits;
+        Pk2DLocalInterpolation<Pk2DLocalBasis<D,R,k> > > Traits;
 
     Pk2DLocalFiniteElement ()
     {

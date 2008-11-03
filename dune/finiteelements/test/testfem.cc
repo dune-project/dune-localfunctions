@@ -4,20 +4,35 @@
 #include "config.h"
 #endif
 #include <iostream>
+#include <vector>
 
 #include "../p0.hh"
 #include "../p12d.hh"
 #include "../pk2d.hh"
 
+class Func
+{
+public:
+  template<typename DT, typename RT>
+  void evaluate (const DT& x, RT& y) const
+  {
+    DT c(0.5);
+    c -= x;
+    y[0] = exp(-3.0*c.two_norm2());
+  }
+};
+
 int main(int argc, char** argv)
 {
-  Dune::P0LocalFiniteElement<float,float,2> p0lfem(Dune::GeometryType::simplex);
-  std::cout << p0lfem.type() << std::endl;
-
-  int s=p0lfem.localCoefficients().size();
-
+  Dune::P0LocalFiniteElement<double,double,2> p0lfem(Dune::GeometryType::simplex);
   Dune::P12DLocalFiniteElement<double,double> p12dlfem;
   Dune::Pk2DLocalFiniteElement<double,double,5> pk2dlfem;
+
+  std::vector<double> c;
+
+  p0lfem.localInterpolation().interpolate(Func(),c);
+  p12dlfem.localInterpolation().interpolate(Func(),c);
+  pk2dlfem.localInterpolation().interpolate(Func(),c);
 
   return 0;
 }

@@ -27,22 +27,22 @@ namespace Dune {
 
     typedef T Traits;
 
-    const typename T::LocalBasisType& localBasis ()
+    const typename T::LocalBasisType& localBasis () const
     {
       return asImp().localBasis();
     }
 
-    const typename T::LocalCoefficientsType& localCoefficients ()
+    const typename T::LocalCoefficientsType& localCoefficients () const
     {
       return asImp().localCoefficients();
     }
 
-    const typename T::LocalInterpolationType& localInterpolation ()
+    const typename T::LocalInterpolationType& localInterpolation () const
     {
       return asImp().localInterpolation();
     }
 
-    GeometryType type ()
+    GeometryType type () const
     {
       return asImp().type();
     }

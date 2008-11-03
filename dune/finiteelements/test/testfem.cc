@@ -10,6 +10,7 @@
 #include "../p12d.hh"
 #include "../pk2d.hh"
 #include "../q12d.hh"
+#include "../q22d.hh"
 
 class Func
 {
@@ -29,6 +30,7 @@ int main(int argc, char** argv)
   Dune::P12DLocalFiniteElement<double,double> p12dlfem;
   Dune::Pk2DLocalFiniteElement<double,double,5> pk2dlfem;
   Dune::Q12DLocalFiniteElement<double,double> q12dlfem;
+  Dune::Q22DLocalFiniteElement<double,double> q22dlfem;
 
   std::vector<double> c;
 
@@ -36,6 +38,7 @@ int main(int argc, char** argv)
   p12dlfem.localInterpolation().interpolate(Func(),c);
   pk2dlfem.localInterpolation().interpolate(Func(),c);
   q12dlfem.localInterpolation().interpolate(Func(),c);
+  q22dlfem.localInterpolation().interpolate(Func(),c);
 
   return 0;
 }

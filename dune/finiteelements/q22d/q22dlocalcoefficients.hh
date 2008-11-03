@@ -6,8 +6,6 @@
 #include <iostream>
 #include <vector>
 
-#include "locallayout.hh"
-
 #include "../common/localcoefficients.hh"
 
 namespace Dune

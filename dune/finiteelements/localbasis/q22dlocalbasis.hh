@@ -3,105 +3,107 @@
 #ifndef DUNE_Q22DLOCALBASIS_HH
 #define DUNE_Q22DLOCALBASIS_HH
 
-#include "../localbasis.hh"
+#include "../common/localbasis.hh"
 
-/**@ingroup LocalBasisImplementation
-   \brief Lagrange shape functions of order 2 on the reference quadrilateral.
-
-   Also known as \f$Q^2\f$.
-
-   - <tt>D</tt>: Type to represent the field in the domain.
-   - <tt>R</tt>: Type to represent the field in the range.
-
-   \nosubgrouping
- */
-template<class D, class R>
-class Q22DLocalBasis :
-  public C1LocalBasisInterface<
-      C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,
-          Dune::FieldVector<Dune::FieldVector<R,2>,1> >,
-      Q22DLocalBasis<D,R> >
+namespace Dune
 {
-public:
-  typedef C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,
-      Dune::FieldVector<Dune::FieldVector<R,2>,1> > Traits;
+  /**@ingroup LocalBasisImplementation
+     \brief Lagrange shape functions of order 2 on the reference quadrilateral.
 
-  //! \brief number of shape functions
-  unsigned int size () const
+     Also known as \f$Q^2\f$.
+
+     - <tt>D</tt>: Type to represent the field in the domain.
+     - <tt>R</tt>: Type to represent the field in the range.
+
+     \nosubgrouping
+   */
+  template<class D, class R>
+  class Q22DLocalBasis :
+    public C1LocalBasisInterface<
+        C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,
+            Dune::FieldVector<Dune::FieldVector<R,2>,1> >,
+        Q22DLocalBasis<D,R> >
   {
-    return 9;
-  }
+  public:
+    typedef C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,
+        Dune::FieldVector<Dune::FieldVector<R,2>,1> > Traits;
 
-  //! \brief Evaluate all shape functions
-  inline void evaluateFunction (const typename Traits::DomainType& in,
-                                std::vector<typename Traits::RangeType>& out) const
-  {
-    out.resize(9);
+    //! \brief number of shape functions
+    unsigned int size () const
+    {
+      return 9;
+    }
 
-    R x=in[0], y=in[1];
-    R X0=2*x*x-3*x+1, X1=-4*x*x+4*x, X2=2*x*x-x;
-    R Y0=2*y*y-3*y+1, Y1=-4*y*y+4*y, Y2=2*y*y-y;
+    //! \brief Evaluate all shape functions
+    inline void evaluateFunction (const typename Traits::DomainType& in,
+                                  std::vector<typename Traits::RangeType>& out) const
+    {
+      out.resize(9);
 
-    out[2] = X0*Y2;
-    out[7] = X1*Y2;
-    out[3] = X2*Y2;
+      R x=in[0], y=in[1];
+      R X0=2*x*x-3*x+1, X1=-4*x*x+4*x, X2=2*x*x-x;
+      R Y0=2*y*y-3*y+1, Y1=-4*y*y+4*y, Y2=2*y*y-y;
 
-    out[4] = X0*Y1;
-    out[8] = X1*Y1;
-    out[5] = X2*Y1;
+      out[2] = X0*Y2;
+      out[7] = X1*Y2;
+      out[3] = X2*Y2;
 
-    out[0] = X0*Y0;
-    out[6] = X1*Y0;
-    out[1] = X2*Y0;
-  }
+      out[4] = X0*Y1;
+      out[8] = X1*Y1;
+      out[5] = X2*Y1;
 
-  //! \brief Evaluate Jacobian of all shape functions
-  inline void
-  evaluateJacobian (const typename Traits::DomainType& in,         // position
-                    std::vector<typename Traits::JacobianType>& out) const          // return value
-  {
-    out.resize(9);
+      out[0] = X0*Y0;
+      out[6] = X1*Y0;
+      out[1] = X2*Y0;
+    }
 
-    R x=in[0], y=in[1];
-    R X0=2*x*x-3*x+1, X1=4*x*x-4*x, X2=2*x*x-x;
-    R Y0=2*y*y-3*y+1, Y1=4*y*y-4*y, Y2=2*y*y-y;
-    R DX0=4*x-3, DX1=-8*x+4, DX2=4*x-1;
-    R DY0=4*y-3, DY1=-8*y+4, DY2=4*y-1;
+    //! \brief Evaluate Jacobian of all shape functions
+    inline void
+    evaluateJacobian (const typename Traits::DomainType& in,       // position
+                      std::vector<typename Traits::JacobianType>& out) const        // return value
+    {
+      out.resize(9);
 
-    out[2][0][0] = DX0*Y2; out[7][0][0] = DX1*Y2; out[3][0][0] = DX2*Y2;
-    out[2][0][1] = X0*DY2; out[7][0][1] = X1*DY2; out[3][0][1] = X2*DY2;
+      R x=in[0], y=in[1];
+      R X0=2*x*x-3*x+1, X1=4*x*x-4*x, X2=2*x*x-x;
+      R Y0=2*y*y-3*y+1, Y1=4*y*y-4*y, Y2=2*y*y-y;
+      R DX0=4*x-3, DX1=-8*x+4, DX2=4*x-1;
+      R DY0=4*y-3, DY1=-8*y+4, DY2=4*y-1;
 
-    out[4][0][0] = DX0*Y1; out[8][0][0] = DX1*Y1; out[5][0][0] = DX2*Y1;
-    out[4][0][1] = X0*DY1; out[8][0][1] = X1*DY1; out[5][0][1] = X2*DY1;
+      out[2][0][0] = DX0*Y2; out[7][0][0] = DX1*Y2; out[3][0][0] = DX2*Y2;
+      out[2][0][1] = X0*DY2; out[7][0][1] = X1*DY2; out[3][0][1] = X2*DY2;
 
-    out[0][0][0] = DX0*Y0; out[6][0][0] = DX1*Y0; out[1][0][0] = DX2*Y0;
-    out[0][0][1] = X0*DY0; out[6][0][1] = X1*DY0; out[1][0][1] = X2*DY0;
-  }
+      out[4][0][0] = DX0*Y1; out[8][0][0] = DX1*Y1; out[5][0][0] = DX2*Y1;
+      out[4][0][1] = X0*DY1; out[8][0][1] = X1*DY1; out[5][0][1] = X2*DY1;
 
-  //! \brief Local interpolation of a function
-  template<typename E, typename F, typename C>
-  void interpolate (const E& e, const F& f, std::vector<C>& out) const
-  {
-    typename Traits::DomainType x;
-    typename Traits::RangeType y;
+      out[0][0][0] = DX0*Y0; out[6][0][0] = DX1*Y0; out[1][0][0] = DX2*Y0;
+      out[0][0][1] = X0*DY0; out[6][0][1] = X1*DY0; out[1][0][1] = X2*DY0;
+    }
 
-    out.resize(9);
-    x[0] = 0.0; x[1] = 0.0; f.eval_local(e,x,y); out[0] = y;
-    x[0] = 1.0; x[1] = 0.0; f.eval_local(e,x,y); out[1] = y;
-    x[0] = 0.0; x[1] = 1.0; f.eval_local(e,x,y); out[2] = y;
-    x[0] = 1.0; x[1] = 1.0; f.eval_local(e,x,y); out[3] = y;
-    x[0] = 0.0; x[1] = 0.5; f.eval_local(e,x,y); out[4] = y;
-    x[0] = 1.0; x[1] = 0.5; f.eval_local(e,x,y); out[5] = y;
-    x[0] = 0.5; x[1] = 0.0; f.eval_local(e,x,y); out[6] = y;
-    x[0] = 0.5; x[1] = 1.0; f.eval_local(e,x,y); out[7] = y;
-    x[0] = 0.5; x[1] = 0.5; f.eval_local(e,x,y); out[8] = y;
-  }
+    //! \brief Local interpolation of a function
+    template<typename E, typename F, typename C>
+    void interpolate (const E& e, const F& f, std::vector<C>& out) const
+    {
+      typename Traits::DomainType x;
+      typename Traits::RangeType y;
 
-  //! \brief Polynomial order of the shape functions
-  unsigned int order () const
-  {
-    return 2;
-  }
-};
+      out.resize(9);
+      x[0] = 0.0; x[1] = 0.0; f.eval_local(e,x,y); out[0] = y;
+      x[0] = 1.0; x[1] = 0.0; f.eval_local(e,x,y); out[1] = y;
+      x[0] = 0.0; x[1] = 1.0; f.eval_local(e,x,y); out[2] = y;
+      x[0] = 1.0; x[1] = 1.0; f.eval_local(e,x,y); out[3] = y;
+      x[0] = 0.0; x[1] = 0.5; f.eval_local(e,x,y); out[4] = y;
+      x[0] = 1.0; x[1] = 0.5; f.eval_local(e,x,y); out[5] = y;
+      x[0] = 0.5; x[1] = 0.0; f.eval_local(e,x,y); out[6] = y;
+      x[0] = 0.5; x[1] = 1.0; f.eval_local(e,x,y); out[7] = y;
+      x[0] = 0.5; x[1] = 0.5; f.eval_local(e,x,y); out[8] = y;
+    }
 
+    //! \brief Polynomial order of the shape functions
+    unsigned int order () const
+    {
+      return 2;
+    }
+  };
+}
 #endif

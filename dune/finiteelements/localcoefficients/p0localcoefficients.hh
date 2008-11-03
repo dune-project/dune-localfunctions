@@ -1,37 +1,43 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_P0LOCALLAYOUT_HH
-#define DUNE_P0LOCALLAYOUT_HH
+#ifndef DUNE_P0LOCALCOEFFICIENTS_HH
+#define DUNE_P0LOCALCOEFFICIENTS_HH
 
 #include <iostream>
 #include <vector>
 
-#include "locallayout.hh"
+#include "../common/localcoefficients.hh"
 
-/**@ingroup LocalLayoutImplementation
-   \brief Layout map for P0 elements
-
-   \nosubgrouping
- */
-class P0LocalLayoutMap : public LocalLayoutMapInterface<P0LocalLayoutMap>
+namespace Dune
 {
-public:
-  //! \brief Standard constructor
-  P0LocalLayoutMap ()
+
+  /**@ingroup LocalLayoutImplementation
+         \brief Layout map for P0 elements
+
+         \nosubgrouping
+   */
+  class P0LocalCoefficients : public LocalCoefficientsInterface<P0LocalCoefficients>
   {
-    p0layout.resize(1);
-    p0layout[0] = LocalIndex(0,0,0);
-  }
+  public:
+    //! \brief Standard constructor
+    P0LocalCoefficients () : index(0,0,0)
+    {}
 
-  //! \brief Deliver layout for entity
-  template<class EntityType>
-  void find (const EntityType& e, LocalLayout& layout) const
-  {
-    layout = p0layout;
-  }
+    //! number of coefficients
+    int size ()
+    {
+      return 1;
+    }
 
-private:
-  LocalLayout p0layout;
-};
+    //! get i'th index
+    const LocalIndex& localIndex (int i) const
+    {
+      return index;
+    }
 
+  private:
+    LocalIndex index;
+  };
+
+}
 #endif

@@ -29,6 +29,13 @@ AC_CONFIG_FILES([
                 dune/Makefile
                 dune/finiteelements/Makefile
                 dune/finiteelements/common/Makefile
+                dune/finiteelements/test/Makefile
+                dune/finiteelements/p0/Makefile
+                dune/finiteelements/p12d/Makefile
+                dune/finiteelements/pk2d/Makefile
+                dune/finiteelements/q12d/Makefile
+                dune/finiteelements/q22d/Makefile
+                dune/finiteelements/rt02d/Makefile
 		lib/Makefile
                 dune-localfunctions.pc
 		])

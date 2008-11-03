@@ -3,7 +3,7 @@
 #ifndef DUNE_P0LOCALINTERPOLATION_HH
 #define DUNE_P0LOCALINTERPOLATION_HH
 
-#include <dune/common/geometrytype.hh>
+#include <dune/grid/common/referenceelements.hh>
 
 #include "../common/localinterpolation.hh"
 
@@ -11,9 +11,11 @@ namespace Dune
 {
 
   template<class LB>
-  class P0LocalInterpolation : LocalInterpolationInterface<P0LocalInterpolation>
+  class P0LocalInterpolation : LocalInterpolationInterface<P0LocalInterpolation<LB> >
   {
   public:
+    P0LocalInterpolation (GeometryType::BasicType basicType, int d) : gt(basicType,d)
+    {}
 
     //! determine coefficients interpolating a given function
     template<typename F, typename C>
@@ -24,16 +26,14 @@ namespace Dune
       typedef typename LB::Traits::DomainFieldType DF;
       const int dim=LB::Traits::dimDomain;
 
-      DomainType x = Dune::ReferenceElements<DF,dim>::general(e.type()).position(0,0);
+      DomainType x = Dune::ReferenceElements<DF,dim>::general(gt).position(0,0);
       RangeType y;
 
       out.resize(1);
       f.eval_local(x,y); out[0] = y;
     }
-
   private:
-    Imp& asImp () {return static_cast<Imp &> (*this);}
-    const Imp& asImp () const {return static_cast<const Imp &>(*this);}
+    GeometryType gt;
   };
 
 }

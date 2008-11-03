@@ -17,13 +17,14 @@ namespace Dune
   class P0LocalFiniteElement : LocalFiniteElementInterface<
                                    LocalFiniteElementTraits<P0LocalBasis<D,R,d>,P0LocalCoefficients,
                                        P0LocalInterpolation<P0LocalBasis<D,R,d> > >,
-                                   P0LocalFiniteElement>
+                                   P0LocalFiniteElement<D,R,d> >
   {
   public:
-    typedef LocalFiniteElementTraits<P0LocalBasis<D,R,d>,P0LocalCoefficients,
-    P0LocalInterpolation<P0LocalBasis<D,R,d> > Traits;
+    typedef LocalFiniteElementTraits<P0LocalBasis<D,R,d>, P0LocalCoefficients,
+        P0LocalInterpolation<P0LocalBasis<D,R,d> > > Traits;
 
-    P0LocalFiniteElement (GeometryType::BasicType basicType) : gt(basicType,d)
+    P0LocalFiniteElement (GeometryType::BasicType basicType)
+      : gt(basicType,d), interpolation(basicType,d)
     {}
 
     const typename Traits::LocalBasisType& localBasis () const
@@ -36,7 +37,7 @@ namespace Dune
       return coefficients;
     }
 
-    const typename T::LocalInterpolationType& localInterpolation () const
+    const typename Traits::LocalInterpolationType& localInterpolation () const
     {
       return interpolation;
     }

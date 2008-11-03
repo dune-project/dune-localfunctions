@@ -15,7 +15,7 @@ namespace Dune {
   struct LocalFiniteElementTraits
   {
     typedef LB LocalBasisType;
-    typedef LC LocalCoefficientType;
+    typedef LC LocalCoefficientsType;
     typedef LI LocalInterpolationType;
   };
 

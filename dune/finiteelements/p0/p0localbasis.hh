@@ -3,6 +3,8 @@
 #ifndef DUNE_P0LOCALBASIS_HH
 #define DUNE_P0LOCALBASIS_HH
 
+#include <dune/grid/common/referenceelements.hh>
+
 #include "../common/localbasis.hh"
 
 namespace Dune

@@ -72,7 +72,7 @@ namespace Dune
   {
   public:
     //! number of coefficients
-    int size ()
+    int size () const
     {
       return asImp().size();
     }

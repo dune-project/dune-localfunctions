@@ -42,7 +42,7 @@ namespace Dune
     }
 
     //! number of coefficients
-    int size ()
+    int size () const
     {
       return N;
     }

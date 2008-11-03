@@ -28,6 +28,11 @@ namespace Dune
       gt.makeTriangle();
     }
 
+    Pk2DLocalFiniteElement (int variant) : coefficients(variant)
+    {
+      gt.makeTriangle();
+    }
+
     const typename Traits::LocalBasisType& localBasis () const
     {
       return basis;

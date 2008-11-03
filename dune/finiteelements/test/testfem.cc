@@ -28,7 +28,7 @@ int main(int argc, char** argv)
 {
   Dune::P0LocalFiniteElement<double,double,2> p0lfem(Dune::GeometryType::simplex);
   Dune::P12DLocalFiniteElement<double,double> p12dlfem;
-  Dune::Pk2DLocalFiniteElement<double,double,5> pk2dlfem;
+  Dune::Pk2DLocalFiniteElement<double,double,5> pk2dlfem(3);
   Dune::Q12DLocalFiniteElement<double,double> q12dlfem;
   Dune::Q22DLocalFiniteElement<double,double> q22dlfem;
 

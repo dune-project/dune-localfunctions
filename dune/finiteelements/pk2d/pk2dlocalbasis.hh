@@ -26,8 +26,10 @@ namespace Dune
             Dune::FieldVector<Dune::FieldVector<R,2>,1> >,
         Pk2DLocalBasis<D,R,k> >
   {
-    enum {N = (k+1)*(k+2)/2};
   public:
+    enum {N = (k+1)*(k+2)/2};
+    enum {O = k};
+
     typedef C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,
         Dune::FieldVector<Dune::FieldVector<R,2>,1> > Traits;
 

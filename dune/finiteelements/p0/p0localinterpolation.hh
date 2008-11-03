@@ -31,7 +31,7 @@ namespace Dune
       RangeType y;
 
       out.resize(1);
-      f.eval_local(x,y); out[0] = y;
+      f.evaluate(x,y); out[0] = y;
     }
   private:
     GeometryType gt;

@@ -21,9 +21,9 @@ namespace Dune
       typename LB::Traits::RangeType y;
 
       out.resize(3);
-      x[0] = 0.0; x[1] = 0.0; f.eval_local(x,y); out[0] = y;
-      x[0] = 1.0; x[1] = 0.0; f.eval_local(x,y); out[1] = y;
-      x[0] = 0.0; x[1] = 1.0; f.eval_local(x,y); out[2] = y;
+      x[0] = 0.0; x[1] = 0.0; f.evaluate(x,y); out[0] = y;
+      x[0] = 1.0; x[1] = 0.0; f.evaluate(x,y); out[1] = y;
+      x[0] = 0.0; x[1] = 1.0; f.evaluate(x,y); out[2] = y;
     }
   };
 }

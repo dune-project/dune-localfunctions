@@ -17,7 +17,7 @@ namespace Dune
          \nosubgrouping
    */
   template<unsigned int k>
-  class Pk2DLocalCoefficients : public LocalCoefficientsInterface<Pk2DLocalCoefficients>
+  class Pk2DLocalCoefficients : public LocalCoefficientsInterface<Pk2DLocalCoefficients<k> >
   {
     enum {N = (k+1)*(k+2)/2};
 

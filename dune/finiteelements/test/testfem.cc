@@ -7,6 +7,7 @@
 
 #include "../p0.hh"
 #include "../p12d.hh"
+#include "../pk2d.hh"
 
 int main(int argc, char** argv)
 {
@@ -16,6 +17,7 @@ int main(int argc, char** argv)
   int s=p0lfem.localCoefficients().size();
 
   Dune::P12DLocalFiniteElement<double,double> p12dlfem;
+  Dune::Pk2DLocalFiniteElement<double,double,5> pk2dlfem;
 
   return 0;
 }

@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "../p0.hh"
+#include "../p12d.hh"
 
 int main(int argc, char** argv)
 {
@@ -13,6 +14,8 @@ int main(int argc, char** argv)
   std::cout << p0lfem.type() << std::endl;
 
   int s=p0lfem.localCoefficients().size();
+
+  Dune::P12DLocalFiniteElement<double,double> p12dlfem;
 
   return 0;
 }

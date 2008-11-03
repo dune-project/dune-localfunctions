@@ -11,7 +11,8 @@ namespace Dune
 {
 
   template<class LB>
-  class P0LocalInterpolation : LocalInterpolationInterface<P0LocalInterpolation<LB> >
+  class P0LocalInterpolation
+    : public LocalInterpolationInterface<P0LocalInterpolation<LB> >
   {
   public:
     P0LocalInterpolation (GeometryType::BasicType basicType, int d) : gt(basicType,d)

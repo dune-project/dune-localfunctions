@@ -16,11 +16,11 @@ namespace Dune
 
          \nosubgrouping
    */
-  class P1LocalCoefficients : public LocalCoefficientsInterface<P1LocalCoefficients>
+  class P12DLocalCoefficients : public LocalCoefficientsInterface<P12DLocalCoefficients>
   {
   public:
     //! \brief Standard constructor
-    P1LocalCoefficients () : li(3)
+    P12DLocalCoefficients () : li(3)
     {
       for (int i=0; i<3; i++)
         li[i] = LocalIndex(i,2,0);

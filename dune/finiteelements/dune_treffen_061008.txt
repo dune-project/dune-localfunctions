@@ -1,0 +1,93 @@
+1) Interface für die lokale Basis
+
+- Differenzierbarkeitsordung als Konstante abfragen können, etwa:
+  enum { diffOrder=1 };
+
+- Local* -> C0Local* der Konsistenz halber
+
+- CnLocalBasisInterface einfügen
+
+- dimension() -> size()
+
+- value -> evaluate umbenennen
+
+- std::vector bleibt erst mal
+
+- interpolate():  <============== STILL To DO !!
+  -- muss in Layout rüber
+  -- Funktion f wird als beliebig glatt angenommen
+  -- entity raus, f ist eine lokale Funktion
+  -- die Methode zur Auswertung von f heisst auch evaluate()  
+
+- order() bleibt im Moment so wie es ist
+
+- jacobian() bleibt wie es ist
+
+- Ck : fügt generisches evaluate interface hinzu
+
+- virtual ? Man müsste es ausprobieren ...
+  311008: Diese Diskussion ist nicht endgültig geklärt.
+
+- namespace Dune einführen
+
+
+Änderungen zu diesem Vorschlag
+
+- Überladen der evaluate() Methode in den abgeleiteten Klassen finde ich blöd,
+  da dies immer ein zusätzliches Einführen der Methode aus der Basisklasse
+  erfordert. Vorschlag: Alle Methoden sollten eindeutige Namen haben:
+
+  evaluateFunction()    Auswerten der Funktion in C0LocalBasis
+  evaluateJacobian()    Auswerten der Jacobimatrix in C1LocalBasis
+  evaluate()            Auswerten beliebiger Ableitungen in CkLocalBasis
+
+- CkLocalBasisInterface ist nicht rekursiv implementiert.
+  Und: evaluate ist eine template-Methode.
+  Das Problem ist (wie oben): Definiert die abgeleitete Klasse eine Methode mit
+  dem selben Namen wie in der Basisklasse so wird diese immer überschrieben
+  und nicht überladen.
+
+- interpolate, d.h. das bestimmen von Freiheitsgraden sollte in einer extra Klasse
+  sein und nicht in LocalCoefficients: Vorschlag: LocalInterpolation
+  Die Methode heisst interpolate().
+
+2) Layout der Freiheitsgrade
+
+- Neu: LocalCoefficients
+  -- enthält std::vector<LocalIndex>
+  -- evaluate (war interpolate)
+
+- interpolate() kommt da rein und heisst evaluate()
+
+- LocalFiniteElement ?
+  -- LocalBasis
+  -- LocalCoefficients
+  -- GeometryType, oder Referenzelement ?
+
+
+3) Verzeichnisstruktur, Namen
+
+- nur abhängig von dune-common
+- hier kommen nicht die maps rein!
+- machen neues Dune Modul "dune-localfunctions"
+- namespace: Dune::
+- tests
+- commit mails über normale Dune-Liste
+
+ANMERKUNGEN:
+
+- die interpolate() Methode braucht die Referenzelemente und die sind
+  in dune-grid :-(
+
+
+4) Aufgaben
+
+- Christian macht Modul
+- Peter baut sein Zeug da ein
+- Diskussion
+- Einigung
+- Tests Oliver
+- Einbau der Basisfunktionen von allen
+  -- Carsten: Argyriselement
+
+

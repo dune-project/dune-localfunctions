@@ -65,8 +65,8 @@ namespace Dune
       }
       int n=0;
       int c=0;
-      for (int j=0; j<=k; j++)
-        for (int i=0; i<=k-j; i++)
+      for (unsigned int j=0; j<=k; j++)
+        for (unsigned int i=0; i<=k-j; i++)
         {
           if (i==0 && j==0)
           {

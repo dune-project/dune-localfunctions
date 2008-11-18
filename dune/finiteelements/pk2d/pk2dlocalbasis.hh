@@ -36,7 +36,8 @@ namespace Dune
     //! \brief Standard constructor
     Pk2DLocalBasis ()
     {
-      for (int i=0; i<=k; i++) pos[i] = (1.0*i)/k;
+      for (unsigned int i=0; i<=k; i++)
+        pos[i] = (1.0*i)/k;
     }
 
     //! \brief number of shape functions

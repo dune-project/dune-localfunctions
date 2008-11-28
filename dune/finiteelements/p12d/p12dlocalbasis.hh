@@ -12,8 +12,8 @@ namespace Dune
 
          Defines the linear shape functions on triangles.
 
-         - <tt>D</tt>: Type to represent the field in the domain.
-         - <tt>R</tt>: Type to represent the field in the range.
+         \tparam D Type to represent the field in the domain.
+         \tparam R Type to represent the field in the range.
 
          \nosubgrouping
    */

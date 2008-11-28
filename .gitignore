@@ -9,6 +9,7 @@ config.sub
 config.status
 configure
 dependencies.m4
+depcomp
 dune-localfunctions.pc
 install-sh
 libtool

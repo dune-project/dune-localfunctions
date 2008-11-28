@@ -37,6 +37,11 @@ AC_CONFIG_FILES([
                 dune/finiteelements/q22d/Makefile
                 dune/finiteelements/rt02d/Makefile
 		lib/Makefile
+                doc/layout/Makefile
+                doc/doxygen/Makefile
+                doc/doxygen/Doxyfile
+                doc/Makefile
+                doc/Makefile.dist
                 dune-localfunctions.pc
 		])
 AC_OUTPUT

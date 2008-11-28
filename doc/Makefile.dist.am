@@ -1,0 +1,13 @@
+# $Id: Makefile.am 724 2007-03-01 11:30:49Z christi $
+
+SUBDIRS = doxygen layout
+
+docdir=$(datadir)/doc/dune-localfunctions
+
+#doc_DATA = istl.pdf
+
+CONFIG_CLEAN_FILES = *.dist
+
+include $(top_srcdir)/am/latex
+include $(top_srcdir)/am/webstuff
+include $(top_srcdir)/am/global-rules

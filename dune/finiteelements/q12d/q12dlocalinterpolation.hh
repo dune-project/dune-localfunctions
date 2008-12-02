@@ -7,6 +7,8 @@
 
 namespace Dune
 {
+
+  /** \todo Please doc me! */
   template<class LB>
   class Q12DLocalInterpolation
     : public LocalInterpolationInterface<Q12DLocalInterpolation<LB> >

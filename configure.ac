@@ -42,6 +42,7 @@ AC_CONFIG_FILES([
                 doc/doxygen/Doxyfile
                 doc/Makefile
                 doc/Makefile.dist
+                debug/Makefile
                 dune-localfunctions.pc
 		])
 AC_OUTPUT

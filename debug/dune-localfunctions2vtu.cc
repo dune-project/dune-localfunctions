@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 
+//for uint32_t etc
 #include <stdint.h>
 
 #include <dune/common/exceptions.hh> // We use exceptions
@@ -124,6 +125,70 @@ uint8_t vtkGeometryType(const Dune::GeometryType &g) {
 
 ////////////////////////////////////////////////////////////////////////
 //
+//  Save and restore fmtflags and precision
+//
+
+class FMTFlagsSaver
+{
+  std::ios_base &stream;
+  std::ios_base::fmtflags flags;
+  std::streamsize precision;
+  std::streamsize width;
+
+public:
+  FMTFlagsSaver(std::ios_base &s)
+    : stream(s)
+      , flags(s.flags())
+      , precision(s.precision())
+      , width(s.width())
+  {}
+
+  ~FMTFlagsSaver() {
+    stream.flags(flags);
+    stream.precision(precision);
+    stream.width(width);
+  }
+};
+
+////////////////////////////////////////////////////////////////////////
+//
+//  Wrapper class to write a value in full precision
+//
+
+template<typename T>
+class FullPrecisionWriter {
+  const T &value_;
+
+  template<typename T1>
+  friend std::ostream &operator<<(std::ostream &s, const FullPrecisionWriter<T1> &w);
+
+public:
+  FullPrecisionWriter(const T &value) : value_(value) {}
+};
+
+template<typename T>
+std::ostream &operator<<(std::ostream &s, const FullPrecisionWriter<T> &w) {
+  // automatically restore format flags when control leaves this function, be
+  // it via return; or an exception
+  FMTFlagsSaver saver(s);
+  std::scientific(s);
+  // numeric_limits<T>::digits10 gives the number of decimal digits that T can
+  // store without loss of precision.  Since we want to store T in decimal
+  // digits (which is just the other way round) I'm taking that value +1 as
+  // the number of required digits.
+  s.precision(std::numeric_limits<T>::digits10+1);
+  s << w.value_;
+  return s;
+}
+
+template<typename T>
+FullPrecisionWriter<T> fullPrecision(const T& value)
+{
+  return FullPrecisionWriter<T>(value);
+}
+
+////////////////////////////////////////////////////////////////////////
+//
 //  sample a local basis for VTK
 //
 template<typename LocalBasis>
@@ -207,8 +272,8 @@ Stream &operator<<(Stream &s, const VTKData<Traits> &vtkData) {
 
     for(unsigned index = 0; index < vtkData.data[bf].size(); ++index) {
       s << "         ";
-      for(int component = 0; component < dimRange; ++ component)
-        s << " " << vtkData.data[bf][index][component];
+      for(int component = 0; component < dimRange; ++component)
+        s << " " << fullPrecision(vtkData.data[bf][index][component]);
       s << "\n";
     }
     s << "        </DataArray>\n";
@@ -222,7 +287,7 @@ Stream &operator<<(Stream &s, const VTKData<Traits> &vtkData) {
   for(unsigned index = 0; index < vtkData.coords.size(); ++index) {
     s << "         ";
     for(int component = 0; component < dimDomain && component < 3; ++component)
-      s << " " << vtkData.coords[index][component];
+      s << " " << fullPrecision(vtkData.coords[index][component]);
     for(int component = dimDomain; component < 3; ++component)
       s << " 0";
     s << "\n";

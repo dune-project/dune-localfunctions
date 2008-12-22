@@ -7,6 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <cstring>
 
 //for uint32_t etc
 #include <stdint.h>
@@ -17,8 +18,10 @@
 
 #include <dune/grid/common/virtualrefinement.hh>
 
-#include <dune/finiteelements/p12d/p12dlocalbasis.hh>
-#include <dune/finiteelements/pk2d/pk2dlocalbasis.hh>
+#ifdef LOCAL_BASIS_HEADER
+#  include LOCAL_BASIS_HEADER
+#endif //LOCAL_BASIS_HEADER
+typedef LOCAL_BASIS_TYPE LB;
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -193,7 +196,7 @@ FullPrecisionWriter<T> fullPrecision(const T& value)
 //
 template<typename LocalBasis>
 void sample(const LocalBasis &lb,
-            const Dune::GeometryType &geo,
+            const Dune::GeometryType::BasicType basicGeo,
             const int refinementLevel,
             VTKData<typename LocalBasis::Traits> &vtkData)
 {
@@ -204,6 +207,7 @@ void sample(const LocalBasis &lb,
   typedef typename VR::VertexIterator VertexIterator;
   typedef typename VR::ElementIterator ElementIterator;
 
+  Dune::GeometryType geo(basicGeo, dimDomain);
   VR &ref = Dune::buildRefinement<dimDomain, DomainFieldType>(geo, geo);
 
   // init coords
@@ -326,19 +330,52 @@ Stream &operator<<(Stream &s, const VTKData<Traits> &vtkData) {
   return s;
 }
 
+////////////////////////////////////////////////////////////////////////
+//
+//  just write some subsampling to a pre-opened stream
+//
+
+template<typename LB>
+void write_to_stream(std::ostream &s, Dune::GeometryType::BasicType basicGeo, int refinementLevel) {
+  VTKData<typename LB::Traits> vtkData;
+
+  sample(LB(), basicGeo, refinementLevel, vtkData);
+  s << vtkData << std::flush;
+}
+
+////////////////////////////////////////////////////////////////////////
+//
+//  Main program
+//
+
 int main(int argc, char** argv)
 {
-  try{
-    typedef double FieldType;
-    typedef Dune::Pk2DLocalBasis<FieldType, FieldType, 2> LB;
-    typedef VTKData<LB::Traits> VD;
+  try {
+    int refinementLevel = 3;
+    for(++argv; *argv; ++argv) {
+      if(std::strcmp(*argv, "--help") == 0 ||
+         std::strcmp(*argv, "-h")     == 0 ||
+         std::strcmp(*argv, "-?")     == 0) {
+        std::cout <<
+        PROG_NAME " -- debug output for " LOCAL_BASIS_TYPE_S "\n"
+        "\n"
+        PROG_NAME " --help|-h|-?\n"
+        "        Show this help.\n"
+        PROG_NAME " [LEVEL]\n"
+        "        Dump " LOCAL_BASIS_TYPE_S " to stdout as a vtu.\n"
+        "        Refine LEVEL times when doing so (default is 3).\n";
+        return 0;
+      }
+      std::istringstream s(*argv);
+      s >> refinementLevel;
+      if(!s.good()) {
+        std::cerr << "Error: Unknown argument " << *argv << "\n";
+        std::cerr << "Error: Try --help\n";
+        return 1;
+      }
+    }
 
-    static const Dune::GeometryType triangle(Dune::GeometryType::simplex, 2);
-    const int refinementLevel = 3;
-
-    VD vtkData;
-    sample(LB(), triangle, refinementLevel, vtkData);
-    std::cout << vtkData << std::flush;
+    write_to_stream<LB>(std::cout, Dune::GeometryType::simplex, refinementLevel);
   }
   catch (Dune::Exception &e) {
     std::cerr << "Dune reported error: " << e << std::endl;

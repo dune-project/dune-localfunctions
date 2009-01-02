@@ -54,8 +54,10 @@ my %bases = (
 tparams  => '<typename DomainFieldType, typename RangeFieldType, int dimension>',
 
 help     => <<EOH,
-Defines the constant scalar shape function in d dimensions. Is valid on any
+Defines the constant scalar shape function in d dimensions.  Is valid on any
 type of reference element.
+
+Template Parameters:
  * DomainFieldType: Type to represent the field in the domain.
  * RangeFieldType: Type to represent the field in the range.
  * dimension: Domain dimension.
@@ -70,6 +72,96 @@ progname => sub {
     my $R = shift;
     my $d = shift;
     return sprintf "p0-%s-%s-%dd", lc $D, lc $R, $d;
+}},
+
+#======================================================================
+'Dune::P12DLocalBasis' => {
+tparams  => '<typename DomainFieldType, typename RangeFieldType>',
+
+help     => <<EOH,
+Linear Lagrange shape functions on the triangle.
+
+Template Parameters:
+ * DomainFieldType: Type to represent the field in the domain.
+ * RangeFieldType:  Type to represent the field in the range. 
+EOH
+
+headers  => <<EOH,
+#include <dune/finiteelements/p12d/p12dlocalbasis.hh>
+EOH
+
+progname => sub {
+    my $D = shift;
+    my $R = shift;
+    return sprintf "p12d-%s-%s", lc $D, lc $R;
+}},
+
+#======================================================================
+'Dune::Pk2DLocalBasis' => {
+tparams  => '<typename DomainFieldType, typename RangeFieldType, int order>',
+
+help     => <<EOH,
+Lagrange shape functions of arbitrary order on the reference triangle.
+
+Template Parameters:
+ * DomainFieldType: Type to represent the field in the domain.
+ * RangeFieldType:  Type to represent the field in the range.
+ * order:           Polynomial order.
+EOH
+
+headers  => <<EOH,
+#include <dune/finiteelements/pk2d/pk2dlocalbasis.hh>
+EOH
+
+progname => sub {
+    my $D = shift;
+    my $R = shift;
+    my $o = shift;
+    return sprintf "pk2d-%s-%s-o%d", lc $D, lc $R, $o;
+}},
+
+#======================================================================
+'Dune::Q12DLocalBasis' => {
+tparams  => '<typename DomainFieldType, typename RangeFieldType>',
+
+help     => <<EOH,
+Lagrange shape functions of order 1 on the reference quadrilateral.
+
+Template Parameters:
+ * DomainFieldType: Type to represent the field in the domain.
+ * RangeFieldType:  Type to represent the field in the range. 
+EOH
+
+headers  => <<EOH,
+#include <dune/finiteelements/q12d/q12dlocalbasis.hh>
+EOH
+
+progname => sub {
+    my $D = shift;
+    my $R = shift;
+    return sprintf "q12d-%s-%s", lc $D, lc $R;
+}},
+
+#======================================================================
+'Dune::Q22DLocalBasis' => {
+tparams  => '<typename DomainFieldType, typename RangeFieldType>',
+
+help     => <<EOH,
+Lagrange shape functions of order 2 on the reference quadrilateral.
+
+Template Parameters:
+ * DomainFieldType: Type to represent the field in the domain.
+ * RangeFieldType:  Type to represent the field in the range. 
+EOH
+
+headers  => <<EOH,
+#include <dune/finiteelements/q22d/q22dlocalbasis.hh>
+EOH
+
+progname => sub {
+    my $D = shift;
+    my $R = shift;
+    return sprintf "q22d-%s-%s", lc $D, lc $R;
 }},
 
 #======================================================================

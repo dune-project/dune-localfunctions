@@ -204,15 +204,12 @@ if(@tparams) {
 my $progname = "functions2vtu-".$bases{$basis}{progname}(@tparams);
 print "Generating $progname\n";
 
-my $command = "";
-if(defined $ENV{MAKE} and $ENV{MAKE} ne "") {
-    $command .= $ENV{MAKE};
-} else {
-    $command .= "make";
-}
+my $make = $ENV{MAKE};
+if(not defined $make or $make eq "") { $make = "make" }
+my $command = <<EOC;
+test -e .deps/$progname.Po || echo '# dummy' >.deps/$progname.Po
+$make BASIS='$fullname' PROG_NAME=$progname $progname
+EOC
 
-$command .= " -f localfunctions2vtu.make BASIS='$fullname' PROG_NAME=$progname $progname";
-
-print "$command\n";
-exec $command;
-die "could not execute $command\n"
+exec "sh", "-vc", $command;
+die "could not execute sh\n"

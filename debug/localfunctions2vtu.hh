@@ -1,9 +1,5 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifdef HAVE_CONFIG_H
-# include "config.h"
-#endif
-
 #include <iostream>
 #include <vector>
 #include <string>
@@ -18,9 +14,6 @@
 
 #include <dune/grid/common/virtualrefinement.hh>
 
-#ifdef LOCAL_BASIS_HEADER
-#  include LOCAL_BASIS_HEADER
-#endif //LOCAL_BASIS_HEADER
 typedef LOCAL_BASIS_TYPE LB;
 
 ////////////////////////////////////////////////////////////////////////

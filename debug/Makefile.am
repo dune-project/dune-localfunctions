@@ -1,14 +1,16 @@
-noinst_PROGRAMS =
+dist_EXTRA_SCRIPTS = make-functions2vtu.pl localfunctions2vtu.make
 
-if DUNE_GRID
-  noinst_PROGRAMS += dune-localfunctions2vtu
-endif DUNE_GRID
-dune_localfunctions2vtu_SOURCES = dune-localfunctions2vtu.cc
-dune_localfunctions2vtu_CPPFLAGS = $(AM_CPPFLAGS) \
-	-DLOCAL_BASIS_HEADER='<dune/finiteelements/p0/p0localbasis.hh>' \
-	-DLOCAL_BASIS_TYPE='Dune::P0LocalBasis<double, double, 2>' \
-	-DLOCAL_BASIS_TYPE_S='"P0LocalBasis<double, double, 2>"' \
-	-DPROG_NAME='"dune-localfunctions2vtu-p0-2d"'
+#use like this: ./make-localfunctions2vtu.pl 'P0LocalBasis<double, double, 2>'
+#make-localfunctions2vtu.pl will call the makefile with the two variables
+#PROG_NAME and BASIS set on the command line and with the apropriate target
+
+noinst_HEADERS = localfunctions2vtu.hh
+
+EXTRA_PROGRAMS = dummy
+
+dummy_SOURCES = dummy.cc
+
+CLEANFILES = functions2vtu-*
 
 include $(top_srcdir)/am/global-rules
 

@@ -201,7 +201,8 @@ void sample(const LocalBasis &lb,
   typedef typename VR::ElementIterator ElementIterator;
 
   Dune::GeometryType geo(basicGeo, dimDomain);
-  VR &ref = Dune::buildRefinement<dimDomain, DomainFieldType>(geo, geo);
+  Dune::GeometryType simplex(Dune::GeometryType::simplex, dimDomain);
+  VR &ref = Dune::buildRefinement<dimDomain, DomainFieldType>(geo, simplex);
 
   // init coords
   vtkData.coords.resize(0);
@@ -345,6 +346,8 @@ int main(int argc, char** argv)
 {
   try {
     int refinementLevel = 3;
+    Dune::GeometryType::BasicType geo = Dune::GeometryType::simplex;
+
     for(++argv; *argv; ++argv) {
       if(std::strcmp(*argv, "--help") == 0 ||
          std::strcmp(*argv, "-h")     == 0 ||
@@ -354,26 +357,62 @@ int main(int argc, char** argv)
         "\n"
         PROG_NAME " --help|-h|-?\n"
         "        Show this help.\n"
-        PROG_NAME " [LEVEL]\n"
-        "        Dump " LOCAL_BASIS_TYPE_S " to stdout as a vtu.\n"
-        "        Refine LEVEL times when doing so (default is 3).\n";
+        PROG_NAME " [--geo|-g TYPE] [LEVEL]\n"
+        "        Dump " LOCAL_BASIS_TYPE_S " to stdout as a vtu.  Refine\n"
+        "        LEVEL times when doing so (default is 3).  If --geo or\n"
+        "        -g is given, use that basic geometry type instead of\n"
+        "        simplex.  Possible values for TYPE are those from\n"
+        "        Dune::GeometryType::BasicType, except that pyramid and\n"
+        "        prism are not supported yet by VirtualRefinement so\n"
+        "        won't work.\n";
         return 0;
       }
-      std::istringstream s(*argv);
-      s >> refinementLevel;
-      if(!s.good()) {
-        std::cerr << "Error: Unknown argument " << *argv << "\n";
-        std::cerr << "Error: Try --help\n";
-        return 1;
+      else if(std::strcmp (*argv, "--geo")     == 0 ||
+              std::strncmp(*argv, "--geo=", 6) == 0 ||
+              std::strncmp(*argv, "-g", 2)     == 0 ) {
+        char *arg;
+        if(std::strncmp(*argv, "--geo=", 6) == 0)
+          arg = *argv + 6;
+        else if(std::strncmp(*argv, "-g", 2) == 0 && (*argv)[2] != '\0')
+          arg = *argv + 2;
+        else {
+          ++argv;
+          arg = *argv;
+        }
+
+        if     (std::strcmp(arg, "simplex") == 0)
+          geo = Dune::GeometryType::simplex;
+        else if(std::strcmp(arg, "cube")    == 0)
+          geo = Dune::GeometryType::cube;
+        else if(std::strcmp(arg, "pyramid") == 0)
+          geo = Dune::GeometryType::pyramid;
+        else if(std::strcmp(arg, "prism")   == 0)
+          geo = Dune::GeometryType::prism;
+        else {
+          std::cerr << "Error: Unknown geometry type " << arg << "\n";
+          std::cerr << "Error: Try --help\n";
+          return 1;
+        }
+      }
+      else {
+        std::istringstream s(*argv);
+        s >> refinementLevel;
+        if(s.fail()) {
+          std::cerr << "Error: Unknown argument " << *argv << "\n";
+          std::cerr << "Error: Try --help\n";
+          return 1;
+        }
       }
     }
 
-    write_to_stream<LB>(std::cout, Dune::GeometryType::simplex, refinementLevel);
+    write_to_stream<LB>(std::cout, geo, refinementLevel);
   }
   catch (Dune::Exception &e) {
     std::cerr << "Dune reported error: " << e << std::endl;
+    return 1;
   }
   catch (...) {
     std::cerr << "Unknown exception thrown!" << std::endl;
+    return 1;
   }
 }

@@ -70,17 +70,6 @@ namespace Dune
       out[2][0][0] = 1;           out[2][1][0] = 0; out[2][0][1] = 0; out[2][1][1] = 1;
     }
 
-    //! \brief Local interpolation of a function
-    template<typename E, typename F, typename C>
-    void interpolate (const E& e, const F& f, std::vector<C>& out) const
-    {
-      typename Traits::DomainType x;
-      typename Traits::RangeType y;
-
-      out.resize(3);
-      DUNE_THROW(Dune::Exception,"interpolate for RT0 not implemented");
-    }
-
     //! \brief Polynomial order of the shape functions
     unsigned int order () const
     {

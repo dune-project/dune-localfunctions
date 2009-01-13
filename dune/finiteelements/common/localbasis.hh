@@ -106,23 +106,6 @@ namespace Dune
       asImp().evaluateFunction(in,out);
     }
 
-    /** \brief Represent given function with the shape functions
-
-            Determines a set of coefficients returned in out
-            to represent a given function on an element.
-            If the function is not contained within the local function
-            spaced spanned by the shape functions an approximation
-            is returned.
-
-            This function is to be moved to the Layout because it depends on the way
-            how the basis functions are used!
-     */
-    template<typename E, typename F, typename C>
-    void interpolate (const E& e, const F& f, std::vector<C>& out) const
-    {
-      asImp().interpolate(e,f,out);
-    }
-
     /*! \brief Polynomial order of the shape functions
 
        \todo Gurke!

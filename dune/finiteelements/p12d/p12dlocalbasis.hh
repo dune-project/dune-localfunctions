@@ -56,19 +56,6 @@ namespace Dune
       out[2][0][0] =  0; out[2][0][1] =  1;   // basis function 2
     }
 
-    //! \brief Local interpolation of a function
-    template<typename E, typename F, typename C>
-    void interpolate (const E& e, const F& f, std::vector<C>& out) const
-    {
-      typename Traits::DomainType x;
-      typename Traits::RangeType y;
-
-      out.resize(3);
-      x[0] = 0.0; x[1] = 0.0; f.eval_local(e,x,y); out[0] = y;
-      x[0] = 1.0; x[1] = 0.0; f.eval_local(e,x,y); out[1] = y;
-      x[0] = 0.0; x[1] = 1.0; f.eval_local(e,x,y); out[2] = y;
-    }
-
     //! \brief Polynomial order of the shape functions
     unsigned int order () const
     {

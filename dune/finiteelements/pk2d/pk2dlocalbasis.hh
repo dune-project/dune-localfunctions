@@ -13,9 +13,9 @@ namespace Dune
          Lagrange shape functions of arbitrary order have the property that
          \f$\hat\phi^i(x_j) = \delta_{i,j}\f$ for certain points \f$x_j\f$.
 
-         - <tt>D</tt>: Type to represent the field in the domain.
-         - <tt>R</tt>: Type to represent the field in the range.
-         - <tt>k</tt>: Polynomial order.
+         \tparam D Type to represent the field in the domain.
+         \tparam R Type to represent the field in the range.
+         \tparam k Polynomial order.
 
          \nosubgrouping
    */
@@ -142,24 +142,6 @@ namespace Dune
 
       //        for (int i=0; i<N; i++)
       //          std::cout << i << " " << out[i][0][0] << " " << out[i][0][1] << std::endl;
-    }
-
-    //! \brief Local interpolation of a function
-    template<typename E, typename F, typename C>
-    void interpolate (const E& e, const F& f, std::vector<C>& out) const
-    {
-      typename Traits::DomainType x;
-      typename Traits::RangeType y;
-      out.resize(N);
-      int n=0;
-      for (int j=0; j<=k; j++)
-        for (int i=0; i<=k-j; i++)
-        {
-          x[0] = pos[i]; x[1] = pos[j];
-          f.eval_local(e,x,y);
-          out[n] = y;
-          n++;
-        }
     }
 
     //! \brief Polynomial order of the shape functions

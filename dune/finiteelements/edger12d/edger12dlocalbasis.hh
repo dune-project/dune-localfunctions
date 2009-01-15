@@ -10,6 +10,9 @@ namespace Dune
   /**@ingroup LocalBasisImplementation
      \brief Edge shape functions of order 1 on the reference rectangle.
 
+     These are from Jianming Jin: "The Finite Element Method in
+     Electromagnetics" 2nd edition, section 8.1.1 "Rectangular Elements".
+
      Note that it is not yet checked whether these basis functions work on
      general quadrilaterals as well as rectangles.  The transformation might
      destroy some properties of the basis.

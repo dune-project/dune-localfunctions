@@ -22,40 +22,23 @@ namespace Dune
       typename LB::Traits::DomainType x;
       typename LB::Traits::RangeType y;
 
-      // Mass matrix M is
-      // / 1/3 1/6  0   0  \
-      // | 1/6 1/3  0   0  |
-      // |  0   0  1/3 1/6 |
-      // \  0   0  1/6 1/3 /
-      //
-      // Inverse Mass M^{-1} matrix is
-      // /  4 -2  0  0 \
-      // | -2  4  0  0 |
-      // |  0  0  4 -2 |
-      // \  0  0 -2  4 /
-
       out.resize(4);
 
       // Evaluate f at the center of the edge corresponding to the given
       // coefficient.  This is the Gauß quadrature rule:
       //
-      //   out[i] = \sum_j M^{-1}_{ij} * \int_{\Gamma_i} f(x)*b_j(x) dx
+      //   out[i] = \int_{\Gamma_i} f(x)*b_i(x) dx
+      //          = f(x^c_i) * b_i(x^c_i)
+      //          = f(x^c_i) * t_i
       //
-      // This approach has the advantage that the corresponding
-      // basisfunction in the neighboring element will get the same
-      // coefficient.  The correct thing AFAICT however would probably be full
-      // a full fledged integral:
-      //
-      //   out[i] = \sum_j M^{-1}_{ij} * \int f(x)*b_j(x) dx
-      //
-      // where b_j is basisfunction j.
+      // where x^c_i is the position of center of the edge number i and t_i is
+      // the tangential unit vector at edge i pointing in the positive
+      // direction along that axis.
 
-      x[0] = 0.5; x[1] = 0.0; f.evaluate(x,y); out[0] = 4*y[0];
-      x[0] = 0.5; x[1] = 1.0; f.evaluate(x,y); out[1] = 4*y[0];
-      x[0] = 0.0; x[1] = 0.5; f.evaluate(x,y); out[2] = 4*y[1];
-      x[0] = 1.0; x[1] = 0.5; f.evaluate(x,y); out[3] = 4*y[1];
-
-      dune_static_assert(0, "This method has yet to be verified.");
+      x[0] = 0.5; x[1] = 0.0; f.evaluate(x,y); out[0] = y[0];
+      x[0] = 0.5; x[1] = 1.0; f.evaluate(x,y); out[1] = y[0];
+      x[0] = 0.0; x[1] = 0.5; f.evaluate(x,y); out[2] = y[1];
+      x[0] = 1.0; x[1] = 0.5; f.evaluate(x,y); out[3] = y[1];
     }
   };
 }

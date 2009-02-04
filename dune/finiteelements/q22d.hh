@@ -25,7 +25,7 @@ namespace Dune
 
     Q22DLocalFiniteElement ()
     {
-      gt.makeTriangle();
+      gt.makeQuadrilateral();
     }
 
     const typename Traits::LocalBasisType& localBasis () const

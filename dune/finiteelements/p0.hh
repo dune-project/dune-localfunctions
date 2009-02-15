@@ -24,7 +24,7 @@ namespace Dune
         P0LocalInterpolation<P0LocalBasis<D,R,d> > > Traits;
 
     P0LocalFiniteElement (GeometryType::BasicType basicType)
-      : gt(basicType,d), interpolation(basicType,d)
+      : interpolation(basicType,d), gt(basicType,d)
     {}
 
     const typename Traits::LocalBasisType& localBasis () const

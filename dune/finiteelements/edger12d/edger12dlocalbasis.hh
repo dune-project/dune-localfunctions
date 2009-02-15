@@ -28,7 +28,7 @@ namespace Dune
           C1LocalBasisTraits<
               D, 2,
               Dune::FieldVector<D,2>,
-              R, 3,
+              R, 2,
               Dune::FieldVector<R,3>,
               Dune::FieldVector<Dune::FieldVector<R,2>, 1>
               >,
@@ -39,7 +39,7 @@ namespace Dune
     typedef C1LocalBasisTraits<
         D, 2,
         Dune::FieldVector<D,2>,
-        R, 3,
+        R, 2,
         Dune::FieldVector<R,3>,
         Dune::FieldVector<Dune::FieldVector<R,2>, 1>
         > Traits;
@@ -63,8 +63,8 @@ namespace Dune
 
     //! \brief Evaluate Jacobian of all shape functions
     inline void
-    evaluateJacobian (const typename Traits::DomainType& in,       // position
-                      std::vector<typename Traits::JacobianType>& out) const    // return value
+    evaluateJacobian (const typename Traits::DomainType& in,         // position
+                      std::vector<typename Traits::JacobianType>& out) const      // return value
     {
       out.resize(4);
       out[0] = 0; out[0][0][1] = -1;

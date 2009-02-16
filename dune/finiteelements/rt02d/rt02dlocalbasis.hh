@@ -30,17 +30,17 @@ namespace Dune
     RT02DLocalBasis ()
     {
       sqrt2 = sqrt(2.0);
-      sign0 = sign1 = sign2 = 1;
+      sign0 = sign1 = sign2 = 1.0;
     }
 
     //! \brief Make set numer s, where 0<=s<8
     RT02DLocalBasis (unsigned int s)
     {
       sqrt2 = sqrt(2.0);
-      sign0 = sign1 = sign2 = 1;
-      if (s&1==0) sign0 *= -1;
-      if (s&2==0) sign1 *= -1;
-      if (s&4==0) sign2 *= -1;
+      sign0 = sign1 = sign2 = 1.0;
+      if (s&1) sign0 *= -1;
+      if (s&2) sign1 *= -1;
+      if (s&4) sign2 *= -1;
     }
 
     //! \brief number of shape functions

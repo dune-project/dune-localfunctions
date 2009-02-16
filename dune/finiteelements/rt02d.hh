@@ -28,7 +28,7 @@ namespace Dune
       gt.makeTriangle();
     }
 
-    RT02DLocalFiniteElement (int s) : basis(s)
+    RT02DLocalFiniteElement (int s) : basis(s), interpolation(s)
     {
       gt.makeTriangle();
     }

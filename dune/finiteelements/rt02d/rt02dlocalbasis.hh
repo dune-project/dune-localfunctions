@@ -38,9 +38,9 @@ namespace Dune
     {
       sqrt2 = sqrt(2.0);
       sign0 = sign1 = sign2 = 1.0;
-      if (s&1) sign0 *= -1;
-      if (s&2) sign1 *= -1;
-      if (s&4) sign2 *= -1;
+      if (s&1) sign0 = -1;
+      if (s&2) sign1 = -1;
+      if (s&4) sign2 = -1;
     }
 
     //! \brief number of shape functions
@@ -56,7 +56,7 @@ namespace Dune
       out.resize(3);
       out[0][0] = sign0*in[0]*sqrt2; out[0][1]=sign0*in[1]*sqrt2;
       out[1][0] = sign1*(in[0]-1);   out[1][1]=sign1*(in[1]);
-      out[2][0] = sign2*in[0];       out[2][1]=sign2*in[1]-1;
+      out[2][0] = sign2*in[0];       out[2][1]=sign2*(in[1]-1);
     }
 
     //! \brief Evaluate Jacobian of all shape functions

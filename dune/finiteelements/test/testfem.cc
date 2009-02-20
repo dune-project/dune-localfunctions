@@ -8,6 +8,7 @@
 
 #include "../p0.hh"
 #include "../p1.hh"
+#include "../p11d.hh"
 #include "../p12d.hh"
 #include "../p13d.hh"
 #include "../pk2d.hh"
@@ -33,6 +34,7 @@ int main(int argc, char** argv)
 {
   Dune::P0LocalFiniteElement<double,double,2> p0lfem(Dune::GeometryType::simplex);
   Dune::P1LocalFiniteElement<double,double,2> p1lfem;
+  Dune::P12DLocalFiniteElement<double,double> p11dlfem;
   Dune::P12DLocalFiniteElement<double,double> p12dlfem;
   Dune::P13DLocalFiniteElement<double,double> p13dlfem;
   Dune::Pk2DLocalFiniteElement<double,double,5> pk2dlfem(3);
@@ -46,6 +48,7 @@ int main(int argc, char** argv)
 
   p0lfem.localInterpolation().interpolate(Func(),c);
   p1lfem.localInterpolation().interpolate(Func(),c);
+  p11dlfem.localInterpolation().interpolate(Func(),c);
   p12dlfem.localInterpolation().interpolate(Func(),c);
   p13dlfem.localInterpolation().interpolate(Func(),c);
   pk2dlfem.localInterpolation().interpolate(Func(),c);

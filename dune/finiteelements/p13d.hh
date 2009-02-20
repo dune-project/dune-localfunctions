@@ -24,7 +24,7 @@ namespace Dune
         P13DLocalInterpolation<P13DLocalBasis<D,R> > > Traits;
     P13DLocalFiniteElement ()
     {
-      gt.makeTriangle();
+      gt.makeTetrahedron();
     }
 
     const typename Traits::LocalBasisType& localBasis () const

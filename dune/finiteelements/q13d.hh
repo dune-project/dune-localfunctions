@@ -25,7 +25,7 @@ namespace Dune
 
     Q13DLocalFiniteElement ()
     {
-      gt.makeQuadrilateral();
+      gt.makeHexahedron();
     }
 
     const typename Traits::LocalBasisType& localBasis () const

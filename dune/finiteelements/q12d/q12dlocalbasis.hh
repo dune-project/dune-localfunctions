@@ -47,8 +47,8 @@ namespace Dune
 
     //! \brief Evaluate Jacobian of all shape functions
     inline void
-    evaluateJacobian (const typename Traits::DomainType& in,       // position
-                      std::vector<typename Traits::JacobianType>& out) const                        // return value
+    evaluateJacobian (const typename Traits::DomainType& in,         // position
+                      std::vector<typename Traits::JacobianType>& out) const      // return value
     {
       out.resize(4);
       out[0][0][0] = in[1]-1; out[0][0][1] = in[0]-1;

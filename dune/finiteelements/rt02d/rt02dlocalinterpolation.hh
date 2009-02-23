@@ -26,9 +26,12 @@ namespace Dune
       if (s&1) sign0 *= -1.0;
       if (s&2) sign1 *= -1.0;
       if (s&4) sign2 *= -1.0;
-      m[0][0] = 0.5; m[0][1] = 0.5;
-      m[1][0] = 0.0; m[1][1] = 0.5;
-      m[2][0] = 0.5; m[2][1] = 0.0;
+      m0[0] = 0.5; m0[1] = 0.5;
+      m1[0] = 0.0; m1[1] = 0.5;
+      m2[0] = 0.5; m2[1] = 0.0;
+      n0[0] = 1.0/sqrt(2.0); n0[1] = 1.0/sqrt(2.0);
+      n1[0] = -1.0;          n1[1] = 0.0;
+      n2[0] = 0.0;           n2[1] = -1.0;
     }
 
     template<typename F, typename C>
@@ -39,14 +42,15 @@ namespace Dune
 
       out.resize(3);
 
-      f.evaluate(m[0],y); out[0] = y*sign0;
-      f.evaluate(m[1],y); out[1] = y*sign1;
-      f.evaluate(m[2],y); out[2] = y*sign2;
+      f.evaluate(m0,y); out[0] = (y[0]*n0[0]+y[1]*n0[1])*sign0;
+      f.evaluate(m1,y); out[1] = (y[0]*n1[0]+y[1]*n1[1])*sign1;
+      f.evaluate(m2,y); out[2] = (y[0]*n2[0]+y[1]*n2[1])*sign2;
     }
 
   private:
     typename LB::Traits::RangeFieldType sign0,sign1,sign2;
-    typename LB::Traits::DomainType m[3];
+    typename LB::Traits::DomainType m0,m1,m2;
+    typename LB::Traits::DomainType n0,n1,n2;
   };
 }
 

@@ -16,8 +16,11 @@ namespace Dune
   template<class D, class R>
   class Q12DLocalFiniteElement : LocalFiniteElementInterface<
                                      LocalFiniteElementTraits<Q12DLocalBasis<D,R>,Q12DLocalCoefficients,
-                                         Q12DLocalInterpolation<Q12DLocalBasis<D,R> > >,
-                                     Q12DLocalFiniteElement<D,R> >
+                                         Q12DLocalInterpolation<Q12DLocalBasis<D,R> > >
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
+                                     ,Q12DLocalFiniteElement<D,R>
+#endif
+                                     >
   {
   public:
     typedef LocalFiniteElementTraits<Q12DLocalBasis<D,R>,Q12DLocalCoefficients,

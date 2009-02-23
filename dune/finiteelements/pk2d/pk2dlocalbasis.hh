@@ -23,8 +23,11 @@ namespace Dune
   class Pk2DLocalBasis :
     public C1LocalBasisInterface<
         C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,
-            Dune::FieldVector<Dune::FieldVector<R,2>,1> >,
-        Pk2DLocalBasis<D,R,k> >
+            Dune::FieldVector<Dune::FieldVector<R,2>,1> >
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
+        ,Pk2DLocalBasis<D,R,k>
+#endif
+        >
   {
   public:
     enum {N = (k+1)*(k+2)/2};
@@ -160,8 +163,11 @@ namespace Dune
   class Pk2DLocalBasis<D,R,0> :
     public C1LocalBasisInterface<
         C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,
-            Dune::FieldVector<Dune::FieldVector<R,2>,1> >,
-        Pk2DLocalBasis<D,R,0> >
+            Dune::FieldVector<Dune::FieldVector<R,2>,1> >
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
+        ,Pk2DLocalBasis<D,R,0>
+#endif
+        >
   {
   public:
     typedef C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,

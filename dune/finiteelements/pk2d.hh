@@ -14,13 +14,23 @@ namespace Dune
 {
 
   template<class D, class R, unsigned int k>
-  class Pk2DLocalFiniteElement : LocalFiniteElementInterface<
-                                     LocalFiniteElementTraits<Pk2DLocalBasis<D,R,k>,Pk2DLocalCoefficients<k>,
-                                         Pk2DLocalInterpolation<Pk2DLocalBasis<D,R,k> > >,
-                                     Pk2DLocalFiniteElement<D,R,k> >
+  class Pk2DLocalFiniteElement
+    :
+#if DUNE_VIRTUAL_SHAPEFUNCTIONS
+      public
+#endif
+      LocalFiniteElementInterface<
+          LocalFiniteElementTraits<Pk2DLocalBasis<D,R,k>,
+              Pk2DLocalCoefficients<k>,
+              Pk2DLocalInterpolation<Pk2DLocalBasis<D,R,k> > >
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
+          ,Pk2DLocalFiniteElement<D,R,k>
+#endif
+          >
   {
   public:
-    typedef LocalFiniteElementTraits<Pk2DLocalBasis<D,R,k>,Pk2DLocalCoefficients<k>,
+    typedef LocalFiniteElementTraits<Pk2DLocalBasis<D,R,k>,
+        Pk2DLocalCoefficients<k>,
         Pk2DLocalInterpolation<Pk2DLocalBasis<D,R,k> > > Traits;
 
     Pk2DLocalFiniteElement ()

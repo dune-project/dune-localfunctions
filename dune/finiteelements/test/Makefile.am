@@ -1,7 +1,7 @@
 # $Id: Makefile.am 4150 2008-05-15 16:12:46Z christi $
 
 # which tests to run
-TESTS = testfem lagrangeshapefunctiontest
+TESTS = testfem lagrangeshapefunctiontest virtualshapefunctiontest
 
 # programs just to build when "make check" is used
 check_PROGRAMS = $(TESTS)
@@ -13,5 +13,6 @@ check_PROGRAMS = $(TESTS)
 
 testfem_SOURCES = testfem.cc
 lagrangeshapefunctiontest_SOURCES = lagrangeshapefunctiontest.cc
+virtualshapefunctiontest_SOURCES = virtualshapefunctiontest.cc
 
 include $(top_srcdir)/am/global-rules

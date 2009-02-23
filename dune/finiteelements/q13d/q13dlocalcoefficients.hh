@@ -23,7 +23,7 @@ namespace Dune
     Q13DLocalCoefficients () : li(8)
     {
       for (int i=0; i<8; i++)
-        li[i] = LocalIndex(i,2,0);
+        li[i] = LocalIndex(i,3,0);
     }
 
     //! number of coefficients

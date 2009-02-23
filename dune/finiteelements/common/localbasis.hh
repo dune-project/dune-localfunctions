@@ -75,14 +75,16 @@ namespace Dune
          This class represents a set of shape functions defined on one particular
          reference element.
 
-         Template parameters:
-
-         - <tt>T</tt>: Instance of LocalBasisTraits providing type information.
-         - <tt>Imp</tt>: Implementation of the interface used via Barton-Nackman
+         \tparam T     Instance of LocalBasisTraits providing type information.
+         \tparam Imp   Implementation of the interface used via Barton-Nackman
 
          \nosubgrouping
    */
-  template<class T, class Imp>
+  template<class T
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
+      , class Imp
+#endif
+      >
   class C0LocalBasisInterface
   {
   public:
@@ -90,34 +92,48 @@ namespace Dune
     typedef T Traits;
 
     //! \brief Number of shape functions
+#if DUNE_VIRTUAL_SHAPEFUNCTIONS
+    virtual unsigned int size () const = 0;
+#else
     unsigned int size () const
     {
       return asImp().size();
     }
+#endif
 
     /** \brief Evaluate all basis function at given position
 
             Evaluates all shape functions at the given position and returns
             these values in a vector.
      */
+#if DUNE_VIRTUAL_SHAPEFUNCTIONS
+    virtual void evaluateFunction (const typename Traits::DomainType& in,
+                                   std::vector<typename Traits::RangeType>& out) const = 0;
+#else
     inline void evaluateFunction (const typename Traits::DomainType& in,
                                   std::vector<typename Traits::RangeType>& out) const
     {
       asImp().evaluateFunction(in,out);
     }
-
+#endif
     /*! \brief Polynomial order of the shape functions
 
        \todo Gurke!
      */
+#if DUNE_VIRTUAL_SHAPEFUNCTIONS
+    virtual unsigned int order () const = 0;
+#else
     unsigned int order () const
     {
       return asImp().order();
     }
+#endif
 
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
   private:
     Imp& asImp () {return static_cast<Imp &> (*this);}
     const Imp& asImp () const {return static_cast<const Imp &>(*this);}
+#endif
   };
 
 
@@ -173,8 +189,15 @@ namespace Dune
 
          \nosubgrouping
    */
+#if DUNE_VIRTUAL_SHAPEFUNCTIONS
+  template<class T>
+  class C1LocalBasisInterface
+    : public C0LocalBasisInterface<T>
+#else
   template<class T, class Imp>
-  class C1LocalBasisInterface : public C0LocalBasisInterface<T,Imp>
+  class C1LocalBasisInterface
+    : public C0LocalBasisInterface<T,Imp>
+#endif
   {
   public:
     //! \brief Export type traits
@@ -184,17 +207,27 @@ namespace Dune
 
             out[k][i][j] is \f$\partial_i \hat\phi_j^k \f$, when \f$\hat\phi^k \f$ is the
             k'th shape function.
+
+       \param [out] out The result
      */
+#if DUNE_VIRTUAL_SHAPEFUNCTIONS
+    virtual void
+    evaluateJacobian(const typename Traits::DomainType& in,             // position
+                     std::vector<typename Traits::JacobianType>& out) const = 0;
+#else
     inline void
     evaluateJacobian(const typename Traits::DomainType& in,             // position
                      std::vector<typename Traits::JacobianType>& out) const                          // return value
     {
       asImp().evaluateJacobian(in,out);
     }
+#endif
 
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
   private:
     Imp& asImp () {return static_cast<Imp &> (*this);}
     const Imp& asImp () const {return static_cast<const Imp &>(*this);}
+#endif
   };
 
 
@@ -211,7 +244,12 @@ namespace Dune
 
   // hinzufügen:
   template<class T, class Imp>
-  class CkLocalBasisInterface : public C1LocalBasisInterface<T,Imp>
+  class CkLocalBasisInterface
+#if DUNE_VIRTUAL_SHAPEFUNCTIONS
+    : public C1LocalBasisInterface<T>
+#else
+    : public C1LocalBasisInterface<T,Imp>
+#endif
   {
   public:
     //! \brief Export type traits

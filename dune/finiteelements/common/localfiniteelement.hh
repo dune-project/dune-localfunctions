@@ -20,36 +20,59 @@ namespace Dune {
   };
 
   //! interface for a finite element
+
+#if DUNE_VIRTUAL_SHAPEFUNCTIONS
+  template<class T>
+#else
   template<class T, class Imp>
+#endif
   class LocalFiniteElementInterface
   {
   public:
 
     typedef T Traits;
 
+#if DUNE_VIRTUAL_SHAPEFUNCTIONS
+    const virtual typename T::LocalBasisType& localBasis () const = 0;
+#else
     const typename T::LocalBasisType& localBasis () const
     {
       return asImp().localBasis();
     }
+#endif
 
+#if DUNE_VIRTUAL_SHAPEFUNCTIONS
+    const virtual typename T::LocalCoefficientsType& localCoefficients () const = 0;
+#else
     const typename T::LocalCoefficientsType& localCoefficients () const
     {
       return asImp().localCoefficients();
     }
+#endif
 
+#if DUNE_VIRTUAL_SHAPEFUNCTIONS
+    const virtual typename T::LocalInterpolationType& localInterpolation () const = 0;
+#else
     const typename T::LocalInterpolationType& localInterpolation () const
     {
       return asImp().localInterpolation();
     }
+#endif
 
+#if DUNE_VIRTUAL_SHAPEFUNCTIONS
+    virtual GeometryType type () const = 0;
+#else
     GeometryType type () const
     {
       return asImp().type();
     }
+#endif
 
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
   private:
     Imp& asImp () {return static_cast<Imp &> (*this);}
     const Imp& asImp () const {return static_cast<const Imp &>(*this);}
+#endif
   };
 
 }

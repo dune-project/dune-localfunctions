@@ -15,7 +15,7 @@ namespace Dune
     P11DLocalInterpolation ()
     {
       x[0][0] = 0.0;
-      x[0][0] = 1.0;
+      x[1][0] = 1.0;
     }
 
     //! \brief Local interpolation of a function

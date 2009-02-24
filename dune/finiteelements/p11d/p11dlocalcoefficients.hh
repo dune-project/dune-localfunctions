@@ -23,7 +23,7 @@ namespace Dune
     P11DLocalCoefficients () : li(2)
     {
       for (int i=0; i<2; i++)
-        li[i] = LocalIndex(i,2,0);
+        li[i] = LocalIndex(i,1,0);
     }
 
     //! number of coefficients

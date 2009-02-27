@@ -13,6 +13,8 @@
 namespace Dune
 {
 
+  /** \todo Please doc me !
+   */
   template<class D, class R>
   class Q22DLocalFiniteElement : LocalFiniteElementInterface<
                                      LocalFiniteElementTraits<Q22DLocalBasis<D,R>,Q22DLocalCoefficients,
@@ -20,29 +22,41 @@ namespace Dune
                                      Q22DLocalFiniteElement<D,R> >
   {
   public:
+    /** \todo Please doc me !
+     */
     typedef LocalFiniteElementTraits<Q22DLocalBasis<D,R>,Q22DLocalCoefficients,
         Q22DLocalInterpolation<Q22DLocalBasis<D,R> > > Traits;
 
+    /** \todo Please doc me !
+     */
     Q22DLocalFiniteElement ()
     {
       gt.makeQuadrilateral();
     }
 
+    /** \todo Please doc me !
+     */
     const typename Traits::LocalBasisType& localBasis () const
     {
       return basis;
     }
 
+    /** \todo Please doc me !
+     */
     const typename Traits::LocalCoefficientsType& localCoefficients () const
     {
       return coefficients;
     }
 
+    /** \todo Please doc me !
+     */
     const typename Traits::LocalInterpolationType& localInterpolation () const
     {
       return interpolation;
     }
 
+    /** \todo Please doc me !
+     */
     GeometryType type () const
     {
       return gt;

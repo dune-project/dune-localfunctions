@@ -13,6 +13,8 @@
 namespace Dune
 {
 
+  /** \todo Please doc me !
+   */
   template<class D, class R>
   class P11DLocalFiniteElement : LocalFiniteElementInterface<
                                      LocalFiniteElementTraits<P11DLocalBasis<D,R>,P11DLocalCoefficients,
@@ -20,28 +22,41 @@ namespace Dune
                                      P11DLocalFiniteElement<D,R> >
   {
   public:
+    /** \todo Please doc me !
+     */
     typedef LocalFiniteElementTraits<P11DLocalBasis<D,R>,P11DLocalCoefficients,
         P11DLocalInterpolation<P11DLocalBasis<D,R> > > Traits;
+
+    /** \todo Please doc me !
+     */
     P11DLocalFiniteElement ()
     {
       gt.makeLine();
     }
 
+    /** \todo Please doc me !
+     */
     const typename Traits::LocalBasisType& localBasis () const
     {
       return basis;
     }
 
+    /** \todo Please doc me !
+     */
     const typename Traits::LocalCoefficientsType& localCoefficients () const
     {
       return coefficients;
     }
 
+    /** \todo Please doc me !
+     */
     const typename Traits::LocalInterpolationType& localInterpolation () const
     {
       return interpolation;
     }
 
+    /** \todo Please doc me !
+     */
     GeometryType type () const
     {
       return gt;

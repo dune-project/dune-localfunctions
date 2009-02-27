@@ -10,19 +10,27 @@
 namespace Dune
 {
 
+  /** \todo Please doc me !
+   */
   template<class D, class R, int d>
   class P1LocalFiniteElement;
 
+  /** \todo Please doc me !
+   */
   template<class D, class R>
   class P1LocalFiniteElement<D, R, 1>
     : public P11DLocalFiniteElement<D, R>
   {};
 
+  /** \todo Please doc me !
+   */
   template<class D, class R>
   class P1LocalFiniteElement<D, R, 2>
     : public P12DLocalFiniteElement<D, R>
   {};
 
+  /** \todo Please doc me !
+   */
   template<class D, class R>
   class P1LocalFiniteElement<D, R, 3>
     : public P13DLocalFiniteElement<D, R>

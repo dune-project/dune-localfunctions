@@ -14,8 +14,16 @@ namespace Dune {
   template<class LB, class LC, class LI>
   struct LocalFiniteElementTraits
   {
+    /** \todo Please doc me !
+     */
     typedef LB LocalBasisType;
+
+    /** \todo Please doc me !
+     */
     typedef LC LocalCoefficientsType;
+
+    /** \todo Please doc me !
+     */
     typedef LI LocalInterpolationType;
   };
 
@@ -30,8 +38,12 @@ namespace Dune {
   {
   public:
 
+    /** \todo Please doc me !
+     */
     typedef T Traits;
 
+    /** \todo Please doc me !
+     */
 #if DUNE_VIRTUAL_SHAPEFUNCTIONS
     const virtual typename T::LocalBasisType& localBasis () const = 0;
 #else
@@ -41,6 +53,8 @@ namespace Dune {
     }
 #endif
 
+    /** \todo Please doc me !
+     */
 #if DUNE_VIRTUAL_SHAPEFUNCTIONS
     const virtual typename T::LocalCoefficientsType& localCoefficients () const = 0;
 #else
@@ -50,6 +64,8 @@ namespace Dune {
     }
 #endif
 
+    /** \todo Please doc me !
+     */
 #if DUNE_VIRTUAL_SHAPEFUNCTIONS
     const virtual typename T::LocalInterpolationType& localInterpolation () const = 0;
 #else
@@ -59,6 +75,8 @@ namespace Dune {
     }
 #endif
 
+    /** \todo Please doc me !
+     */
 #if DUNE_VIRTUAL_SHAPEFUNCTIONS
     virtual GeometryType type () const = 0;
 #else

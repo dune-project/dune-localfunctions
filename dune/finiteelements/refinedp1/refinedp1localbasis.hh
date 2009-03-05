@@ -21,6 +21,15 @@ namespace Dune
      Shape functions like these are necessary for hierarchical error estimators
      for certain nonlinear problems.
 
+     The functions are associated to points by:
+
+     f_0 ~ (0.0, 0.0)
+     f_1 ~ (1.0, 0.0)
+     f_2 ~ (0.0, 1.0)
+     f_3 ~ (0.5, 0.5)
+     f_4 ~ (0.0, 0.5)
+     f_5 ~ (0.5, 0.0)
+
          \tparam D Type to represent the field in the domain.
          \tparam R Type to represent the field in the range.
 

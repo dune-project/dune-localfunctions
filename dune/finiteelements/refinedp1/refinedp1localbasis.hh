@@ -24,11 +24,11 @@ namespace Dune
      The functions are associated to points by:
 
      f_0 ~ (0.0, 0.0)
-     f_1 ~ (1.0, 0.0)
-     f_2 ~ (0.0, 1.0)
-     f_3 ~ (0.5, 0.5)
-     f_4 ~ (0.0, 0.5)
-     f_5 ~ (0.5, 0.0)
+     f_1 ~ (0.5, 0.0)
+     f_2 ~ (1.0, 0.0)
+     f_3 ~ (0.0, 0.5)
+     f_4 ~ (0.5, 0.5)
+     f_5 ~ (0.0, 1.0)
 
          \tparam D Type to represent the field in the domain.
          \tparam R Type to represent the field in the range.
@@ -70,34 +70,24 @@ namespace Dune
       case 0 :
 
         out[0] = 1 - local[0] - local[1];
-        out[1] = 0;
+        out[1] = local[0];
         out[2] = 0;
-        out[3] = 0;
-        out[4] = local[1];
-        out[5] = local[0];
-
+        out[3] = local[1];
+        out[4] = 0;
+        out[5] = 0;
         break;
 
       case 1 :
 
         out[0] = 0;
-        out[1] = local[0];
-        out[2] = 0;
-        out[3] = local[1];
-        out[4] = 0;
-        out[5] = 1 - local[0] - local[1];
+        out[1] = 1 - local[0] - local[1];
+        out[2] = local[0];
+        out[3] = 0;
+        out[4] = local[1];
+        out[5] = 0;
         break;
 
       case 2 :
-
-        out[0] = 0;
-        out[1] = 0;
-        out[2] = local[1];
-        out[3] = local[0];
-        out[4] = 1 - local[0] - local[1];
-        out[5] = 0;
-        break;
-      case 3 :
 
         out[0] = 0;
         out[1] = 0;
@@ -105,6 +95,15 @@ namespace Dune
         out[3] = 1 - local[0] - local[1];
         out[4] = local[0];
         out[5] = local[1];
+        break;
+      case 3 :
+
+        out[0] = 0;
+        out[1] = local[1];
+        out[2] = 0;
+        out[3] = local[0];
+        out[4] = 1 - local[0] - local[1];
+        out[5] = 0;
       }
 
     }
@@ -124,40 +123,40 @@ namespace Dune
       case 0 :
 
         out[0][0][0] = -2;    out[0][0][1] = -2;
-        out[1][0][0] =  0;    out[1][0][1] =  0;
+        out[1][0][0] =  2;    out[1][0][1] =  0;
         out[2][0][0] =  0;    out[2][0][1] =  0;
-        out[3][0][0] =  0;    out[3][0][1] =  0;
-        out[4][0][0] =  0;    out[4][0][1] =  2;
-        out[5][0][0] =  2;    out[5][0][1] =  0;
+        out[3][0][0] =  0;    out[3][0][1] =  2;
+        out[4][0][0] =  0;    out[4][0][1] =  0;
+        out[5][0][0] =  0;    out[5][0][1] =  0;
         break;
 
       case 1 :
 
         out[0][0][0] =  0;    out[0][0][1] =  0;
-        out[1][0][0] =  2;    out[1][0][1] =  0;
-        out[2][0][0] =  0;    out[2][0][1] =  0;
-        out[3][0][0] =  0;    out[3][0][1] =  2;
-        out[4][0][0] =  0;    out[4][0][1] =  0;
-        out[5][0][0] = -2;    out[5][0][1] = -2;
+        out[1][0][0] = -2;    out[1][0][1] = -2;
+        out[2][0][0] =  2;    out[2][0][1] =  0;
+        out[3][0][0] =  0;    out[3][0][1] =  0;
+        out[4][0][0] =  0;    out[4][0][1] =  2;
+        out[5][0][0] =  0;    out[5][0][1] =  0;
         break;
 
       case 2 :
 
         out[0][0][0] =  0;    out[0][0][1] =  0;
         out[1][0][0] =  0;    out[1][0][1] =  0;
-        out[2][0][0] =  0;    out[2][0][1] =  2;
-        out[3][0][0] =  2;    out[3][0][1] =  0;
-        out[4][0][0] = -2;    out[4][0][1] = -2;
-        out[5][0][0] =  0;    out[5][0][1] =  0;
+        out[2][0][0] =  0;    out[2][0][1] =  0;
+        out[3][0][0] = -2;    out[3][0][1] = -2;
+        out[4][0][0] =  2;    out[4][0][1] =  0;
+        out[5][0][0] =  0;    out[5][0][1] =  2;
         break;
       case 3 :
 
         out[0][0][0] =  0;    out[0][0][1] =  0;
-        out[1][0][0] =  0;    out[1][0][1] =  0;
+        out[1][0][0] =  0;    out[1][0][1] = -2;
         out[2][0][0] =  0;    out[2][0][1] =  0;
-        out[3][0][0] =  2;    out[3][0][1] =  2;
-        out[4][0][0] = -2;    out[4][0][1] =  0;
-        out[5][0][0] =  0;    out[5][0][1] = -2;
+        out[3][0][0] = -2;    out[3][0][1] =  0;
+        out[4][0][0] =  2;    out[4][0][1] =  2;
+        out[5][0][0] =  0;    out[5][0][1] =  0;
       }
 
     }

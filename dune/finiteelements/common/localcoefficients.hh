@@ -25,7 +25,11 @@ namespace Dune
     LocalIndex ()
     {}
 
-    //! \brief Initialize all components
+    /** \brief Initialize all components
+        \param s Local number of the associated subentity
+        \param c Codimension of the associated subentity
+        \param i Index in the set of all functions associated to this subentity
+     */
     LocalIndex (unsigned int s, unsigned int c, unsigned int i)
       : Dune::tuple<unsigned int, unsigned int, unsigned int>(s,c,i)
     {}

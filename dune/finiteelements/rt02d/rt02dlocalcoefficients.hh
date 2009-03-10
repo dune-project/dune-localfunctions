@@ -23,7 +23,7 @@ namespace Dune
     RT02DLocalCoefficients () : li(3)
     {
       for (int i=0; i<3; i++)
-        li[i] = LocalIndex(i,1,0);
+        li[i] = LocalKey(i,1,0);
     }
 
     //! number of coefficients
@@ -33,13 +33,13 @@ namespace Dune
     }
 
     //! get i'th index
-    const LocalIndex& localIndex (int i) const
+    const LocalKey& localKey (int i) const
     {
       return li[i];
     }
 
   private:
-    std::vector<LocalIndex> li;
+    std::vector<LocalKey> li;
   };
 
 }

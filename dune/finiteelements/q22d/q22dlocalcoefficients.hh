@@ -23,7 +23,7 @@ namespace Dune
     Q22DLocalCoefficients () : li(9)
     {
       for (int i=0; i<9; i++)
-        li[i] = LocalIndex(i%4,2-i/4,0);
+        li[i] = LocalKey(i%4,2-i/4,0);
     }
 
     //! number of coefficients
@@ -33,13 +33,13 @@ namespace Dune
     }
 
     //! get i'th index
-    const LocalIndex& localIndex (int i) const
+    const LocalKey& localKey (int i) const
     {
       return li[i];
     }
 
   private:
-    std::vector<LocalIndex> li;
+    std::vector<LocalKey> li;
   };
 
 }

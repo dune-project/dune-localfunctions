@@ -30,13 +30,13 @@ namespace Dune
     }
 
     //! get i'th index
-    const LocalIndex& localIndex (int i) const
+    const LocalKey& localKey (int i) const
     {
       return index;
     }
 
   private:
-    LocalIndex index;
+    LocalKey index;
   };
 
 }

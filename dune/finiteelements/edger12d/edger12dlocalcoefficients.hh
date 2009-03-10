@@ -23,10 +23,10 @@ namespace Dune
     //! \brief Standard constructor
     EdgeR12DLocalCoefficients () : li(4)
     {
-      li[0] = LocalIndex(2,1,0);
-      li[1] = LocalIndex(3,1,0);
-      li[2] = LocalIndex(0,1,0);
-      li[3] = LocalIndex(1,1,0);
+      li[0] = LocalKey(2,1,0);
+      li[1] = LocalKey(3,1,0);
+      li[2] = LocalKey(0,1,0);
+      li[3] = LocalKey(1,1,0);
     }
 
     //! number of coefficients
@@ -36,13 +36,13 @@ namespace Dune
     }
 
     //! get i'th index
-    const LocalIndex& localIndex (int i) const
+    const LocalKey& localKey (int i) const
     {
       return li[i];
     }
 
   private:
-    std::vector<LocalIndex> li;
+    std::vector<LocalKey> li;
   };
 
 }

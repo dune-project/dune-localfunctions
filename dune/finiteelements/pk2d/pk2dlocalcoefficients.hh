@@ -53,19 +53,19 @@ namespace Dune
     }
 
     //! get i'th index
-    const LocalIndex& localIndex (int i) const
+    const LocalKey& localKey (int i) const
     {
       return li[i];
     }
 
   private:
-    std::vector<LocalIndex> li;
+    std::vector<LocalKey> li;
 
     void fill_default ()
     {
       if (k==0)
       {
-        li[0] = LocalIndex(0,0,0);
+        li[0] = LocalKey(0,0,0);
         return;
       }
       int n=0;
@@ -75,35 +75,35 @@ namespace Dune
         {
           if (i==0 && j==0)
           {
-            li[n++] = LocalIndex(0,2,0);
+            li[n++] = LocalKey(0,2,0);
             continue;
           }
           if (i==k && j==0)
           {
-            li[n++] = LocalIndex(1,2,0);
+            li[n++] = LocalKey(1,2,0);
             continue;
           }
           if (i==0 && j==k)
           {
-            li[n++] = LocalIndex(2,2,0);
+            li[n++] = LocalKey(2,2,0);
             continue;
           }
           if (j==0)
           {
-            li[n++] = LocalIndex(2,1,i-1);
+            li[n++] = LocalKey(2,1,i-1);
             continue;
           }
           if (i==0)
           {
-            li[n++] = LocalIndex(1,1,j-1);
+            li[n++] = LocalKey(1,1,j-1);
             continue;
           }
           if (i+j==k)
           {
-            li[n++] = LocalIndex(0,1,j-1);
+            li[n++] = LocalKey(0,1,j-1);
             continue;
           }
-          li[n++] = LocalIndex(0,0,c++);
+          li[n++] = LocalKey(0,0,c++);
         }
     }
   };

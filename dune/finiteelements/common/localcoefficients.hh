@@ -13,16 +13,16 @@ namespace Dune
   /**@ingroup LocalLayoutInterface
          \brief Describe position of one degree of freedom
 
-         A LocalIndex associates a degree of freedom with an index
+         A LocalKey associates a degree of freedom with an index
          of a local basis function.
 
          \nosubgrouping
    */
-  class LocalIndex : public Dune::tuple<unsigned int, unsigned int, unsigned int>
+  class LocalKey : public Dune::tuple<unsigned int, unsigned int, unsigned int>
   {
   public:
     //! \brief Standard constructor for uninitialized local index
-    LocalIndex ()
+    LocalKey ()
     {}
 
     /** \brief Initialize all components
@@ -30,7 +30,7 @@ namespace Dune
         \param c Codimension of the associated subentity
         \param i Index in the set of all functions associated to this subentity
      */
-    LocalIndex (unsigned int s, unsigned int c, unsigned int i)
+    LocalKey (unsigned int s, unsigned int c, unsigned int i)
       : Dune::tuple<unsigned int, unsigned int, unsigned int>(s,c,i)
     {}
 
@@ -89,11 +89,11 @@ namespace Dune
 
     //! get i'th index
 #if DUNE_VIRTUAL_SHAPEFUNCTIONS
-    const virtual LocalIndex& localIndex (int i) const = 0;
+    const virtual LocalKey& localKey (int i) const = 0;
 #else
-    const LocalIndex& localIndex (int i) const
+    const LocalKey& localKey (int i) const
     {
-      return asImp().localIndex(i);
+      return asImp().localKey(i);
     }
 #endif
 

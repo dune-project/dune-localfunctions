@@ -9,6 +9,7 @@
 #include "refinedp1/refinedp1localbasis.hh"
 #include "pk2d/pk2dlocalcoefficients.hh"
 #include "pk2d/pk2dlocalinterpolation.hh"
+#include "pk2d/pk2dlocalbasis.hh"
 
 namespace Dune
 {

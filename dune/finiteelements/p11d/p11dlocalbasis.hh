@@ -21,8 +21,11 @@ namespace Dune
   class P11DLocalBasis :
     public C1LocalBasisInterface<
         C1LocalBasisTraits<D,1,Dune::FieldVector<D,1>,R,1,Dune::FieldVector<R,1>,
-            Dune::FieldVector<Dune::FieldVector<R,1>,1> >,
-        P11DLocalBasis<D,R> >
+            Dune::FieldVector<Dune::FieldVector<R,1>,1> >
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
+        , P11DLocalBasis<D,R>
+#endif
+        >
   {
   public:
     //! \brief export type traits for function signature

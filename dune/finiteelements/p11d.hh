@@ -18,8 +18,11 @@ namespace Dune
   template<class D, class R>
   class P11DLocalFiniteElement : LocalFiniteElementInterface<
                                      LocalFiniteElementTraits<P11DLocalBasis<D,R>,P11DLocalCoefficients,
-                                         P11DLocalInterpolation<P11DLocalBasis<D,R> > >,
-                                     P11DLocalFiniteElement<D,R> >
+                                         P11DLocalInterpolation<P11DLocalBasis<D,R> > >
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
+                                     , P11DLocalFiniteElement<D,R>
+#endif
+                                     >
   {
   public:
     /** \todo Please doc me !

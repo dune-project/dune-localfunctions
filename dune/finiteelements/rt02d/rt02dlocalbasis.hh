@@ -29,14 +29,12 @@ namespace Dune
     //! \brief Standard constructor
     RT02DLocalBasis ()
     {
-      sqrt2 = sqrt(2.0);
       sign0 = sign1 = sign2 = 1.0;
     }
 
     //! \brief Make set numer s, where 0<=s<8
     RT02DLocalBasis (unsigned int s)
     {
-      sqrt2 = sqrt(2.0);
       sign0 = sign1 = sign2 = 1.0;
       if (s&1) sign0 = -1.0;
       if (s&2) sign1 = -1.0;
@@ -54,7 +52,7 @@ namespace Dune
                                   std::vector<typename Traits::RangeType>& out) const
     {
       out.resize(3);
-      out[0][0] = sign0*in[0]*sqrt2; out[0][1]=sign0*in[1]*sqrt2;
+      out[0][0] = sign0*in[0];       out[0][1]=sign0*in[1];
       out[1][0] = sign1*(in[0]-1.0); out[1][1]=sign1*in[1];
       out[2][0] = sign2*in[0];       out[2][1]=sign2*(in[1]-1.0);
     }
@@ -65,13 +63,10 @@ namespace Dune
                       std::vector<typename Traits::JacobianType>& out) const                          // return value
     {
       out.resize(3);
-
-      out[0][0][0] = sign0*sqrt2; out[0][0][1] = 0;
-      out[0][1][0] = 0;           out[0][1][1] = sign0*sqrt2;
-
+      out[0][0][0] = sign0;       out[0][0][1] = 0;
+      out[0][1][0] = 0;           out[0][1][1] = sign0;
       out[1][0][0] = sign1;       out[1][0][1] = 0;
       out[1][1][0] = 0;           out[1][1][1] = sign1;
-
       out[2][0][0] = sign2;       out[2][0][1] = 0;
       out[2][1][0] = 0;           out[2][1][1] = sign2;
     }
@@ -83,7 +78,6 @@ namespace Dune
     }
 
   private:
-    R sqrt2;
     R sign0, sign1, sign2;
   };
 }

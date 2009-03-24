@@ -20,7 +20,7 @@ namespace Dune
                                      LocalFiniteElementTraits<P12DLocalBasis<D,R>,P12DLocalCoefficients,
                                          P12DLocalInterpolation<P12DLocalBasis<D,R> > >
 #ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-                                     P12DLocalFiniteElement<D,R>
+                                     , P12DLocalFiniteElement<D,R>
 #endif
                                      >
   {

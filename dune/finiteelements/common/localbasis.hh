@@ -205,8 +205,8 @@ namespace Dune
 
     /** \brief Evaluate jacobian of all shape functions at given position.
 
-            out[k][i][j] is \f$\partial_i \hat\phi_j^k \f$, when \f$\hat\phi^k \f$ is the
-            k'th shape function.
+            out[i][j][k] is \f$\partial_k \hat\phi_j^i \f$, when \f$\hat\phi^i \f$ is the
+            i'th shape function.
 
        \param [out] out The result
      */

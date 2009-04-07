@@ -209,6 +209,32 @@ progname => sub {
 }},
 
 #======================================================================
+'Dune::MonomLocalBasis' => {
+tparams  => '<typename DomainFieldType, typename RangeFieldType, int dimDomain, int porder>',
+
+help     => <<EOH,
+Monom shape functions of order 1.
+
+Template Parameters:
+ * DomainFieldType: Type to represent the field in the domain.
+ * RangeFieldType:  Type to represent the field in the range. 
+ * dimDomain:       Dimension of the domain.
+ * porder:          Polynomial order.
+EOH
+
+headers  => <<EOH,
+#include <dune/finiteelements/monom/monomlocalbasis.hh>
+EOH
+
+progname => sub {
+    my $D = shift;
+    my $R = shift;
+    my $d = shift;
+    my $k = shift;
+    return sprintf "monomp%d%dD-%s-%s", $k, $d, lc $D, lc $R;
+}},
+
+#======================================================================
 );
 
 sub decode_basis($ ) {

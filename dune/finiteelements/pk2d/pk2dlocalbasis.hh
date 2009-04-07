@@ -56,15 +56,15 @@ namespace Dune
     {
       out.resize(N);
       int n=0;
-      for (int j=0; j<=k; j++)
-        for (int i=0; i<=k-j; i++)
+      for (unsigned int j=0; j<=k; j++)
+        for (unsigned int i=0; i<=k-j; i++)
         {
           out[n] = 1.0;
-          for (int alpha=0; alpha<i; alpha++)
+          for (unsigned int alpha=0; alpha<i; alpha++)
             out[n] *= (x[0]-pos[alpha])/(pos[i]-pos[alpha]);
-          for (int beta=0; beta<j; beta++)
+          for (unsigned int beta=0; beta<j; beta++)
             out[n] *= (x[1]-pos[beta])/(pos[j]-pos[beta]);
-          for (int gamma=i+j+1; gamma<=k; gamma++)
+          for (unsigned int gamma=i+j+1; gamma<=k; gamma++)
             out[n] *= (pos[gamma]-x[0]-x[1])/(pos[gamma]-pos[i]-pos[j]);
           n++;
         }

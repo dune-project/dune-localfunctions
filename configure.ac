@@ -41,6 +41,7 @@ AC_CONFIG_FILES([
                 dune/finiteelements/rt02d/Makefile
                 dune/finiteelements/edger12d/Makefile
                 dune/finiteelements/refinedp1/Makefile
+                dune/finiteelements/monom/Makefile
 		lib/Makefile
                 doc/layout/Makefile
                 doc/doxygen/Makefile

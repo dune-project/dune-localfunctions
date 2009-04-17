@@ -90,7 +90,7 @@ namespace Dune
           }
           if (j==0)
           {
-            li[n++] = LocalKey(2,1,i-1);
+            li[n++] = LocalKey(0,1,i-1);
             continue;
           }
           if (i==0)
@@ -100,7 +100,7 @@ namespace Dune
           }
           if (i+j==k)
           {
-            li[n++] = LocalKey(0,1,j-1);
+            li[n++] = LocalKey(2,1,j-1);
             continue;
           }
           li[n++] = LocalKey(0,0,c++);

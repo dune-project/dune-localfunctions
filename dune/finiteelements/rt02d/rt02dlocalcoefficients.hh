@@ -23,7 +23,7 @@ namespace Dune
     RT02DLocalCoefficients () : li(3)
     {
       for (int i=0; i<3; i++)
-        li[i] = LocalKey(i,1,0);
+        li[i] = LocalKey(2-i,1,0);
     }
 
     //! number of coefficients

@@ -32,8 +32,8 @@ namespace Dune
 
       // Edge bubbles
       li[4] = LocalKey(0,2,0);
-      li[5] = LocalKey(1,2,0);
-      li[6] = LocalKey(2,2,0);
+      li[5] = LocalKey(2,2,0);
+      li[6] = LocalKey(1,2,0);
       li[7] = LocalKey(3,2,0);
       li[8] = LocalKey(4,2,0);
       li[9] = LocalKey(5,2,0);

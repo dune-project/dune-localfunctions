@@ -42,7 +42,7 @@ namespace Dune
       if (variant & 2) flip[1]=true;else flip[1]=false;
       if (variant & 4) flip[2]=true;else flip[2]=false;
       for (int i=0; i<N; i++)
-        if (li[i].codim()==1 && flip[li[i].subentity()])
+        if (li[i].codim()==1 && flip[li[i].subEntity()])
           li[i].index(k-2-li[i].index());
     }
 

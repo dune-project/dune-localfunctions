@@ -35,7 +35,7 @@ namespace Dune
     {}
 
     //! \brief Return number of associated subentity
-    inline unsigned int subentity () const
+    inline unsigned int subEntity () const
     {
       return Dune::get<0>(*this);
     }

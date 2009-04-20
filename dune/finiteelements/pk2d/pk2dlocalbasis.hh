@@ -45,7 +45,6 @@ namespace Dune
 
     //! \brief number of shape functions
     unsigned int size () const
-    //! \brief number of shape functions
     {
       return N;
     }
@@ -77,32 +76,32 @@ namespace Dune
     {
       out.resize(N);
       int n=0;
-      for (int j=0; j<=k; j++)
-        for (int i=0; i<=k-j; i++)
+      for (unsigned int j=0; j<=k; j++)
+        for (unsigned int i=0; i<=k-j; i++)
         {
           // x_0 derivative
           out[n][0][0] = 0.0;
           R factor=1.0;
-          for (int beta=0; beta<j; beta++)
+          for (unsigned int beta=0; beta<j; beta++)
             factor *= (x[1]-pos[beta])/(pos[j]-pos[beta]);
-          for (int a=0; a<i; a++)
+          for (unsigned int a=0; a<i; a++)
           {
             R product=factor;
-            for (int alpha=0; alpha<i; alpha++)
+            for (unsigned int alpha=0; alpha<i; alpha++)
               if (alpha==a)
                 product *= 1.0/(pos[i]-pos[alpha]);
               else
                 product *= (x[0]-pos[alpha])/(pos[i]-pos[alpha]);
-            for (int gamma=i+j+1; gamma<=k; gamma++)
+            for (unsigned int gamma=i+j+1; gamma<=k; gamma++)
               product *= (pos[gamma]-x[0]-x[1])/(pos[gamma]-pos[i]-pos[j]);
             out[n][0][0] += product;
           }
-          for (int c=i+j+1; c<=k; c++)
+          for (unsigned int c=i+j+1; c<=k; c++)
           {
             R product=factor;
-            for (int alpha=0; alpha<i; alpha++)
+            for (unsigned int alpha=0; alpha<i; alpha++)
               product *= (x[0]-pos[alpha])/(pos[i]-pos[alpha]);
-            for (int gamma=i+j+1; gamma<=k; gamma++)
+            for (unsigned int gamma=i+j+1; gamma<=k; gamma++)
               if (gamma==c)
                 product *= -1.0/(pos[gamma]-pos[i]-pos[j]);
               else
@@ -113,26 +112,26 @@ namespace Dune
           // x_1 derivative
           out[n][0][1] = 0.0;
           factor = 1.0;
-          for (int alpha=0; alpha<i; alpha++)
+          for (unsigned int alpha=0; alpha<i; alpha++)
             factor *= (x[0]-pos[alpha])/(pos[i]-pos[alpha]);
-          for (int b=0; b<j; b++)
+          for (unsigned int b=0; b<j; b++)
           {
             R product=factor;
-            for (int beta=0; beta<j; beta++)
+            for (unsigned int beta=0; beta<j; beta++)
               if (beta==b)
                 product *= 1.0/(pos[j]-pos[beta]);
               else
                 product *= (x[1]-pos[beta])/(pos[j]-pos[beta]);
-            for (int gamma=i+j+1; gamma<=k; gamma++)
+            for (unsigned int gamma=i+j+1; gamma<=k; gamma++)
               product *= (pos[gamma]-x[0]-x[1])/(pos[gamma]-pos[i]-pos[j]);
             out[n][0][1] += product;
           }
-          for (int c=i+j+1; c<=k; c++)
+          for (unsigned int c=i+j+1; c<=k; c++)
           {
             R product=factor;
-            for (int beta=0; beta<j; beta++)
+            for (unsigned int beta=0; beta<j; beta++)
               product *= (x[1]-pos[beta])/(pos[j]-pos[beta]);
-            for (int gamma=i+j+1; gamma<=k; gamma++)
+            for (unsigned int gamma=i+j+1; gamma<=k; gamma++)
               if (gamma==c)
                 product *= -1.0/(pos[gamma]-pos[i]-pos[j]);
               else

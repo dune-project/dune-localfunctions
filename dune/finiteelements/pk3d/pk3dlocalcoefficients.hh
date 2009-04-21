@@ -79,7 +79,7 @@ namespace Dune
             unsigned int codim = 0;
             for (unsigned int m = 0; m < 4; ++m)
             {
-              j[m] = vertexmap[i[m]];
+              j[m] = i[vertexmap[m]];
               entity += !!j[m] << m;
               codim += !j[m];
             }

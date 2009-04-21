@@ -54,10 +54,10 @@ namespace Dune
                                   std::vector<typename Traits::RangeType>& out) const
     {
       out.resize(N);
-      unsigned int int n = 0;
-      for (unsigned int i3 = 0; i3 < k; ++i3)
-        for (unsigned int i2 = 0; i2 < k - i3; ++i2)
-          for (unsigned int i1 = 0; i1 < k - i2 - i3; ++i1)
+      unsigned int n = 0;
+      for (unsigned int i3 = 0; i3 <= k; ++i3)
+        for (unsigned int i2 = 0; i2 <= k - i3; ++i2)
+          for (unsigned int i1 = 0; i1 <= k - i2 - i3; ++i1)
           {
             out[n] = 1.0;
             for (unsigned int alpha=0; alpha<i1; alpha++)
@@ -66,7 +66,7 @@ namespace Dune
               out[n] *= (x[1]-pos[beta])/(pos[i2]-pos[beta]);
             for (unsigned int gamma=0; gamma<i3; gamma++)
               out[n] *= (x[2]-pos[gamma])/(pos[i3]-pos[gamma]);
-            for (unsigned int delta=i+i2+1; delta<=k; delta++)
+            for (unsigned int delta=i1+i2+i3+1; delta<=k; delta++)
               out[n] *= (pos[delta]-x[0]-x[1]-x[2])/(pos[delta]-pos[i1]-pos[i2]-pos[i3]);
             n++;
           }

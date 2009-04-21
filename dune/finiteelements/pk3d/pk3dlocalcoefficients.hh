@@ -65,23 +65,27 @@ namespace Dune
         subindex[m] = codim_count[codim]++;
       }
 
+      int a1 = (3*k + 12)*k + 11;
+      int a2 = -3*k - 6;
       unsigned int dof_count[16] = {0};
       unsigned int i[4];
-      unsigned int n = 0;
       for (i[3] = 0; i[3] <= k; ++i[3])
         for (i[2] = 0; i[2] <= k - i[3]; ++i[2])
           for (i[1] = 0; i[1] <= k - i[2] - i[3]; ++i[1])
           {
             i[0] = k - i[1] - i[2] - i[3];
+            unsigned int j[4];
             unsigned int entity = 0;
             unsigned int codim = 0;
             for (unsigned int m = 0; m < 4; ++m)
             {
-              unsigned int j = !vertexmap[i[m]];
-              entity += !j << m;
-              codim += j;
+              j[m] = vertexmap[i[m]];
+              entity += !!j[m] << m;
+              codim += !j[m];
             }
-            li[n++] = LocalKey(subindex[entity], codim, dof_count[entity]++);
+            int local_index = j[3]*(a1 + (a2 + j[3])*j[3])/6
+                              + j[2]*(2*(k - j[3]) + 3 - j[2])/2 + j[1];
+            li[local_index] = LocalKey(subindex[entity], codim, dof_count[entity]++);
           }
     }
   };

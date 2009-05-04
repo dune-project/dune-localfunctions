@@ -7,7 +7,7 @@ EXTRA_DIST=dune.module
 # we need automake 1.5
 AUTOMAKE_OPTIONS = foreign 1.5
 
-SUBDIRS = lib dune debug doc
+SUBDIRS = dune debug doc
 
 # pass most important options when "make distcheck" is used
 DISTCHECK_CONFIGURE_FLAGS = --with-dune-common="$(DUNE_COMMON_ROOT)" CXX="$(CXX)" CC="$(CC)"

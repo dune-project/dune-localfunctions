@@ -209,6 +209,28 @@ progname => sub {
 }},
 
 #======================================================================
+'Dune::EdgeS12DLocalBasis' => {
+tparams  => '<typename DomainFieldType, typename RangeFieldType>',
+
+help     => <<EOH,
+Edge shape functions of order 1 on the reference triange.
+
+Template Parameters:
+ * DomainFieldType: Type to represent the field in the domain.
+ * RangeFieldType:  Type to represent the field in the range. 
+EOH
+
+headers  => <<EOH,
+#include <dune/finiteelements/edges12d/edges12dlocalbasis.hh>
+EOH
+
+progname => sub {
+    my $D = shift;
+    my $R = shift;
+    return sprintf "edges12d-%s-%s", lc $D, lc $R;
+}},
+
+#======================================================================
 'Dune::MonomLocalBasis' => {
 tparams  => '<typename DomainFieldType, typename RangeFieldType, int dimDomain, int porder>',
 

@@ -265,13 +265,18 @@ Stream &operator<<(Stream &s, const VTKData<Traits> &vtkData) {
     s << "        <DataArray type=\"" << vtkRangeFieldType << "\""
     <<                   " format=\"ascii\""
     <<                   " Name=\"LocalFunction" << bf << "\"";
-    if(dimRange > 1) s <<  " NumberOfComponents=\"" << dimRange << "\"";
+    // expand 2D to 3D
+    if(dimRange == 2) s << " NumberOfComponents=\"3\"";
+    if(dimRange >  2) s << " NumberOfComponents=\"" << dimRange << "\"";
     s <<                   ">\n";
 
     for(unsigned index = 0; index < vtkData.data[bf].size(); ++index) {
       s << "         ";
       for(int component = 0; component < dimRange; ++component)
         s << " " << fullPrecision(vtkData.data[bf][index][component]);
+      // expand 2D to 3D
+      if(dimRange == 2)
+        s << " 0";
       s << "\n";
     }
     s << "        </DataArray>\n";

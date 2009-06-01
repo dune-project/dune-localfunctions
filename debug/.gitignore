@@ -1,4 +1,7 @@
 .deps
 dune-localfunctions2vtu
+functions2vtu-*
+hurz.vtu
+hurz.vtu.bak
 Makefile
 Makefile.in

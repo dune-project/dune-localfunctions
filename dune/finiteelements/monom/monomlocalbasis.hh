@@ -181,13 +181,16 @@ namespace Dune
                       std::vector<typename Traits::JacobianType>& out) const      // return value
     {
       out.resize(size());
+      array<int, d> derivatives;
+      for(int i = 0; i < d; ++i)
+        derivatives[i] = 0;
       for(int i = 0; i < d; ++i)
       {
-        array<int, 1> directions;
-        directions[0] = i;
+        derivatives[i] = 1;
         int index = 0;
-        MonomImp::Evaluate<Traits, d>::eval(in, out, directions, 1, p, index,
-                                            MonomImp::JacobianAccess<Traits>(out, i));
+        MonomImp::JacobianAccess<Traits> access(out, i);
+        MonomImp::Evaluate<Traits, d>::eval(in, derivatives, 1, p, index, access);
+        derivatives[i] = 0;
       }
     }
 

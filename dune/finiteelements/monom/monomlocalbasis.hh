@@ -107,16 +107,16 @@ namespace Dune
             Evaluate<Traits,c-1>::
             eval(in, derivatives, 0, newbound, index, access);
           else {
-            int divisor = 1;
+            int coeff = 1;
             for(int i = e - derivatives[d] + 1; i <= e; ++i)
-              divisor *= i;
+              coeff *= i;
             // call the evaluator for the next dimension
             Evaluate<Traits,c-1>::
             eval(  // pass the coordinate and the derivatives unchanged
               in, derivatives,
               // also pass the product accumulated so far, but also
               // include the current dimension
-              prod*std::pow(in[d], typename Traits::DomainFieldType(e-derivatives[d]))/divisor,
+              prod*std::pow(in[d], typename Traits::DomainFieldType(e-derivatives[d]))*coeff,
               // pass the number of remaining exponents to the next
               // dimension
               newbound,
@@ -146,10 +146,10 @@ namespace Dune
         if(bound < derivatives[d])
           prod = 0;
         else {
-          int divisor = 1;
+          int coeff = 1;
           for(int i = bound - derivatives[d] + 1; i <= bound; ++i)
-            divisor *= i;
-          prod *= std::pow(in[d], typename Traits::DomainFieldType(bound-derivatives[d]))/divisor;
+            coeff *= i;
+          prod *= std::pow(in[d], typename Traits::DomainFieldType(bound-derivatives[d]))*coeff;
         }
         access[index] = prod;
         ++index;

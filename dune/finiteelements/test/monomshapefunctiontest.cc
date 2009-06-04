@@ -107,16 +107,19 @@ int main (int argc, char *argv[]) try
     Dune::FieldVector<double, 1> pos;
 
     pos[0] = 0;
-    testShapeFunctionValue<1,1>(GeometryType::cube, pos, 0, 1);
-    testShapeFunctionValue<1,1>(GeometryType::cube, pos, 1, 0);
+    testShapeFunctionValue<1,2>(GeometryType::cube, pos, 0, 1);
+    testShapeFunctionValue<1,2>(GeometryType::cube, pos, 1, 0);
+    testShapeFunctionValue<1,2>(GeometryType::cube, pos, 2, 0);
 
     pos[0] = .5;
-    testShapeFunctionValue<1,1>(GeometryType::cube, pos, 0, 1);
-    testShapeFunctionValue<1,1>(GeometryType::cube, pos, 1, .5);
+    testShapeFunctionValue<1,2>(GeometryType::cube, pos, 0, 1);
+    testShapeFunctionValue<1,2>(GeometryType::cube, pos, 1, .5);
+    testShapeFunctionValue<1,2>(GeometryType::cube, pos, 2, .25);
 
     pos[0] = 1;
-    testShapeFunctionValue<1,1>(GeometryType::cube, pos, 0, 1);
-    testShapeFunctionValue<1,1>(GeometryType::cube, pos, 1, 1);
+    testShapeFunctionValue<1,2>(GeometryType::cube, pos, 0, 1);
+    testShapeFunctionValue<1,2>(GeometryType::cube, pos, 1, 1);
+    testShapeFunctionValue<1,2>(GeometryType::cube, pos, 2, 1);
   }
 
   { // dim=2
@@ -142,15 +145,15 @@ int main (int argc, char *argv[]) try
   testShapeFunctionDerivative<1,1>(GeometryType(1));
   testShapeFunctionDerivative<1,2>(GeometryType(1));
 
-  //         testShapeFunctionDerivative<2,1>(GeometryType(GeometryType::simplex,2));
-  //         testShapeFunctionDerivative<2,1>(GeometryType(GeometryType::cube,2));
+  testShapeFunctionDerivative<2,1>(GeometryType(GeometryType::simplex,2));
+  //   testShapeFunctionDerivative<2,1>(GeometryType(GeometryType::cube,2));
 
-  //         testShapeFunctionDerivative<3,1>(GeometryType(GeometryType::simplex,3));
-  //         testShapeFunctionDerivative<3,1>(GeometryType(GeometryType::cube,3));
-  //         testShapeFunctionDerivative<3,1>(GeometryType(GeometryType::pyramid,3));
-  //         testShapeFunctionDerivative<3,1>(GeometryType(GeometryType::prism,3));
+  //   testShapeFunctionDerivative<3,1>(GeometryType(GeometryType::simplex,3));
+  //   testShapeFunctionDerivative<3,1>(GeometryType(GeometryType::cube,3));
+  //   testShapeFunctionDerivative<3,1>(GeometryType(GeometryType::pyramid,3));
+  //   testShapeFunctionDerivative<3,1>(GeometryType(GeometryType::prism,3));
 
-  //         testShapeFunctionDerivative<4,1>(GeometryType(GeometryType::cube,4));
+  //   testShapeFunctionDerivative<4,1>(GeometryType(GeometryType::cube,4));
 
   return success ? 0 : 1;
 }

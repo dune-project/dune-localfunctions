@@ -3,6 +3,8 @@
 #ifndef DUNE_MONOMLOCALBASIS_HH
 #define DUNE_MONOMLOCALBASIS_HH
 
+#include <cassert>
+
 #include <dune/grid/common/referenceelements.hh>
 
 #include "../common/localbasis.hh"
@@ -30,12 +32,29 @@ namespace Dune
     template <typename Traits>
     class EvalAccess {
       std::vector<typename Traits::RangeType> &out;
+#ifndef NDEBUG
+      unsigned int first_unused_index;
+#endif
+
     public:
       EvalAccess(std::vector<typename Traits::RangeType> &out_)
         : out(out_)
+#ifndef NDEBUG
+          , first_unused_index(0)
+#endif
       { }
+#ifndef NDEBUG
+      ~EvalAccess() {
+        assert(first_unused_index == out.size());
+      }
+#endif
       typename Traits::RangeFieldType &operator[](unsigned int index)
       {
+        assert(index < out.size());
+#ifndef NDEBUG
+        if(first_unused_index <= index)
+          first_unused_index = index+1;
+#endif
         return out[index][0];
       }
     };
@@ -45,50 +64,107 @@ namespace Dune
     class JacobianAccess {
       std::vector<typename Traits::JacobianType> &out;
       unsigned int row;
+#ifndef NDEBUG
+      unsigned int first_unused_index;
+#endif
+
     public:
       JacobianAccess(std::vector<typename Traits::JacobianType> &out_,
                      unsigned int row_)
         : out(out_), row(row_)
+#ifndef NDEBUG
+          , first_unused_index(0)
+#endif
       { }
+#ifndef NDEBUG
+      ~JacobianAccess() {
+        assert(first_unused_index == out.size());
+      }
+#endif
       typename Traits::RangeFieldType &operator[](unsigned int index)
       {
-        return out[index][row][0];
+        assert(index < out.size());
+#ifndef NDEBUG
+        if(first_unused_index <= index)
+          first_unused_index = index+1;
+#endif
+        return out[index][0][row];
       }
     };
 
     /** Template Metaprogramm for evaluating monomial shapefunctions
      *  \internal
+     *
+     *  \tparam Traits The Traits class of the monomial shape functions to
+     *                 evaluate -- used to get DomainType etc.
+     *  \tparam c      The "codim of the next dimension to try for factors".
+     *                 Unfortunately, we cannot recurs over that dimension
+     *                 directly, since the end of the recursion cannot be
+     *                 specialized for dimDomain-1, but we can recurs over
+     *                 dimDomain minus that dimension, since it can be
+     *                 specialized for 1.
      */
     template <typename Traits, int c>
     struct Evaluate
     {
-      enum { d = Traits::dimDomain - c };
+      enum {
+        //! The next dimension to try for factors
+        d = Traits::dimDomain - c
+      };
+      /** \todo
+       *
+       *  \tparam Access Wrapper around the result vector, so we don't have to
+       *                 copy the output and can still use the same code for
+       *                 both the usual drivatives and for the Jacobian
+       */
       template <typename Access>
-      static void eval (const typename Traits::DomainType &in,
-                        const array<int, Traits::dimDomain> &derivatives,
-                        typename Traits::RangeFieldType prod,
-                        int bound, int& index, Access &access)
+      static void eval ( //! The point at which to evaluate
+        const typename Traits::DomainType &in,
+        //! The number of partial derivatives, one entry for
+        //! each dimension
+        const array<int, Traits::dimDomain> &derivatives,
+        //! The product accumulated for the dimensions which
+        //! have already been handled
+        typename Traits::RangeFieldType prod,
+        //! The number of factors still to go
+        int bound,
+        //! The index of the next entry in the output to fill
+        int& index,
+        //! The wrapper used to access the output vector
+        Access &access)
       {
-        for (int newbound=0; newbound<=bound; newbound++)
+        // start with the highest exponent for this dimension, then work down
+        for (int e = bound; e >= 0; --e)
         {
-          int e = bound-newbound;
+          // the rest rest of the available exponents, to be used by the other
+          // dimensions
+          int newbound = bound - e;
           /*if(e < derivatives[d])
              Evaluate<Traits,c-1>::
               eval(in, derivatives, 0, newbound, index, access);
              else*/{
-            /*int divisor = 1;
-               for(int i = e - derivatives[d] + 1; i <= e; ++i)
-               divisor *= i;*/
+            int coeff = 1;
+            for(int i = e - derivatives[d] + 1; i <= e; ++i)
+              coeff *= i;
+            // call the evaluator for the next dimension
             Evaluate<Traits,c-1>::
-            eval(in, derivatives,
-                 prod*std::pow(in[d], typename Traits::DomainFieldType(e /*-derivatives[d]*/)) /*/ divisor* /,
-                 newbound, index, access);
+            eval(  // pass the coordinate and the derivatives unchanged
+              in, derivatives,
+              // also pass the product accumulated so far, but also
+              // include the current dimension
+              prod*std::pow(in[d], typename Traits::DomainFieldType(e-derivatives[d]))*coeff,
+              // pass the number of remaining exponents to the next
+              // dimension
+              newbound,
+              // pass the next index to fill and the output access
+              // wrapper
+              index, access);
           }
         }
       }
     };
 
-    /** \copydoc evaluate
+    /** \copydoc Evaluate
      *  \brief Specializes the end of the recursion
      *  \internal
      */
@@ -96,19 +172,20 @@ namespace Dune
     struct Evaluate<Traits, 1>
     {
       enum { d = Traits::dimDomain-1 };
+      //! \copydoc Evaluate::eval
       template <typename Access>
       static void eval (const typename Traits::DomainType &in,
                         const array<int, Traits::dimDomain> &derivatives,
                         typename Traits::RangeFieldType prod,
                         int bound, int& index, Access &access)
       {
-        /*if(bound < derivatives[d])
-           prod = 0;
-           else*/{
-          /*int divisor = 1;
-             for(int i = bound - derivatives[d] + 1; i <= bound; ++i)
-             divisor *= i;*/
-          prod *= std::pow(in[d], typename Traits::DomainFieldType(bound /*-derivatives[d]*/)) /*/ divisor* /;
+        if(bound < derivatives[d])
+          prod = 0;
+        else {
+          int coeff = 1;
+          for(int i = bound - derivatives[d] + 1; i <= bound; ++i)
+            coeff *= i;
+          prod *= std::pow(in[d], typename Traits::DomainFieldType(bound-derivatives[d]))*coeff;
         }
         access[index] = prod;
         ++index;
@@ -181,13 +258,17 @@ namespace Dune
                       std::vector<typename Traits::JacobianType>& out) const      // return value
     {
       out.resize(size());
-      for(int i = 0; i < d; ++i)
+      array<int, d> derivatives;
+      for(unsigned int i = 0; i < d; ++i)
+        derivatives[i] = 0;
+      for(unsigned int i = 0; i < d; ++i)
       {
-        array<int, 1> directions;
-        directions[0] = i;
+        derivatives[i] = 1;
         int index = 0;
-        MonomImp::Evaluate<Traits, d>::eval(in, out, directions, 1, p, index,
-                                            MonomImp::JacobianAccess<Traits>(out, i));
+        MonomImp::JacobianAccess<Traits> access(out, i);
+        for(unsigned int lp = 0; lp <= p; ++lp)
+          MonomImp::Evaluate<Traits, d>::eval(in, derivatives, 1, lp, index, access);
+        derivatives[i] = 0;
       }
     }
 

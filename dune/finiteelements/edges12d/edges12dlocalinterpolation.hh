@@ -20,10 +20,24 @@ namespace Dune
   class EdgeS12DLocalInterpolation
     : public LocalInterpolationInterface<EdgeS12DLocalInterpolation<LB> >
   {
-    //! square root of 1/2
-    static const typename LB::Traits::RangeFieldType s0_5;
-
   public:
+    //! contruct an interpolation instance with default orientations
+    EdgeS12DLocalInterpolation()
+    {
+      s[0] = s[1] = s[2] = 1;
+    }
+
+    //! contruct an interpolation instance with the given orientations
+    //! \param orientations Bit-map of orientations for each shape function;
+    //! bit 0 = 0 means default orientation for the first shape function, bit
+    //! 0 = 1 means inverted orientation for the first shape function.
+    EdgeS12DLocalInterpolation(unsigned int orientations)
+    {
+      s[0] = s[1] = s[2] = 1;
+      for(int i = 0; i < 3; ++i)
+        if(orientations & (1<<i)) s[i] = -1;
+    }
+
     //! \brief Local interpolation of a function
     template<typename F, typename C>
     void interpolate (const F& f, std::vector<C>& out) const
@@ -54,7 +68,7 @@ namespace Dune
        *  t}_\alpha\f$ a unitvector tangential to \f$C_\alpha\f$.  The
        *  orientation of \f$\mathbf{\hat t}_\alpha\f$ does not matter, since a
        *  factor of -1 introduced in the first factor under the itegral will
-       *  be canceld out by the second.  Here we use the following definition
+       *  be canceled out by the second.  Here we use the following definition
        *  for \f$\mathbf{\hat t}_\alpha\f$:
        *  \f[
        *     \mathbf{\hat t}_0=(1,0)\qquad
@@ -64,9 +78,9 @@ namespace Dune
        *  The scalar product \f$\mathbf N^e_\alpha\cdot\mathbf{\hat
        *  t}_\alpha\f$ then becomes:
        *  \f[
-       *     \mathbf N^e_0\cdot\mathbf{\hat t}_0= 1  -y\stackrel{  y=0}= 1 \qquad
-       *     \mathbf N^e_1\cdot\mathbf{\hat t}_1=-1+x  \stackrel{x  =0}=-1 \qquad
-       *     \mathbf N^e_2\cdot\mathbf{\hat t}_2=   x+y\stackrel{x+y=1}= 1
+       *     \mathbf N^e_0\cdot\mathbf{\hat t}_0=s_0( 1  -y)\stackrel{  y=0}= s_0 \qquad
+       *     \mathbf N^e_1\cdot\mathbf{\hat t}_1=s_1(-1+x  )\stackrel{x  =0}=-s_1 \qquad
+       *     \mathbf N^e_2\cdot\mathbf{\hat t}_2=s_2(   x+y)\stackrel{x+y=1}= s_2
        *  \f]
        *  Here the relation which define \f$C_\alpha\f$ have been used in the
        *  second step.  The second factor can then be taken out ouf the
@@ -103,11 +117,11 @@ namespace Dune
        *  Written out for the different base functions this becomes:
        *  \f[
        *     (\mathbf a,\mathbf N^e_0)=
-       *             \mathbf a_x(0.5,0)     \qquad
+       *             s_0\mathbf a_x(0.5,0)     \qquad
        *     (\mathbf a,\mathbf N^e_1)=
-       *            -\mathbf a_y(0,0.5)     \qquad
+       *            -s_1\mathbf a_y(0,0.5)     \qquad
        *     (\mathbf a,\mathbf N^e_2)=
-       *            -\mathbf a_x(0.5,0.5)+\mathbf b_y(0.5,0.5)
+       *             s_2(-\mathbf a_x(0.5,0.5)+\mathbf b_y(0.5,0.5))
        *  \f]
        *
        *  Now about the mass matrix \f$M_{\alpha,\beta}=(\mathbf
@@ -123,21 +137,27 @@ namespace Dune
        *  \f]
        *  Thus we arrive at
        *  \f[
-       *     a_0= \mathbf a_x(0.5,0)     \qquad
-       *     a_1=-\mathbf a_y(0,0.5)     \qquad
-       *     a_2=\frac1{\sqrt2}
+       *     a_0= s_0\mathbf a_x(0.5,0)     \qquad
+       *     a_1=-s_1\mathbf a_y(0,0.5)     \qquad
+       *     a_2=\frac{s_2}{\sqrt2}
        *        (-\mathbf a_x(0.5,0.5)+\mathbf a_y(0.5,0.5))
        *  \f]
        */
 
-      x[0] = 0.5; x[1] = 0.0; f.evaluate(x,y); out[0] =        y[0];
-      x[0] = 0.0; x[1] = 0.5; f.evaluate(x,y); out[1] =            -y[1];
-      x[0] = 0.5; x[1] = 0.5; f.evaluate(x,y); out[2] = s0_5*(-y[0]+y[1]);
+      x[0] = 0.5; x[1] = 0.0; f.evaluate(x,y); out[0] = s[0]*        y[0];
+      x[0] = 0.0; x[1] = 0.5; f.evaluate(x,y); out[1] = s[1]*            -y[1];
+      x[0] = 0.5; x[1] = 0.5; f.evaluate(x,y); out[2] = s[2]*sr0_5*(-y[0]+y[1]);
     }
+
+  private:
+    //! square root of 1/2
+    static const typename LB::Traits::RangeFieldType sr0_5;
+
+    typename LB::Traits::RangeFieldType s[3];
   };
 
   template<class LB>
-  const typename LB::Traits::RangeFieldType EdgeS12DLocalInterpolation <LB>::s0_5 =
+  const typename LB::Traits::RangeFieldType EdgeS12DLocalInterpolation <LB>::sr0_5 =
     std::sqrt(typename LB::Traits::RangeFieldType(0.5));
 }
 

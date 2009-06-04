@@ -1,5 +1,7 @@
 testfem
+edges12dshapefunctiontest
 lagrangeshapefunctiontest
+monomshapefunctiontest
 virtualshapefunctiontest
 Makefile.in
 Makefile

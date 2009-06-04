@@ -39,7 +39,18 @@ namespace Dune
 
     /** \todo Please doc me !
      */
+    //! contruct a local finite element instance with default orientations
     EdgeS12DLocalFiniteElement ()
+    {
+      gt.makeTriangle();
+    }
+
+    //! contruct a local finite element instance with the given orientations
+    //! \param orientations Bit-map of orientations for each shape function;
+    //! bit 0 = 0 means default orientation for the first shape function, bit
+    //! 0 = 1 means inverted orientation for the first shape function.
+    EdgeS12DLocalFiniteElement (unsigned int s)
+      : basis(s), interpolation(s)
     {
       gt.makeTriangle();
     }

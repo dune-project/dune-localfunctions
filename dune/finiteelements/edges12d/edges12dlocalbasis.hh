@@ -32,9 +32,6 @@ namespace Dune
 #endif
           >
   {
-    //! square root of 2
-    static const R s2;
-
   public:
     //! \brief export type traits for function signature
     typedef C1LocalBasisTraits<
@@ -42,6 +39,23 @@ namespace Dune
         R,2,Dune::FieldVector<R,2>,
         Dune::FieldVector<Dune::FieldVector<R,2>,2>
         > Traits;
+
+    //! contruct a local basis instance with default orientations
+    EdgeS12DLocalBasis()
+    {
+      s[0] = s[1] = s[2] = 1;
+    }
+
+    //! contruct a local basis instance with the given orientations
+    //! \param orientations Bit-map of orientations for each shape function;
+    //! bit 0 = 0 means default orientation for the first shape function, bit
+    //! 0 = 1 means inverted orientation for the first shape function.
+    EdgeS12DLocalBasis(unsigned int orientations)
+    {
+      s[0] = s[1] = s[2] = 1;
+      for(int i = 0; i < 3; ++i)
+        if(orientations & (1<<i)) s[i] = -1;
+    }
 
     //! \brief number of shape functions
     unsigned int size () const
@@ -115,14 +129,26 @@ namespace Dune
      * \f[ \mathbf N^e_0(x,y)=           (1-y,   x) \f]
      * \f[ \mathbf N^e_1(x,y)=           ( -y,-1+x) \f]
      * \f[ \mathbf N^e_2(x,y)=\sqrt2\cdot( -y,   x) \f]
+     *
+     * These three base functions all turn counterclockwise the viewed in
+     * paraview (x-axis pojnting right, y-axis pointing up).  When two
+     * triangles are joined together, this will lead to the tangential
+     * components of the two corresponding shape functions from the two
+     * triangles having an opposite sign.  To prevent that, the base functions
+     * class gets a vector of signs to multiply each base function with.  This
+     * vector has to be supplied externally e.g. by the FiniteElementMap from
+     * dune-pdelab.  Thus the final shape functions look like this:
+     * \f[ \mathbf N^e_0(x,y)=s_0           (1-y,   x) \f]
+     * \f[ \mathbf N^e_1(x,y)=s_1           ( -y,-1+x) \f]
+     * \f[ \mathbf N^e_2(x,y)=s_2\sqrt2\cdot( -y,   x) \f]
      */
     inline void evaluateFunction (const typename Traits::DomainType& in,
                                   std::vector<typename Traits::RangeType>& out) const
     {
       out.resize(3);
-      out[0][0] = 1-   in[1]; out[0][1] =       in[0];
-      out[1][0] =  -   in[1]; out[1][1] = -1+   in[0];
-      out[2][0] =  -s2*in[1]; out[2][1] =    s2*in[0];
+      out[0][0] = s[0]*(1-    in[1]); out[0][1] = s[0]*(       in[0]);
+      out[1][0] = s[1]*( -    in[1]); out[1][1] = s[1]*(-1+    in[0]);
+      out[2][0] = s[2]*( -sq2*in[1]); out[2][1] = s[2]*(   sq2*in[0]);
     }
 
     //! \brief Evaluate Jacobian of all shape functions
@@ -130,18 +156,16 @@ namespace Dune
     evaluateJacobian (const typename Traits::DomainType& in,         // position
                       std::vector<typename Traits::JacobianType>& out) const      // return value
     {
-      static const typename Traits::RangeFieldType s2 = std::sqrt(2.0);
-
       out.resize(3);
       // basis function 0
-      out[0][0][0] =   0; out[0][1][0] =  1;
-      out[0][0][1] = - 1; out[0][1][1] =  0;
+      out[0][0][0] =     0;     out[0][1][0] = s[0];
+      out[0][0][1] = -s[0];     out[0][1][1] =    0;
       // basis function 1
-      out[1][0][0] =   0; out[1][1][0] =  1;
-      out[1][0][1] = - 1; out[1][1][1] =  0;
+      out[1][0][0] =     0;     out[1][1][0] = s[1];
+      out[1][0][1] = -s[1];     out[1][1][1] =    0;
       // basis function 2
-      out[2][0][0] =   0; out[2][1][0] = s2;
-      out[2][0][1] = -s2; out[2][1][1] =  0;
+      out[2][0][0] =     0;     out[2][1][0] = s[2]*sq2;
+      out[2][0][1] = -s[2]*sq2; out[2][1][1] =    0;
     }
 
     //! \brief Polynomial order of the shape functions
@@ -149,8 +173,14 @@ namespace Dune
     {
       return 1;
     }
+
+  private:
+    //! square root of 2
+    static const R sq2;
+
+    R s[3];
   };
   template<class D, class R>
-  const R EdgeS12DLocalBasis<D,R>::s2 = std::sqrt(R(2.0));
+  const R EdgeS12DLocalBasis<D,R>::sq2 = std::sqrt(R(2.0));
 }
 #endif // DUNE_EDGES12DLOCALBASIS_HH

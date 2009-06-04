@@ -1,7 +1,8 @@
 # $Id: Makefile.am 4150 2008-05-15 16:12:46Z christi $
 
 # which tests to run
-TESTS = testfem lagrangeshapefunctiontest monomshapefunctiontest virtualshapefunctiontest
+TESTS = testfem edges12dshapefunctiontest lagrangeshapefunctiontest \
+	monomshapefunctiontest virtualshapefunctiontest
 
 # programs just to build when "make check" is used
 check_PROGRAMS = $(TESTS)
@@ -12,6 +13,7 @@ check_PROGRAMS = $(TESTS)
 # define the programs
 
 testfem_SOURCES = testfem.cc
+edges12dshapefunctiontest_SOURCES = edges12dshapefunctiontest.cc
 lagrangeshapefunctiontest_SOURCES = lagrangeshapefunctiontest.cc
 monomshapefunctiontest_SOURCES = monomshapefunctiontest.cc
 virtualshapefunctiontest_SOURCES = virtualshapefunctiontest.cc

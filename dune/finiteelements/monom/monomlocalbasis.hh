@@ -3,6 +3,8 @@
 #ifndef DUNE_MONOMLOCALBASIS_HH
 #define DUNE_MONOMLOCALBASIS_HH
 
+#include <cassert>
+
 #include <dune/grid/common/referenceelements.hh>
 
 #include "../common/localbasis.hh"
@@ -30,12 +32,29 @@ namespace Dune
     template <typename Traits>
     class EvalAccess {
       std::vector<typename Traits::RangeType> &out;
+#ifndef NDEBUG
+      unsigned int first_unused_index;
+#endif
+
     public:
       EvalAccess(std::vector<typename Traits::RangeType> &out_)
         : out(out_)
+#ifndef NDEBUG
+          , first_unused_index(0)
+#endif
       { }
+#ifndef NDEBUG
+      ~EvalAccess() {
+        assert(first_unused_index == out.size());
+      }
+#endif
       typename Traits::RangeFieldType &operator[](unsigned int index)
       {
+        assert(index < out.size());
+#ifndef NDEBUG
+        if(first_unused_index <= index)
+          first_unused_index = index+1;
+#endif
         return out[index][0];
       }
     };
@@ -45,14 +64,31 @@ namespace Dune
     class JacobianAccess {
       std::vector<typename Traits::JacobianType> &out;
       unsigned int row;
+#ifndef NDEBUG
+      unsigned int first_unused_index;
+#endif
+
     public:
       JacobianAccess(std::vector<typename Traits::JacobianType> &out_,
                      unsigned int row_)
         : out(out_), row(row_)
+#ifndef NDEBUG
+          , first_unused_index(0)
+#endif
       { }
+#ifndef NDEBUG
+      ~JacobianAccess() {
+        assert(first_unused_index == out.size());
+      }
+#endif
       typename Traits::RangeFieldType &operator[](unsigned int index)
       {
-        return out[index][row][0];
+        assert(index < out.size());
+#ifndef NDEBUG
+        if(first_unused_index <= index)
+          first_unused_index = index+1;
+#endif
+        return out[index][0][row];
       }
     };
 
@@ -103,10 +139,10 @@ namespace Dune
           // the rest rest of the available exponents, to be used by the other
           // dimensions
           int newbound = bound - e;
-          if(e < derivatives[d])
-            Evaluate<Traits,c-1>::
-            eval(in, derivatives, 0, newbound, index, access);
-          else {
+          /*if(e < derivatives[d])
+             Evaluate<Traits,c-1>::
+              eval(in, derivatives, 0, newbound, index, access);
+             else*/{
             int coeff = 1;
             for(int i = e - derivatives[d] + 1; i <= e; ++i)
               coeff *= i;

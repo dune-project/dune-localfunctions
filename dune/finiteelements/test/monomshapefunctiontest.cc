@@ -146,12 +146,12 @@ int main (int argc, char *argv[]) try
   testShapeFunctionDerivative<1,2>(GeometryType(1));
 
   testShapeFunctionDerivative<2,1>(GeometryType(GeometryType::simplex,2));
-  //   testShapeFunctionDerivative<2,1>(GeometryType(GeometryType::cube,2));
+  testShapeFunctionDerivative<2,1>(GeometryType(GeometryType::cube,2));
 
-  //   testShapeFunctionDerivative<3,1>(GeometryType(GeometryType::simplex,3));
-  //   testShapeFunctionDerivative<3,1>(GeometryType(GeometryType::cube,3));
-  //   testShapeFunctionDerivative<3,1>(GeometryType(GeometryType::pyramid,3));
-  //   testShapeFunctionDerivative<3,1>(GeometryType(GeometryType::prism,3));
+  testShapeFunctionDerivative<3,1>(GeometryType(GeometryType::simplex,3));
+  testShapeFunctionDerivative<3,1>(GeometryType(GeometryType::cube,3));
+  testShapeFunctionDerivative<3,1>(GeometryType(GeometryType::pyramid,3));
+  testShapeFunctionDerivative<3,1>(GeometryType(GeometryType::prism,3));
 
   //   testShapeFunctionDerivative<4,1>(GeometryType(GeometryType::cube,4));
 

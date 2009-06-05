@@ -1,7 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_EDGER12DLOCALINTERPOLATION_HH
-#define DUNE_EDGER12DLOCALINTERPOLATION_HH
+#ifndef DUNE_EDGER02DLOCALINTERPOLATION_HH
+#define DUNE_EDGER02DLOCALINTERPOLATION_HH
 
 #include "../common/localinterpolation.hh"
 
@@ -10,8 +10,8 @@ namespace Dune
 
   /** \todo Please doc me! */
   template<class LB>
-  class EdgeR12DLocalInterpolation
-    : public LocalInterpolationInterface<EdgeR12DLocalInterpolation<LB> >
+  class EdgeR02DLocalInterpolation
+    : public LocalInterpolationInterface<EdgeR02DLocalInterpolation<LB> >
   {
   public:
 
@@ -43,4 +43,4 @@ namespace Dune
   };
 }
 
-#endif // DUNE_EDGER12DLOCALINTERPOLATION_HH
+#endif // DUNE_EDGER02DLOCALINTERPOLATION_HH

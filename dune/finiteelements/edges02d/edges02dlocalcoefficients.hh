@@ -1,7 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_EDGER12DLOCALCOEFFICIENTS_HH
-#define DUNE_EDGER12DLOCALCOEFFICIENTS_HH
+#ifndef DUNE_EDGES02DLOCALCOEFFICIENTS_HH
+#define DUNE_EDGES02DLOCALCOEFFICIENTS_HH
 
 #include <iostream>
 #include <vector>
@@ -12,27 +12,29 @@ namespace Dune
 {
 
   /**@ingroup LocalLayoutImplementation
-     \brief Layout map for edge R1 elements
+     \brief Layout map for lowest order edge elements on triangles
 
      \nosubgrouping
    */
-  class EdgeR12DLocalCoefficients
-    : public LocalCoefficientsInterface<EdgeR12DLocalCoefficients>
+  class EdgeS02DLocalCoefficients
+#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
+    : public LocalCoefficientsInterface
+#else
+    : public LocalCoefficientsInterface<EdgeS02DLocalCoefficients>
+#endif
   {
   public:
     //! \brief Standard constructor
-    EdgeR12DLocalCoefficients () : li(4)
+    EdgeS02DLocalCoefficients () : li(3)
     {
-      li[0] = LocalKey(2,1,0);
-      li[1] = LocalKey(3,1,0);
-      li[2] = LocalKey(0,1,0);
-      li[3] = LocalKey(1,1,0);
+      for (int i=0; i<3; i++)
+        li[i] = LocalKey(i,1,0);
     }
 
     //! number of coefficients
     int size () const
     {
-      return 4;
+      return 3;
     }
 
     //! get i'th index
@@ -47,4 +49,4 @@ namespace Dune
 
 }
 
-#endif // DUNE_EDGER12DLOCALCOEFFICIENTS_HH
+#endif // DUNE_EDGES02DLOCALCOEFFICIENTS_HH

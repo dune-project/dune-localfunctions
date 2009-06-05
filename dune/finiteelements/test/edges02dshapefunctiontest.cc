@@ -6,7 +6,7 @@
 
 #include <dune/grid/common/quadraturerules.hh>
 
-#include <dune/finiteelements/edges12d.hh>
+#include <dune/finiteelements/edges02d.hh>
 
 /** \file
     \brief Performs some tests for the monomial shape functions
@@ -20,8 +20,8 @@ using namespace Dune;
 void testShapeFunctionDerivative(unsigned int orientation, int order)
 {
 
-  typedef EdgeS12DLocalFiniteElement<double,double> LocalFiniteElement;
-  LocalFiniteElement lFEM(orientation);
+  typedef EdgeS02DLocalFiniteElement<double,double> LocalFiniteElement;
+  LocalFiniteElement lFE(orientation);
 
   typedef LocalFiniteElement::Traits::LocalBasisType LB;
 
@@ -33,7 +33,7 @@ void testShapeFunctionDerivative(unsigned int orientation, int order)
   // A set of test points
   // Bad: dependence on dune-grid.  Only for the test points, though
   const QuadratureRule<double,LB::Traits::dimDomain> quad =
-    QuadratureRules<double,LB::Traits::dimDomain>::rule(lFEM.type(),order);
+    QuadratureRules<double,LB::Traits::dimDomain>::rule(lFE.type(),order);
 
   // Loop over all quadrature points
   for (size_t i=0; i<quad.size(); i++) {
@@ -43,10 +43,10 @@ void testShapeFunctionDerivative(unsigned int orientation, int order)
 
     // Get the shape function derivatives there
     std::vector<LB::Traits::JacobianType> jacobians;
-    lFEM.localBasis().evaluateJacobian(testPoint, jacobians);
+    lFE.localBasis().evaluateJacobian(testPoint, jacobians);
 
     // Loop over all shape functions in this set
-    for (unsigned int j=0; j<lFEM.localBasis().size(); ++j) {
+    for (unsigned int j=0; j<lFE.localBasis().size(); ++j) {
 
       // Loop over all direction
       for (int k=0; k<LB::Traits::dimDomain; k++) {
@@ -60,8 +60,8 @@ void testShapeFunctionDerivative(unsigned int orientation, int order)
 
         std::vector<LB::Traits::RangeType> upValues, downValues;
 
-        lFEM.localBasis().evaluateFunction(upPos,   upValues);
-        lFEM.localBasis().evaluateFunction(downPos, downValues);
+        lFE.localBasis().evaluateFunction(upPos,   upValues);
+        lFE.localBasis().evaluateFunction(downPos, downValues);
 
         //Loop over all components
         for(int l=0; l < LB::Traits::dimRange; ++l) {
@@ -73,7 +73,7 @@ void testShapeFunctionDerivative(unsigned int orientation, int order)
 
           // Check
           if (std::abs(derivative-finiteDiff) > epsilon) {
-            std::cerr << "Bug in shape function of order " << order << " for " << lFEM.type() << "." << std::endl;
+            std::cerr << "Bug in shape function of order " << order << " for " << lFE.type() << "." << std::endl;
             std::cerr << "Shape function derivative does not agree with FD approximation" << std::endl;
             std::cerr << "Shape function " << j << " component " << l << " at position " << testPoint
                       << ":  derivative in direction " << k << " is " << derivative

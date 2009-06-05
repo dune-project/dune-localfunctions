@@ -1,21 +1,22 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_EDGER12DLOCALBASIS_HH
-#define DUNE_EDGER12DLOCALBASIS_HH
+#ifndef DUNE_EDGER02DLOCALBASIS_HH
+#define DUNE_EDGER02DLOCALBASIS_HH
 
 #include "../common/localbasis.hh"
 
 namespace Dune
 {
   /**@ingroup LocalBasisImplementation
-     \brief Edge shape functions of order 1 on the reference rectangle.
+     \brief Lowest order edge shape functions of on the reference rectangle.
 
      These are from Jianming Jin: "The Finite Element Method in
      Electromagnetics" 2nd edition, section 8.1.1 "Rectangular Elements".
 
-     Note that it is not yet checked whether these basis functions work on
-     general quadrilaterals as well as rectangles.  The transformation might
-     destroy some properties of the basis.
+     These will only work when the transformation from reference element to
+     grid element only involves stretching and shifting.  In particular,
+     rotation, shearing and second order transformations will destroy
+     important properties of the basis.
 
      - <tt>D</tt>: Type to represent the field in the domain.
      - <tt>R</tt>: Type to represent the field in the range.
@@ -23,7 +24,7 @@ namespace Dune
      \nosubgrouping
    */
   template<class D, class R>
-  class EdgeR12DLocalBasis
+  class EdgeR02DLocalBasis
     : public C1LocalBasisInterface<
           C1LocalBasisTraits<
               D, 2,
@@ -32,7 +33,7 @@ namespace Dune
               Dune::FieldVector<R,3>,
               Dune::FieldVector<Dune::FieldVector<R,2>, 1>
               >,
-          EdgeR12DLocalBasis<D,R>
+          EdgeR02DLocalBasis<D,R>
           >
   {
   public:
@@ -80,4 +81,4 @@ namespace Dune
     }
   };
 }
-#endif // DUNE_EDGER12DLOCALBASIS_HH
+#endif // DUNE_EDGER02DLOCALBASIS_HH

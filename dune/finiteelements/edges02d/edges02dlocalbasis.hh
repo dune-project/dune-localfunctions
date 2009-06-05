@@ -1,7 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_EDGES12DLOCALBASIS_HH
-#define DUNE_EDGES12DLOCALBASIS_HH
+#ifndef DUNE_EDGES02DLOCALBASIS_HH
+#define DUNE_EDGES02DLOCALBASIS_HH
 
 #include <cmath>
 
@@ -10,7 +10,7 @@
 namespace Dune
 {
   /**@ingroup LocalBasisImplementation
-         \brief Experimental edge elements for triangles.
+         \brief Experimental lowest order edge elements for triangles.
 
      (S for simplex)
 
@@ -20,7 +20,7 @@ namespace Dune
          \nosubgrouping
    */
   template<class D, class R>
-  class EdgeS12DLocalBasis
+  class EdgeS02DLocalBasis
     : public C1LocalBasisInterface<
           C1LocalBasisTraits<
               D,2,Dune::FieldVector<D,2>,
@@ -28,7 +28,7 @@ namespace Dune
               Dune::FieldVector<Dune::FieldVector<R,2>,2>
               >
 #ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-          , EdgeS12DLocalBasis<D,R>
+          , EdgeS02DLocalBasis<D,R>
 #endif
           >
   {
@@ -41,7 +41,7 @@ namespace Dune
         > Traits;
 
     //! contruct a local basis instance with default orientations
-    EdgeS12DLocalBasis()
+    EdgeS02DLocalBasis()
     {
       s[0] = s[1] = s[2] = 1;
     }
@@ -50,7 +50,7 @@ namespace Dune
     //! \param orientations Bit-map of orientations for each shape function;
     //! bit 0 = 0 means default orientation for the first shape function, bit
     //! 0 = 1 means inverted orientation for the first shape function.
-    EdgeS12DLocalBasis(unsigned int orientations)
+    EdgeS02DLocalBasis(unsigned int orientations)
     {
       s[0] = s[1] = s[2] = 1;
       for(int i = 0; i < 3; ++i)
@@ -69,7 +69,7 @@ namespace Dune
      * Electromagnetics" by Jianming Jin.
      *
      * In that book the triangle looks like
-     * \image html dune/finiteelements/edges12d/Jin2002-reftriangle.png
+     * \image html dune/finiteelements/edges02d/Jin2002-reftriangle.png
      *
      * <!--
                 3
@@ -181,6 +181,6 @@ namespace Dune
     R s[3];
   };
   template<class D, class R>
-  const R EdgeS12DLocalBasis<D,R>::sq2 = std::sqrt(R(2.0));
+  const R EdgeS02DLocalBasis<D,R>::sq2 = std::sqrt(R(2.0));
 }
-#endif // DUNE_EDGES12DLOCALBASIS_HH
+#endif // DUNE_EDGES02DLOCALBASIS_HH

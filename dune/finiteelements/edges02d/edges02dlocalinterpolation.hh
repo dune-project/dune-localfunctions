@@ -1,7 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_EDGES12DLOCALINTERPOLATION_HH
-#define DUNE_EDGES12DLOCALINTERPOLATION_HH
+#ifndef DUNE_EDGES02DLOCALINTERPOLATION_HH
+#define DUNE_EDGES02DLOCALINTERPOLATION_HH
 
 #include <cmath>
 
@@ -10,19 +10,19 @@
 namespace Dune
 {
   /**@ingroup LocalBasisImplementation
-         \brief Interpolation for experimental edge elements for triangles.
+         \brief Interpolation for experimental lowest order edge elements for triangles.
 
          \tparam LB LocalBasisImplementation
          \nosubgrouping
    */
 
   template<class LB>
-  class EdgeS12DLocalInterpolation
-    : public LocalInterpolationInterface<EdgeS12DLocalInterpolation<LB> >
+  class EdgeS02DLocalInterpolation
+    : public LocalInterpolationInterface<EdgeS02DLocalInterpolation<LB> >
   {
   public:
     //! contruct an interpolation instance with default orientations
-    EdgeS12DLocalInterpolation()
+    EdgeS02DLocalInterpolation()
     {
       s[0] = s[1] = s[2] = 1;
     }
@@ -31,7 +31,7 @@ namespace Dune
     //! \param orientations Bit-map of orientations for each shape function;
     //! bit 0 = 0 means default orientation for the first shape function, bit
     //! 0 = 1 means inverted orientation for the first shape function.
-    EdgeS12DLocalInterpolation(unsigned int orientations)
+    EdgeS02DLocalInterpolation(unsigned int orientations)
     {
       s[0] = s[1] = s[2] = 1;
       for(int i = 0; i < 3; ++i)
@@ -157,8 +157,8 @@ namespace Dune
   };
 
   template<class LB>
-  const typename LB::Traits::RangeFieldType EdgeS12DLocalInterpolation <LB>::sr0_5 =
+  const typename LB::Traits::RangeFieldType EdgeS02DLocalInterpolation <LB>::sr0_5 =
     std::sqrt(typename LB::Traits::RangeFieldType(0.5));
 }
 
-#endif // DUNE_EDGES12DLOCALINTERPOLATION_HH
+#endif // DUNE_EDGES02DLOCALINTERPOLATION_HH

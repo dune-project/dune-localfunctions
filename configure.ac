@@ -27,9 +27,11 @@ LIBS="$DUNE_LIBS"
 AC_CONFIG_FILES([
 		Makefile
                 dune/Makefile
-                dune/finiteelements/Makefile
                 dune/finiteelements/common/Makefile
-                dune/finiteelements/test/Makefile
+                dune/finiteelements/edger02d/Makefile
+                dune/finiteelements/edges02d/Makefile
+                dune/finiteelements/Makefile
+                dune/finiteelements/monom/Makefile
                 dune/finiteelements/p0/Makefile
                 dune/finiteelements/p11d/Makefile
                 dune/finiteelements/p12d/Makefile
@@ -39,11 +41,9 @@ AC_CONFIG_FILES([
                 dune/finiteelements/q12d/Makefile
                 dune/finiteelements/q13d/Makefile
                 dune/finiteelements/q22d/Makefile
-                dune/finiteelements/rt02d/Makefile
-                dune/finiteelements/edger12d/Makefile
-                dune/finiteelements/edges12d/Makefile
                 dune/finiteelements/refinedp1/Makefile
-                dune/finiteelements/monom/Makefile
+                dune/finiteelements/rt02d/Makefile
+                dune/finiteelements/test/Makefile
                 doc/layout/Makefile
                 doc/doxygen/Makefile
                 doc/doxygen/Doxyfile

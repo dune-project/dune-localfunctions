@@ -1,37 +1,37 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_EDGER12DLOCALFINITEELEMENT_HH
-#define DUNE_EDGER12DLOCALFINITEELEMENT_HH
+#ifndef DUNE_EDGER02DLOCALFINITEELEMENT_HH
+#define DUNE_EDGER02DLOCALFINITEELEMENT_HH
 
 #include <dune/common/geometrytype.hh>
 
 #include "common/localfiniteelement.hh"
-#include "edger12d/edger12dlocalbasis.hh"
-#include "edger12d/edger12dlocalcoefficients.hh"
-#include "edger12d/edger12dlocalinterpolation.hh"
+#include "edger02d/edger02dlocalbasis.hh"
+#include "edger02d/edger02dlocalcoefficients.hh"
+#include "edger02d/edger02dlocalinterpolation.hh"
 
 namespace Dune
 {
 
   template<class D, class R>
-  class EdgeR12DLocalFiniteElement
+  class EdgeR02DLocalFiniteElement
     : LocalFiniteElementInterface<
           LocalFiniteElementTraits<
-              EdgeR12DLocalBasis<D,R>,
-              EdgeR12DLocalCoefficients,
-              EdgeR12DLocalInterpolation<EdgeR12DLocalBasis<D,R> >
+              EdgeR02DLocalBasis<D,R>,
+              EdgeR02DLocalCoefficients,
+              EdgeR02DLocalInterpolation<EdgeR02DLocalBasis<D,R> >
               >,
-          EdgeR12DLocalFiniteElement<D,R>
+          EdgeR02DLocalFiniteElement<D,R>
           >
   {
   public:
     typedef LocalFiniteElementTraits<
-        EdgeR12DLocalBasis<D,R>,
-        EdgeR12DLocalCoefficients,
-        EdgeR12DLocalInterpolation<EdgeR12DLocalBasis<D,R> >
+        EdgeR02DLocalBasis<D,R>,
+        EdgeR02DLocalCoefficients,
+        EdgeR02DLocalInterpolation<EdgeR02DLocalBasis<D,R> >
         > Traits;
 
-    EdgeR12DLocalFiniteElement ()
+    EdgeR02DLocalFiniteElement ()
     {
       gt.makeQuadrilateral();
     }
@@ -57,12 +57,12 @@ namespace Dune
     }
 
   private:
-    EdgeR12DLocalBasis<D,R> basis;
-    EdgeR12DLocalCoefficients coefficients;
-    EdgeR12DLocalInterpolation<EdgeR12DLocalBasis<D,R> > interpolation;
+    EdgeR02DLocalBasis<D,R> basis;
+    EdgeR02DLocalCoefficients coefficients;
+    EdgeR02DLocalInterpolation<EdgeR02DLocalBasis<D,R> > interpolation;
     GeometryType gt;
   };
 
 }
 
-#endif //DUNE_EDGER12DLOCALFINITEELEMENT_HH
+#endif //DUNE_EDGER02DLOCALFINITEELEMENT_HH

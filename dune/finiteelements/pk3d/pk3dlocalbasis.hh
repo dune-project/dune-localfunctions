@@ -37,11 +37,7 @@ namespace Dune
         Dune::FieldVector<Dune::FieldVector<R,3>,1> > Traits;
 
     //! \brief Standard constructor
-    Pk3DLocalBasis ()
-    {
-      for (unsigned int i=0; i<=k; i++)
-        pos[i] = D(i)/k;
-    }
+    Pk3DLocalBasis () {}
 
     //! \brief number of shape functions
     unsigned int size () const
@@ -54,22 +50,35 @@ namespace Dune
                                   std::vector<typename Traits::RangeType>& out) const
     {
       out.resize(N);
+      typename Traits::DomainType kx = x;
+      kx *= k;
       unsigned int n = 0;
-      for (unsigned int i3 = 0; i3 <= k; ++i3)
-        for (unsigned int i2 = 0; i2 <= k - i3; ++i2)
-          for (unsigned int i1 = 0; i1 <= k - i2 - i3; ++i1)
+      unsigned int i[4];
+      R factor[4];
+      for (i[2] = 0; i[2] <= k; ++i[2])
+      {
+        factor[2] = 1.0;
+        for (unsigned int j = 0; j < i[2]; ++j)
+          factor[2] *= (kx[2]-j) / (i[2]-j);
+        for (i[1] = 0; i[1] <= k - i[2]; ++i[1])
+        {
+          factor[1] = 1.0;
+          for (unsigned int j = 0; j < i[1]; ++j)
+            factor[1] *= (kx[1]-j) / (i[1]-j);
+          for (i[0] = 0; i[0] <= k - i[1] - i[2]; ++i[0])
           {
-            out[n] = 1.0;
-            for (unsigned int alpha=0; alpha<i1; alpha++)
-              out[n] *= (x[0]-pos[alpha])/(pos[i1]-pos[alpha]);
-            for (unsigned int beta=0; beta<i2; beta++)
-              out[n] *= (x[1]-pos[beta])/(pos[i2]-pos[beta]);
-            for (unsigned int gamma=0; gamma<i3; gamma++)
-              out[n] *= (x[2]-pos[gamma])/(pos[i3]-pos[gamma]);
-            for (unsigned int delta=i1+i2+i3+1; delta<=k; delta++)
-              out[n] *= (pos[delta]-x[0]-x[1]-x[2])/(pos[delta]-pos[i1]-pos[i2]-pos[i3]);
-            n++;
+            factor[0] = 1.0;
+            for (unsigned int j = 0; j < i[0]; ++j)
+              factor[0] *= (kx[0]-j) / (i[0]-j);
+            i[3] = k - i[0] - i[1] - i[2];
+            D kx3 = k - kx[0] - kx[1] - kx[2];
+            factor[3] = 1.0;
+            for (unsigned int j = 0; j < i[3]; ++j)
+              factor[3] *= (kx3-j) / (i[3]-j);
+            out[n++] = factor[0] * factor[1] * factor[2] * factor[3];
           }
+        }
+      }
     }
 
     //! \brief Evaluate Jacobian of all shape functions
@@ -77,8 +86,70 @@ namespace Dune
     evaluateJacobian (const typename Traits::DomainType& x,         // position
                       std::vector<typename Traits::JacobianType>& out) const      // return value
     {
-      DUNE_THROW(Dune::NotImplemented,
-                 "Jacobian for P_k 3D shape functions not implemented yet");        out.resize(N);
+      out.resize(N);
+      typename Traits::DomainType kx = x;
+      kx *= k;
+      unsigned int n = 0;
+      unsigned int i[4];
+      R factor[4];
+      for (i[2] = 0; i[2] <= k; ++i[2])
+      {
+        factor[2] = 1.0;
+        for (unsigned int j = 0; j < i[2]; ++j)
+          factor[2] *= (kx[2]-j) / (i[2]-j);
+        for (i[1] = 0; i[1] <= k - i[2]; ++i[1])
+        {
+          factor[1] = 1.0;
+          for (unsigned int j = 0; j < i[1]; ++j)
+            factor[1] *= (kx[1]-j) / (i[1]-j);
+          for (i[0] = 0; i[0] <= k - i[1] - i[2]; ++i[0])
+          {
+            factor[0] = 1.0;
+            for (unsigned int j = 0; j < i[0]; ++j)
+              factor[0] *= (kx[0]-j) / (i[0]-j);
+            i[3] = k - i[0] - i[1] - i[2];
+            D kx3 = k - kx[0] - kx[1] - kx[2];
+            R sum3 = 0.0;
+            factor[3] = 1.0;
+            for (unsigned int j = 0; j < i[3]; ++j)
+              factor[3] /= i[3] - j;
+            R prod_all = factor[0] * factor[1] * factor[2] * factor[3];
+            for (unsigned int j = 0; j < i[3]; ++j)
+            {
+              R prod = prod_all;
+              for (unsigned int l = 0; l < i[3]; ++l)
+                if (j == l)
+                  prod *= -R(k);
+                else
+                  prod *= kx3 - l;
+              sum3 += prod;
+            }
+            for (unsigned int j = 0; j < i[3]; ++j)
+              factor[3] *= kx3 - j;
+            for (unsigned int m = 0; m < 3; ++m)
+            {
+              out[n][0][m] = sum3;
+              for (unsigned int j = 0; j < i[m]; ++j)
+              {
+                R prod = factor[3];
+                for (unsigned int p = 0; p < 3; ++p)
+                {
+                  if (m == p)
+                    for (unsigned int l = 0; l < i[p]; ++l)
+                      if (j == l)
+                        prod *= R(k) / (i[p]-l);
+                      else
+                        prod *= (kx[p]-l) / (i[p]-l);
+                  else
+                    prod *= factor[p];
+                }
+                out[n][0][m] += prod;
+              }
+            }
+            n++;
+          }
+        }
+      }
     }
 
     //! \brief Polynomial order of the shape functions
@@ -86,9 +157,6 @@ namespace Dune
     {
       return k;
     }
-
-  private:
-    R pos[k+1]; // positions on the interval
   };
 
 
@@ -136,9 +204,9 @@ namespace Dune
     {
       typename Traits::DomainType x;
       typename Traits::RangeType y;
-      x[0] = 1.0/3.0;
-      x[1] = 1.0/3.0;
-      x[2] = 1.0/3.0;
+      x[0] = 1.0/4.0;
+      x[1] = 1.0/4.0;
+      x[2] = 1.0/4.0;
       f.eval_local(e,x,y);
       out[0] = y;
     }

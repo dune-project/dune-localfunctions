@@ -187,11 +187,11 @@ progname => sub {
 }},
 
 #======================================================================
-'Dune::EdgeR12DLocalBasis' => {
+'Dune::EdgeR02DLocalBasis' => {
 tparams  => '<typename DomainFieldType, typename RangeFieldType>',
 
 help     => <<EOH,
-Edge shape functions of order 1 on the reference rectangle.
+Lowest order edge shape functions on the reference rectangle.
 
 Template Parameters:
  * DomainFieldType: Type to represent the field in the domain.
@@ -199,17 +199,17 @@ Template Parameters:
 EOH
 
 headers  => <<EOH,
-#include <dune/finiteelements/edger12d/edger12dlocalbasis.hh>
+#include <dune/finiteelements/edger02d/edger02dlocalbasis.hh>
 EOH
 
 progname => sub {
     my $D = shift;
     my $R = shift;
-    return sprintf "edger12d-%s-%s", lc $D, lc $R;
+    return sprintf "edger02d-%s-%s", lc $D, lc $R;
 }},
 
 #======================================================================
-'Dune::EdgeS12DLocalBasis' => {
+'Dune::EdgeS02DLocalBasis' => {
 tparams  => '<typename DomainFieldType, typename RangeFieldType>',
 
 help     => <<EOH,
@@ -221,13 +221,13 @@ Template Parameters:
 EOH
 
 headers  => <<EOH,
-#include <dune/finiteelements/edges12d/edges12dlocalbasis.hh>
+#include <dune/finiteelements/edges02d/edges02dlocalbasis.hh>
 EOH
 
 progname => sub {
     my $D = shift;
     my $R = shift;
-    return sprintf "edges12d-%s-%s", lc $D, lc $R;
+    return sprintf "edges02d-%s-%s", lc $D, lc $R;
 }},
 
 #======================================================================

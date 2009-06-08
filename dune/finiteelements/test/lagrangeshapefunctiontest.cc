@@ -25,14 +25,14 @@ using namespace Dune;
 
 // Generate list of Lagrange points for dim-dimensional simplex
 template <int dim>
-void getPkTestPoints(int order, int level, std::vector<FieldVector<double,dim> >& test_points)
+void getPkTestPoints(unsigned order, unsigned level, std::vector<FieldVector<double,dim> >& test_points)
 {
-  for (int i = 0; i <= order - level; ++i)
+  for (unsigned i = 0; i <= order - level; ++i)
   {
     std::vector<FieldVector<double,dim-1> > test_points_lower_dim;
     getPkTestPoints(order, level + i, test_points_lower_dim);
     double coord = double(i) / order;
-    for (int j = 0; j < test_points_lower_dim.size(); ++j)
+    for (unsigned j = 0; j < test_points_lower_dim.size(); ++j)
     {
       FieldVector<double,dim> pos;
       for (int k = 0; k < dim-1; ++k)
@@ -45,7 +45,7 @@ void getPkTestPoints(int order, int level, std::vector<FieldVector<double,dim> >
 
 // Template specialization to terminate recursion
 template <>
-void getPkTestPoints(int order, int level, std::vector<FieldVector<double,0> >& test_points)
+void getPkTestPoints(unsigned order, unsigned level, std::vector<FieldVector<double,0> >& test_points)
 {
   FieldVector<double,0> pos;
   test_points.push_back(pos);
@@ -55,14 +55,14 @@ template <class FE>
 void testPk(const FE& local_fe)
 {
   const int dim = FE::Traits::LocalBasisType::Traits::dimDomain;
-  const int order = local_fe.localBasis().order();
+  const unsigned order = local_fe.localBasis().order();
 
   std::vector<FieldVector<double,1> > values;
 
   std::vector<FieldVector<double,dim> > test_points;
   getPkTestPoints(order, 0, test_points);
 
-  for (int n = 0; n < test_points.size(); ++n)
+  for (unsigned n = 0; n < test_points.size(); ++n)
   {
     FieldVector<double,dim> pos = test_points[n];
 
@@ -73,7 +73,7 @@ void testPk(const FE& local_fe)
     //////////////////////////////////////////////////////////////////
 
     local_fe.localBasis().evaluateFunction(pos, values);
-    for (int i = 0; i < values.size(); ++i)
+    for (unsigned i = 0; i < values.size(); ++i)
       if (std::abs(values[i] - double(i==n)) > epsilon)
       {
         std::cerr << "Bug in shape function in local finite element type"
@@ -109,7 +109,7 @@ void testPk(const FE& local_fe)
       local_fe.localBasis().evaluateFunction(downPos, downValues);
 
       // Loop over all shape functions in this set
-      for (unsigned int j=0; j<local_fe.localBasis().size(); ++j)
+      for (unsigned j=0; j<local_fe.localBasis().size(); ++j)
       {
         // The current partial derivative, just for ease of notation
         double derivative = jacobians[j][0][k];

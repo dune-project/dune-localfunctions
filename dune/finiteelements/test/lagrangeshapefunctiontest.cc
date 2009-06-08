@@ -3,109 +3,178 @@
 #include <config.h>
 
 #include <iostream>
+#include <typeinfo>
+#include <fenv.h>
 
-#include <dune/grid/common/quadraturerules.hh>
-
+#include <dune/finiteelements/p11d.hh>
+#include <dune/finiteelements/p12d.hh>
+#include <dune/finiteelements/p13d.hh>
+#include <dune/finiteelements/p23d.hh>
 #include <dune/finiteelements/pk2d.hh>
+#include <dune/finiteelements/pk3d.hh>
 
 /** \file
-    \brief Performs some tests for the Lagrange shape functions
+    \brief Performs some tests for the Pk shape functions
  */
 
 bool success = true;
-double epsilon = 1e-8;
+double epsilon = 1e-14;
+double sqrt_epsilon = std::sqrt(epsilon);
 
 using namespace Dune;
 
+// Generate list of Lagrange points for dim-dimensional simplex
 template <int dim>
-void testShapeFunction(const GeometryType& type, int order)
+void getPkTestPoints(int order, int level, std::vector<FieldVector<double,dim> >& test_points)
 {
+  for (int i = 0; i <= order - level; ++i)
+  {
+    std::vector<FieldVector<double,dim-1> > test_points_lower_dim;
+    getPkTestPoints(order, level + i, test_points_lower_dim);
+    double coord = double(i) / order;
+    for (int j = 0; j < test_points_lower_dim.size(); ++j)
+    {
+      FieldVector<double,dim> pos;
+      for (int k = 0; k < dim-1; ++k)
+        pos[k] = test_points_lower_dim[j][k];
+      pos[dim-1] = coord;
+      test_points.push_back(pos);
+    }
+  }
+}
 
-  Pk2DLocalFiniteElement<double,double,1> shapeFunctionSet;
+// Template specialization to terminate recursion
+template <>
+void getPkTestPoints(int order, int level, std::vector<FieldVector<double,0> >& test_points)
+{
+  FieldVector<double,0> pos;
+  test_points.push_back(pos);
+}
 
-  // ////////////////////////////////////////////////////////////
-  //   Check the partial derivatives by comparing them
-  //   to finite difference approximations
-  // ////////////////////////////////////////////////////////////
+template <class FE>
+void testPk(const FE& local_fe)
+{
+  const int dim = FE::Traits::LocalBasisType::Traits::dimDomain;
+  const int order = local_fe.localBasis().order();
 
-  // A set of test points
-  // Bad: dependence on dune-grid.  Only for the test points, though
-  const QuadratureRule<double,dim> quad = QuadratureRules<double,dim>::rule(type,order);
+  std::vector<FieldVector<double,1> > values;
 
-  for (size_t i=0; i<quad.size(); i++) {
+  std::vector<FieldVector<double,dim> > test_points;
+  getPkTestPoints(order, 0, test_points);
 
-    // Get a test point
-    const FieldVector<double,dim>& testPoint = quad[i].position();
+  for (int n = 0; n < test_points.size(); ++n)
+  {
+    FieldVector<double,dim> pos = test_points[n];
 
-    // Get the shape function derivatives there
+    //////////////////////////////////////////////////////////////////
+    //  Verfiy that shape functions fulfill \phi_i(x_j) = \delta_{ij}
+    //  We assume that the shape functions are ordered corresponding
+    //  to the test points returned by getPkTestPoints()
+    //////////////////////////////////////////////////////////////////
+
+    local_fe.localBasis().evaluateFunction(pos, values);
+    for (int i = 0; i < values.size(); ++i)
+      if (std::abs(values[i] - double(i==n)) > epsilon)
+      {
+        std::cerr << "Bug in shape function in local finite element type"
+                  << typeid(FE).name() << std::endl;
+        std::cerr << "Shape function " << n << " has value " << values[i]
+                  << " at position " << pos << " while " << double(i==n)
+                  << " was expected" << std::endl;
+        success = false;
+      }
+
+    //////////////////////////////////////////////////////////////////
+    //  Check the partial derivatives by comparing them
+    //  to finite difference approximations
+    //////////////////////////////////////////////////////////////////
+
+    // Get the shape function derivatives at pos
     std::vector<FieldVector<FieldVector<double,dim>,1> > jacobians;
-    shapeFunctionSet.localBasis().evaluateJacobian(testPoint, jacobians);
+    local_fe.localBasis().evaluateJacobian(pos, jacobians);
 
-    // Loop over all shape functions in this set
-    for (unsigned int j=0; j<shapeFunctionSet.localBasis().size(); ++j) {
+    // Loop over all axes
+    for (int k=0; k<dim; k++)
+    {
+      // Compute an approximation to the derivative by finite differences
+      FieldVector<double,dim> upPos   = pos;
+      FieldVector<double,dim> downPos = pos;
 
-      // Loop over all partial derivatives
-      for (int k=0; k<dim; k++) {
+      upPos[k]   += sqrt_epsilon;
+      downPos[k] -= sqrt_epsilon;
 
+      std::vector<FieldVector<double,1> > upValues, downValues;
+
+      local_fe.localBasis().evaluateFunction(upPos,   upValues);
+      local_fe.localBasis().evaluateFunction(downPos, downValues);
+
+      // Loop over all shape functions in this set
+      for (unsigned int j=0; j<local_fe.localBasis().size(); ++j)
+      {
         // The current partial derivative, just for ease of notation
         double derivative = jacobians[j][0][k];
 
-        // Compute an approximation to the derivative by finite differences
-        FieldVector<double,dim> upPos   = testPoint;
-        FieldVector<double,dim> downPos = testPoint;
-
-        upPos[k]   += epsilon;
-        downPos[k] -= epsilon;
-
-        std::vector<FieldVector<double,1> > upValues, downValues;
-
-        shapeFunctionSet.localBasis().evaluateFunction(upPos,   upValues);
-        shapeFunctionSet.localBasis().evaluateFunction(downPos, downValues);
-        double finiteDiff = (upValues[j] - downValues[j]) / (2*epsilon);
+        // Compute finite difference approximation
+        double finiteDiff = (upValues[j] - downValues[j]) / (2*sqrt_epsilon);
 
         // Check
-        if (std::abs(derivative-finiteDiff) > epsilon) {
-          std::cerr << "Bug in shape function of order " << order << " for " << type << "." << std::endl;
-          std::cerr << "Shape function derivative does not agree with FD approximation" << std::endl;
-          std::cerr << "Shape function " << j << " at position " << testPoint
-                    << ":  derivative in direction " << k << " is " << derivative
-                    << ", but " << finiteDiff << " is expected." << std::endl;
+        if (std::abs(derivative - finiteDiff) > sqrt_epsilon) {
+          std::cerr << "Bug in shape function in local finite element type "
+                    << typeid(FE).name() << std::endl;
+          std::cerr << "    of order " << order << "." << std::endl;
+          std::cerr << "    Shape function derivative differs "
+                    << "significantly from FD approximation" << std::endl;
+          std::cerr << "    Shape function " << j << " at position " << pos
+                    << ":  derivative in direction " << k
+                    << " is " << derivative << ", but " << finiteDiff
+                    << " is expected." << std::endl;
           success = false;
         }
-
       }
-
     }
-
   }
-
 }
 
 int main (int argc, char *argv[]) try
 {
-  for (int i=0; i<3; i++) {
+  feenableexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW);
 
-#if 0
-    // Test shape functions for the 1d segment
-    testShapeFunction<1>(GeometryType(1),i);
-#endif
-    testShapeFunction<2>(GeometryType(GeometryType::simplex,2),i);
-#if 0
-    testShapeFunction<2>(GeometryType(GeometryType::cube,2),i);
+  P11DLocalFiniteElement<double,double> p11d;
+  testPk(p11d);
 
-    testShapeFunction<3>(GeometryType(GeometryType::simplex,3),i);
-    testShapeFunction<3>(GeometryType(GeometryType::cube,3),i);
-    testShapeFunction<3>(GeometryType(GeometryType::pyramid,3),i);
-    testShapeFunction<3>(GeometryType(GeometryType::prism,3),i);
+  P12DLocalFiniteElement<double,double> p12d;
+  testPk(p12d);
 
-    testShapeFunction<4>(GeometryType(GeometryType::cube,4),i);
-#endif
-  }
+  P13DLocalFiniteElement<double,double> p13d;
+  testPk(p13d);
+
+  //     P23DLocalFiniteElement does not fulfill above assumption on the
+  //     ordering of the shape functions
+  //     P23DLocalFiniteElement<double,double> p23d;
+  //     testPk(p23d);
+
+  Pk2DLocalFiniteElement<double,double,1> pk12d;
+  testPk(pk12d);
+  Pk2DLocalFiniteElement<double,double,2> pk22d;
+  testPk(pk22d);
+  Pk2DLocalFiniteElement<double,double,3> pk32d;
+  testPk(pk32d);
+  Pk2DLocalFiniteElement<double,double,4> pk42d;
+  testPk(pk42d);
+
+  Pk3DLocalFiniteElement<double,double,1> pk13d;
+  testPk(pk13d);
+  Pk3DLocalFiniteElement<double,double,2> pk23d;
+  testPk(pk23d);
+  Pk3DLocalFiniteElement<double,double,3> pk33d;
+  testPk(pk33d);
+  Pk3DLocalFiniteElement<double,double,4> pk43d;
+  testPk(pk43d);
 
   return success ? 0 : 1;
 }
 catch (Exception e) {
 
-  std::cout << e << std::endl;
+  std::cerr << e << std::endl;
   return 1;
 }

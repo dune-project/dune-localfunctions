@@ -213,7 +213,7 @@ progname => sub {
 tparams  => '<typename DomainFieldType, typename RangeFieldType>',
 
 help     => <<EOH,
-Edge shape functions of order 1 on the reference triange.
+Lowest order edge shape functions on the reference triangle.
 
 Template Parameters:
  * DomainFieldType: Type to represent the field in the domain.
@@ -228,6 +228,28 @@ progname => sub {
     my $D = shift;
     my $R = shift;
     return sprintf "edges02d-%s-%s", lc $D, lc $R;
+}},
+
+#======================================================================
+'Dune::EdgeS03DLocalBasis' => {
+tparams  => '<typename DomainFieldType, typename RangeFieldType>',
+
+help     => <<EOH,
+Lowest order edge shape functions on the reference tetrahedron.
+
+Template Parameters:
+ * DomainFieldType: Type to represent the field in the domain.
+ * RangeFieldType:  Type to represent the field in the range. 
+EOH
+
+headers  => <<EOH,
+#include <dune/finiteelements/edges03d/edges03dlocalbasis.hh>
+EOH
+
+progname => sub {
+    my $D = shift;
+    my $R = shift;
+    return sprintf "edges03d-%s-%s", lc $D, lc $R;
 }},
 
 #======================================================================

@@ -7,7 +7,7 @@
 #include <vector>
 
 #include <dune/common/static_assert.hh>
-#include <dune/common/fixedarray.hh>
+#include <dune/common/array.hh>
 #include <dune/common/fvector.hh>
 
 namespace Dune

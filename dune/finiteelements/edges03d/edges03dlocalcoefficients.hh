@@ -28,7 +28,7 @@ namespace Dune
     EdgeS03DLocalCoefficients () : li(6)
     {
       for (int i=0; i<6; i++)
-        li[i] = LocalKey(i,1,0);
+        li[i] = LocalKey(i,2,0);
     }
 
     //! number of coefficients

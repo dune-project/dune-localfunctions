@@ -1,0 +1,188 @@
+\documentclass{scrartcl}
+
+\usepackage{dsfont}
+\usepackage{amsmath}
+
+\begin{document}
+
+\title{Edge Basis and Transformation}
+
+\maketitle
+
+\section{The Basis}
+
+For the edge basis we have the following properties, which fully determine
+them:
+\begin{subequations}
+  \begin{enumerate}
+  \item Each shape function $\psi_i$ is linear:
+    \begin{equation}
+      \psi^i(\mathbf x)=\mathrm A^i\mathbf x+\mathbf a^i
+    \end{equation}
+  \item Each shape function maps from $\mathds R^n$ to $\mathds R^n$, where
+    $n$ is the dimension.
+  \item For each shape function holds
+    \begin{equation}
+      \psi_i(\mathbf x)\cdot\mathbf t^j=\delta_{ij} \qquad
+      \forall\mathbf x\in\Gamma^j,
+    \end{equation}
+    where $\Gamma^j$ denotes edge $j$ and $\mathbf t^j$ denotes a tangential
+    unit vector to that edge.
+  \end{enumerate}
+\end{subequations}
+We use the following numbering of edges and vertices:
+\begin{center}
+  \begin{tabular}{c|c|c}
+edge \# & vertex 0 \# & vertex 1 \# \\\hline
+   0    &     0       &      1      \\
+   1    &     0       &      2      \\
+   2    &     1       &      2
+ \end{tabular}
+\end{center}
+From that follow the following definitions for the tangential unit vectors
+$\mathbf t^i$ and edge lengthes $\ell^i$, where $\mathbf x^i$ are the
+coordinates of vertex $i$:
+\begin{subequations}
+  \begin{align}
+    \mathbf t^0&=(\mathbf x^1-\mathbf x^0)/\ell^0 &
+         \ell^0&=||\mathbf x^1-\mathbf x^0||      \\
+    \mathbf t^1&=(\mathbf x^2-\mathbf x^0)/\ell^1 &
+         \ell^1&=||\mathbf x^2-\mathbf x^0||      \\
+    \mathbf t^2&=(\mathbf x^2-\mathbf x^1)/\ell^2 &
+         \ell^2&=||\mathbf x^2-\mathbf x^1||
+  \end{align}
+\end{subequations}
+Evaluating the shape functions at the three vertices and taking the scalar
+product with the two adjacent tangential vectors $\psi^i(\mathbf
+x^k)\cdot\mathbf t^j=\delta_{ij}$ $\forall k\in\{j_0,j_1\}$ leaves us with
+the following six conditions:
+\begin{subequations}
+  \begin{align}
+    \psi^i(\mathbf x^0)\cdot\mathbf t^0&=\delta_{i0} &&\Longrightarrow &
+        (\mathrm A^i\mathbf x^0+\mathbf a^i)
+        \cdot(\mathbf x^1-\mathbf x^0)&=\delta_{i0}\ell^0              \\
+    \psi^i(\mathbf x^1)\cdot\mathbf t^0&=\delta_{i0} &&\Longrightarrow &
+        (\mathrm A^i\mathbf x^1+\mathbf a^i)
+        \cdot(\mathbf x^1-\mathbf x^0)&=\delta_{i0}\ell^0              \\
+    \psi^i(\mathbf x^1)\cdot\mathbf t^2&=\delta_{i2} &&\Longrightarrow &
+        (\mathrm A^i\mathbf x^1+\mathbf a^i)
+        \cdot(\mathbf x^2-\mathbf x^1)&=\delta_{i2}\ell^2              \\
+    \psi^i(\mathbf x^2)\cdot\mathbf t^2&=\delta_{i2} &&\Longrightarrow &
+        (\mathrm A^i\mathbf x^2+\mathbf a^i)
+        \cdot(\mathbf x^2-\mathbf x^1)&=\delta_{i2}\ell^2              \\
+    \psi^i(\mathbf x^2)\cdot\mathbf t^1&=\delta_{i1} &&\Longrightarrow &
+        (\mathrm A^i\mathbf x^2+\mathbf a^i)
+        \cdot(\mathbf x^2-\mathbf x^0)&=\delta_{i1}\ell^1              \\
+    \psi^i(\mathbf x^0)\cdot\mathbf t^1&=\delta_{i1} &&\Longrightarrow &
+        (\mathrm A^i\mathbf x^0+\mathbf a^i)
+        \cdot(\mathbf x^2-\mathbf x^0)&=\delta_{i1}\ell^1
+  \end{align}
+\end{subequations}
+By pairwise combination we can transform these conditions into
+\begin{subequations}
+  \begin{align}
+    [\mathrm A^i(\mathbf x^1-\mathbf x^0)]
+      \cdot(\mathbf x^1-\mathbf x^0)&=0 &&\Longleftrightarrow &
+        (\mathrm A^i\mathbf t^0)\cdot\mathbf t^0&=0           \\
+    [\mathrm A^i(\mathbf x^2-\mathbf x^0)]
+      \cdot(\mathbf x^2-\mathbf x^0)&=0 &&\Longleftrightarrow &
+        (\mathrm A^i\mathbf t^1)\cdot\mathbf t^1&=0           \\
+    [\mathrm A^i(\mathbf x^2-\mathbf x^1)]
+      \cdot(\mathbf x^2-\mathbf x^1)&=0 &&\Longleftrightarrow &
+        (\mathrm A^i\mathbf t^2)\cdot\mathbf t^2&=0
+  \end{align}
+  and
+  \begin{align}
+    (\mathrm A^i\mathbf x^0+\mathbf a^i)\cdot(\mathbf x^2-\mathbf x^1)
+        &=\delta_{i1}\ell^1-\delta_{i0}\ell^0 &&\Longleftrightarrow &
+      (\mathrm A^i\mathbf x^0+\mathbf a^i)\cdot\mathbf t^2
+        &=\frac{\delta_{i1}\ell^1-\delta_{i0}\ell^0}{\ell^2}        \\
+    (\mathrm A^i\mathbf x^1+\mathbf a^i)\cdot(\mathbf x^2-\mathbf x^0)
+        &=\delta_{i2}\ell^2+\delta_{i0}\ell^0 &&\Longleftrightarrow &
+      (\mathrm A^i\mathbf x^1+\mathbf a^i)\cdot\mathbf t^1
+        &=\frac{\delta_{i2}\ell^2+\delta_{i0}\ell^0}{\ell^1}         \\
+    (\mathrm A^i\mathbf x^2+\mathbf a^i)\cdot(\mathbf x^1-\mathbf x^0)
+        &=\delta_{i1}\ell^1-\delta_{i2}\ell^2 &&\Longleftrightarrow &
+      (\mathrm A^i\mathbf x^2+\mathbf a^i)\cdot\mathbf t^0
+        &=\frac{\delta_{i1}\ell^1-\delta_{i2}\ell^2}{\ell^0}
+\end{align}
+\end{subequations}
+Mayhaps these will be useful later.
+
+\section{Coordinate Transformation}
+
+For transformation we use a mapping $\mathbf x=g(\mathbf{\hat x})$.  We say
+that we map from {\em reference coordinates} $\mathbf{\hat x}$ into {\em world
+  coordinates} $\mathbf x$.  Entities with the hat $\hat{\phantom x}$ are in
+reference coordinates, entities without the hat are in world coordinates.  The
+mapping $g$ is affine linear and can thus be written as
+\begin{equation}
+  g(\mathbf{\hat x})=\mathrm B\mathbf{\hat x}+\mathbf b
+\end{equation}
+The conversion of the vertex coordinates is simple:
+\begin{equation}
+  \mathbf x^i=\mathrm B\mathbf{\hat x}^i+\mathbf b
+\end{equation}
+The tangential vectors and edge lengthes are a bit more complicated:
+\begin{subequations}
+  \begin{align}
+    \mathbf t^0&
+      =\frac{\mathbf x^1-\mathbf x^0}{||\mathbf x^1-\mathbf x^0||}
+      =\frac{\mathrm B(\mathbf{\hat x}^1-\mathbf{\hat x}^0)}
+            {||\mathrm B(\mathbf{\hat x}^1-\mathbf{\hat x}^0)||}
+      =\frac{\mathrm B\mathbf{\hat t}^0}{||\mathrm B\mathbf{\hat t}^0||}
+    &  \ell^0&=||\mathbf x^1-\mathbf x^0||
+              =||B(\mathbf{\hat x}^1-\mathbf{\hat x}^0)||               \\
+    \mathbf t^1&
+      =\frac{\mathbf x^2-\mathbf x^0}{||\mathbf x^2-\mathbf x^0||}
+      =\frac{\mathrm B(\mathbf{\hat x}^2-\mathbf{\hat x}^0)}
+            {||\mathrm B(\mathbf{\hat x}^2-\mathbf{\hat x}^0)||}
+      =\frac{\mathrm B\mathbf{\hat t}^1}{||\mathrm B\mathbf{\hat t}^1||}
+    &  \ell^1&=||\mathbf x^2-\mathbf x^0||
+              =||B(\mathbf{\hat x}^2-\mathbf{\hat x}^0)||               \\
+    \mathbf t^2&
+      =\frac{\mathbf x^2-\mathbf x^1}{||\mathbf x^2-\mathbf x^1||}
+      =\frac{\mathrm B(\mathbf{\hat x}^2-\mathbf{\hat x}^1)}
+            {||\mathrm B(\mathbf{\hat x}^2-\mathbf{\hat x}^1)||}
+      =\frac{\mathrm B\mathbf{\hat t}^2}{||\mathrm B\mathbf{\hat t}^2||}
+    &  \ell^2&=||\mathbf x^2-\mathbf x^1||
+              =||B(\mathbf{\hat x}^2-\mathbf{\hat x}^1)||
+  \end{align}
+\end{subequations}
+If we require that $\hat\psi^i$ fullfills the same conditions in reference
+coordinates as $\psi^i$ fullfills in world coordinates, what is the
+transformation $\psi^i(g(\mathbf{\hat x}))=L(\hat\psi^i(\mathbf{\hat x}))$?
+Let us assume that $L$ is linear and independent of $\mathbf x$ and
+$\mathbf{\hat x}$:
+\begin{equation}
+  \mathbf y=L(\mathbf{\hat y})=\mathrm C\mathbf{\hat y}+\mathbf c
+\end{equation}
+How do $\mathrm C$ and $\mathbf c$ relate to $\mathrm B$ and $\mathbf b$?  We
+have the three vertex coordinates times two directions in each coordinate to
+evaluate $\psi^0$ and $\hat\psi^0$, that should give us six conditions with
+which we should be able to fix the six coefficients of $\mathrm C$ and
+$\mathbf c$ (ideally, $\mathbf c=0$).  OK, evaluating just one basis function
+is probably not enough, since I already know what to expect there.  Instead, I
+probably have to evaluate a function $\mathbf y(\mathbf x)$ ($\mathbf{\hat
+  y}(\mathbf{\hat x})$) to learn whats going on.
+
+Let
+\begin{align}
+  \mathbf{\hat y}&=\sum_iy^i\hat\psi^i &&\text{and} &\mathbf y&=\sum_iy^i\psi^i
+\end{align}
+with the same coeffitients $y^i$.  Now we require
+\begin{equation}
+  \mathbf y(\mathbf x^i)=\mathrm C\mathbf{\hat y}(\mathbf{\hat x}^i)+\mathbf c.
+\end{equation}
+We will not test this with cartesian components
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% mode: TeX-PDF
+%%% mode: auto-fill
+%%% TeX-master: t
+%%% mode: flyspell
+%%% ispell-local-dictionary: "american"
+%%% End: 

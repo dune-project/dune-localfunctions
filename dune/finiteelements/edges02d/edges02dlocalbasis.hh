@@ -170,6 +170,135 @@ namespace Dune
       out[2][0] = s[2]*( -in[1]); out[2][1] = s[2]*(  in[0]);
     }
 
+    //! Get global values of shape functions
+    /**
+     * Experimental interface for getting global values of shape functions.
+     *
+     * Vector valued shape functions often require a complicated
+     * transformation to get the global values from the local values:
+     * \f[ \psi_i(g(\mathbf{\hat x}))=L(\hat\psi_i(\mathbf x)) \f]
+     * where \f$g\f$ is transformation for coordinates, \f$L\f$ the
+     * tranformation for values and the hat \f$\hat{\phantom x}\f$ denotes
+     * local quantities.  Worse, if we require for edge elements that
+     * \f[ \psi_i\cdot\mathbf t_j=\delta_{ij}\text{ on edge }j \f]
+     * and
+     * \f[ \hat\psi_i\cdot\mathbf{\hat t}_j=\delta_{ij}\text{ on edge }j \f]
+     * then we need a different \f$L\f$ for each shape function.  This
+     * property is very desirable be eases debugging and the construction of
+     * constraints for grids with hanging nodes.
+     *
+     * \tparam     Geometry Type of geometry
+     * \param[in]  in       Where to evaluate.  <b>NOTE: these are local
+     *                      coordinates</b>
+     * \param[out] out      The global values of the shape functions.
+     * \param[in]  geometry The geometry used for the local to global mapping.
+     */
+    template<typename Geometry>
+    inline void evaluateFunctionGlobal
+      (const typename Traits::DomainType& in,
+      std::vector<typename Traits::RangeType>& out,
+      const Geometry &geometry) const
+    {
+      assert(geometry.type().isTriangle());
+
+      /**
+       * We have
+       * \f[
+       *    \psi^i=\alpha^i\mathds{\tilde1}\mathbf x+\mathbf a^i
+       * \f]
+       * with
+       * \f[
+       *    \mathds{\tilde1}=\begin{pmatrix}0&1\\-1&0\end{pmatrix}
+       * \f]
+       * For each shape function we have the equation system
+       * \f[
+       *    \begin{pmatrix}
+       *      (\mathbf x^2-\mathbf x^1)\cdot\mathds{\tilde1}\mathbf x^0
+       *              & \mathbf x^2_0-\mathbf x^1_0
+       *                        & \mathbf x^2_1-\mathbf x^1_1  \\
+       *      (\mathbf x^2-\mathbf x^0)\cdot\mathds{\tilde1}\mathbf x^1
+       *              & \mathbf x^2_0-\mathbf x^0_0
+       *                        & \mathbf x^2_1-\mathbf x^0_1  \\
+       *      (\mathbf x^1-\mathbf x^0)\cdot\mathds{\tilde1}\mathbf x^2
+       *              & \mathbf x^1_0-\mathbf x^0_0
+       *                        & \mathbf x^1_1-\mathbf x^0_1
+       *    \end{pmatrix}
+       *    \begin{pmatrix}
+       *      \alpha^i      \\
+       *      \mathbf a^i_0 \\
+       *      \mathbf a^i_1
+       *    \end{pmatrix}
+       *    =
+       *    \begin{pmatrix}
+       *      \delta_{i1}\ell^1-\delta_{i0}\ell^0 \\
+       *      \delta_{i2}\ell^2+\delta_{i0}\ell^0 \\
+       *      \delta_{i1}\ell^1-\delta_{i2}\ell^2
+       *    \end{pmatrix}
+       * \f]
+       * where \f$\mathbf x^i\f$ is the global coordinate of vertex \f$i\f$
+       * and \f$\ell^i\f$ is the length (global) of edge \f$i\f$.
+       */
+      typename Traits::DomainType vertex[3];
+      for(int i = 0; i < 3; ++i)
+        vertex[i] = geometry.corner(i);
+
+      typename Traits::DomainType offset[3];
+      offset[0] = vertex[1]; offset[0] -= vertex[0];
+      offset[1] = vertex[2]; offset[1] -= vertex[0];
+      offset[2] = vertex[2]; offset[2] -= vertex[1];
+
+      // assemble matrix
+      FieldMatrix<typename Traits::DomainFieldType, 3, 3> M;
+      M[0][0] = offset[2][0]*vertex[0][1]-offset[2][1]*vertex[0][0];
+      M[0][1] = offset[2][0];
+      M[0][2] = offset[2][1];
+
+      M[1][0] = offset[1][0]*vertex[1][1]-offset[1][1]*vertex[1][0];
+      M[1][1] = offset[1][0];
+      M[1][2] = offset[1][1];
+
+      M[2][0] = offset[0][0]*vertex[2][1]-offset[0][1]*vertex[2][0];
+      M[2][1] = offset[0][0];
+      M[2][2] = offset[0][1];
+
+      M.invert();
+
+      typename Traits::DomainType pos = geometry.global(in);
+      FieldVector<typename Traits::DomainFieldType, 3> rhs;
+      out.resize(3);
+
+      // store coefficients
+      FieldVector<typename Traits::DomainFieldType, 3> coeff;
+      // aliases into the coefficients vector for clearer code
+      typename Traits::DomainFieldType &alpha = coeff[0];
+      typename Traits::DomainFieldType &a0 = coeff[1];
+      typename Traits::DomainFieldType &a1 = coeff[2];
+
+      // \phi^0
+      rhs[0] = -offset[0].two_norm();
+      rhs[1] =  offset[0].two_norm();
+      rhs[2] = 0;
+      M.mv(rhs, coeff); //Sets alpha, a0 and a1
+      out[0][0] = s[0]*( alpha*pos[1] + a0);
+      out[0][1] = s[0]*(-alpha*pos[0] + a1);
+
+      // \phi^1
+      rhs[0] = offset[1].two_norm();
+      rhs[1] = 0;
+      rhs[2] = offset[1].two_norm();
+      M.mv(rhs, coeff); //Sets alpha, a0 and a1
+      out[1][0] = s[1]*( alpha*pos[1] + a0);
+      out[1][1] = s[1]*(-alpha*pos[0] + a1);
+
+      // \phi^2
+      rhs[0] = 0;
+      rhs[1] =  offset[2].two_norm();
+      rhs[2] = -offset[2].two_norm();
+      M.mv(rhs, coeff); //Sets alpha, a0 and a1
+      out[2][0] = s[2]*( alpha*pos[1] + a0);
+      out[2][1] = s[2]*(-alpha*pos[0] + a1);
+    }
+
     //! \brief Evaluate Jacobian of all shape functions
     inline void
     evaluateJacobian (const typename Traits::DomainType& in,         // position

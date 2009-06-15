@@ -2,7 +2,6 @@
 
 \usepackage{dsfont}
 \usepackage{amsmath}
-\usepackage{eufrak}
 \usepackage{tikz}
 
 \begin{document}
@@ -142,7 +141,36 @@ vectors $\mathbf t^j$ which are mutually linearly independent, we have three
 such equations, with which we can fix three of the four coefficients of
 $\mathrm A$, and since antisymmetric matrices have only on independent
 coefficient left and fulfill the above equation, $\mathrm A$ must be
-antisymmetric.  Thus the three matrices $\mathrm A^i$ are antisymmetric.
+antisymmetric.  Thus the three matrices $\mathrm A^i$ are antisymmetric:
+\begin{equation}
+  \mathrm A^i=\alpha^i\begin{pmatrix}0&1\\-1&0\end{pmatrix}
+  =\alpha^i\mathds{\tilde1}
+\end{equation}
+The other three equations yield the following equation system:
+\begin{equation}
+  \begin{pmatrix}
+    (\mathbf x^2-\mathbf x^1)\cdot\mathds{\tilde1}\mathbf x^0
+            & \mathbf x^2_0-\mathbf x^1_0
+                      & \mathbf x^2_1-\mathbf x^1_1  \\
+    (\mathbf x^2-\mathbf x^0)\cdot\mathds{\tilde1}\mathbf x^1
+            & \mathbf x^2_0-\mathbf x^0_0
+                      & \mathbf x^2_1-\mathbf x^0_1  \\
+    (\mathbf x^1-\mathbf x^0)\cdot\mathds{\tilde1}\mathbf x^2
+            & \mathbf x^1_0-\mathbf x^0_0
+                      & \mathbf x^1_1-\mathbf x^0_1
+  \end{pmatrix}
+  \begin{pmatrix}
+    \alpha^i      \\
+    \mathbf a^i_0 \\
+    \mathbf a^i_1
+  \end{pmatrix}
+  =
+  \begin{pmatrix}
+    \delta_{i1}\ell^1-\delta_{i0}\ell^0 \\
+    \delta_{i2}\ell^2+\delta_{i0}\ell^0 \\
+    \delta_{i1}\ell^1-\delta_{i2}\ell^2
+  \end{pmatrix}
+\end{equation}
 
 Mayhaps these will be useful later.
 

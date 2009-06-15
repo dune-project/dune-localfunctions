@@ -3,6 +3,7 @@
 \usepackage{dsfont}
 \usepackage{amsmath}
 \usepackage{eufrak}
+\usepackage{tikz}
 
 \begin{document}
 
@@ -33,12 +34,25 @@ them:
 \end{subequations}
 We use the following numbering of edges and vertices:
 \begin{center}
-  \begin{tabular}{c|c|c}
+  \begin{tabular}[c]{c|c|c}
 edge \# & vertex 0 \# & vertex 1 \# \\\hline
    0    &     0       &      1      \\
    1    &     0       &      2      \\
    2    &     1       &      2
  \end{tabular}
+ \hspace{1cm}
+ \begin{tikzpicture}[baseline={(.5,.5)}]
+   \draw (0,0) node[below left] {0}
+         -- node[below] {0}
+         (1,0) node[below right] {1}
+         -- node[above right] {2}
+         (0,1) node[above left] {2}
+         -- node[left] {1}
+         (0,0);
+   \draw[->] (0,0) -- (.5,0);
+   \draw[->] (1,0) -- (.5,.5);
+   \draw[->] (0,0) -- (0,.5);
+ \end{tikzpicture}
 \end{center}
 From that follow the following definitions for the tangential unit vectors
 $\mathbf t^i$ and edge lengthes $\ell^i$, where $\mathbf x^i$ are the
@@ -119,9 +133,9 @@ antisymmetric: Let $\mathrm A$ be a $2\times2$ matrix and $\mathbf t$ be a
 vector with two entries.  Then the equation $(\mathrm A\mathbf t)\cdot\mathbf
 t=0$ yields:
 \begin{equation}
-  \mathbf (t_0)^2\mathrm A_{00}
+  (\mathbf t_0)^2\mathrm A_{00}
   +\mathbf t_0\mathbf t_1(\mathrm A_{01}+\mathrm A_{10})
-  +\mathbf (t_1)^2\mathrm A_{11}=0
+  +(\mathbf t_1)^2\mathrm A_{11}=0
 \end{equation}
 This is certainly fulfilled for any antisymmetric matrix.  If we have three
 vectors $\mathbf t^j$ which are mutually linearly independent, we have three
@@ -210,17 +224,21 @@ $\mathrm A^i$ and $\mathrm{\hat A}^i$ are antisymmetric:
 $\mathds{\tilde1}$ is the ``antisymmetric unit matrix'' with the following
 properties:
 \begin{align}
-  \mathds{\tilde1}&=\begin{pmatrix}0&1\\-1&0\end{pmatrix} &
-  \mathds{\tilde1}^{-1}&=-\mathds{\tilde1}                &
-  \mathds{\tilde1}^2&=-\mathds1                           &
+  \mathds{\tilde1}&=\begin{pmatrix}0&1\\-1&0\end{pmatrix}     &
+  \mathds{\tilde1}^{-1}&=-\mathds{\tilde1}=\mathds{\tilde1}^T  \\
+  \mathds{\tilde1}^2&=-\mathds1                               &
   \mathds{\tilde1}\begin{pmatrix}a&b\\c&d\end{pmatrix}\mathds{\tilde1}
-      =\begin{pmatrix}-d&c\\b&-a\end{pmatrix}
+      &=\begin{pmatrix}-d&c\\b&-a\end{pmatrix}
+       =-\begin{vmatrix}a&b\\c&d\end{vmatrix}
+         \begin{pmatrix}a&b\\c&d\end{pmatrix}^{-T}
 \end{align}
 Thus follows
 \begin{equation}
   \alpha^i\mathds{\tilde1}\mathrm B=\mathrm C\hat\alpha^i\mathds{\tilde1}
   \qquad\Longrightarrow\qquad
-  \mathrm C=-\frac{\alpha^i}{\hat\alpha^i}\mathds{\tilde1}\mathrm B\mathds{\tilde1}
+  \mathrm C=-\frac{\alpha^i}{\hat\alpha^i}\mathds{\tilde1}\mathrm
+  B\mathds{\tilde1}
+    =\frac{\alpha^i}{\hat\alpha^i}\det(\mathrm B)\mathrm B^{-T}
 \end{equation}
 So, $\mathrm C$ is a garbled and scaled version of $\mathrm B$.  Note that
 \begin{equation}

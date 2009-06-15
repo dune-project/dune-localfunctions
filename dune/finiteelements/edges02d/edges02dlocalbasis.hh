@@ -43,7 +43,7 @@ namespace Dune
     //! contruct a local basis instance with default orientations
     EdgeS02DLocalBasis()
     {
-      sl[0] = 1; sl[1] = 1; sl[2] = sr2;
+      s[0] = 1; s[1] = 1; s[2] = 1;
     }
 
     //! contruct a local basis instance with the given orientations
@@ -52,9 +52,9 @@ namespace Dune
     //! 0 = 1 means inverted orientation for the first shape function.
     EdgeS02DLocalBasis(unsigned int orientations)
     {
-      sl[0] = 1; sl[1] = 1; sl[2] = sr2;
+      s[0] = 1; s[1] = 1; s[2] = 1;
       for(int i = 0; i < 3; ++i)
-        if(orientations & (1<<i)) sl[i] *= -1;
+        if(orientations & (1<<i)) s[i] *= -1;
     }
 
     //! \brief number of shape functions
@@ -117,18 +117,31 @@ namespace Dune
      * To break that down onto the reference element, we insert
      * \f[ (x^e_0,y^e_0)=(0,0)\qquad(x^e_1,y^e_1)=(1,0)\qquad(x^e_2,y^e_2)=(0,1) \f]
      * which yields
-     * \f[ a^e_0=1\qquad a^e_1=0\qquad a^e_2=0 \f]
+     * \f[ a^e_0= 1\qquad a^e_1=0\qquad a^e_2=0 \f]
      * \f[ b^e_0=-1\qquad b^e_1=1\qquad b^e_2=0 \f]
      * \f[ c^e_0=-1\qquad c^e_1=0\qquad b^e_2=1 \f]
      * and, together with \f$\Delta^e=1/2\f$
      * \f[ L^e_0(x,y)=1-x-y\qquad \nabla L^e_0=(-1,-1) \f]
      * \f[ L^e_1(x,y)=x    \qquad \nabla L^e_1=(1,0) \f]
      * \f[ L^e_2(x,y)=y    \qquad \nabla L^e_2=(0,1) \f]
+     * Thus we arrive at
      * With \f$\ell^e_0=1\f$, \f$\ell^e_1=1\f$ and \f$\ell^e_2=\sqrt2\f$ we
      * arrive at
-     * \f[ \mathbf N^e_0(x,y)=           (1-y,   x) \f]
-     * \f[ \mathbf N^e_1(x,y)=           ( -y,-1+x) \f]
-     * \f[ \mathbf N^e_2(x,y)=\sqrt2\cdot( -y,   x) \f]
+     * \f[ \mathbf N^e_0(x,y)=\ell^e_0\cdot(1-y,   x) \f]
+     * \f[ \mathbf N^e_1(x,y)=\ell^e_1\cdot( -y,-1+x) \f]
+     * \f[ \mathbf N^e_2(x,y)=\ell^e_2\cdot( -y,   x) \f]
+     *
+     * It turns out that having the factor \f$\ell^e_i\f$ make the
+     * transformation of the values from reference to world coordinates much
+     * more complicated (if at all possible by a linear transformation).
+     * Therefore, we leave this factor out.
+     * \f[
+     *    \mathbf N^e_i\cdot\mathbf{\hat t}_j=\delta_{ij}\text{ on }\Gamma_j
+     * \f]
+     * then becomes
+     * \f[
+     *    \mathbf N^e_i\cdot\mathbf{\hat t}_j=\delta_{ij}/\ell^e_j\text{ on }\Gamma_j
+     * \f]
      *
      * These three base functions all turn counterclockwise the viewed in
      * paraview (x-axis pointing right, y-axis pointing up).  When two
@@ -144,17 +157,17 @@ namespace Dune
      *     FiniteElementMap from dune-pdelab.
      *  .
      * Thus the final shape functions look like this:
-     * \f[ \mathbf N^e_0(x,y)=s_0           (1-y,  x) \f]
-     * \f[ \mathbf N^e_1(x,y)=s_1           (  y,1-x) \f]
-     * \f[ \mathbf N^e_2(x,y)=s_2\sqrt2\cdot( -y,  x) \f]
+     * \f[ \mathbf N^e_0(x,y)=s_0(1-y,  x) \f]
+     * \f[ \mathbf N^e_1(x,y)=s_1(  y,1-x) \f]
+     * \f[ \mathbf N^e_2(x,y)=s_2( -y,  x) \f]
      */
     inline void evaluateFunction (const typename Traits::DomainType& in,
                                   std::vector<typename Traits::RangeType>& out) const
     {
       out.resize(3);
-      out[0][0] = sl[0]*(1-in[1]); out[0][1] = sl[0]*(  in[0]);
-      out[1][0] = sl[1]*(  in[1]); out[1][1] = sl[1]*(1-in[0]);
-      out[2][0] = sl[2]*( -in[1]); out[2][1] = sl[2]*(  in[0]);
+      out[0][0] = s[0]*(1-in[1]); out[0][1] = s[0]*(  in[0]);
+      out[1][0] = s[1]*(  in[1]); out[1][1] = s[1]*(1-in[0]);
+      out[2][0] = s[2]*( -in[1]); out[2][1] = s[2]*(  in[0]);
     }
 
     //! \brief Evaluate Jacobian of all shape functions
@@ -164,14 +177,14 @@ namespace Dune
     {
       out.resize(3);
       // basis function 0
-      out[0][0][0] =      0; out[0][1][0] = sl[0];
-      out[0][0][1] = -sl[0]; out[0][1][1] =     0;
+      out[0][0][0] =     0; out[0][1][0] = s[0];
+      out[0][0][1] = -s[0]; out[0][1][1] =    0;
       // basis function 1
-      out[1][0][0] =      0; out[1][1][0] = sl[1];
-      out[1][0][1] = -sl[1]; out[1][1][1] =     0;
+      out[1][0][0] =     0; out[1][1][0] = s[1];
+      out[1][0][1] = -s[1]; out[1][1][1] =    0;
       // basis function 2
-      out[2][0][0] =      0; out[2][1][0] = sl[2];
-      out[2][0][1] = -sl[2]; out[2][1][1] =     0;
+      out[2][0][0] =     0; out[2][1][0] = s[2];
+      out[2][0][1] = -s[2]; out[2][1][1] =    0;
     }
 
     //! \brief Polynomial order of the shape functions
@@ -181,13 +194,8 @@ namespace Dune
     }
 
   private:
-    //! square root of 2
-    static const R sr2;
-
-    //! The combined sign and length: sl[i]=\f$s_i\ell^e_i\f$
-    R sl[3];
+    //! The signs
+    R s[3];
   };
-  template<class D, class R>
-  const R EdgeS02DLocalBasis<D,R>::sr2 = std::sqrt(R(2.0));
 }
 #endif // DUNE_EDGES02DLOCALBASIS_HH

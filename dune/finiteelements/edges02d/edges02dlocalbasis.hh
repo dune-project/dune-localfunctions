@@ -174,6 +174,11 @@ namespace Dune
     /**
      * Experimental interface for getting global values of shape functions.
      *
+     * <b>WARNING: this global interface will result in scaled shape functions
+     * compared to the shapefunctions from the local interface with the
+     * apropriate transformation applied.  Don't use both interfaces in the
+     * same code.</b>
+     *
      * Vector valued shape functions often require a complicated
      * transformation to get the global values from the local values:
      * \f[ \psi_i(g(\mathbf{\hat x}))=L(\hat\psi_i(\mathbf x)) \f]
@@ -197,6 +202,96 @@ namespace Dune
     inline void evaluateFunctionGlobal
       (const typename Traits::DomainType& in,
       std::vector<typename Traits::RangeType>& out,
+      const Geometry &geometry) const
+    {
+      typename Traits::DomainType pos = geometry.global(in);
+      // store coefficients
+      FieldVector<typename Traits::DomainFieldType, 3> coeff[3];
+
+      coefficientsGlobal(coeff, geometry);
+
+      out.resize(3);
+      for(int i = 0; i < 3; ++i) {
+        // \phi^i
+        out[i][0] = s[i]*( coeff[i][alpha]*pos[1] + coeff[i][a0]);
+        out[i][1] = s[i]*(-coeff[i][alpha]*pos[0] + coeff[i][a1]);
+      }
+    }
+
+    //! Evaluate global Jacobian of all shape functions
+    /**
+     * Experimental interface for getting global values of the Jacobian of the
+     * shapefunctions.
+     *
+     * <b>WARNING: this global interface will result in scaled shape functions
+     * compared to the shapefunctions from the local interface with the
+     * apropriate transformation applied.  Don't use both interfaces in the
+     * same code.</b>
+     *
+     * This calculates the global Jacobian
+     * \f[
+     *   \mathrm J(\psi^i)=
+     *   \begin{pmatrix}
+     *     \partial\psi^i_0/\partial x_0 & \partial\psi^i_0/\partial x_1 & \cdots \\
+     *     \partial\psi^i_1/\partial x_0 & \partial\psi^i_1/\partial x_1 & \cdots \\
+     *     \vdots & \vdots & \ddots
+     *   \end{pmatrix}
+     * \f]
+     * Note that this are the derivatives of the global values by the global
+     * coordinates, evaluated at local coordinates.
+     *
+     * \tparam     Geometry Type of geometry
+     * \param[in]  in       Where to evaluate.  <b>NOTE: these are local
+     *                      coordinates</b>
+     * \param[out] out      The values of the global Jacobian.
+     * \param[in]  geometry The geometry used for the local to global mapping.
+     */
+    template<typename Geometry>
+    inline void evaluateJacobianGlobal
+      (const typename Traits::DomainType& in,         // position
+      std::vector<typename Traits::JacobianType>& out,        // return value
+      const Geometry &geometry) const
+    {
+      // store coefficients
+      FieldVector<typename Traits::DomainFieldType, 3> coeff[3];
+
+      coefficientsGlobal(coeff, geometry);
+
+      out.resize(3);
+      for(int i = 0; i < 3; ++i) {
+        // \phi^i
+        out[i][0][0] = 0;                     out[i][0][1] = s[i]*coeff[i][alpha];
+        out[i][1][0] = -s[i]*coeff[i][alpha]; out[i][1][1] = 0;
+      }
+    }
+
+    //! \brief Evaluate Jacobian of all shape functions
+    inline void
+    evaluateJacobian (const typename Traits::DomainType& in,         // position
+                      std::vector<typename Traits::JacobianType>& out) const      // return value
+    {
+      out.resize(3);
+      // basis function 0
+      out[0][0][0] =     0; out[0][1][0] = s[0];
+      out[0][0][1] = -s[0]; out[0][1][1] =    0;
+      // basis function 1
+      out[1][0][0] =     0; out[1][1][0] = s[1];
+      out[1][0][1] = -s[1]; out[1][1][1] =    0;
+      // basis function 2
+      out[2][0][0] =     0; out[2][1][0] = s[2];
+      out[2][0][1] = -s[2]; out[2][1][1] =    0;
+    }
+
+    //! \brief Polynomial order of the shape functions
+    unsigned int order () const
+    {
+      return 1;
+    }
+
+  private:
+    template<typename Geometry>
+    void coefficientsGlobal
+      (FieldVector<typename Traits::DomainFieldType, 3> (&coeff)[3],
       const Geometry &geometry) const
     {
       assert(geometry.type().isTriangle());
@@ -263,66 +358,31 @@ namespace Dune
 
       M.invert();
 
-      typename Traits::DomainType pos = geometry.global(in);
       FieldVector<typename Traits::DomainFieldType, 3> rhs;
-      out.resize(3);
-
-      // store coefficients
-      FieldVector<typename Traits::DomainFieldType, 3> coeff;
-      // aliases into the coefficients vector for clearer code
-      typename Traits::DomainFieldType &alpha = coeff[0];
-      typename Traits::DomainFieldType &a0 = coeff[1];
-      typename Traits::DomainFieldType &a1 = coeff[2];
 
       // \phi^0
       rhs[0] = -offset[0].two_norm();
       rhs[1] =  offset[0].two_norm();
       rhs[2] = 0;
-      M.mv(rhs, coeff); //Sets alpha, a0 and a1
-      out[0][0] = s[0]*( alpha*pos[1] + a0);
-      out[0][1] = s[0]*(-alpha*pos[0] + a1);
+      M.mv(rhs, coeff[0]);
 
       // \phi^1
       rhs[0] = offset[1].two_norm();
       rhs[1] = 0;
       rhs[2] = offset[1].two_norm();
-      M.mv(rhs, coeff); //Sets alpha, a0 and a1
-      out[1][0] = s[1]*( alpha*pos[1] + a0);
-      out[1][1] = s[1]*(-alpha*pos[0] + a1);
+      M.mv(rhs, coeff[1]);
 
       // \phi^2
       rhs[0] = 0;
       rhs[1] =  offset[2].two_norm();
       rhs[2] = -offset[2].two_norm();
-      M.mv(rhs, coeff); //Sets alpha, a0 and a1
-      out[2][0] = s[2]*( alpha*pos[1] + a0);
-      out[2][1] = s[2]*(-alpha*pos[0] + a1);
+      M.mv(rhs, coeff[2]);
     }
 
-    //! \brief Evaluate Jacobian of all shape functions
-    inline void
-    evaluateJacobian (const typename Traits::DomainType& in,         // position
-                      std::vector<typename Traits::JacobianType>& out) const      // return value
-    {
-      out.resize(3);
-      // basis function 0
-      out[0][0][0] =     0; out[0][1][0] = s[0];
-      out[0][0][1] = -s[0]; out[0][1][1] =    0;
-      // basis function 1
-      out[1][0][0] =     0; out[1][1][0] = s[1];
-      out[1][0][1] = -s[1]; out[1][1][1] =    0;
-      // basis function 2
-      out[2][0][0] =     0; out[2][1][0] = s[2];
-      out[2][0][1] = -s[2]; out[2][1][1] =    0;
-    }
+    // indices into the coefficient vectors for clearer code
+    static const typename FieldVector<typename Traits::DomainFieldType, 3>::size_type
+    alpha = 0, a0 = 1, a1 = 2;
 
-    //! \brief Polynomial order of the shape functions
-    unsigned int order () const
-    {
-      return 1;
-    }
-
-  private:
     //! The signs
     R s[3];
   };

@@ -1,0 +1,418 @@
+\documentclass{scrartcl}
+
+\usepackage{dsfont}
+\usepackage{amsmath}
+\usepackage{tikz}
+
+\usetikzlibrary{calc}
+
+\begin{document}
+
+\title{Edge Basis and Transformation}
+
+\maketitle
+
+\section{The Basis}
+
+For the edge basis we have the following properties, which fully determine
+them:
+\begin{subequations}
+  \begin{enumerate}
+  \item Each shape function $\psi_i$ is linear:
+    \begin{equation}
+      \psi^i(\mathbf x)=\mathrm A^i\mathbf x+\mathbf a^i
+    \end{equation}
+  \item Each shape function maps from $\mathds R^n$ to $\mathds R^n$, where
+    $n$ is the dimension.
+  \item For each shape function holds
+    \begin{equation}
+      \psi_i(\mathbf x)\cdot\mathbf t^j=\delta_{ij} \qquad
+      \forall\mathbf x\in\Gamma^j,
+    \end{equation}
+    where $\Gamma^j$ denotes edge $j$ and $\mathbf t^j$ denotes a tangential
+    unit vector to that edge.
+  \end{enumerate}
+\end{subequations}
+We use the following numbering of edges and vertices:
+\begin{center}
+  \begin{tabular}[c]{c|c|c}
+edge \# & vertex 0 \# & vertex 1 \# \\\hline
+   0    &     0       &      1      \\
+   1    &     0       &      2      \\
+   2    &     1       &      2      \\
+   3    &     0       &      3      \\
+   4    &     1       &      3      \\
+   5    &     3       &      3
+ \end{tabular}
+ \hspace{1cm}
+ \begin{tikzpicture}
+   [x={(1cm,0cm)},y={(.35cm,.35cm)},z={(0cm,1cm)},scale=2,baseline={(.5,.5)},
+   every node/.style={inner sep=0pt}]
+
+   \draw (0,0,0) -- (1,0,0);
+   \draw[->] (0,0,0) -- ($(0,0,0)!.75!(1,0,0)$);
+   \node[below]       at ($(0,0,0)!.5!(1,0,0)$) {0};
+
+   \draw (0,0,0) -- (0,1,0);
+   \draw[->] (0,0,0) -- ($(0,0,0)!.75!(0,1,0)$);
+   \node[above]       at ($(0,0,0)!.5!(0,1,0)$) {1};
+
+   \draw (1,0,0) -- (0,1,0);
+   \draw[->] (1,0,0) -- ($(1,0,0)!.75!(0,1,0)$);
+   \node[below left]  at ($(1,0,0)!.5!(0,1,0)$) {2};
+
+   \draw (0,0,0) -- (0,0,1);
+   \draw[->] (0,0,0) -- ($(0,0,0)!.75!(0,0,1)$);
+   \node[left]        at ($(0,0,0)!.5!(0,0,1)$) {3};
+
+   \draw (1,0,0) -- (0,0,1);
+   \draw[->] (1,0,0) -- ($(1,0,0)!.75!(0,0,1)$);
+   \node[above right] at ($(1,0,0)!.5!(0,0,1)$) {4};
+
+   \draw (0,1,0) -- (0,0,1);
+   \draw[->] (0,1,0) -- ($(0,1,0)!.75!(0,0,1)$);
+   \node[below left]  at ($(0,1,0)!.5!(0,0,1)$) {5};
+
+   \node[below left]  at (0,0,0) {0};
+   \node[below right] at (1,0,0) {1};
+   \node[above right] at (0,1,0) {2};
+   \node[above left]  at (0,0,1) {3};
+ \end{tikzpicture}
+\end{center}
+This table defined an edge to vertex mapping $v$, where $v(e,i)$ is the number
+of the $i$th vertex on edge $e$.
+
+From that follow the following definitions for the tangential unit vectors
+$\mathbf t^i$ and edge lengthes $\ell^i$, where $\mathbf x^i$ are the
+coordinates of vertex $i$:
+\begin{subequations}
+  \begin{align}
+    \mathbf t^i&=(\mathbf x^{v(i,1)}-\mathbf x^{v(i,0)})/\ell^i &
+         \ell^i&=||\mathbf x^{v(i,1)}-\mathbf x^{v(i,0)}||
+  \end{align}
+\end{subequations}
+Evaluating the shape functions at the three vertices and taking the scalar
+product with the three adjacent tangential vectors $\psi^i(\mathbf
+x^k)\cdot\mathbf t^j=\delta_{ij}$ $\forall k\in\{v(j,0),v(j,1)\}$ leaves us with
+the following twelve conditions per shape function:
+\begin{subequations}
+  \begin{align}
+    \label{cond:x0t0}
+    \psi^i(\mathbf x^{v(j,0)})\cdot\mathbf t^j&=\delta_{ij} &&\Longrightarrow &
+        (\mathrm A^i\mathbf x^{v(j,0)}+\mathbf a^i)
+        \cdot(\mathbf x^{v(j,1)}-\mathbf x^{v(j,0)})&=\delta_{ij}\ell^j              \\
+    \label{cond:x1t0}
+    \psi^i(\mathbf x^{v(j,1)})\cdot\mathbf t^j&=\delta_{ij} &&\Longrightarrow &
+        (\mathrm A^i\mathbf x^{v(j,1)}+\mathbf a^i)
+        \cdot(\mathbf x^{v(j,1)}-\mathbf x^{v(j,0)})&=\delta_{ij}\ell^j
+  \end{align}
+\end{subequations}
+By pairwise combination we can transform these conditions into
+\begin{equation}
+  (\mathrm A^i\mathbf t^j)\cdot\mathbf t^j=0
+        \qquad\forall i,j=0,\ldots,5
+\end{equation}
+which means that the matrices $\mathrm A^i$ are diagonal.  This leaves us with
+six coefficients to determine: three from $\mathrm A^i$ and three from
+$\mathbf a^i$.  We write $\mathrm A^i$ as a weighted sum of the three basic
+antisymmetric matrices
+\begin{equation}
+  \mathrm A^i=\mathrm A^i_{01}\mathds{\tilde1}^{01}
+  +\mathrm A^i_{02}\mathds{\tilde1}^{02}
+  +\mathrm A^i_{12}\mathds{\tilde1}^{12}
+\end{equation}
+with
+\begin{equation}
+  \mathds{\tilde1}^{01}=\begin{pmatrix}
+     0 &  1 &  0 \\
+    -1 &  0 &  0 \\
+     0 &  0 &  0
+  \end{pmatrix}
+  \qquad
+  \mathds{\tilde1}^{02}=\begin{pmatrix}
+     0 &  0 &  1 \\
+     0 &  0 &  0 \\
+    -1 &  0 &  0
+  \end{pmatrix}
+  \qquad
+  \mathds{\tilde1}^{12}=\begin{pmatrix}
+     0 &  0 &  0 \\
+     0 &  0 &  1 \\
+     0 & -1 &  0
+  \end{pmatrix}
+\end{equation}
+and use the antisymmetry of $\mathrm A^i$ to simplify (\ref{cond:x0t0})
+\begin{gather}
+  (\mathbf x^{v(j,1)})^T\mathrm A^i\mathbf x^{v(j,0)}
+  +\mathbf a^i\cdot(\mathbf x^{v(j,1)}-\mathbf x^{v(j,0)})
+  =\delta_{ij}\ell^j \\
+  \Downarrow \notag\\
+  \begin{aligned}
+  &+\mathrm A^i_{01}\mathbf x^{v(j,1)}\cdot\mathds{\tilde1}^{01}\mathbf x^{v(j,0)}&
+  &+\mathrm A^i_{02}\mathbf x^{v(j,1)}\cdot\mathds{\tilde1}^{02}\mathbf x^{v(j,0)}&
+  &+\mathrm A^i_{12}\mathbf x^{v(j,1)}\cdot\mathds{\tilde1}^{12}\mathbf x^{v(j,0)}\\
+  &+\mathbf a^i_0(\mathbf x^{v(j,1)}_0-\mathbf x^{v(j,0)}_0)&
+  &+\mathbf a^i_1(\mathbf x^{v(j,1)}_1-\mathbf x^{v(j,0)}_1)&
+  &+\mathbf a^i_2(\mathbf x^{v(j,1)}_2-\mathbf x^{v(j,0)}_2)&
+  =\delta_{ij}\ell^j
+  \end{aligned}
+\end{gather}
+This gives an equation system
+\begin{equation}
+  Mm^i=r^i,
+\end{equation}
+where
+\begin{equation}
+  \begin{aligned}
+  M_{j0}&=\mathbf x^{v(j,1)}\cdot\mathds{\tilde1}^{01}\mathbf x^{v(j,0)}&
+  M_{j1}&=\mathbf x^{v(j,1)}\cdot\mathds{\tilde1}^{02}\mathbf x^{v(j,0)}&
+  M_{j2}&=\mathbf x^{v(j,1)}\cdot\mathds{\tilde1}^{12}\mathbf x^{v(j,0)}\\
+  M_{j3}&=\mathbf x^{v(j,1)}_0-\mathbf x^{v(j,0)}_0&
+  M_{j4}&=\mathbf x^{v(j,1)}_1-\mathbf x^{v(j,0)}_1&
+  M_{j5}&=\mathbf x^{v(j,1)}_2-\mathbf x^{v(j,0)}_2
+  \end{aligned}
+\end{equation}
+\begin{align}
+  m^i_0&=\mathrm A^i_{01}&
+  m^i_1&=\mathrm A^i_{02}&
+  m^i_2&=\mathrm A^i_{12}&
+  m^i_3&=\mathbf a^i_0&
+  m^i_4&=\mathbf a^i_1&
+  m^i_5&=\mathbf a^i_2&
+\end{align}
+and
+\begin{equation}
+  r^i_j=\delta_{ij}\ell^j.
+\end{equation}
+
+\section{Coordinate Transformation}
+
+For transformation we use a mapping $\mathbf x=g(\mathbf{\hat x})$.  We say
+that we map from {\em reference coordinates} $\mathbf{\hat x}$ into {\em world
+  coordinates} $\mathbf x$.  Entities with the hat $\hat{\phantom x}$ are in
+reference coordinates, entities without the hat are in world coordinates.  The
+mapping $g$ is affine linear and can thus be written as
+\begin{equation}
+  g(\mathbf{\hat x})=\mathrm B\mathbf{\hat x}+\mathbf b
+\end{equation}
+The conversion of the vertex coordinates is simple:
+\begin{equation}
+  \mathbf x^i=\mathrm B\mathbf{\hat x}^i+\mathbf b
+\end{equation}
+The tangential vectors and edge lengthes are a bit more complicated:
+\begin{subequations}
+  \begin{align}
+    \mathbf t^0&
+      =\frac{\mathbf x^1-\mathbf x^0}{||\mathbf x^1-\mathbf x^0||}
+      =\frac{\mathrm B(\mathbf{\hat x}^1-\mathbf{\hat x}^0)}
+            {||\mathrm B(\mathbf{\hat x}^1-\mathbf{\hat x}^0)||}
+      =\frac{\mathrm B\mathbf{\hat t}^0}{||\mathrm B\mathbf{\hat t}^0||}
+    &  \ell^0&=||\mathbf x^1-\mathbf x^0||
+              =||B(\mathbf{\hat x}^1-\mathbf{\hat x}^0)||               \\
+    \mathbf t^1&
+      =\frac{\mathbf x^2-\mathbf x^0}{||\mathbf x^2-\mathbf x^0||}
+      =\frac{\mathrm B(\mathbf{\hat x}^2-\mathbf{\hat x}^0)}
+            {||\mathrm B(\mathbf{\hat x}^2-\mathbf{\hat x}^0)||}
+      =\frac{\mathrm B\mathbf{\hat t}^1}{||\mathrm B\mathbf{\hat t}^1||}
+    &  \ell^1&=||\mathbf x^2-\mathbf x^0||
+              =||B(\mathbf{\hat x}^2-\mathbf{\hat x}^0)||               \\
+    \mathbf t^2&
+      =\frac{\mathbf x^2-\mathbf x^1}{||\mathbf x^2-\mathbf x^1||}
+      =\frac{\mathrm B(\mathbf{\hat x}^2-\mathbf{\hat x}^1)}
+            {||\mathrm B(\mathbf{\hat x}^2-\mathbf{\hat x}^1)||}
+      =\frac{\mathrm B\mathbf{\hat t}^2}{||\mathrm B\mathbf{\hat t}^2||}
+    &  \ell^2&=||\mathbf x^2-\mathbf x^1||
+              =||B(\mathbf{\hat x}^2-\mathbf{\hat x}^1)||
+  \end{align}
+\end{subequations}
+If we require that $\hat\psi^i$ fullfills the same conditions in reference
+coordinates as $\psi^i$ fullfills in world coordinates, what is the
+transformation $\psi^i(g(\mathbf{\hat x}))=L(\hat\psi^i(\mathbf{\hat x}))$?
+Let us assume that $L$ is linear and independent of $\mathbf x$ and
+$\mathbf{\hat x}$:
+\begin{equation}
+  \mathbf y=L(\mathbf{\hat y})=\mathrm C\mathbf{\hat y}+\mathbf c
+\end{equation}
+How do $\mathrm C$ and $\mathbf c$ relate to $\mathrm B$ and $\mathbf b$?  
+
+As special cases of $\mathbf y$ consider $\psi^i$.
+\begin{gather}
+  \psi^i(\mathbf x)=\mathrm A^i\mathbf x+\mathbf a^i
+  =\mathrm C\hat\psi^i(\mathbf{\hat x})+\mathbf c
+  =\mathrm C\mathrm{\hat A}^i\mathbf{\hat x}
+      +\mathrm C\mathbf{\hat a}^i+\mathbf c\\
+  \Downarrow\notag\\
+  \mathrm A^i\mathrm B\mathbf{\hat x}+\mathrm A^i\mathbf b
+      +\mathbf a^i
+  =\mathrm C\mathrm{\hat A}^i\mathbf{\hat x}
+      +\mathrm C\mathbf{\hat a}^i+\mathbf c
+\end{gather}
+Since this must hold for arbitrary $\mathbf{\hat x}$ it follows that
+\begin{equation}
+    \mathrm A^i\mathrm B=\mathrm C\mathrm{\hat A}^i
+\end{equation}
+and
+\begin{equation}
+  \mathrm A^i\mathbf b+\mathbf a^i=\mathrm C\mathbf{\hat a}^i+\mathbf c
+\end{equation}
+$\mathrm A^i$ and $\mathrm{\hat A}^i$ are antisymmetric:
+\begin{align}
+  \mathrm A^i&=\alpha^i\mathds{\tilde1}
+  &\mathrm{\hat A}^i&=\hat\alpha^i\mathds{\tilde1}
+\end{align}
+$\mathds{\tilde1}$ is the ``antisymmetric unit matrix'' with the following
+properties:
+\begin{align}
+  \mathds{\tilde1}&=\begin{pmatrix}0&1\\-1&0\end{pmatrix}     &
+  \mathds{\tilde1}^{-1}&=-\mathds{\tilde1}=\mathds{\tilde1}^T  \\
+  \mathds{\tilde1}^2&=-\mathds1                               &
+  \mathds{\tilde1}\begin{pmatrix}a&b\\c&d\end{pmatrix}\mathds{\tilde1}
+      &=\begin{pmatrix}-d&c\\b&-a\end{pmatrix}
+       =-\begin{vmatrix}a&b\\c&d\end{vmatrix}
+         \begin{pmatrix}a&b\\c&d\end{pmatrix}^{-T}
+\end{align}
+Thus follows
+\begin{equation}
+  \alpha^i\mathds{\tilde1}\mathrm B=\mathrm C\hat\alpha^i\mathds{\tilde1}
+  \qquad\Longrightarrow\qquad
+  \mathrm C=-\frac{\alpha^i}{\hat\alpha^i}\mathds{\tilde1}\mathrm
+  B\mathds{\tilde1}
+    =\frac{\alpha^i}{\hat\alpha^i}\det(\mathrm B)\mathrm B^{-T}
+\end{equation}
+So, $\mathrm C$ is a garbled and scaled version of $\mathrm B$.  Note that
+\begin{equation}
+  \frac{\alpha^0}{\hat\alpha^0}
+  =\frac{\alpha^1}{\hat\alpha^1}
+  =\frac{\alpha^2}{\hat\alpha^2}
+\end{equation}
+otherwise we would need a different $\mathrm C$ for each shape function.
+We
+have the three vertex coordinates times two directions in each coordinate to
+evaluate $\psi^0$ and $\hat\psi^0$, that should give us six conditions with
+which we should be able to fix the six coefficients of $\mathrm C$ and
+$\mathbf c$ (ideally, $\mathbf c=0$).  OK, evaluating just one basis function
+is probably not enough, since I already know what to expect there.  Instead, I
+probably have to evaluate a function $\mathbf y(\mathbf x)$ ($\mathbf{\hat
+  y}(\mathbf{\hat x})$) to learn whats going on.
+
+Let
+\begin{align}\label{ydef}
+  \mathbf{\hat y}&=\sum_iy^i\hat\psi^i &&\text{and} &\mathbf y&=\sum_iy^i\psi^i
+\end{align}
+with the same coeffitients $y^i$.  Now we require
+\begin{equation}
+  \mathbf y(\mathbf x^i)=\mathrm C\mathbf{\hat y}(\mathbf{\hat x}^i)+\mathbf c.
+\end{equation}
+We will not test this with Cartesian components, but with the scalar product
+of the function value with the tangential vectors:
+\begin{equation}
+  \mathbf{\hat y}(\mathbf{\hat x}^i)\cdot\mathbf{\hat t}^j
+  =[\mathrm C\mathbf{\hat y}(\mathbf{\hat x}^i)]\cdot\mathbf t^j
+  +\mathbf c\cdot\mathbf t^j  
+\end{equation}
+for edge $j$ adjacent to vertex $i$.  Inserting (\ref{ydef}) we get:
+\begin{equation}
+  \sum_ky^k\hat\psi^k(\mathbf{\hat x}^i)\cdot\mathbf{\hat t}^j
+  =\sum_ky^k[\mathrm C\hat\psi^k(\mathbf{\hat x}^i)]\cdot\mathbf t^j
+  +\mathbf c\cdot\mathbf t^j
+\end{equation}
+\begin{equation}
+  \sum_ky^k\hat\psi^k(\mathbf{\hat x}^i)\cdot\mathbf{\hat t}^j
+  =\sum_ky^k\psi^k(\mathbf x^i)\cdot\mathbf t^j
+\end{equation}
+For $\mathbf{\hat x}^i=\mathbf{\hat x}^0$ and $\mathbf{\hat t}^j=\mathbf{\hat
+  t}^0$ we get
+\begin{equation}
+  \sum_ky^k\hat\psi^k(\mathbf{\hat x}^0)\cdot\mathbf{\hat t}^0
+  =\left[\sum_ky^k\mathrm C\hat\psi^k(\mathbf{\hat x}^0)+\mathbf c\right]
+    \cdot\frac{\mathrm B\mathbf{\hat t}^0}
+              {||\mathrm B\mathbf{\hat t}^0||}
+\end{equation}
+Inserting (\ref{cond:x0t0}) on the left side and using the linearity of
+$\hat\psi^k$ we get:
+\begin{subequations}
+  \begin{align}
+    \mathbf{\hat x}^0,\mathbf{\hat t}^0&&
+    y^0||\mathrm B\mathbf{\hat t}^0||
+    &=\left[\sum_ky^k\mathrm C(\mathrm{\hat A}^k\mathbf{\hat x}^0
+              +\mathbf{\hat a}^k)+\mathbf c\right]
+      \cdot[\mathrm B\mathbf{\hat t}^0]\\
+  \intertext{Similar for the other valid combinations:}
+  \mathbf{\hat x}^1,\mathbf{\hat t}^0&&
+    y^0||\mathrm B\mathbf{\hat t}^0||
+    &=\left[\sum_ky^k\mathrm C(\mathrm{\hat A}^k\mathbf{\hat x}^1
+              +\mathbf{\hat a}^k)+\mathbf c\right]
+      \cdot[\mathrm B\mathbf{\hat t}^0]\\
+  \mathbf{\hat x}^1,\mathbf{\hat t}^2&&
+    y^2||\mathrm B\mathbf{\hat t}^2||
+    &=\left[\sum_ky^k\mathrm C(\mathrm{\hat A}^k\mathbf{\hat x}^1
+              +\mathbf{\hat a}^k)+\mathbf c\right]
+      \cdot[\mathrm B\mathbf{\hat t}^2]\\
+  \mathbf{\hat x}^2,\mathbf{\hat t}^2&&
+    y^2||\mathrm B\mathbf{\hat t}^2||
+    &=\left[\sum_ky^k\mathrm C(\mathrm{\hat A}^k\mathbf{\hat x}^2
+              +\mathbf{\hat a}^k)+\mathbf c\right]
+      \cdot[\mathrm B\mathbf{\hat t}^2]\\
+  \mathbf{\hat x}^2,\mathbf{\hat t}^1&&
+    y^1||\mathrm B\mathbf{\hat t}^1||
+    &=\left[\sum_ky^k\mathrm C(\mathrm{\hat A}^k\mathbf{\hat x}^2
+              +\mathbf{\hat a}^k)+\mathbf c\right]
+      \cdot[\mathrm B\mathbf{\hat t}^1]\\
+  \mathbf{\hat x}^0,\mathbf{\hat t}^1&&
+    y^1||\mathrm B\mathbf{\hat t}^1||
+    &=\left[\sum_ky^k\mathrm C(\mathrm{\hat A}^k\mathbf{\hat x}^0
+              +\mathbf{\hat a}^k)+\mathbf c\right]
+      \cdot[\mathrm B\mathbf{\hat t}^1]
+  \end{align}
+\end{subequations}
+We substitute $\mathrm{\hat A}=\sum_ky^k\mathrm{\hat A}^k$ and $\mathbf{\hat a}=\sum_ky^k\mathbf{\hat a}^k$:
+\begin{subequations}
+  \begin{align}
+    y^0||\mathrm B\mathbf{\hat t}^0||
+    &=\left[\mathrm C(\mathrm{\hat A}\mathbf{\hat x}^0
+              +\mathbf{\hat a})+\mathbf c\right]
+      \cdot[\mathrm B\mathbf{\hat t}^0]\\
+    y^0||\mathrm B\mathbf{\hat t}^0||
+    &=\left[\mathrm C(\mathrm{\hat A}\mathbf{\hat x}^1
+              +\mathbf{\hat a})+\mathbf c\right]
+      \cdot[\mathrm B\mathbf{\hat t}^0]\\
+    y^2||\mathrm B\mathbf{\hat t}^2||
+    &=\left[\mathrm C(\mathrm{\hat A}\mathbf{\hat x}^1
+              +\mathbf{\hat a})+\mathbf c\right]
+      \cdot[\mathrm B\mathbf{\hat t}^2]\\
+    y^2||\mathrm B\mathbf{\hat t}^2||
+    &=\left[\mathrm C(\mathrm{\hat A}\mathbf{\hat x}^2
+              +\mathbf{\hat a})+\mathbf c\right]
+      \cdot[\mathrm B\mathbf{\hat t}^2]\\
+    y^1||\mathrm B\mathbf{\hat t}^1||
+    &=\left[\mathrm C(\mathrm{\hat A}\mathbf{\hat x}^2
+              +\mathbf{\hat a})+\mathbf c\right]
+      \cdot[\mathrm B\mathbf{\hat t}^1]\\
+    y^1||\mathrm B\mathbf{\hat t}^1||
+    &=\left[\mathrm C(\mathrm{\hat A}\mathbf{\hat x}^0
+              +\mathbf{\hat a})+\mathbf c\right]
+      \cdot[\mathrm B\mathbf{\hat t}^1]
+  \end{align}
+\end{subequations}
+By pairwise combination we get the following:
+\begin{subequations}
+  \begin{align}
+    0&=[\mathrm C\mathrm{\hat A}\mathbf{\hat t}^0]
+      \cdot[\mathrm B\mathbf{\hat t}^0]\\
+    0&=[\mathrm C\mathrm{\hat A}\mathbf{\hat t}^2]
+      \cdot[\mathrm B\mathbf{\hat t}^2]\\
+    0&=[\mathrm C\mathrm{\hat A}\mathbf{\hat t}^1]
+      \cdot[\mathrm B\mathbf{\hat t}^1]
+  \end{align}
+\end{subequations}
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% mode: TeX-PDF
+%%% mode: auto-fill
+%%% TeX-master: t
+%%% mode: flyspell
+%%% ispell-local-dictionary: "american"
+%%% End: 

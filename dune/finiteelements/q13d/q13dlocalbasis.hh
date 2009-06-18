@@ -12,8 +12,8 @@ namespace Dune
 
          Also known as \f$Q^1\f$.
 
-         - <tt>D</tt>: Type to represent the field in the domain.
-         - <tt>R</tt>: Type to represent the field in the range.
+         \tparam D Type to represent the field in the domain.
+         \tparam R Type to represent the field in the range.
 
          \nosubgrouping
    */
@@ -21,8 +21,11 @@ namespace Dune
   class Q13DLocalBasis :
     public C1LocalBasisInterface<
         C1LocalBasisTraits<D,3,Dune::FieldVector<D,3>,R,1,Dune::FieldVector<R,1>,
-            Dune::FieldVector<Dune::FieldVector<R,3>,1> >,
-        Q13DLocalBasis<D,R> >
+            Dune::FieldVector<Dune::FieldVector<R,3>,1> >
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
+        , Q13DLocalBasis<D,R>
+#endif
+        >
   {
   public:
     typedef C1LocalBasisTraits<D,3,Dune::FieldVector<D,3>,R,1,Dune::FieldVector<R,1>,

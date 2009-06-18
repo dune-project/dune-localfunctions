@@ -298,8 +298,8 @@ namespace Dune
       for(int i = 0; i < 6; ++i) {
         // \phi^i
         out[i][0] = s[i]*( coeff[i][A01]*pos[1]+coeff[i][A02]*pos[2]+coeff[i][a0]);
-        out[i][0] = s[i]*(-coeff[i][A01]*pos[0]+coeff[i][A12]*pos[2]+coeff[i][a1]);
-        out[i][0] = s[i]*(-coeff[i][A02]*pos[0]-coeff[i][A12]*pos[1]+coeff[i][a2]);
+        out[i][1] = s[i]*(-coeff[i][A01]*pos[0]+coeff[i][A12]*pos[2]+coeff[i][a1]);
+        out[i][2] = s[i]*(-coeff[i][A02]*pos[0]-coeff[i][A12]*pos[1]+coeff[i][a2]);
       }
     }
 
@@ -433,10 +433,10 @@ namespace Dune
       M.invert();
 
       for(int i = 0; i < 6; ++i) {
-        FieldVector<typename Traits::DomainFieldType, 3> rhs(0);
+        FieldVector<typename Traits::DomainFieldType, 6> rhs(0);
         rhs[i] = distance[i].two_norm();
 
-        M.mv(rhs, coeff[0]);
+        M.mv(rhs, coeff[i]);
       }
     }
 

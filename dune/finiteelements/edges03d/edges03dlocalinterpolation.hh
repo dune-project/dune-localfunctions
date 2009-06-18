@@ -24,7 +24,7 @@ namespace Dune
     //! contruct an interpolation instance with default orientations
     EdgeS03DLocalInterpolation()
     {
-      s[0] = 1; s[1] = 1; s[2] = sr0_5; s[3] = 1; s[4] = sr0_5; s[5] = sr0_5;
+      for(int i = 1; i < 6; ++i) s[i] = 1;
     }
 
     //! contruct an interpolation instance with the given orientations
@@ -33,8 +33,8 @@ namespace Dune
     //! 0 = 1 means inverted orientation for the first shape function.
     EdgeS03DLocalInterpolation(unsigned int orientations)
     {
-      s[0] = 1; s[1] = 1; s[2] = sr0_5; s[3] = 1; s[4] = sr0_5; s[5] = sr0_5;
-      for(int i = 0; i < 3; ++i)
+      for(int i = 1; i < 6; ++i) s[i] = 1;
+      for(int i = 0; i < 6; ++i)
         if(orientations & (1<<i)) s[i] *= -1;
     }
 
@@ -269,15 +269,10 @@ namespace Dune
     }
 
   private:
-    //! square root of 1/2
-    static const typename LB::Traits::RangeFieldType sr0_5;
-
+    // The signs
     typename LB::Traits::RangeFieldType s[6];
   };
 
-  template<class LB>
-  const typename LB::Traits::RangeFieldType EdgeS03DLocalInterpolation <LB>::sr0_5 =
-    std::sqrt(typename LB::Traits::RangeFieldType(0.5));
 }
 
 #endif // DUNE_EDGES03DLOCALINTERPOLATION_HH

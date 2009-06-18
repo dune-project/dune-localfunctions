@@ -156,6 +156,52 @@ namespace Dune
       x[0] = 0.5; x[1] = 0.5; f.evaluate(x,y); out[2] = (-y[0]+y[1])*s[2];
     }
 
+    //! \brief Local interpolation of a function
+    /**
+     * \tparam F        Type of function to interpolate.  The class should
+     *                  provide a method <tt>void evaluate(const DomainType
+     *                  &x, RangeType &y) const</tt> which is used to evaluate
+     *                  the function on the reference element.  This method
+     *                  should expect local coordinates on the reference
+     *                  element as input <tt>x</tt> but should return global
+     *                  values in <tt>y</tt>.
+     * \tparam C        Type of coefficients.
+     * \tparam Geometry Type of Geometry.
+     *
+     * \param[in]  f        Function instance used to interpolate.
+     * \param[out] out      Resulting coefficients vector.
+     * \param[in]  geometry geometry of the element used for interpolation.
+     */
+    template<typename F, typename C, typename Geometry>
+    void interpolate (const F& f, std::vector<C>& out,
+                      const Geometry &geometry) const
+    {
+      static const GenericReferenceElement<typename LB::Traits::DomainFieldType, 2> &refElem
+        = GenericReferenceElements<typename LB::Traits::DomainFieldType, 2>::simplex();
+
+      typename LB::Traits::DomainType vertex[3];
+      for(int i = 0; i < 3; ++i)
+        vertex[i] = geometry.corner(i);
+
+      typename LB::Traits::DomainType tangent;
+      typename LB::Traits::DomainType x;
+      typename LB::Traits::RangeType y;
+
+      out.resize(3);
+      for(int j = 0; j < 3; ++j) {
+        int v0 = refElem.subEntity(j, 1, 0, 2);
+        int v1 = refElem.subEntity(j, 1, 1, 2);
+        if(v0 > v1) std::swap(v0, v1);
+
+        tangent = vertex[v1]; tangent -= vertex[v0];
+        x = vertex[v1]; x += vertex[v0]; x /= 2;
+
+        f.evaluate(x,y);
+
+        out[j] = s[j] * (tangent * y) / tangent.two_norm();
+      }
+    }
+
   private:
     //! The signs
     typename LB::Traits::RangeFieldType s[3];

@@ -20,7 +20,7 @@ namespace Dune
      *           method <tt>void evaluate(const DomainType &x, RangeType &y)
      *           const</tt> which is used to evaluate the function on the
      *           reference element.
-     * \tparam C Type of coefficients vector.
+     * \tparam C Type of coefficients.
      *
      * \param[in]  f   Function instance used to interpolate.
      * \param[out] out Resulting coefficients vector.

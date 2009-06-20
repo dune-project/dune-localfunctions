@@ -173,8 +173,8 @@ namespace Dune
      * \param[in]  geometry geometry of the element used for interpolation.
      */
     template<typename F, typename C, typename Geometry>
-    void interpolate (const F& f, std::vector<C>& out,
-                      const Geometry &geometry) const
+    void interpolateGlobal (const F& f, std::vector<C>& out,
+                            const Geometry &geometry) const
     {
       static const GenericReferenceElement<typename LB::Traits::DomainFieldType, 2> &refElem
         = GenericReferenceElements<typename LB::Traits::DomainFieldType, 2>::simplex();

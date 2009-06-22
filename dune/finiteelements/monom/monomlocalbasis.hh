@@ -139,10 +139,10 @@ namespace Dune
           // the rest rest of the available exponents, to be used by the other
           // dimensions
           int newbound = bound - e;
-          /*if(e < derivatives[d])
-             Evaluate<Traits,c-1>::
-              eval(in, derivatives, 0, newbound, index, access);
-             else*/{
+          if(e < derivatives[d])
+            Evaluate<Traits,c-1>::
+            eval(in, derivatives, 0, newbound, index, access);
+          else {
             int coeff = 1;
             for(int i = e - derivatives[d] + 1; i <= e; ++i)
               coeff *= i;

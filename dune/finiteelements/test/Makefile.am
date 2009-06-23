@@ -2,7 +2,9 @@
 
 # which tests to run
 TESTS = testfem edges02dshapefunctiontest lagrangeshapefunctiontest \
-	monomshapefunctiontest virtualshapefunctiontest
+	monomshapefunctiontest			\
+	test-edges03dinterpolate		\
+	virtualshapefunctiontest
 
 # programs just to build when "make check" is used
 check_PROGRAMS = $(TESTS)
@@ -16,6 +18,7 @@ testfem_SOURCES = testfem.cc
 edges02dshapefunctiontest_SOURCES = edges02dshapefunctiontest.cc
 lagrangeshapefunctiontest_SOURCES = lagrangeshapefunctiontest.cc
 monomshapefunctiontest_SOURCES = monomshapefunctiontest.cc
+test_edges03dinterpolate_SOURCES = test-edges03dinterpolate.cc
 virtualshapefunctiontest_SOURCES = virtualshapefunctiontest.cc
 
 include $(top_srcdir)/am/global-rules

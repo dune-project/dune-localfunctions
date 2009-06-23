@@ -5,6 +5,8 @@
 
 #include <cmath>
 
+#include <dune/grid/common/genericreferenceelements.hh>
+
 #include "../common/localbasis.hh"
 
 namespace Dune

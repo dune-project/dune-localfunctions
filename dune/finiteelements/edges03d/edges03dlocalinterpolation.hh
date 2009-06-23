@@ -24,7 +24,7 @@ namespace Dune
     //! contruct an interpolation instance with default orientations
     EdgeS03DLocalInterpolation()
     {
-      for(int i = 1; i < 6; ++i) s[i] = 1;
+      for(int i = 0; i < 6; ++i) s[i] = 1;
     }
 
     //! contruct an interpolation instance with the given orientations
@@ -33,7 +33,7 @@ namespace Dune
     //! 0 = 1 means inverted orientation for the first shape function.
     EdgeS03DLocalInterpolation(unsigned int orientations)
     {
-      for(int i = 1; i < 6; ++i) s[i] = 1;
+      for(int i = 0; i < 6; ++i) s[i] = 1;
       for(int i = 0; i < 6; ++i)
         if(orientations & (1<<i)) s[i] *= -1;
     }

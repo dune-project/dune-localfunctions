@@ -250,7 +250,6 @@ namespace Dune
         vertex[i] = geometry.corner(i);
 
       typename LB::Traits::DomainType tangent;
-      typename LB::Traits::DomainType x;
       typename LB::Traits::RangeType y;
 
       out.resize(6);
@@ -260,9 +259,8 @@ namespace Dune
         if(v0 > v1) std::swap(v0, v1);
 
         tangent = vertex[v1]; tangent -= vertex[v0];
-        x = vertex[v1]; x += vertex[v0]; x /= 2;
 
-        f.evaluate(x,y);
+        f.evaluate(refElem.position(j,2),y);
 
         out[j] = s[j] * (tangent * y) / tangent.two_norm();
       }

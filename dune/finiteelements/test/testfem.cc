@@ -21,9 +21,10 @@
 #include "../q22d.hh"
 #include "../rt02d.hh"
 #include "../refinedp1.hh"
+#include "../monom.hh"
 
-double epsilon = 1e-14;
-double sqrt_epsilon = std::sqrt(epsilon);
+
+double TOL = 1e-5;
 
 class Func
 {
@@ -93,14 +94,14 @@ bool testLocalInterpolation(const FE& fe)
   // Construct coefficient vectors for testing
   // Currently we simply use
   // (1,0,0,0,...)
-  // (1,1,0,0,...)
-  // (1,1,1,0,...)
+  // (1,2,0,0,...)
+  // (1,2,3,0,...)
   // We could also test for arbitrary vectors.
   std::vector<typename LocalFEFunction<FE>::CT> coeff;
   for(int i=0; i<f.coeff_.size(); ++i)
   {
     // Compute interpolation weights
-    f.coeff_[i] = 1;
+    f.coeff_[i] = i;
     fe.localInterpolation().interpolate(f, coeff);
 
     // Check size of weight vector
@@ -116,12 +117,13 @@ bool testLocalInterpolation(const FE& fe)
     // Check if interpolation weights are equal to coefficients
     for(int j=0; j<coeff.size(); ++j)
     {
-      if (std::abs(coeff[i]-f.coeff_[i]) > sqrt_epsilon)
+      if (std::abs(coeff[i]-f.coeff_[i]) > TOL)
       {
         std::cout << "Bug in LocalInterpolation for finite element type "
                   << typeid(FE).name() << std::endl;
         std::cout << "    Interpolation weight " << j
-                  << " differs significantly from coefficient of linear combination." << std::endl;
+                  << " differs by " << std::abs(coeff[i]-f.coeff_[i])
+                  << " from coefficient of linear combination." << std::endl;
         success = false;
       }
     }
@@ -130,55 +132,90 @@ bool testLocalInterpolation(const FE& fe)
 }
 
 
-int main(int argc, char** argv)
+// call tests for given finite element
+template<class FE>
+bool testFE(const FE& fe)
 {
-  Dune::P0LocalFiniteElement<double,double,2> p0lfem(Dune::GeometryType::simplex);
-  Dune::P1LocalFiniteElement<double,double,2> p1lfem;
-  Dune::P12DLocalFiniteElement<double,double> p11dlfem;
-  Dune::P12DLocalFiniteElement<double,double> p12dlfem;
-  Dune::P13DLocalFiniteElement<double,double> p13dlfem;
-  Dune::Pk2DLocalFiniteElement<double,double,5> pk2dlfem(3);
-  Dune::Q1LocalFiniteElement<double,double,3> q1lfem;
-  Dune::Q12DLocalFiniteElement<double,double> q12dlfem;
-  Dune::Q12DLocalFiniteElement<double,double> q13dlfem;
-  Dune::Q22DLocalFiniteElement<double,double> q22dlfem;
-  Dune::RT02DLocalFiniteElement<double,double> rt02dlfem;
-  Dune::RefinedP1LocalFiniteElement<double,double> refp1lfem;
-  Dune::P23DLocalFiniteElement<double,double> p23dlfem;
-  Dune::Pk3DLocalFiniteElement<double,double,1> pk13dlfem;
-  Dune::Pk3DLocalFiniteElement<double,double,2> pk23dlfem;
-  Dune::Pk3DLocalFiniteElement<double,double,5> pk53dlfem;
+  std::vector<double> c;
+  fe.localInterpolation().interpolate(Func(),c);
 
+  return testLocalInterpolation(fe);
+}
+
+
+// tmp for testing arbitrary order finite elements
+template<int k>
+bool testArbitraryOrderFE()
+{
+  bool success = true;
   std::vector<double> c;
 
-  p0lfem.localInterpolation().interpolate(Func(),c);
-  p1lfem.localInterpolation().interpolate(Func(),c);
-  p11dlfem.localInterpolation().interpolate(Func(),c);
-  p12dlfem.localInterpolation().interpolate(Func(),c);
-  p13dlfem.localInterpolation().interpolate(Func(),c);
-  pk2dlfem.localInterpolation().interpolate(Func(),c);
-  q1lfem.localInterpolation().interpolate(Func(),c);
-  q12dlfem.localInterpolation().interpolate(Func(),c);
-  q13dlfem.localInterpolation().interpolate(Func(),c);
-  q22dlfem.localInterpolation().interpolate(Func(),c);
-  refp1lfem.localInterpolation().interpolate(Func(),c);
+  Dune::Pk2DLocalFiniteElement<double,double,k> pk2dlfem(1);
+  success = testFE(pk2dlfem) and success;
 
+  Dune::Pk3DLocalFiniteElement<double,double,1> pk3dlfem;
+  success = testFE(pk3dlfem) and success;
+
+  Dune::MonomLocalFiniteElement<double,double,1,k> monom1d(Dune::GeometryType::simplex);
+  success = testFE(monom1d) and success;
+
+  Dune::MonomLocalFiniteElement<double,double,2,k> monom2d(Dune::GeometryType::simplex);
+  success = testFE(monom2d) and success;
+
+  Dune::MonomLocalFiniteElement<double,double,3,k> monom3d(Dune::GeometryType::simplex);
+  success = testFE(monom3d) and success;
+
+  return testArbitraryOrderFE<k-1>() and success;
+}
+
+template<>
+bool testArbitraryOrderFE<0>()
+{
+  return true;
+}
+
+int main(int argc, char** argv)
+{
   bool success = true;
 
-  success = (testLocalInterpolation(p0lfem) and success);
-  success = (testLocalInterpolation(p1lfem) and success);
-  success = (testLocalInterpolation(p11dlfem) and success);
-  success = (testLocalInterpolation(p12dlfem) and success);
-  success = (testLocalInterpolation(p13dlfem) and success);
-  success = (testLocalInterpolation(pk2dlfem) and success);
-  success = (testLocalInterpolation(q1lfem) and success);
-  success = (testLocalInterpolation(q12dlfem) and success);
-  success = (testLocalInterpolation(q13dlfem) and success);
-  success = (testLocalInterpolation(refp1lfem) and success);
-  success = (testLocalInterpolation(p23dlfem) and success);
-  success = (testLocalInterpolation(pk13dlfem) and success);
-  success = (testLocalInterpolation(pk23dlfem) and success);
-  success = (testLocalInterpolation(pk53dlfem) and success);
+  Dune::P0LocalFiniteElement<double,double,2> p0lfem(Dune::GeometryType::simplex);
+  success = testFE(p0lfem) and success;
+
+  Dune::P1LocalFiniteElement<double,double,2> p1lfem;
+  success = testFE(p1lfem) and success;
+
+  Dune::P12DLocalFiniteElement<double,double> p11dlfem;
+  success = testFE(p11dlfem) and success;
+
+  Dune::P12DLocalFiniteElement<double,double> p12dlfem;
+  success = testFE(p12dlfem) and success;
+
+  Dune::P13DLocalFiniteElement<double,double> p13dlfem;
+  success = testFE(p13dlfem) and success;
+
+  Dune::Q1LocalFiniteElement<double,double,3> q1lfem;
+  success = testFE(q1lfem) and success;
+
+  Dune::Q12DLocalFiniteElement<double,double> q12dlfem;
+  success = testFE(q12dlfem) and success;
+
+  Dune::Q12DLocalFiniteElement<double,double> q13dlfem;
+  success = testFE(q13dlfem) and success;
+
+  Dune::Q22DLocalFiniteElement<double,double> q22dlfem;
+  success = testFE(q22dlfem) and success;
+
+  Dune::RefinedP1LocalFiniteElement<double,double> refp1lfem;
+  success = testFE(refp1lfem) and success;
+
+  Dune::P23DLocalFiniteElement<double,double> p23dlfem;
+  success = testFE(p23dlfem) and success;
+
+  // Monomials produce an error for higher order since
+  // the tolerance of 1e-5 is to small.
+  success = testArbitraryOrderFE<5>() and success;
+
+  Dune::RT02DLocalFiniteElement<double,double> rt02dlfem;
 
   return success;
 }

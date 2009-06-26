@@ -35,6 +35,11 @@ public:
   }
 };
 
+// This class defines a local finite element function.
+// It is determined by a local finite element and
+// representing the local basis and a coefficient vector.
+// This provides the evaluate method needed by the interpolate()
+// method.
 template<class FE>
 class LocalFEFunction
 {
@@ -75,17 +80,28 @@ private:
 };
 
 
+// Check if localInterpolation is consistens with
+// localBasis evaluation.
 template<class FE>
 bool testLocalInterpolation(const FE& fe)
 {
   bool success = true;
   LocalFEFunction<FE> f(fe);
 
+  // Construct coefficient vectors for testing
+  // Currently we simply use
+  // (1,0,0,0,...)
+  // (1,1,0,0,...)
+  // (1,1,1,0,...)
+  // We could also test for arbitrary vectors.
   std::vector<typename LocalFEFunction<FE>::CT> coeff;
   for(int i=0; i<f.coeff_.size(); ++i)
   {
+    // Compute interpolation weights
     f.coeff_[i] = 1;
     fe.localInterpolation().interpolate(f, coeff);
+
+    // Check size of weight vector
     if (coeff.size() != fe.localBasis().size())
     {
       std::cout << "Bug in LocalInterpolation for finite element type "
@@ -95,8 +111,7 @@ bool testLocalInterpolation(const FE& fe)
       success = false;
     }
 
-
-    double diff=0;
+    // Check if interpolation weights are equal to coefficients
     for(int j=0; j<coeff.size(); ++j)
     {
       if (std::abs(coeff[i]-f.coeff_[i]) > sqrt_epsilon)

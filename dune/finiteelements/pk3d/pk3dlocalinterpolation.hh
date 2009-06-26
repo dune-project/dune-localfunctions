@@ -27,9 +27,9 @@ namespace Dune
         for (int i1=0; i1<=k-i0; i1++)
           for (int i2=0; i2<=k-i0-i1; i2++)
           {
-            x[0] = ((D)i0)/((D)k);
+            x[2] = ((D)i0)/((D)k);
             x[1] = ((D)i1)/((D)k);
-            x[2] = ((D)i2)/((D)k);
+            x[0] = ((D)i2)/((D)k);
             f.evaluate(x,y);
             out[n] = y;
             n++;

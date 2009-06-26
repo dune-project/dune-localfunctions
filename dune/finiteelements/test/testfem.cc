@@ -13,6 +13,8 @@
 #include "../p12d.hh"
 #include "../p13d.hh"
 #include "../pk2d.hh"
+#include "../p23d.hh"
+#include "../pk3d.hh"
 #include "../q1.hh"
 #include "../q12d.hh"
 #include "../q13d.hh"
@@ -142,6 +144,10 @@ int main(int argc, char** argv)
   Dune::Q22DLocalFiniteElement<double,double> q22dlfem;
   Dune::RT02DLocalFiniteElement<double,double> rt02dlfem;
   Dune::RefinedP1LocalFiniteElement<double,double> refp1lfem;
+  Dune::P23DLocalFiniteElement<double,double> p23dlfem;
+  Dune::Pk3DLocalFiniteElement<double,double,1> pk13dlfem;
+  Dune::Pk3DLocalFiniteElement<double,double,2> pk23dlfem;
+  Dune::Pk3DLocalFiniteElement<double,double,5> pk53dlfem;
 
   std::vector<double> c;
 
@@ -169,6 +175,10 @@ int main(int argc, char** argv)
   success = (testLocalInterpolation(q12dlfem) and success);
   success = (testLocalInterpolation(q13dlfem) and success);
   success = (testLocalInterpolation(refp1lfem) and success);
+  success = (testLocalInterpolation(p23dlfem) and success);
+  success = (testLocalInterpolation(pk13dlfem) and success);
+  success = (testLocalInterpolation(pk23dlfem) and success);
+  success = (testLocalInterpolation(pk53dlfem) and success);
 
   return success;
 }

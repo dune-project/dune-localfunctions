@@ -345,7 +345,7 @@ namespace Dune
       coefficientsGlobal(coeff, geometry);
 
       out.resize(6);
-      for(int i = 0; i < 3; ++i) {
+      for(int i = 0; i < 6; ++i) {
         // \phi^i
         out[i][0][0] =  0;
         out[i][0][1] =  s[i]*coeff[i][A01];

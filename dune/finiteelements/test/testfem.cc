@@ -23,6 +23,9 @@
 #include "../rt02d.hh"
 #include "../refinedp1.hh"
 #include "../monom.hh"
+#include "../edger02d.hh"
+#include "../edges02d.hh"
+#include "../edges03d.hh"
 
 
 double TOL = 1e-4;
@@ -218,6 +221,15 @@ int main(int argc, char** argv)
   // Monomials produce an error for higher order since
   // the tolerance of 1e-4 is to small.
   success = testArbitraryOrderFE<5>() and success;
+
+  Dune::EdgeR02DLocalFiniteElement<double,double> edger02dlfem;
+  success = testFE(edger02dlfem) and success;
+
+  Dune::EdgeS02DLocalFiniteElement<double,double> edges02dlfem;
+  success = testFE(edges02dlfem) and success;
+
+  Dune::EdgeS03DLocalFiniteElement<double,double> edges03dlfem;
+  success = testFE(edges03dlfem) and success;
 
   Dune::RT02DLocalFiniteElement<double,double> rt02dlfem;
 

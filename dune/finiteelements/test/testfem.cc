@@ -5,6 +5,7 @@
 #endif
 #include <iostream>
 #include <typeinfo>
+#include <cstdlib>
 #include <vector>
 
 #include "../p0.hh"
@@ -24,7 +25,7 @@
 #include "../monom.hh"
 
 
-double TOL = 1e-5;
+double TOL = 1e-4;
 
 class Func
 {
@@ -62,6 +63,13 @@ public:
       coeff_[i] = 0;
   }
 
+  void setRandom(double max)
+  {
+    coeff_.resize(fe_.localBasis().size());
+    for(int i=0; i<coeff_.size(); ++i)
+      coeff_[i] = ((std::rand() / RAND_MAX) - 0.5)*2.0*max;
+  }
+
 
   template<typename DT, typename RT>
   void evaluate (const DT& x, RT& y) const
@@ -86,22 +94,18 @@ private:
 // Check if localInterpolation is consistens with
 // localBasis evaluation.
 template<class FE>
-bool testLocalInterpolation(const FE& fe)
+bool testLocalInterpolation(const FE& fe, int n=100)
 {
   bool success = true;
   LocalFEFunction<FE> f(fe);
 
-  // Construct coefficient vectors for testing
-  // Currently we simply use
-  // (1,0,0,0,...)
-  // (1,2,0,0,...)
-  // (1,2,3,0,...)
-  // We could also test for arbitrary vectors.
   std::vector<typename LocalFEFunction<FE>::CT> coeff;
-  for(int i=0; i<f.coeff_.size(); ++i)
+  for(int i=0; i<n; ++i)
   {
+    // Set random coefficient vector
+    f.setRandom(100);
+
     // Compute interpolation weights
-    f.coeff_[i] = i;
     fe.localInterpolation().interpolate(f, coeff);
 
     // Check size of weight vector
@@ -117,12 +121,12 @@ bool testLocalInterpolation(const FE& fe)
     // Check if interpolation weights are equal to coefficients
     for(int j=0; j<coeff.size(); ++j)
     {
-      if (std::abs(coeff[i]-f.coeff_[i]) > TOL)
+      if (std::abs(coeff[j]-f.coeff_[j]) > TOL)
       {
         std::cout << "Bug in LocalInterpolation for finite element type "
                   << typeid(FE).name() << std::endl;
         std::cout << "    Interpolation weight " << j
-                  << " differs by " << std::abs(coeff[i]-f.coeff_[i])
+                  << " differs by " << std::abs(coeff[j]-f.coeff_[j])
                   << " from coefficient of linear combination." << std::endl;
         success = false;
       }
@@ -212,7 +216,7 @@ int main(int argc, char** argv)
   success = testFE(p23dlfem) and success;
 
   // Monomials produce an error for higher order since
-  // the tolerance of 1e-5 is to small.
+  // the tolerance of 1e-4 is to small.
   success = testArbitraryOrderFE<5>() and success;
 
   Dune::RT02DLocalFiniteElement<double,double> rt02dlfem;

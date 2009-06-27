@@ -30,12 +30,12 @@ namespace Dune
     //! \brief Standard constructor
     Pk3DLocalCoefficients () : li(N)
     {
-      unsigned int vertexmap[4] = {0, 1, 2, 3};
+      const unsigned int vertexmap[4] = {0, 1, 2, 3};
       generate_local_keys(vertexmap);
     }
 
     //! constructor for eight variants with order on edges flipped
-    Pk3DLocalCoefficients (unsigned int vertexmap[4]) : li(N)
+    Pk3DLocalCoefficients (const unsigned int vertexmap[4]) : li(N)
     {
       generate_local_keys(vertexmap);
     }
@@ -55,7 +55,7 @@ namespace Dune
   private:
     std::vector<LocalKey> li;
 
-    void generate_local_keys(unsigned int vertexmap[4])
+    void generate_local_keys(const unsigned int vertexmap[4])
     {
       unsigned int subindex[16];
       unsigned int codim_count[4] = {0};

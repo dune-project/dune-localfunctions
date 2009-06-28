@@ -28,7 +28,7 @@
 #include "../edges03d.hh"
 
 
-double TOL = 1e-4;
+double TOL = 1e-10;
 
 class Func
 {
@@ -181,7 +181,7 @@ bool testArbitraryOrderFE<0>()
   return true;
 }
 
-int main(int argc, char** argv)
+int main(int argc, char** argv) try
 {
   bool success = true;
 
@@ -218,9 +218,7 @@ int main(int argc, char** argv)
   Dune::P23DLocalFiniteElement<double,double> p23dlfem;
   success = testFE(p23dlfem) and success;
 
-  // Monomials produce an error for higher order since
-  // the tolerance of 1e-4 is to small.
-  success = testArbitraryOrderFE<5>() and success;
+  success = testArbitraryOrderFE<7>() and success;
 
   Dune::EdgeR02DLocalFiniteElement<double,double> edger02dlfem;
   success = testFE(edger02dlfem) and success;
@@ -234,4 +232,9 @@ int main(int argc, char** argv)
   Dune::RT02DLocalFiniteElement<double,double> rt02dlfem;
 
   return success;
+}
+catch (Dune::Exception e)
+{
+  std::cout << e << std::endl;
+  return 1;
 }

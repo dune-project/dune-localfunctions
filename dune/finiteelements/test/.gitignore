@@ -3,6 +3,7 @@ edges02dshapefunctiontest
 lagrangeshapefunctiontest
 monomshapefunctiontest
 virtualshapefunctiontest
+refinedp1test
 Makefile.in
 Makefile
 .deps

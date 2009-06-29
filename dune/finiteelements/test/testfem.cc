@@ -212,8 +212,11 @@ int main(int argc, char** argv) try
   Dune::Q22DLocalFiniteElement<double,double> q22dlfem;
   success = testFE(q22dlfem) and success;
 
-  Dune::RefinedP1LocalFiniteElement<double,double> refp1lfem;
-  success = testFE(refp1lfem) and success;
+  Dune::RefinedP1LocalFiniteElement<double,double,2> refp12dlfem;
+  success = testFE(refp12dlfem) and success;
+
+  Dune::RefinedP1LocalFiniteElement<double,double,3> refp13dlfem;
+  success = testFE(refp13dlfem) and success;
 
   Dune::P23DLocalFiniteElement<double,double> p23dlfem;
   success = testFE(p23dlfem) and success;

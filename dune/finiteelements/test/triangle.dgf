@@ -1,0 +1,12 @@
+DGF
+Vertex        % the verticies of the grid
+ 0    0       % vertex 0
+ 1    0       % vertex 1
+ 0    1       % vertex 2
+#
+SIMPLEX       % a simplex grid
+0 1 2         % triangle 0
+#
+BOUNDARYDOMAIN
+default 1     % all other boundary segments have id 1
+#

@@ -30,14 +30,30 @@ namespace Dune
   template<class D, class R, int k>
   class PkLocalFiniteElement<D, R, 2, k>
     : public Pk2DLocalFiniteElement<D, R, k>
-  {};
+  {
+  public:
+    PkLocalFiniteElement()
+    {}
+
+    PkLocalFiniteElement(int variant) :
+      Pk2DLocalFiniteElement<D, R, k>(variant)
+    {}
+  };
 
   /** \todo Please doc me !
    */
   template<class D, class R, int k>
   class PkLocalFiniteElement<D, R, 3, k>
     : public Pk3DLocalFiniteElement<D, R, k>
-  {};
+  {
+  public:
+    PkLocalFiniteElement()
+    {}
+
+    PkLocalFiniteElement(unsigned int vertexmap[4]) :
+      Pk3DLocalFiniteElement<D, R, k>(vertexmap)
+    {}
+  };
 
 }
 

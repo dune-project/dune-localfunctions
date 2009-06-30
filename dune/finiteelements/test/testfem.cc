@@ -160,7 +160,7 @@ bool testArbitraryOrderFE()
   Dune::Pk2DLocalFiniteElement<double,double,k> pk2dlfem(1);
   success = testFE(pk2dlfem) and success;
 
-  Dune::Pk3DLocalFiniteElement<double,double,1> pk3dlfem;
+  Dune::Pk3DLocalFiniteElement<double,double,k> pk3dlfem;
   success = testFE(pk3dlfem) and success;
 
   Dune::MonomLocalFiniteElement<double,double,1,k> monom1d(Dune::GeometryType::simplex);

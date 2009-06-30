@@ -46,7 +46,7 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    Pk3DLocalFiniteElement (unsigned int vertexmap[4]) : coefficients(vertexmap)
+    Pk3DLocalFiniteElement (const unsigned int vertexmap[4]) : coefficients(vertexmap)
     {
       gt.makeTetrahedron();
     }

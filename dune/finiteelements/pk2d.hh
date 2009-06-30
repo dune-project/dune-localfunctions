@@ -53,6 +53,13 @@ namespace Dune
 
     /** \todo Please doc me !
      */
+    Pk2DLocalFiniteElement (const unsigned int vertexmap[3]) : coefficients(vertexmap)
+    {
+      gt.makeTriangle();
+    }
+
+    /** \todo Please doc me !
+     */
     const typename Traits::LocalBasisType& localBasis () const
     {
       return basis;

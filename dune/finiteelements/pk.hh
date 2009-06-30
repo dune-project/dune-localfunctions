@@ -38,6 +38,10 @@ namespace Dune
     PkLocalFiniteElement(int variant) :
       Pk2DLocalFiniteElement<D, R, k>(variant)
     {}
+
+    PkLocalFiniteElement(const unsigned int vertexmap[3]) :
+      Pk2DLocalFiniteElement<D, R, k>(vertexmap)
+    {}
   };
 
   /** \todo Please doc me !
@@ -50,7 +54,7 @@ namespace Dune
     PkLocalFiniteElement()
     {}
 
-    PkLocalFiniteElement(unsigned int vertexmap[4]) :
+    PkLocalFiniteElement(const unsigned int vertexmap[4]) :
       Pk3DLocalFiniteElement<D, R, k>(vertexmap)
     {}
   };

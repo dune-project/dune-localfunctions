@@ -38,9 +38,21 @@ namespace Dune
     {
       fill_default();
       bool flip[3];
-      if (variant & 1) flip[0]=true;else flip[0]=false;
-      if (variant & 2) flip[1]=true;else flip[1]=false;
-      if (variant & 4) flip[2]=true;else flip[2]=false;
+      for (int i = 0; i < 3; ++i)
+        flip[i] = variant & (1<<i);
+      for (int i=0; i<N; i++)
+        if (li[i].codim()==1 && flip[li[i].subEntity()])
+          li[i].index(k-2-li[i].index());
+    }
+
+    //! constructor for six variants with permuted vertices
+    Pk2DLocalCoefficients (const unsigned int vertexmap[3]) : li(N)
+    {
+      fill_default();
+      bool flip[3];
+      flip[0] = vertexmap[0] > vertexmap[1];
+      flip[1] = vertexmap[0] > vertexmap[2];
+      flip[2] = vertexmap[1] > vertexmap[2];
       for (int i=0; i<N; i++)
         if (li[i].codim()==1 && flip[li[i].subEntity()])
           li[i].index(k-2-li[i].index());

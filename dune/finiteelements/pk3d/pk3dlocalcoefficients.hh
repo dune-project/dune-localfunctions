@@ -34,7 +34,12 @@ namespace Dune
       generate_local_keys(vertexmap);
     }
 
-    //! constructor for eight variants with order on edges flipped
+    /** Constructor for variants with permuted vertices.
+
+        \param vertexmap The permutation of the vertices.  This
+        can for instance be generated from the global indices of
+        the vertices by reducing those to the integers 0...3
+     */
     Pk3DLocalCoefficients (const unsigned int vertexmap[4]) : li(N)
     {
       generate_local_keys(vertexmap);

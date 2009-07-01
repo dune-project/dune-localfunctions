@@ -226,6 +226,7 @@ namespace Dune
      *                              \end{pmatrix}
      * \f]
      */
+#ifndef DISABLE_LOCAL_INTERFACE
     inline void evaluateFunction (const typename Traits::DomainType& in,
                                   std::vector<typename Traits::RangeType>& out) const
     {
@@ -255,6 +256,7 @@ namespace Dune
       out[5][1] = s[5]*(             -in[2]);
       out[5][2] = s[5]*(        in[1]      );
     }
+#endif // DISABLE_LOCAL_INTERFACE
 
     //! Get global values of shape functions
     /**
@@ -361,6 +363,7 @@ namespace Dune
       }
     }
 
+#ifndef DISABLE_LOCAL_INTERFACE
     //! \brief Evaluate Jacobian of all shape functions
     inline void
     evaluateJacobian (const typename Traits::DomainType& in,         // position
@@ -392,6 +395,7 @@ namespace Dune
       out[5][1][0] =     0; out[5][1][1] =     0; out[5][1][2] = -s[5];
       out[5][2][0] =     0; out[5][2][1] =  s[5]; out[5][2][2] =     0;
     }
+#endif // DISABLE_LOCAL_INTERFACE
 
     //! \brief Polynomial order of the shape functions
     unsigned int order () const

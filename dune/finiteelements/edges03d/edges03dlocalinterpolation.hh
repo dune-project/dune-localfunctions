@@ -38,6 +38,7 @@ namespace Dune
         if(orientations & (1<<i)) s[i] *= -1;
     }
 
+#ifndef DISABLE_LOCAL_INTERFACE
     //! \brief Local interpolation of a function
     template<typename F, typename C>
     void interpolate (const F& f, std::vector<C>& out) const
@@ -221,6 +222,7 @@ namespace Dune
       x[0] = 0.0; x[1] = 0.5; x[2] = 0.5; f.evaluate(x,y);
       out[5] = s[5]*(     -y[1]+y[2]);
     }
+#endif // DISABLE_LOCAL_INTERFACE
 
     //! \brief Local interpolation of a function
     /**

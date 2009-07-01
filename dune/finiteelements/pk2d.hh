@@ -51,7 +51,11 @@ namespace Dune
       gt.makeTriangle();
     }
 
-    /** \todo Please doc me !
+    /** Constructor for six variants with permuted vertices.
+
+        \param vertexmap The permutation of the vertices.  This
+        can for instance be generated from the global indices of
+        the vertices by reducing those to the integers 0...2
      */
     Pk2DLocalFiniteElement (const unsigned int vertexmap[3]) : coefficients(vertexmap)
     {

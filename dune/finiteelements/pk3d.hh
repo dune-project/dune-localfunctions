@@ -44,7 +44,11 @@ namespace Dune
       gt.makeTetrahedron();
     }
 
-    /** \todo Please doc me !
+    /** Constructor for variants with permuted vertices.
+
+        \param vertexmap The permutation of the vertices.  This
+        can for instance be generated from the global indices of
+        the vertices by reducing those to the integers 0...3
      */
     Pk3DLocalFiniteElement (const unsigned int vertexmap[4]) : coefficients(vertexmap)
     {

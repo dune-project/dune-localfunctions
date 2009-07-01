@@ -45,7 +45,12 @@ namespace Dune
           li[i].index(k-2-li[i].index());
     }
 
-    //! constructor for six variants with permuted vertices
+    /** Constructor for six variants with permuted vertices.
+
+        \param vertexmap The permutation of the vertices.  This
+        can for instance be generated from the global indices of
+        the vertices by reducing those to the integers 0...2
+     */
     Pk2DLocalCoefficients (const unsigned int vertexmap[3]) : li(N)
     {
       fill_default();

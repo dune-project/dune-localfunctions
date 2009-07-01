@@ -15,15 +15,35 @@ namespace Dune
   /** \todo Please doc me !
    */
   template<class D, class R, int d, int k>
-  class PkLocalFiniteElement;
+  class PkLocalFiniteElement
+  {
+  public:
+    PkLocalFiniteElement()
+    {}
 
+    /** Constructor for variants with permuted vertices.
+
+        \param vertexmap The permutation of the vertices.  This
+        can for instance be generated from the global indices of
+        the vertices by reducing those to the integers 0...k+1
+     */
+    PkLocalFiniteElement(const unsigned int vertexmap[k+1])
+    {}
+  };
 
   /** \todo Please doc me !
    */
   template<class D, class R>
   class PkLocalFiniteElement<D, R, 1, 1>
     : public P11DLocalFiniteElement<D, R>
-  {};
+  {
+  public:
+    PkLocalFiniteElement()
+    {}
+
+    PkLocalFiniteElement(const unsigned int vertexmap[2])
+    {}
+  };
 
   /** \todo Please doc me !
    */
@@ -33,10 +53,6 @@ namespace Dune
   {
   public:
     PkLocalFiniteElement()
-    {}
-
-    PkLocalFiniteElement(int variant) :
-      Pk2DLocalFiniteElement<D, R, k>(variant)
     {}
 
     PkLocalFiniteElement(const unsigned int vertexmap[3]) :

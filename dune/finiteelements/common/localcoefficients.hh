@@ -10,6 +10,11 @@
 
 namespace Dune
 {
+  enum {
+    //! codim that indicates degree of freedom in intersection
+    intersectionCodim=777
+  };
+
   /**@ingroup LocalLayoutInterface
          \brief Describe position of one degree of freedom
 

@@ -10,9 +10,10 @@
 
 namespace Dune
 {
+  // the number of the beast ...
   enum {
     //! codim that indicates degree of freedom in intersection
-    intersectionCodim=777
+    intersectionCodim=666
   };
 
   /**@ingroup LocalLayoutInterface

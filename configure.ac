@@ -33,6 +33,7 @@ AC_CONFIG_FILES([
                 dune/finiteelements/edges03d/Makefile
                 dune/finiteelements/Makefile
                 dune/finiteelements/monom/Makefile
+                dune/finiteelements/mimetic/Makefile
                 dune/finiteelements/p0/Makefile
                 dune/finiteelements/p11d/Makefile
                 dune/finiteelements/p12d/Makefile

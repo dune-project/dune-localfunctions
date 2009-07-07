@@ -17,14 +17,35 @@
 template<int dim>
 int testForDim()
 {
-  // Generate the grid
+  // //////////////////////////////////////////////////////
+  // Generate a grid consisting of a single simplex
+  // //////////////////////////////////////////////////////
+
   typedef typename Dune::ALUSimplexGrid<dim,dim> GridType;
 
-  Dune::GridPtr<GridType> gridptr;
+  Dune::GridFactory<GridType> gridFactory;
 
-  gridptr = Dune::GridPtr<GridType>((dim==2 ? "triangle.dgf" : "tetrahedron.dgf"));
+  Dune::FieldVector<double,dim> pos(0);
+  gridFactory.insertVertex(pos);
+
+  for (int i=0; i<dim; i++) {
+    pos = 0;   pos[i] = 1;
+    gridFactory.insertVertex(pos);
+  }
+
+  std::vector<unsigned int> element(dim+1);
+  for (int i=0; i<dim+1; i++)
+    element[i] = i;
+
+  gridFactory.insertElement( Dune::GeometryType(Dune::GeometryType::simplex,dim), element);
+
+  GridType* gridptr = gridFactory.createGrid();
 
   GridType& grid = *gridptr;
+
+  // //////////////////////////////////////////////////////
+  //   The actual test
+  // //////////////////////////////////////////////////////
 
   typedef typename GridType::template Codim<0>::LeafIterator ElementIterator;
   typedef typename GridType::template Codim<dim>::LeafIterator NodeIterator;

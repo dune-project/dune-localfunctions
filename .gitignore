@@ -1,3 +1,5 @@
+dune-localfunctions-*.tar.gz
+
 aclocal.m4
 am
 autom4te.cache
@@ -13,6 +15,7 @@ dependencies.m4
 depcomp
 dune-localfunctions.pc
 install-sh
+lib
 libtool
 ltmain.sh
 Makefile

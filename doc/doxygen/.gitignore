@@ -1,5 +1,7 @@
 Makefile.in
 Makefile
+
+doxy-header.html
 doxygen.log
 Doxyfile
 html

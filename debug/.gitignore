@@ -1,7 +1,12 @@
-.deps
+Makefile
+Makefile.in
+
+dummy.cc
 dune-localfunctions2vtu
 functions2vtu-*
 hurz.vtu
 hurz.vtu.bak
-Makefile
-Makefile.in
+*.swp
+
+.deps
+.libs

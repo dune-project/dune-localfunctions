@@ -5,7 +5,7 @@
 
 #include <dune/common/geometrytype.hh>
 
-#include "../common/localfiniteelement.hh"
+#include "common/localfiniteelement.hh"
 
 #include "rannacher_turek2d/rannacher_turek2dlocalbasis.hh"
 #include "rannacher_turek2d/rannacher_turek2dlocalcoefficients.hh"

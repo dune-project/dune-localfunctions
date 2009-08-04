@@ -15,9 +15,9 @@ namespace Dune
          Defines the constant scalar shape function in d dimensions. Is
          valid on any type of reference element.
 
-         - <tt>D</tt>: Type to represent the field in the domain.
-         - <tt>R</tt>: Type to represent the field in the range.
-         - <tt>d</tt>: Domain dimension
+         \tparam D Type to represent the field in the domain.
+         \tparam R Type to represent the field in the range.
+         \tparam d Domain dimension
 
          \nosubgrouping
    */
@@ -25,8 +25,11 @@ namespace Dune
   class P0LocalBasis :
     public C1LocalBasisInterface<
         C1LocalBasisTraits<D,d,Dune::FieldVector<D,d>,R,1,Dune::FieldVector<R,1>,
-            Dune::FieldVector<Dune::FieldVector<R,d>,1> >,
-        P0LocalBasis<D,R,d> >
+            Dune::FieldVector<Dune::FieldVector<R,d>,1> >
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
+        , P0LocalBasis<D,R,d>
+#endif
+        >
   {
   public:
     //! \brief export type traits for function signature

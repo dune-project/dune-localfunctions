@@ -3,7 +3,7 @@
 #ifndef DUNE_P0LOCALINTERPOLATION_HH
 #define DUNE_P0LOCALINTERPOLATION_HH
 
-#include <dune/grid/common/referenceelements.hh>
+#include <dune/grid/common/genericreferenceelements.hh>
 
 #include "../common/localinterpolation.hh"
 
@@ -27,7 +27,7 @@ namespace Dune
       typedef typename LB::Traits::DomainFieldType DF;
       const int dim=LB::Traits::dimDomain;
 
-      DomainType x = Dune::ReferenceElements<DF,dim>::general(gt).position(0,0);
+      DomainType x = Dune::GenericReferenceElements<DF,dim>::general(gt).position(0,0);
       RangeType y;
 
       out.resize(1);

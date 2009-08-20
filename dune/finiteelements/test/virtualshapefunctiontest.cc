@@ -138,7 +138,7 @@ int main (int argc, char *argv[]) try
   testSumToOne<2>(&testSetQ1.localBasis(), testSetQ1.type());
   testShapeFunctionSet<2>(&testSetQ1.localBasis(), testSetQ1.type());
 
-  RefinedP1LocalFiniteElement<double,double> testSetRefinedP1;
+  RefinedP1LocalFiniteElement<double,double,2> testSetRefinedP1;
   testSumToOne<2>(&testSetRefinedP1.localBasis(), testSetRefinedP1.type());
   testShapeFunctionSet<2>(&testSetRefinedP1.localBasis(), testSetRefinedP1.type());
 

@@ -25,7 +25,9 @@ edges02dshapefunctiontest_SOURCES = edges02dshapefunctiontest.cc
 lagrangeshapefunctiontest_SOURCES = lagrangeshapefunctiontest.cc
 monomshapefunctiontest_SOURCES = monomshapefunctiontest.cc
 test_edges03dinterpolate_SOURCES = test-edges03dinterpolate.cc
+
 virtualshapefunctiontest_SOURCES = virtualshapefunctiontest.cc
+virtualshapefunctiontest_CPPFLAGS = $(AM_CPPFLAGS) -DDUNE_VIRTUAL_SHAPEFUNCTIONS
 
 if ALUGRID
 refinedp1test_SOURCES = refinedp1test.cc

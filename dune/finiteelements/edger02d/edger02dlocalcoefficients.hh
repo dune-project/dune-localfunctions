@@ -3,6 +3,7 @@
 #ifndef DUNE_EDGER02DLOCALCOEFFICIENTS_HH
 #define DUNE_EDGER02DLOCALCOEFFICIENTS_HH
 
+#include <cstddef>
 #include <iostream>
 #include <vector>
 
@@ -30,13 +31,13 @@ namespace Dune
     }
 
     //! number of coefficients
-    int size () const
+    std::size_t size () const
     {
       return 4;
     }
 
     //! get i'th index
-    const LocalKey& localKey (int i) const
+    const LocalKey& localKey (std::size_t i) const
     {
       return li[i];
     }

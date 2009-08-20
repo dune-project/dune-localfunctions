@@ -3,6 +3,7 @@
 #ifndef DUNE_Q12DLOCALCOEFFICIENTS_HH
 #define DUNE_Q12DLOCALCOEFFICIENTS_HH
 
+#include <cstddef>
 #include <iostream>
 #include <vector>
 
@@ -27,18 +28,18 @@ namespace Dune
     //! \brief Standard constructor
     Q12DLocalCoefficients () : li(4)
     {
-      for (int i=0; i<4; i++)
+      for (std::size_t i=0; i<4; i++)
         li[i] = LocalKey(i,2,0);
     }
 
     //! number of coefficients
-    int size () const
+    std::size_t size () const
     {
       return 4;
     }
 
     //! get i'th index
-    const LocalKey& localKey (int i) const
+    const LocalKey& localKey (std::size_t i) const
     {
       return li[i];
     }

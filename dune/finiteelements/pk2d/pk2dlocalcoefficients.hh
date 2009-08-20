@@ -3,6 +3,7 @@
 #ifndef DUNE_PK2DLOCALCOEFFICIENTS_HH
 #define DUNE_PK2DLOCALCOEFFICIENTS_HH
 
+#include <cstddef>
 #include <iostream>
 #include <vector>
 
@@ -58,19 +59,19 @@ namespace Dune
       flip[0] = vertexmap[0] > vertexmap[1];
       flip[1] = vertexmap[0] > vertexmap[2];
       flip[2] = vertexmap[1] > vertexmap[2];
-      for (int i=0; i<N; i++)
+      for (std::size_t i=0; i<N; i++)
         if (li[i].codim()==1 && flip[li[i].subEntity()])
           li[i].index(k-2-li[i].index());
     }
 
     //! number of coefficients
-    int size () const
+    std::size_t size () const
     {
       return N;
     }
 
     //! get i'th index
-    const LocalKey& localKey (int i) const
+    const LocalKey& localKey (std::size_t i) const
     {
       return li[i];
     }

@@ -4,6 +4,7 @@
 # include "config.h"
 #endif
 
+#include <cstddef>
 #include <iostream>
 
 #include <dune/grid/alugrid.hh>
@@ -68,7 +69,7 @@ int testForDim()
     refp1element.localBasis().evaluateFunction(node->geometry().corner(0),refp1values);
     p2element.localBasis().evaluateFunction(node->geometry().corner(0),p2values);
     int count = 0;
-    for (int i=0; i<refp1element.localBasis().size(); ++i)
+    for (std::size_t i=0; i<refp1element.localBasis().size(); ++i)
     {
       assert(refp1values[i]>=0 and (fabs(1-refp1values[i])<1e-8 or refp1values[i]<1e-8));
       if (fabs(1-refp1values[i])<=1e-8)
@@ -81,7 +82,7 @@ int testForDim()
     assert(count==1);     // check if indexmap is injective meaning one and only one refinedP1LocalBasisFunction evaluates to 1 at current node of refined grid
   }
 
-  for (int k=0; k<indexmap.size(); ++k)   // check if indexmap is really a map meaning that all refinedP1basisFunctions find a corresponding refined node
+  for (std::size_t k=0; k<indexmap.size(); ++k)   // check if indexmap is really a map meaning that all refinedP1basisFunctions find a corresponding refined node
   {
     assert(indexmap[k] >= 0);
   }
@@ -120,7 +121,7 @@ int testForDim()
         invJacobian.mv(p1grads_[v][0],p1grads[grid.leafIndexSet().template subIndex<dim>(*element,v)][0]);
       }
 
-      for (int j=0; j<p1values.size(); ++j)
+      for (std::size_t j=0; j<p1values.size(); ++j)
       {
         assert(fabs(refp1values[j]-p1values[indexmap[j]])<1e-14);         // check if RefinedP1LocalBasis functions on the big tetrahedron evaluate to the same values as the P1LocalBasis functions on refined grid
         for (int k=0; k<dim; ++k)

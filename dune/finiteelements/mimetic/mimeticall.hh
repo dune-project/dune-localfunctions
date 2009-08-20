@@ -3,6 +3,8 @@
 #ifndef DUNE_MIMETIC_ALL_HH
 #define DUNE_MIMETIC_ALL_HH
 
+#include <cstddef>
+
 #include <dune/common/exceptions.hh>
 #include <dune/common/fvector.hh>
 #include <dune/common/geometrytype.hh>
@@ -78,10 +80,10 @@ namespace Dune
     {}
 
     //! number of coefficients
-    int size () const { return variant; }
+    std::size_t size () const { return variant; }
 
     //! map index i to local key
-    const Dune::LocalKey& localKey (int i) const {
+    const Dune::LocalKey& localKey (std::size_t i) const {
       return li[i];
     }
 

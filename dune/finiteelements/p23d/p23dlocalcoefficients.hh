@@ -3,6 +3,7 @@
 #ifndef DUNE_P2_3DLOCALCOEFFICIENTS_HH
 #define DUNE_P2_3DLOCALCOEFFICIENTS_HH
 
+#include <cstddef>
 #include <vector>
 
 #include "../common/localcoefficients.hh"
@@ -40,13 +41,13 @@ namespace Dune
     }
 
     //! number of coefficients
-    int size () const
+    std::size_t size () const
     {
       return 10;
     }
 
     //! get i'th index
-    const LocalKey& localKey (int i) const
+    const LocalKey& localKey (std::size_t i) const
     {
       return li[i];
     }

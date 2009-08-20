@@ -3,6 +3,7 @@
 #ifndef DUNE_LOCALCOEFFICIENTS_HH
 #define DUNE_LOCALCOEFFICIENTS_HH
 
+#include <cstddef>
 #include <iostream>
 #include <vector>
 
@@ -85,9 +86,9 @@ namespace Dune
   public:
     //! number of coefficients
 #if DUNE_VIRTUAL_SHAPEFUNCTIONS
-    virtual int size () const = 0;
+    virtual std::size_t size () const = 0;
 #else
-    int size () const
+    std::size_t size () const
     {
       return asImp().size();
     }
@@ -95,9 +96,9 @@ namespace Dune
 
     //! get i'th index
 #if DUNE_VIRTUAL_SHAPEFUNCTIONS
-    const virtual LocalKey& localKey (int i) const = 0;
+    const virtual LocalKey& localKey (std::size_t i) const = 0;
 #else
-    const LocalKey& localKey (int i) const
+    const LocalKey& localKey (std::size_t i) const
     {
       return asImp().localKey(i);
     }

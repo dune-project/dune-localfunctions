@@ -3,6 +3,7 @@
 #ifndef DUNE_P0LOCALCOEFFICIENTS_HH
 #define DUNE_P0LOCALCOEFFICIENTS_HH
 
+#include <cstddef>
 #include <iostream>
 #include <vector>
 
@@ -27,13 +28,13 @@ namespace Dune
     {}
 
     //! number of coefficients
-    int size () const
+    std::size_t size () const
     {
       return 1;
     }
 
     //! get i'th index
-    const LocalKey& localKey (int i) const
+    const LocalKey& localKey (std::size_t i) const
     {
       return index;
     }

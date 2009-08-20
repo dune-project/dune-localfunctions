@@ -3,6 +3,8 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+
+#include <cstddef>
 #include <iostream>
 #include <typeinfo>
 #include <cstdlib>
@@ -62,14 +64,14 @@ public:
   void resetCoefficients()
   {
     coeff_.resize(fe_.localBasis().size());
-    for(int i=0; i<coeff_.size(); ++i)
+    for(std::size_t i=0; i<coeff_.size(); ++i)
       coeff_[i] = 0;
   }
 
   void setRandom(double max)
   {
     coeff_.resize(fe_.localBasis().size());
-    for(int i=0; i<coeff_.size(); ++i)
+    for(std::size_t i=0; i<coeff_.size(); ++i)
       coeff_[i] = ((std::rand() / RAND_MAX) - 0.5)*2.0*max;
   }
 
@@ -83,7 +85,7 @@ public:
     fe_.localBasis().evaluateFunction(x, yy);
 
     y = 0.0;
-    for (int i=0; i<yy.size(); ++i)
+    for (std::size_t i=0; i<yy.size(); ++i)
       y.axpy(coeff_[i], yy[i]);
   }
 
@@ -122,7 +124,7 @@ bool testLocalInterpolation(const FE& fe, int n=100)
     }
 
     // Check if interpolation weights are equal to coefficients
-    for(int j=0; j<coeff.size(); ++j)
+    for(std::size_t j=0; j<coeff.size(); ++j)
     {
       if (std::abs(coeff[j]-f.coeff_[j]) > TOL)
       {

@@ -2,6 +2,7 @@
 // vi: set et ts=4 sw=2 sts=2:
 #include <config.h>
 
+#include <cstddef>
 #include <iostream>
 
 #include <dune/grid/common/quadraturerules.hh>
@@ -43,7 +44,7 @@ void testSumToOne(const C0LocalBasisInterface<C1Traits>* localBasis,
     localBasis->evaluateFunction(quad[i].position(), values);
 
     R sum = R(0);
-    for (int j=0; j<values.size(); j++)
+    for (std::size_t j=0; j<values.size(); j++)
       sum += values[j];
 
     if (std::abs(1-sum) > epsilon) {

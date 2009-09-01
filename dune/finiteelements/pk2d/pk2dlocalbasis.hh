@@ -30,7 +30,13 @@ namespace Dune
         >
   {
   public:
+
+    /** \brief Export the number of degrees of freedom */
     enum {N = (k+1)*(k+2)/2};
+
+    /** \brief Export the element order
+       OS: Surprising that we need to export this both statically and dynamically!
+     */
     enum {O = k};
 
     typedef C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,

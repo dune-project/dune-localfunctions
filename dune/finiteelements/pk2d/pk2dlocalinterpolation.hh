@@ -11,8 +11,12 @@ namespace Dune
   class Pk2DLocalInterpolation
     : public LocalInterpolationInterface<Pk2DLocalInterpolation<LB> >
   {
+    /** \brief The number of degrees of freedom */
     enum {N = LB::N};
+
+    /** \brief Export the element order */
     enum {k = LB::O};
+
   public:
 
     template<typename F, typename C>

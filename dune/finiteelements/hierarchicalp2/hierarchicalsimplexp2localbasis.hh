@@ -83,7 +83,7 @@ namespace Dune
 
       out[0][0][0] = -1;
       out[1][0][0] =  1;
-      out[2][0][0] = 4-8*x;
+      out[2][0][0] = 4-8*in[0];
     }
 
     /** \brief Polynomial order of the shape functions  (2, in this case)

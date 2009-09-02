@@ -28,6 +28,7 @@
 #include "../edger02d.hh"
 #include "../edges02d.hh"
 #include "../edges03d.hh"
+#include "../hierarchicalp2.hh"
 
 
 double TOL = 1e-10;
@@ -235,6 +236,17 @@ int main(int argc, char** argv) try
   success = testFE(edges03dlfem) and success;
 
   Dune::RT02DLocalFiniteElement<double,double> rt02dlfem;
+  success = testFE(rt02dlfem) and success;
+
+  Dune::HierarchicalP2LocalFiniteElement<double,double,1> hierarchicalp21dlfem;
+  success = testFE(hierarchicalp21dlfem) and success;
+
+  Dune::HierarchicalP2LocalFiniteElement<double,double,2> hierarchicalp22dlfem;
+  success = testFE(hierarchicalp22dlfem) and success;
+
+  Dune::HierarchicalP2LocalFiniteElement<double,double,3> hierarchicalp23dlfem;
+  success = testFE(hierarchicalp23dlfem) and success;
+
 
   return success;
 }

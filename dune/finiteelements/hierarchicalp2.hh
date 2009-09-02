@@ -6,13 +6,12 @@
 #include <dune/common/geometrytype.hh>
 
 #include "common/localfiniteelement.hh"
-#include "hierarchicalp2/hierarchicalp2/p2localbasis.hh"
+
+#include "hierarchicalp2/hierarchicalsimplexp2localbasis.hh"
+#include "hierarchicalp2/hierarchicalsimplexp2localinterpolation.hh"
+
 #include "pk2d/pk2dlocalcoefficients.hh"
-#include "pk2d/pk2dlocalinterpolation.hh"
-#include "pk2d/pk2dlocalbasis.hh"
 #include "pk3d/pk3dlocalcoefficients.hh"
-#include "pk3d/pk3dlocalinterpolation.hh"
-#include "pk3d/pk3dlocalbasis.hh"
 
 namespace Dune
 {
@@ -33,9 +32,9 @@ namespace Dune
    */
   template<class D, class R>
   class HierarchicalP2LocalFiniteElement<D,R,2> : LocalFiniteElementInterface<
-                                                      LocalFiniteElementTraits<HierarchicalP2LocalBasis<D,R,2>,
+                                                      LocalFiniteElementTraits<HierarchicalSimplexP2LocalBasis<D,R,2>,
                                                           Pk2DLocalCoefficients<2>,
-                                                          Pk2DLocalInterpolation<Pk2DLocalBasis<D,R,2> > >
+                                                          HierarchicalSimplexP2LocalInterpolation<HierarchicalSimplexP2LocalBasis<D,R,2> > >
 #ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
                                                       , HierarchicalP2LocalFiniteElement<D,R,2>
 #endif
@@ -44,9 +43,9 @@ namespace Dune
   public:
     /** \todo Please doc me !
      */
-    typedef LocalFiniteElementTraits<HierarchicalP2LocalBasis<D,R,2>,
+    typedef LocalFiniteElementTraits<HierarchicalSimplexP2LocalBasis<D,R,2>,
         Pk2DLocalCoefficients<2>,
-        Pk2DLocalInterpolation<Pk2DLocalBasis<D,R,2> > > Traits;
+        HierarchicalSimplexP2LocalInterpolation<HierarchicalSimplexP2LocalBasis<D,R,2> > > Traits;
 
     /** \todo Please doc me !
      */
@@ -84,9 +83,9 @@ namespace Dune
     }
 
   private:
-    HierarchicalP2LocalBasis<D,R,2> basis;
+    HierarchicalSimplexP2LocalBasis<D,R,2> basis;
     Pk2DLocalCoefficients<2> coefficients;
-    Pk2DLocalInterpolation<Pk2DLocalBasis<D,R,2> > interpolation;
+    HierarchicalSimplexP2LocalInterpolation<HierarchicalSimplexP2LocalBasis<D,R,2> > interpolation;
     GeometryType gt;
   };
 
@@ -94,9 +93,9 @@ namespace Dune
    */
   template<class D, class R>
   class HierarchicalP2LocalFiniteElement<D,R,3> : LocalFiniteElementInterface<
-                                                      LocalFiniteElementTraits<HierarchicalP2LocalBasis<D,R,3>,
+                                                      LocalFiniteElementTraits<HierarchicalSimplexP2LocalBasis<D,R,3>,
                                                           Pk3DLocalCoefficients<2>,
-                                                          Pk3DLocalInterpolation<Pk3DLocalBasis<D,R,2> > >
+                                                          HierarchicalSimplexP2LocalInterpolation<HierarchicalSimplexP2LocalBasis<D,R,3> > >
 #ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
                                                       , HierarchicalP2LocalFiniteElement<D,R,3>
 #endif
@@ -105,9 +104,9 @@ namespace Dune
   public:
     /** \todo Please doc me !
      */
-    typedef LocalFiniteElementTraits<HierarchicalP2LocalBasis<D,R,3>,
+    typedef LocalFiniteElementTraits<HierarchicalSimplexP2LocalBasis<D,R,3>,
         Pk3DLocalCoefficients<2>,
-        Pk3DLocalInterpolation<Pk3DLocalBasis<D,R,2> > > Traits;
+        HierarchicalSimplexP2LocalInterpolation<HierarchicalSimplexP2LocalBasis<D,R,3> > > Traits;
 
     /** \todo Please doc me !
      */
@@ -145,9 +144,9 @@ namespace Dune
     }
 
   private:
-    HierarchicalP2LocalBasis<D,R,3> basis;
+    HierarchicalSimplexP2LocalBasis<D,R,3> basis;
     Pk3DLocalCoefficients<2> coefficients;
-    Pk3DLocalInterpolation<Pk3DLocalBasis<D,R,2> > interpolation;
+    HierarchicalSimplexP2LocalInterpolation<HierarchicalSimplexP2LocalBasis<D,R,3> > interpolation;
     GeometryType gt;
   };
 

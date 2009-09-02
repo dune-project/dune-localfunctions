@@ -21,8 +21,11 @@ namespace Dune
   class Q22DLocalBasis :
     public C1LocalBasisInterface<
         C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,
-            Dune::FieldVector<Dune::FieldVector<R,2>,1> >,
-        Q22DLocalBasis<D,R> >
+            Dune::FieldVector<Dune::FieldVector<R,2>,1> >
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
+        , Q22DLocalBasis<D,R>
+#endif
+        >
   {
   public:
     typedef C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,

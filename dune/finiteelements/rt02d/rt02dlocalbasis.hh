@@ -19,8 +19,11 @@ namespace Dune
   class RT02DLocalBasis :
     public C1LocalBasisInterface<
         C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,2,Dune::FieldVector<R,2>,
-            Dune::FieldVector<Dune::FieldVector<R,2>,2> >,
-        RT02DLocalBasis<D,R> >
+            Dune::FieldVector<Dune::FieldVector<R,2>,2> >
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
+        , RT02DLocalBasis<D,R>
+#endif
+        >
   {
   public:
     typedef C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,2,Dune::FieldVector<R,2>,

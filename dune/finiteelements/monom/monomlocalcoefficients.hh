@@ -18,7 +18,12 @@ namespace Dune
          \nosubgrouping
    */
   template<int static_size>
-  class MonomLocalCoefficients : public LocalCoefficientsInterface<MonomLocalCoefficients<static_size> >
+  class MonomLocalCoefficients
+#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
+    : public LocalCoefficientsInterface
+#else
+    : public LocalCoefficientsInterface<MonomLocalCoefficients<static_size> >
+#endif
   {
   public:
     //! \brief Standard constructor

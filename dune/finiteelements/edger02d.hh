@@ -20,8 +20,10 @@ namespace Dune
               EdgeR02DLocalBasis<D,R>,
               EdgeR02DLocalCoefficients,
               EdgeR02DLocalInterpolation<EdgeR02DLocalBasis<D,R> >
-              >,
-          EdgeR02DLocalFiniteElement<D,R>
+              >
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
+          , EdgeR02DLocalFiniteElement<D,R>
+#endif
           >
   {
   public:

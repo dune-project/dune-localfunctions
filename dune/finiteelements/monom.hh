@@ -20,8 +20,11 @@ namespace Dune
                                       LocalFiniteElementTraits<
                                           MonomLocalBasis<D,R,d,p>,
                                           MonomLocalCoefficients<MonomImp::Size<d,p>::val>,
-                                          MonomLocalInterpolation<MonomLocalBasis<D,R,d,p>,MonomImp::Size<d,p>::val> >,
-                                      MonomLocalFiniteElement<D,R,d,p> >
+                                          MonomLocalInterpolation<MonomLocalBasis<D,R,d,p>,MonomImp::Size<d,p>::val> >
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
+                                      , MonomLocalFiniteElement<D,R,d,p>
+#endif
+                                      >
   {
     enum { static_size = MonomImp::Size<d,p>::val };
 

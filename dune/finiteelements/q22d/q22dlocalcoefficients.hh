@@ -17,7 +17,12 @@ namespace Dune
 
          \nosubgrouping
    */
-  class Q22DLocalCoefficients : public LocalCoefficientsInterface<Q22DLocalCoefficients>
+  class Q22DLocalCoefficients
+#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
+    : public LocalCoefficientsInterface
+#else
+    : public LocalCoefficientsInterface<Q22DLocalCoefficients>
+#endif
   {
   public:
     //! \brief Standard constructor

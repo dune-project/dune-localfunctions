@@ -32,8 +32,10 @@ namespace Dune
               R, 2,
               Dune::FieldVector<R,3>,
               Dune::FieldVector<Dune::FieldVector<R,2>, 1>
-              >,
-          EdgeR02DLocalBasis<D,R>
+              >
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
+          , EdgeR02DLocalBasis<D,R>
+#endif
           >
   {
   public:

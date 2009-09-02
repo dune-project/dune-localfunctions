@@ -17,7 +17,12 @@ namespace Dune
 
          \nosubgrouping
    */
-  class RT02DLocalCoefficients : public LocalCoefficientsInterface<RT02DLocalCoefficients>
+  class RT02DLocalCoefficients
+#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
+    : public LocalCoefficientsInterface
+#else
+    : public LocalCoefficientsInterface<RT02DLocalCoefficients>
+#endif
   {
   public:
     //! \brief Standard constructor

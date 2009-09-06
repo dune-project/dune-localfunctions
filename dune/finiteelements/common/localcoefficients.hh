@@ -4,8 +4,6 @@
 #define DUNE_LOCALCOEFFICIENTS_HH
 
 #include <cstddef>
-#include <iostream>
-#include <vector>
 
 namespace Dune
 {

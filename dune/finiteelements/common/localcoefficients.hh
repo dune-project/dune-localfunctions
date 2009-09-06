@@ -7,8 +7,6 @@
 #include <iostream>
 #include <vector>
 
-#include <dune/common/tuples.hh>
-
 namespace Dune
 {
   // the number of the beast ...
@@ -25,7 +23,7 @@ namespace Dune
 
          \nosubgrouping
    */
-  class LocalKey : public Dune::tuple<unsigned int, unsigned int, unsigned int>
+  class LocalKey
   {
   public:
     //! \brief Standard constructor for uninitialized local index
@@ -38,32 +36,43 @@ namespace Dune
         \param i Index in the set of all functions associated to this subentity
      */
     LocalKey (unsigned int s, unsigned int c, unsigned int i)
-      : Dune::tuple<unsigned int, unsigned int, unsigned int>(s,c,i)
+      : subEntity_(s), codim_(c), index_(i)
     {}
 
     //! \brief Return number of associated subentity
     inline unsigned int subEntity () const
     {
-      return Dune::get<0>(*this);
+      return subEntity_;
     }
 
     //! \brief Return codim of associated entity
     inline unsigned int codim () const
     {
-      return Dune::get<1>(*this);
+      return codim_;
     }
 
     //! \brief Return offset within subentity
     inline unsigned int index () const
     {
-      return Dune::get<2>(*this);
+      return index_;
     }
 
     //! \brief Set index component
     void index (unsigned int i)
     {
-      Dune::get<2>(*this) = i;
+      index_ = i;
     }
+
+  private:
+    /** \brief Local number of the associated subentity */
+    unsigned int subEntity_;
+
+    /** \brief Codimension of the associated subentity */
+    unsigned int codim_;
+
+    /** \brief Index in the set of all functions associated to this subentity */
+    unsigned int index_;
+
   };
 
   /**@ingroup LocalLayoutInterface

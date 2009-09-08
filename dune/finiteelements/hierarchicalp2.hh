@@ -16,36 +16,28 @@
 namespace Dune
 {
 
-  /** \brief The Hierarchical P2 basis
+  /** \todo Please doc me !
    */
   template<class D, class R, int dim>
   class HierarchicalP2LocalFiniteElement
-  {
-  public:
-    HierarchicalP2LocalFiniteElement()
-    {
-      DUNE_THROW(Dune::NotImplemented,"RefinedP1LocalFiniteElement not implemented for dim > 3.");
-    }
-  };
-
-  /** \todo Please doc me !
-   */
-  template<class D, class R>
-  class HierarchicalP2LocalFiniteElement<D,R,2> : LocalFiniteElementInterface<
-                                                      LocalFiniteElementTraits<HierarchicalSimplexP2LocalBasis<D,R,2>,
-                                                          Pk2DLocalCoefficients<2>,
-                                                          HierarchicalSimplexP2LocalInterpolation<HierarchicalSimplexP2LocalBasis<D,R,2> > >
+    : LocalFiniteElementInterface<
+          LocalFiniteElementTraits<HierarchicalSimplexP2LocalBasis<D,R,dim>,
+              typename Dune::SelectType<dim==2, Pk2DLocalCoefficients<2>, Pk3DLocalCoefficients<2> >::Type,
+              HierarchicalSimplexP2LocalInterpolation<HierarchicalSimplexP2LocalBasis<D,R,dim> > >
 #ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-                                                      , HierarchicalP2LocalFiniteElement<D,R,2>
+          , HierarchicalP2LocalFiniteElement<D,R,dim>
 #endif
-                                                      >
+          >
   {
+
+    dune_static_assert(dim==2 || dim==3, "HierarchicalP2LocalFiniteElement only implemented for dim==2, 3.");
+
   public:
     /** \todo Please doc me !
      */
-    typedef LocalFiniteElementTraits<HierarchicalSimplexP2LocalBasis<D,R,2>,
-        Pk2DLocalCoefficients<2>,
-        HierarchicalSimplexP2LocalInterpolation<HierarchicalSimplexP2LocalBasis<D,R,2> > > Traits;
+    typedef LocalFiniteElementTraits<HierarchicalSimplexP2LocalBasis<D,R,dim>,
+        typename Dune::SelectType<dim==2, Pk2DLocalCoefficients<2>, Pk3DLocalCoefficients<2> >::Type,
+        HierarchicalSimplexP2LocalInterpolation<HierarchicalSimplexP2LocalBasis<D,R,dim> > > Traits;
 
     /** \todo Please doc me !
      */
@@ -83,70 +75,12 @@ namespace Dune
     }
 
   private:
-    HierarchicalSimplexP2LocalBasis<D,R,2> basis;
-    Pk2DLocalCoefficients<2> coefficients;
-    HierarchicalSimplexP2LocalInterpolation<HierarchicalSimplexP2LocalBasis<D,R,2> > interpolation;
-    GeometryType gt;
-  };
+    HierarchicalSimplexP2LocalBasis<D,R,dim> basis;
 
-  /** \todo Please doc me !
-   */
-  template<class D, class R>
-  class HierarchicalP2LocalFiniteElement<D,R,3> : LocalFiniteElementInterface<
-                                                      LocalFiniteElementTraits<HierarchicalSimplexP2LocalBasis<D,R,3>,
-                                                          Pk3DLocalCoefficients<2>,
-                                                          HierarchicalSimplexP2LocalInterpolation<HierarchicalSimplexP2LocalBasis<D,R,3> > >
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-                                                      , HierarchicalP2LocalFiniteElement<D,R,3>
-#endif
-                                                      >
-  {
-  public:
-    /** \todo Please doc me !
-     */
-    typedef LocalFiniteElementTraits<HierarchicalSimplexP2LocalBasis<D,R,3>,
-        Pk3DLocalCoefficients<2>,
-        HierarchicalSimplexP2LocalInterpolation<HierarchicalSimplexP2LocalBasis<D,R,3> > > Traits;
+    /** \todo Stupid, Pk local coefficients can't be parametrized */
+    typename Dune::SelectType<dim==2, Pk2DLocalCoefficients<2>, Pk3DLocalCoefficients<2> >::Type coefficients;
 
-    /** \todo Please doc me !
-     */
-    HierarchicalP2LocalFiniteElement ()
-    {
-      gt.makeTetrahedron();
-    }
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalBasisType& localBasis () const
-    {
-      return basis;
-    }
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalCoefficientsType& localCoefficients () const
-    {
-      return coefficients;
-    }
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalInterpolationType& localInterpolation () const
-    {
-      return interpolation;
-    }
-
-    /** \todo Please doc me !
-     */
-    GeometryType type () const
-    {
-      return gt;
-    }
-
-  private:
-    HierarchicalSimplexP2LocalBasis<D,R,3> basis;
-    Pk3DLocalCoefficients<2> coefficients;
-    HierarchicalSimplexP2LocalInterpolation<HierarchicalSimplexP2LocalBasis<D,R,3> > interpolation;
+    HierarchicalSimplexP2LocalInterpolation<HierarchicalSimplexP2LocalBasis<D,R,dim> > interpolation;
     GeometryType gt;
   };
 

@@ -23,7 +23,10 @@ namespace Dune
 
          \nosubgrouping
    */
-  class LocalKey : public Dune::tuple<unsigned int, unsigned int, unsigned int>
+  class LocalKey
+  // The data members of this class are implemented using a tuple base class,
+  // because that way they can be used as keys in stl containers.
+    : public Dune::tuple<unsigned int, unsigned int, unsigned int>
   {
   public:
     //! \brief Standard constructor for uninitialized local index

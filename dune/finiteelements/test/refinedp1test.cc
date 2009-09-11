@@ -136,8 +136,7 @@ int testForDim()
 
 int main () try
 {
-#warning Gridfactory for ALUSimplexGrid<2,2> is not yet supported, skipping test
-  //    testForDim<2>();
+  testForDim<2>();
   testForDim<3>();
 }
 catch (Dune::Exception e)

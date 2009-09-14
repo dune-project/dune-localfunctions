@@ -83,7 +83,7 @@ namespace Dune
       out[2][1][0] = 0;           out[2][1][1] = sign2;
 
       out[3][0][0] = 0;           out[3][0][1] = 0;
-      out[3][1][0] = 0;           out[3][1][1] = sign2;
+      out[3][1][0] = 0;           out[3][1][1] = sign3;
     }
 
     //! \brief Polynomial order of the shape functions

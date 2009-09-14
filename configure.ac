@@ -46,6 +46,7 @@ AC_CONFIG_FILES([
                 dune/finiteelements/refinedp1/Makefile
                 dune/finiteelements/rannacher_turek2d/Makefile
                 dune/finiteelements/rt02d/Makefile
+                dune/finiteelements/rt0q2d/Makefile
                 dune/finiteelements/test/Makefile
                 doc/layout/Makefile
                 doc/doxygen/Makefile

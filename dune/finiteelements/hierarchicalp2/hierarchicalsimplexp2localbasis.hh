@@ -96,7 +96,7 @@ namespace Dune
   };
 
   /**@ingroup LocalBasisImplementation
-     \brief Hierarchical P2 basis in 1d.
+     \brief Hierarchical P2 basis in 2d.
 
      The shape functions are associated to the following points:
 
@@ -175,7 +175,7 @@ namespace Dune
   };
 
   /**@ingroup LocalBasisImplementation
-     \brief Hierarchical P2 basis in 1d.
+     \brief Hierarchical P2 basis in 3d.
 
      The shape functions are associated to the following points:
 

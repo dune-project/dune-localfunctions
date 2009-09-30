@@ -68,19 +68,28 @@ namespace Dune
      *  Evaluates all shape functions at the given (local) position and
      *  return the (global) value of the sum weighted with some coefficients.
      *
+     *  \note This is a default implementation which works by perfoming the
+     *        weighted sum of the values returned by evaluateFunction().
+     *
      *  \tparam C The type of the coefficients
      *
-     *  \param [in]  in     Where to evaluate in local (reference element)
-     *                      coordinates.
-     *  \param [in]  coeffs The coefficients.
-     *  \param [out] out    The resulting global value.
+     *  \param [in] in     Where to evaluate in local (reference element)
+     *                     coordinates.
+     *  \param [in] coeffs The coefficients.
+     *  \return     The resulting global value.
      */
     template<typename C>
-    inline void evaluateCoeffs(const typename Traits::DomainType& in,
-                               const std::vector<C>& coeffs,
-                               typename Traits::RangeType& out) const
+    inline typename Traits::RangeType
+    evaluateCoeffs(const typename Traits::DomainType& in,
+                   const std::vector<C>& coeffs) const
     {
-      asImp().evaluateCoeffs(in,coeffs,out);
+      std::vector<typename Traits::RangeType> basevalues;
+      typename Traits::RangeType out = 0;
+      asImp().evaluateFunction(in, basevalues);
+      assert(coeffs.size() == basevalues.size());
+      for(unsigned i = 0; i < coeffs.size(); ++i)
+        out.axpy(coeffs[i], basevalues[i]);
+      return out;
     }
 
     /*! \brief Polynomial order of the shape functions
@@ -161,20 +170,28 @@ namespace Dune
      *  derivatives of the global values by the global coordinates, evaluated
      *  at local coordinates.
      *
+     *  \note This is a default implementation which works by perfoming the
+     *        weighted sum of the values returned by evaluateJacobian().
+     *
      *  \tparam C The type of the coefficients
      *
-     *  \param [in]  in     Where to evaluate in local (reference element)
-     *                      coordinates.
-     *  \param [in]  coeffs The coefficients.
-     *  \param [out] out    The resulting global jacobian.
+     *  \param [in] in     Where to evaluate in local (reference element)
+     *                     coordinates.
+     *  \param [in] coeffs The coefficients.
+     *  \return            The resulting global jacobian.
      */
     template<typename C>
     inline void
     evaluateJacobianCoeffs(const typename Traits::DomainType& in,         // position
-                           const std::vector<C>& coeffs,
-                           typename Traits::JacobianType& out) const      // return value
+                           const std::vector<C>& coeffs) const      // return value
     {
-      asImp().evaluateJacobianCoeffs(in,coeffs,out);
+      std::vector<typename Traits::JacobianType> basevalues;
+      typename Traits::JacobianType out = 0;
+      asImp().evaluateFunction(in, basevalues);
+      assert(coeffs.size() == basevalues.size());
+      for(unsigned i = 0; i < coeffs.size(); ++i)
+        out.axpy(coeffs[i], basevalues[i]);
+      return out;
     }
 
 #ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS

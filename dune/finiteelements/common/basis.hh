@@ -5,11 +5,56 @@
 
 #include <vector>
 
-#include <dune/common/array.hh>
-#include <dune/common/fvector.hh>
+#include <dune/common/static_assert.hh>
 
 namespace Dune
 {
+
+  //! Traits for basis implementations
+  /**
+   *  Each basis should either have its own specialization of this class or
+   *  provide a traits class conforming to this interface in some other way.
+   *
+   *  \note Defining the traits inside the basis class is impossible if the
+   *  basis is derived from C0BasisInterface or C1BasisInterface since those
+   *  require the traits class as an (implicit or explicit) template
+   *  parameter.
+   */
+  template<typename Imp>
+  struct BasisTraits {
+    dune_static_assert(false,
+                       "If you get this error you the compiler tried to "
+                       "instantiate the non-specialized version of "
+                       "BasisTraits, which should never happen.  Maybe you "
+                       "forgot to provide a specialization for your basis?");
+    //! Type used for single coordinate components
+    typedef Imp::Traits::DomainFieldType DomainFieldType;
+    //! Dimension of the domain, number of components per coordinate
+    static const unsigned dimDomain = Imp::Traits::dimDomain;
+    //! Type used for complete coordinates
+    typedef Imp::Traits::DomainType DomainType;
+
+    //! Type used for one component of the function value
+    typedef Imp::Traits::RangeFieldType RangeFieldType;
+    //! Dimension or number of components of the function value
+    static const unsigned dimRange = Imp::Traits::dimRange;
+    //! Type used for the complete function value
+    typedef Imp::Traits::RangeType RangeType;
+
+    //! How many times this function may be differentiated
+    /**
+     * This should be 0 if the basis provides only the interface of
+     * C0BasisInterface and 1 if it provides the interface of
+     * C1BasisInterface.
+     */
+    static const unsigned diffOrder Imp::Traits::diffOrder;
+    //! The type of the jacobian
+    /**
+     *  \note This typedef is not required for a basis that implements the
+     *        C0BasisInterface only
+     */
+    typedef Imp::Traits::JacobianType JacobianType;
+  };
 
   /**@ingroup LocalBasisInterface
          \brief Interface for shape functions on a specific reference element
@@ -17,16 +62,12 @@ namespace Dune
          This class represents a set of shape functions defined on one particular
      reference element.  It returns global values.
 
-         \tparam T     Instance of LocalBasisTraits providing type information.
-     \tparam Imp   Implementation of the interface used via CRTP
+     \tparam Imp Implementation of the interface used via CRTP
+     \tparam T   Instance of LocalBasisTraits providing type information.
 
          \nosubgrouping
    */
-  template<class T
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-      , class Imp
-#endif
-      >
+  template<typename Imp, typename T = BasisTraits<Imp> >
   class C0BasisInterface
   {
   public:
@@ -121,20 +162,14 @@ namespace Dune
    * This class represents a set of differentiable shape functions defined on
    * one particular reference element.  This interface returns global values.
    *
-   * \tparam T   Instance of C1LocalBasisTraits providing type information.
    * \tparam Imp Implementation of the interface used via CRTP.
+   * \tparam T   Instance of C1LocalBasisTraits providing type information.
    *
    * \nosubgrouping
    */
-#if DUNE_VIRTUAL_SHAPEFUNCTIONS
-  template<class T>
+  template<typename Imp, typename T = BasisTraits<Imp> >
   class C1BasisInterface
-    : public C0BasisInterface<T>
-#else
-  template<class T, class Imp>
-  class C1BasisInterface
-    : public C0BasisInterface<T,Imp>
-#endif
+    : public C0BasisInterface<Imp,T>
   {
   public:
     //! \brief Export type traits

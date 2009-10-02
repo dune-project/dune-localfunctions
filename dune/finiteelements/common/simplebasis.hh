@@ -22,9 +22,10 @@ namespace Dune
    * \tparam Geo Type of the geometry.
    *
    * \nosubgrouping
+   * \extends C0LocalBasisTraits
    */
   template<typename LB>
-  struct BasisTraits<C1SimpleBasis<LB> >
+  struct BasisTraits<C0SimpleBasis<LB> >
     : public typename LB::Traits
   {
     //! Limit the diffOrder to 0
@@ -91,6 +92,7 @@ namespace Dune
    * \tparam Geo Type of the geometry.
    *
    * \nosubgrouping
+   * \extends C1LocalBasisTraits
    */
   template<typename LB, typename Geo>
   struct BasisTraits<C1SimpleBasis<LB, Geo> >

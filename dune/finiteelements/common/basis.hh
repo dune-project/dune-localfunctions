@@ -22,24 +22,24 @@ namespace Dune
    */
   template<typename Imp>
   struct BasisTraits {
-    dune_static_assert(false,
+    dune_static_assert(AlwaysFalse<Imp>::value,
                        "If you get this error you the compiler tried to "
                        "instantiate the non-specialized version of "
                        "BasisTraits, which should never happen.  Maybe you "
                        "forgot to provide a specialization for your basis?");
     //! Type used for single coordinate components
-    typedef Imp::Traits::DomainFieldType DomainFieldType;
+    typedef typename Imp::Traits::DomainFieldType DomainFieldType;
     //! Dimension of the domain, number of components per coordinate
     static const unsigned dimDomain = Imp::Traits::dimDomain;
     //! Type used for complete coordinates
-    typedef Imp::Traits::DomainType DomainType;
+    typedef typename Imp::Traits::DomainType DomainType;
 
     //! Type used for one component of the function value
-    typedef Imp::Traits::RangeFieldType RangeFieldType;
+    typedef typename Imp::Traits::RangeFieldType RangeFieldType;
     //! Dimension or number of components of the function value
     static const unsigned dimRange = Imp::Traits::dimRange;
     //! Type used for the complete function value
-    typedef Imp::Traits::RangeType RangeType;
+    typedef typename Imp::Traits::RangeType RangeType;
 
     //! How many times this function may be differentiated
     /**
@@ -47,13 +47,13 @@ namespace Dune
      * C0BasisInterface and 1 if it provides the interface of
      * C1BasisInterface.
      */
-    static const unsigned diffOrder Imp::Traits::diffOrder;
+    static const unsigned diffOrder = Imp::Traits::diffOrder;
     //! The type of the jacobian
     /**
      *  \note This typedef is not required for a basis that implements the
      *        C0BasisInterface only
      */
-    typedef Imp::Traits::JacobianType JacobianType;
+    typedef typename Imp::Traits::JacobianType JacobianType;
   };
 
   /**@ingroup LocalBasisInterface

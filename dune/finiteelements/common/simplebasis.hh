@@ -5,6 +5,7 @@
 
 #include <vector>
 
+#include <dune/common/fmatrix.hh>
 #include <dune/common/static_assert.hh>
 #include <dune/common/typetraits.hh>
 
@@ -26,7 +27,7 @@ namespace Dune
    */
   template<typename LB>
   struct BasisTraits<C0SimpleBasis<LB> >
-    : public typename LB::Traits
+    : public LB::Traits
   {
     //! Limit the diffOrder to 0
     static const unsigned diffOrder = 0;
@@ -96,9 +97,9 @@ namespace Dune
    */
   template<typename LB, typename Geo>
   struct BasisTraits<C1SimpleBasis<LB, Geo> >
-    : public typename LB::Traits
+    : public LB::Traits
   {
-    dune_static_assert(Geo::mydimension == dimDomain,
+    dune_static_assert(Geo::mydimension == LB::Traits::dimDomain,
                        "Local dimension of the geometry and "
                        "domain dimension of the local basis must match");
     dune_static_assert(LB::Traits::diffOrder >= 1,
@@ -110,7 +111,7 @@ namespace Dune
     //! The number of columns of the jacobian is different than for the LB
     typedef FieldMatrix<
         typename LB::Traits::JacobianType::field_type::field_type,
-        dimRange, Geo::coorddimension> JacobianType;
+        LB::Traits::dimRange, Geo::coorddimension> JacobianType;
   };
   /**@ingroup LocalBasisInterface
    * \brief Basis implementation where local and global values are equal
@@ -199,7 +200,7 @@ namespace Dune
     {
       out.resize(lb.size());
       std::vector<typename LB::Traits::JacobianType> localJ(lb.size());
-      lb.evaluateJacobian(in, localjacobian);
+      lb.evaluateJacobian(in, localJ);
       typename Geo::Jacobian geoJinvT = geo.jacobianInverseTransposed(in);
       for(unsigned baseno = 0; baseno < lb.size(); ++baseno)
         for(unsigned compno = 0; compno < Traits::dimRange; ++compno)

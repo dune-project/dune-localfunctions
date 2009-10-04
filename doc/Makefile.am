@@ -1,6 +1,6 @@
 # $Id: Makefile.am 836 2007-12-05 17:34:43Z robertk $
 
-SUBDIRS = doxygen layout
+SUBDIRS = doxygen
 
 EXTRA_DIST = Makefile.dist.in Makefile.dist.am
 

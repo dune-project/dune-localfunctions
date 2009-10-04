@@ -6,9 +6,9 @@
 #include <dune/common/geometrytype.hh>
 
 #include "common/localfiniteelement.hh"
-#include "p12d/p12dlocalbasis.hh"
-#include "p12d/p12dlocalcoefficients.hh"
-#include "p12d/p12dlocalinterpolation.hh"
+#include "p1/p1localbasis.hh"
+#include "p1/p1localcoefficients.hh"
+#include "p1/p1localinterpolation.hh"
 
 namespace Dune
 {
@@ -16,9 +16,9 @@ namespace Dune
   /** \todo Please doc me !
    */
   template<class D, class R>
-  class P12DLocalFiniteElement : LocalFiniteElementInterface<
-                                     LocalFiniteElementTraits<P12DLocalBasis<D,R>,P12DLocalCoefficients,
-                                         P12DLocalInterpolation<P12DLocalBasis<D,R> > >
+  class P12DLocalFiniteElement : public LocalFiniteElementInterface<
+                                     LocalFiniteElementTraits<P1LocalBasis<D,R,2>,P1LocalCoefficients<2>,
+                                         P1LocalInterpolation<2,P1LocalBasis<D,R,2> > >
 #ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
                                      , P12DLocalFiniteElement<D,R>
 #endif
@@ -27,8 +27,8 @@ namespace Dune
   public:
     /** \todo Please doc me !
      */
-    typedef LocalFiniteElementTraits<P12DLocalBasis<D,R>,P12DLocalCoefficients,
-        P12DLocalInterpolation<P12DLocalBasis<D,R> > > Traits;
+    typedef LocalFiniteElementTraits<P1LocalBasis<D,R,2>,P1LocalCoefficients<2>,
+        P1LocalInterpolation<2,P1LocalBasis<D,R,2> > > Traits;
 
     /** \todo Please doc me !
      */
@@ -66,9 +66,9 @@ namespace Dune
     }
 
   private:
-    P12DLocalBasis<D,R> basis;
-    P12DLocalCoefficients coefficients;
-    P12DLocalInterpolation<P12DLocalBasis<D,R> > interpolation;
+    P1LocalBasis<D,R,2> basis;
+    P1LocalCoefficients<2> coefficients;
+    P1LocalInterpolation<2,P1LocalBasis<D,R,2> > interpolation;
     GeometryType gt;
   };
 

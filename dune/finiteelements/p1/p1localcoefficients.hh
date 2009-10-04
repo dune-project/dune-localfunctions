@@ -1,7 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_P11DLOCALCOEFFICIENTS_HH
-#define DUNE_P11DLOCALCOEFFICIENTS_HH
+#ifndef DUNE_P1_LOCALCOEFFICIENTS_HH
+#define DUNE_P1_LOCALCOEFFICIENTS_HH
 
 #include <cstddef>
 #include <iostream>
@@ -12,28 +12,28 @@
 namespace Dune
 {
 
-  /**@ingroup LocalLayoutImplementation
-         \brief Layout map for P0 elements
+  /** \brief Local coefficients for simplex P0 elements
 
          \nosubgrouping
    */
-  class P11DLocalCoefficients : public LocalCoefficientsInterface
+  template <int dim>
+  class P1LocalCoefficients : public LocalCoefficientsInterface
 #ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-                                <P11DLocalCoefficients>
+                              <P1LocalCoefficients<dim> >
 #endif
   {
   public:
     //! \brief Standard constructor
-    P11DLocalCoefficients () : li(2)
+    P1LocalCoefficients () : li(size())
     {
-      for (std::size_t i=0; i<2; i++)
-        li[i] = LocalKey(i,1,0);
+      for (std::size_t i=0; i<size(); i++)
+        li[i] = LocalKey(i,dim,0);
     }
 
     //! number of coefficients
     std::size_t size () const
     {
-      return 2;
+      return dim+1;
     }
 
     //! get i'th index

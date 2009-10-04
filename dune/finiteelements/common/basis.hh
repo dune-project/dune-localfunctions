@@ -19,6 +19,8 @@ namespace Dune
    *  basis is derived from C0BasisInterface or C1BasisInterface since those
    *  require the traits class as an (implicit or explicit) template
    *  parameter.
+   *
+   *  \tparam Imp The type of the basis implementation.
    */
   template<typename Imp>
   struct BasisTraits {

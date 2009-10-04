@@ -27,8 +27,9 @@ namespace Dune {
     typedef LI LocalInterpolationType;
   };
 
-  //! interface for a finite element
-
+  /** \brief interface for a finite element
+      \tparam T The controlling traits
+   */
 #if DUNE_VIRTUAL_SHAPEFUNCTIONS
   template<class T>
 #else

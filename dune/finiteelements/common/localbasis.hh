@@ -24,14 +24,12 @@ namespace Dune
          This is just a convenience class for supplying traits to the
          C0LocalBasisInterface.
 
-         Template parameters:
-
-         - <tt>DF</tt>: Type to represent the field in the domain.
-         - <tt>n</tt>:  Dimension of the domain.
-         - <tt>D</tt>:  Type to represent the domain, allows random access.
-         - <tt>RF</tt>: Type to represent the field in the range.
-         - <tt>m</tt>:  Dimension of the range.
-         - <tt>R</tt>:  Type to represent the range, allows random access.
+         \tparam DF Type to represent the field in the domain.
+         \tparam n  Dimension of the domain.
+         \tparam D  Type to represent the domain, allows random access.
+         \tparam RF Type to represent the field in the range.
+         \tparam m  Dimension of the range.
+         \tparam R  Type to represent the range, allows random access.
 
          \nosubgrouping
    */
@@ -144,15 +142,13 @@ namespace Dune
          Extends the traits class LocalBasisTraits for differentiable
          shape functions.
 
-         Template parameters:
-
-         - <tt>DF</tt>: Type to represent the field in the domain.
-         - <tt>n</tt>:  Dimension of the domain.
-         - <tt>D</tt>:  Type to represent the domain, allows random access.
-         - <tt>RF</tt>: Type to represent the field in the range.
-         - <tt>m</tt>:  Dimension of the range.
-         - <tt>R</tt>:  Type to represent the range, allows random access.
-         - <tt>J</tt>:  Type to represent the Jacobian, allows random access.
+         \tparam DF Type to represent the field in the domain.
+         \tparam n  Dimension of the domain.
+         \tparam D  Type to represent the domain, allows random access.
+         \tparam RF Type to represent the field in the range.
+         \tparam m  Dimension of the range.
+         \tparam R  Type to represent the range, allows random access.
+         \tparam J  Type to represent the Jacobian, allows random access.
 
          \nosubgrouping
    */
@@ -184,8 +180,8 @@ namespace Dune
 
          Template parameters:
 
-         - <tt>T</tt>: Instance of C1LocalBasisTraits providing type information.
-         - <tt>Imp</tt>: Implementation of the interface used via Barton-Nackman
+         \tparam T Instance of C1LocalBasisTraits providing type information.
+         \tparam Imp Implementation of the interface used via Barton-Nackman
 
          \nosubgrouping
    */

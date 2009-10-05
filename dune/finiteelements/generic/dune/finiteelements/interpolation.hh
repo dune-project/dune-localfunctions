@@ -17,7 +17,7 @@ namespace Dune
     typedef typename Entity::Geometry Geometry;
     typedef FieldVector< typename Geometry::ctype, Geometry::dimension > DomainVector;
 
-    LocalFunction ( const Function &functon, const Entity &entity )
+    LocalFunction ( const Function &function, const Entity &entity )
       : function_( function ),
         geometry_( entity.geometry_ )
     {}
@@ -40,7 +40,7 @@ namespace Dune
   template< class GridView, class DofMapper, class Creator >
   class Interpolation
   {
-    typedef Interpolation< DofMapper, Creator > This;
+    typedef Interpolation< GridView, DofMapper, Creator > This;
 
     template< int topologyId >
     struct Build;
@@ -49,7 +49,7 @@ namespace Dune
     typedef typename Creator::Key Key;
     typedef typename Creator::Field Field;
 
-    typedef Creator::LocalInterpolation LocalInterpolation;
+    typedef typename Creator::LocalInterpolation LocalInterpolation;
 
     static const unsigned int dimension = Creator::dimension;
     static const unsigned int numTopologies = (1 << dimension);
@@ -58,7 +58,7 @@ namespace Dune
       : gridView_( gridView ),
         dofMapper_( dofMapper )
     {
-      ForLoop< Build, 0, numTopologies-1 >::apply( key, localInterpolation_ );
+      GenericGeometry::ForLoop< Build, 0, numTopologies-1 >::apply( key, localInterpolation_ );
     }
 
     ~Interpolation ()
@@ -70,6 +70,9 @@ namespace Dune
     template< class Function >
     void operator() ( const Function &function, std::vector< Field > &dofVector ) const
     {
+      typedef typename GridView::template Codim< 0 >::Iterator Iterator;
+      typedef typename GridView::template Codim< 0 >::Entity Entity;
+
       assert( dofVector.size() == dofMapper_.size() );
       std::vector< unsigned int > indices;
       std::vector< Field > localDofs;
@@ -77,10 +80,11 @@ namespace Dune
       const Iterator end = gridView_.end();
       for( Iterator it = gridView_.begin(); it != end; ++it )
       {
-        dofMapper_.map( *it, indices );
+        const Entity &entity = *it;
+        dofMapper_.map( entity, indices );
 
         const LocalInterpolation &interpolation = localInterpolation( entity );
-        LocalFunction< Function, Entity > localFunction( function, *it );
+        LocalFunction< Function, Entity > localFunction( function, entity );
         interpolation.interpolate( localFunction, localDofs );
 
         const unsigned int size = indices.size();
@@ -90,7 +94,8 @@ namespace Dune
       }
     }
 
-    const LocalInterpolation &localInterpolation ( const Entity &entity ) const
+    const LocalInterpolation &
+    localInterpolation ( const typename GridView::template Codim< 0 >::Entity &entity ) const
     {
       return localInterpolation_[ topologyId( entity.type() ) ];
     }
@@ -110,7 +115,8 @@ namespace Dune
     static void apply ( const Key &key,
                         const LocalInterpolation *(&localInterpolation)[ numTopologies ] )
     {
-      localInterpolation[ topologyId ] = &Creator::localInterpolation< Topology >( Key );
+      typedef typename GenericGeometry::Topology< topologyId, dimension >::type Topology;
+      localInterpolation[ topologyId ] = &Creator::template localInterpolation< Topology >( key );
     }
   };
 }

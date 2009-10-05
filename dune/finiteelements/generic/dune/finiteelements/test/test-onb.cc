@@ -7,6 +7,7 @@
 
 #include <dune/finiteelements/orthonormalbasis/dgorthonormalbasis.hh>
 #include <dune/finiteelements/dofmapper.hh>
+#include <dune/finiteelements/interpolation.hh>
 
 const unsigned int dimension = GridType::dimension;
 
@@ -14,10 +15,11 @@ typedef double StorageField;
 typedef Dune::AlgLib::MultiPrecision< 512 > ComputeField;
 typedef Dune::DGOrthonormalBasisProvider< dimension, StorageField, ComputeField > BasisProvider;
 
-typedef Dune::DofMapper< GridType::LeafIndexSet, BasisProvider > DofMapper;
+typedef GridType::LeafGridView GridView;
+typedef Dune::DofMapper< GridView::IndexSet, BasisProvider > DofMapper;
 
-typedef GridType::Codim< 0 >::Entity Entity;
-typedef GridType::Codim< 0 >::LeafIterator LeafIterator;
+typedef GridView::Codim< 0 >::Entity Entity;
+typedef GridView::Codim< 0 >::Iterator Iterator;
 
 int main ( int argc, char **argv )
 {
@@ -28,14 +30,15 @@ int main ( int argc, char **argv )
   }
 
   Dune::GridPtr< GridType > gridPtr( argv[ 1 ] );
-  GridType &grid = *gridPtr;
+
+  GridView gridView = gridPtr->leafView();
 
   const unsigned int order = atoi( argv[ 2 ] );
 
-  DofMapper dofMapper( grid.leafIndexSet(), order );
+  DofMapper dofMapper( gridView.indexSet(), order );
 
-  const LeafIterator end = grid.leafend< 0 >();
-  for( LeafIterator it = grid.leafbegin< 0 >(); it != end; ++it )
+  const Iterator end = gridView.end< 0 >();
+  for( Iterator it = gridView.begin< 0 >(); it != end; ++it )
   {
     const Entity &entity = *it;
     const unsigned int topologyId = Dune::GenericGeometry::topologyId( entity.type() );

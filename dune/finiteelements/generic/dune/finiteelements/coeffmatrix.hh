@@ -209,7 +209,7 @@ namespace Dune
             itx += *skipIt;
             val.axpy(*pos,*itx);
           }
-          y[ i ].assign( r, val );
+          DerivativeAssign<XDerivatives,YDerivatives>::apply(r,val,y[i]);
         }
       }
     }

@@ -18,10 +18,10 @@
 #error "TOPOLOGY not defined."
 #endif
 
-template <int dimR,int dimBasis>
+template <int dimR,bool scalarBasis>
 struct TestMatrix;
 template <int dimR>
-struct TestMatrix<dimR,dimR>
+struct TestMatrix<dimR,false>
 {
   template <class Basis>
   TestMatrix(const Basis &basis)
@@ -40,7 +40,7 @@ struct TestMatrix<dimR,dimR>
   unsigned int size_;
 };
 template <int dimR>
-struct TestMatrix<dimR,1>
+struct TestMatrix<dimR,true>
 {
   template <class Basis>
   TestMatrix(const Basis &basis)
@@ -81,7 +81,7 @@ void vecTest(int testNr,unsigned int p)
   typedef VectorialEvaluator<Basis,dimBasis,basisLayout> Evaluator;
   const unsigned int blockSize = (dimBasis==dimR) ? 1 : dimR;
   PolynomialBasisWithMatrix<Evaluator,SparseCoeffMatrix<double,blockSize> > basis(mbasis);
-  TestMatrix<dimR,dimBasis> matrix(mbasis);
+  TestMatrix<dimR,dimBasis==1> matrix(mbasis);
   basis.fill(matrix);
 
   unsigned int size = basis.size();
@@ -124,13 +124,13 @@ int main ( int argc, char **argv )
   }
   int p = atoi( argv[ 1 ] );
 
-  const unsigned int dimR = 2;
-  // problem: vecTest<Topology,1,value,dimR,value>(1,p);
+  const unsigned int dimR = 3;
+  vecTest<Topology,1,value,dimR,value>(1,p);
   vecTest<Topology,1,derivative,dimR,derivative>(2,p);
   vecTest<Topology,dimR,value,dimR,value>(3,p);
   vecTest<Topology,dimR,derivative,dimR,derivative>(4,p);
-  // problem: vecTest<Topology,1,derivative,dimR,value>(5,p);
+  vecTest<Topology,1,derivative,dimR,value>(5,p);
   vecTest<Topology,1,value,dimR,derivative>(6,p);
-  // missing: vecTest<Topology,dimR,value,dimR,derivative>(7,p);
+  vecTest<Topology,dimR,value,dimR,derivative>(7,p);
   vecTest<Topology,dimR,derivative,dimR,value>(8,p);
 }

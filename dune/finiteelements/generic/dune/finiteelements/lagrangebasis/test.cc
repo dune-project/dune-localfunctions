@@ -18,21 +18,24 @@ bool test(unsigned int order) {
   LagrangePoints points( order );
 
   std::vector< Dune::FieldVector< double, 1 > > y( basis.size() );
-
   for( unsigned int index = 0; index < points.size(); ++index )
   {
     basis.evaluate( points[ index ].point(), y );
+    bool first = true;
     for( unsigned int i = 0; i < y.size(); ++i )
     {
       if( fabs( y[ i ] - double( i == index ) ) > 1e-10 )
       {
-        std::cout << "ERROR: "
-                  << index << " -> "
-                  << "x = " << points[ index ].point()
-                  << " (codim = " << points[ index ].localKey().codim() << ", "
-                  << "subentity = " << points[ index ].localKey().subentity() << ", "
-                  << "index = " << points[ index ].localKey().index() << "):"
-                  << "    y[ " << i << " ] = " << y[ i ] << std::endl;
+        if (first) {
+          std::cout << "ERROR: "
+                    << index << " -> "
+                    << "x = " << points[ index ].point()
+                    << " (codim = " << points[ index ].localKey().codim() << ", "
+                    << "subentity = " << points[ index ].localKey().subentity() << ", "
+                    << "index = " << points[ index ].localKey().index() << "):" << std::endl;
+          first = false;
+        }
+        std::cout << "         y[ " << i << " ] = " << y[ i ] << std::endl;
         ret = false;
       }
     }

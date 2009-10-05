@@ -16,8 +16,6 @@
 #include "../p23d.hh"
 #include "../pk3d.hh"
 #include "../q1.hh"
-#include "../q12d.hh"
-#include "../q13d.hh"
 #include "../q22d.hh"
 #include "../rt02d.hh"
 #include "../refinedp1.hh"
@@ -197,13 +195,13 @@ int main(int argc, char** argv) try
   Dune::P1LocalFiniteElement<double,double,3> p13dlfem;
   success = testFE(p13dlfem) and success;
 
-  Dune::Q1LocalFiniteElement<double,double,3> q1lfem;
-  success = testFE(q1lfem) and success;
+  Dune::Q1LocalFiniteElement<double,double,1> q11dlfem;
+  success = testFE(q11dlfem) and success;
 
-  Dune::Q12DLocalFiniteElement<double,double> q12dlfem;
+  Dune::Q1LocalFiniteElement<double,double,2> q12dlfem;
   success = testFE(q12dlfem) and success;
 
-  Dune::Q12DLocalFiniteElement<double,double> q13dlfem;
+  Dune::Q1LocalFiniteElement<double,double,3> q13dlfem;
   success = testFE(q13dlfem) and success;
 
   Dune::Q22DLocalFiniteElement<double,double> q22dlfem;

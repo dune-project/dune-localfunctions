@@ -12,7 +12,6 @@ namespace Dune
 
   // BasisProvider
   // -------------
-
   template< class BasisCreator >
   struct BasisProvider
   {
@@ -25,11 +24,13 @@ namespace Dune
     template< class Topology >
     static const Basis &basis ( const Key &key )
     {
+      dune_static_assert( Topology::dimension == dimension, "basis provider called with a topology of wrong dimension!" );
       return instance().template getBasis< Topology >( key );
     }
 
     static const Basis &basis ( const unsigned int topologyId, const Key &key )
     {
+      assert( topologyId < numTopologies );
       return instance().getBasis( topologyId, key );
     }
 

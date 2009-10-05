@@ -83,41 +83,37 @@ namespace Dune
   // LagrangeBasisCreator
   // --------------------
 
-  template< int dim, class SF, class CF >
+  template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
   struct LagrangeBasisCreator
   {
+    static const unsigned int dimension = dim;
+
     typedef SF StorageField;
 
     typedef StorageField BasisField;
 
-    typedef VirtualMonomialBasis<dim,BasisField> MBasis;
-    typedef StandardEvaluator<MBasis> Evaluator;
+    typedef Dune::MonomialBasisProvider< dimension, BasisField > MonomialBasisProvider;
+    typedef typename MonomialBasisProvider::Basis MonomialBasis;
 
-    typedef AlgLib::MultiPrecision< Precision<CF>::value > ComputeField;
-    static const int dimension = dim;
-    typedef PolynomialBasisWithMatrix<Evaluator,SparseCoeffMatrix<StorageField> > Basis;
     typedef unsigned int Key;
 
-    template <class Topology>
-    static void basis(unsigned int order,Basis* &basis)
-    {
-      const MBasis &virtBasis = MonomialBasisProvider<dimension,BasisField>::template basis<Topology>(order);
+    typedef StandardEvaluator< MonomialBasis > Evaluator;
+    typedef AlgLib::MultiPrecision< Precision< CF >::value > ComputeField;
+    typedef PolynomialBasisWithMatrix< Evaluator, SparseCoeffMatrix< StorageField > > Basis;
 
-      basis = new Basis(virtBasis);
-      LagrangeMatrix<Topology,ComputeField> matrix(order);
-      basis->fill(matrix);
-      {
-        typedef MultiIndex< dimension > MIField;
-        typedef VirtualMonomialBasis<dim,MIField> MBasisMI;
-        typedef PolynomialBasisWithMatrix<StandardEvaluator<MBasisMI>,SparseCoeffMatrix<StorageField> > BasisMI;
-        const MBasisMI &_mBasisMI = MonomialBasisProvider<dimension,MIField>::template basis<Topology>(order);
-        BasisMI basisMI(_mBasisMI);
-        basisMI.fill(matrix);
-        std::stringstream name;
-        name << "lagrange_" << Topology::name() << "_p" << order;
-        std::ofstream out(name.str().c_str());
-        basisPrint<1>(out,basisMI);
-      }
+    template< class Topology >
+    static const Basis &basis ( const Key &order )
+    {
+      const MonomialBasis &monomialBasis = MonomialBasisProvider::template basis< Topology >( order );
+      Basis *basis = new Basis( monomialBasis );
+      LagrangeMatrix< Topology, ComputeField > matrix( order );
+      basis->fill( matrix );
+      return *basis;
+    }
+
+    static void release ( const Basis &basis )
+    {
+      delete &basis;
     }
   };
 

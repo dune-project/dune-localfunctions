@@ -835,24 +835,47 @@ namespace Dune
     using Base::order_;
   };
 
+
+
+  // MonomialBasisCreator
+  // --------------------
+
   template< int dim, class F >
   struct MonomialBasisCreator
   {
-    typedef F StorageField;
-    typedef VirtualMonomialBasis<dim,StorageField> Basis;
-    static const int dimension = dim;
-    typedef unsigned int Key;
+    static const unsigned int dimension = dim;
 
-    template <class Topology>
+    typedef F StorageField;
+
+    typedef unsigned int Key;
+    typedef VirtualMonomialBasis< dimension, StorageField > Basis;
+
+    template< class Topology >
+    static const Basis &basis ( const Key &order )
+    {
+      return *(new VirtualMonomialBasisImpl< Topology, StorageField >( order ));
+    }
+
+    static void release ( const Basis &basis )
+    {
+      delete &basis;
+    }
+
+    template< class Topology >
     static void basis(unsigned int order,Basis* &basis)
     {
       basis = new VirtualMonomialBasisImpl<Topology,StorageField>(order);
     }
   };
 
+
+
+  // MonomialBasisProvider
+  // ---------------------
+
   template< int dim, class SF >
   struct MonomialBasisProvider
-    : public BasisProvider<MonomialBasisCreator<dim,SF> >
+    : public BasisProvider< MonomialBasisCreator< dim, SF > >
   {};
 
 }

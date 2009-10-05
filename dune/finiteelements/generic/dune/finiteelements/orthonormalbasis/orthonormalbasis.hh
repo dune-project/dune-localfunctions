@@ -2,57 +2,69 @@
 // vi: set et ts=4 sw=2 sts=2:
 #ifndef DUNE_ORTHONORMALBASIS_HH
 #define DUNE_ORTHONORMALBASIS_HH
+
 #include <sstream>
+
 #include <dune/finiteelements/polynomialbasis.hh>
 #include <dune/finiteelements/basisprovider.hh>
 #include <dune/finiteelements/basisprint.hh>
-#include "orthonormalcompute.hh"
+#include <dune/finiteelements/orthonormalbasis/orthonormalcompute.hh>
+
 namespace Dune
 {
 
-  template< int dim, class SF, class CF >
-  struct ONBasisCreator
+  // OrthonormalBasisCreator
+  // -----------------------
+
+  template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
+  struct OrthonormalBasisCreator
   {
-    typedef VirtualMonomialBasis<dim,SF> MBasis;
+    static const unsigned int dimension = dim;
     typedef SF StorageField;
-    typedef AlgLib::MultiPrecision< Precision<CF>::value > ComputeField;
-    static const int dimension = dim;
-    typedef SparseCoeffMatrix< StorageField > CoefficientMatrix;
-    typedef StandardEvaluator<MBasis> Evaluator;
-    typedef PolynomialBasis<Evaluator,CoefficientMatrix> Basis;
+
+    typedef Dune::MonomialBasisProvider< dimension, StorageField > MonomialBasisProvider;
+    typedef typename MonomialBasisProvider::Basis MonomialBasis;
+
     typedef unsigned int Key;
+
+    typedef AlgLib::MultiPrecision< Precision< CF >::value > ComputeField;
+    typedef SparseCoeffMatrix< StorageField > CoefficientMatrix;
+    typedef StandardEvaluator< MonomialBasis > Evaluator;
+    typedef PolynomialBasis< Evaluator, CoefficientMatrix > Basis;
+
     typedef typename GenericGeometry::SimplexTopology< dim >::type SimplexTopology;
 
-    template <class Topology>
-    static void basis(unsigned int order,Basis* &basis)
+    template< class Topology >
+    static const Basis &basis ( const unsigned int order )
     {
-      const MBasis &_basis = MonomialBasisProvider<dimension,StorageField>::template basis<SimplexTopology>(order);
+      const MonomialBasis &monomialBasis = MonomialBasisProvider::template basis< SimplexTopology >( order );
+
       static CoefficientMatrix _coeffs;
-      if ( _coeffs.size() <= _basis.size() )
+      if( _coeffs.size() <= monomialBasis.size() )
       {
-        ONB::ONBMatrix<Topology,ComputeField> matrix(order);
-        _coeffs.fill(matrix);
-        basis = new Basis(_basis,_coeffs,_basis.size());
+        ONB::ONBMatrix< Topology, ComputeField > matrix( order );
+        _coeffs.fill( matrix );
       }
-      else
-        basis = new Basis(_basis,_coeffs,_basis.size());
-      {
-        typedef MultiIndex< dimension > MIField;
-        typedef VirtualMonomialBasis<dim,MIField> MBasisMI;
-        typedef PolynomialBasis<StandardEvaluator<MBasisMI>,SparseCoeffMatrix<StorageField> > BasisMI;
-        const MBasisMI &_mBasisMI = MonomialBasisProvider<dimension,MIField>::template basis<SimplexTopology>(order);
-        BasisMI basisMI(_mBasisMI,_coeffs,_basis.size());
-        std::stringstream name;
-        name << "onb_" << Topology::name() << "_p" << order;
-        std::ofstream out(name.str().c_str());
-        basisPrint<0>(out,basisMI);
-      }
+
+      return *(new Basis( monomialBasis, _coeffs, monomialBasis.size() ));
+    }
+
+    static void release ( const Basis &basis )
+    {
+      delete &basis;
     }
   };
 
+
+
+  // OrthonormalBasisProvider
+  // ------------------------
+
   template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
   struct OrthonormalBasisProvider
-    : public BasisProvider<ONBasisCreator<dim,SF,CF> >
+    : public BasisProvider< OrthonormalBasisCreator< dim, SF, CF > >
   {};
+
 }
-#endif // DUNE_ORTHONORMALBASIS_HH
+
+#endif // #ifndef DUNE_ORTHONORMALBASIS_HH

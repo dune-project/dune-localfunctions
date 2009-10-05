@@ -64,17 +64,33 @@ namespace Dune
   struct RaviartThomasInterpolation<F,d>::Helper<Func,Vector,true>
   // Func is of Function type
   {
-    typedef std::vector<Dune::FieldVector<F,d> > Result;
+    typedef std::vector< Dune::FieldVector<F,d> > Result;
     Helper(const Func & func, Vector &vec)
       : func_(func),
         vec_(vec),
         tmp_(1)
     {}
+    const typename Vector::value_type &operator()(unsigned int row,unsigned int col)
+    {
+      return vec_[row];
+    }
     template <class Fy>
     void set(unsigned int row,unsigned int col,
              const Fy &val)
     {
+      assert(-100<val && val<100);
+      assert(col==0);
+      assert(row<vec_.size());
       field_cast( val, vec_[row] );
+    }
+    template <class Fy>
+    void add(unsigned int row,unsigned int col,
+             const Fy &val)
+    {
+      assert(-100<val && val<100);
+      assert(col==0);
+      assert(row<vec_.size());
+      vec_[row] += field_cast<typename Vector::value_type>(val);
     }
     template <class DomainVector>
     const Result &evaluate(const DomainVector &x) const
@@ -100,11 +116,29 @@ namespace Dune
       : basis_(basis),
         matrix_(matrix),
         tmp_(basis.size()) {}
+    const F &operator()(unsigned int row,unsigned int col) const
+    {
+      return matrix_(row,col);
+    }
+    F &operator()(unsigned int row,unsigned int col)
+    {
+      return matrix_(row,col);
+    }
     template <class Fy>
     void set(unsigned int row,unsigned int col,
              const Fy &val)
     {
+      assert(col<matrix_.cols());
+      assert(row<matrix_.rows());
       field_cast(val,matrix_(row,col));
+    }
+    template <class Fy>
+    void add(unsigned int row,unsigned int col,
+             const Fy &val)
+    {
+      assert(col<matrix_.cols());
+      assert(row<matrix_.rows());
+      matrix_(row,col) += val;
     }
     template <class DomainVector>
     const Result &evaluate(const DomainVector &x) const
@@ -338,8 +372,7 @@ namespace Dune
 
       testBasisVal.resize(mFaceBasis_.size());
 
-      unsigned int nrFaces = GenericGeometry::Size<Topology,1>::value;
-      for (unsigned int f=0; f<nrFaces; ++f)
+      for (unsigned int f=0; f<dimension+1; ++f)
       {
         const typename SubQuadratureProvider::Quadrature &faceQuad = SubQuadratureProvider::template quadrature<Topology>( std::make_pair(f,2*order_+1) );
         const typename SubQuadratureProvider::SubQuadrature &faceSubQuad = SubQuadratureProvider::template subQuadrature<Topology>( std::make_pair(f,2*order_+1) );
@@ -356,7 +389,7 @@ namespace Dune
         row += mFaceBasis_.size();
       }
       // element dofs
-      if (row<func.size())
+      if (row<size())
       {
         testBasisVal.resize(mBasis_.size());
 
@@ -394,7 +427,10 @@ namespace Dune
         typename MVal::const_iterator miter = mVal.begin();
         for (unsigned int row = startRow;
              row!=endRow; ++miter, ++row )
-          matrix.set(row,col, weight*(cFactor*(*miter)) );
+        {
+          matrix.add(row,col, weight*(cFactor*(*miter)) );
+        }
+        assert( miter == mVal.end() );
       }
     }
     template <class MVal, class RTVal,class Matrix>
@@ -413,8 +449,11 @@ namespace Dune
              row!=endRow; ++miter,row+=dimension )
         {
           for (unsigned int i=0; i<dimension; ++i)
-            matrix.set(row+i,col, weight*(*rtiter)[i]*(*miter) );
+          {
+            matrix.add(row+i,col, weight*(*rtiter)[i]*(*miter) );
+          }
         }
+        assert( miter == mVal.end() );
       }
     }
 
@@ -565,10 +604,10 @@ namespace Dune
     typedef unsigned int Key;
     typedef typename GenericGeometry::SimplexTopology< dim >::type SimplexTopology;
 
-    #define RTLAGRANGE 1
+    #define RTLAGRANGE 0
 #if RTLAGRANGE
-    typedef LagrangePointsCreator< ComputeField, dimension > PointsSetCreator;
-    // typedef LobattoPointsCreator< ComputeField, dimension > PointsSetCreator;
+    // typedef LagrangePointsCreator< ComputeField, dimension > PointsSetCreator;
+    typedef LobattoPointsCreator< ComputeField, dimension > PointsSetCreator;
     typedef RaviartThomasLagrangeInterpolation< ComputeField, PointsSetCreator > LocalInterpolation;
 #else
     typedef RaviartThomasL2Interpolation< ComputeField, dimension > LocalInterpolation;
@@ -608,12 +647,14 @@ namespace Dune
         name << "rt_" << Topology::name() << "_p" << order;
         std::ofstream out(name.str().c_str());
         basisPrint<0>(out,basisMI);
-        const LocalCoefficients &keys = localCoefficients<Topology>(order);
-        for (int index=0; index<keys.size(); ++index)
-          std::cout << index << " -> "
+        /*
+           const LocalCoefficients &keys = localCoefficients<Topology>(order);
+           for (int index=0;index<keys.size();++index)
+           std::cout << index << " -> "
                     << " (codim = " << keys.localKey(index).codim() << ", "
                     << "subentity = " << keys.localKey(index).subEntity() << ", "
                     << "index = " << keys.localKey(index).index() << "):" << std::endl;
+         */
       }
       return *basis;
     }

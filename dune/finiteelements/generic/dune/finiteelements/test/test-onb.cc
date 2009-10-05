@@ -6,8 +6,8 @@
 #include <dune/grid/io/file/dgfparser/dgfgridtype.hh>
 
 #include <dune/finiteelements/orthonormalbasis/dgorthonormalbasis.hh>
-#include <dune/finiteelements/dofmapper.hh>
-#include <dune/finiteelements/interpolation.hh>
+#include <dune/finiteelements/global/dofmapper.hh>
+#include <dune/finiteelements/global/interpolation.hh>
 
 const unsigned int dimension = GridType::dimension;
 

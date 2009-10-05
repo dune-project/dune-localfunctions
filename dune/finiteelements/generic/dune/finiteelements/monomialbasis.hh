@@ -351,8 +351,13 @@ namespace Dune
       baseBasis_.integral( order, offsets, values );
 
       const unsigned int *const baseSizes = baseBasis_.sizes_;
+
+      Field *const col0End = values + baseSizes[ 0 ];
+      for( Field *it = values; it != col0End; ++it )
+        *it *= Field( 1 ) / Field( dimDomain );
       Field *row0 = values;
-      for( unsigned int k = 0; k <= order; ++k )
+
+      for( unsigned int k = 1; k <= order; ++k )
       {
         const Field factor = (Field( 1 ) / Field( k + dimDomain ));
 
@@ -360,7 +365,7 @@ namespace Dune
         Field *const col0End = row1 + baseSizes[ k ];
         Field *it = row1;
         for( ; it != col0End; ++it )
-          *it = factor * (*it);
+          *it *= factor;
         for( unsigned int i = 0; i < k; ++i )
         {
           Field *const end = it + baseSizes[ i ];

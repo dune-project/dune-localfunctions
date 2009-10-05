@@ -54,6 +54,10 @@ int main ( int argc, char **argv )
   std::cout << std::endl;
   std::cout << ">>> Testing quadrature of order " << (2*p+1) << "..." << std::endl;
 
+  std::vector< Dune::FieldVector< double, 1 > > yquad( size );
+  for( unsigned int i = 0; i < size; ++i )
+    yquad[ i ] = 0;
+
   typedef GenericQuadratureRule< Topology > Quadrature;
   Quadrature quadrature( 2*p+1 );
   const Quadrature::iterator qend = quadrature.end();
@@ -62,8 +66,23 @@ int main ( int argc, char **argv )
     basis.evaluate( p, qit->position(), y );
     std::cout << "x = " << qit->position() << ":" << std::endl;
     for( unsigned int i = 0; i < size; ++i )
+    {
+      yquad[ i ] += qit->weight() * y[ i ];
       std::cout << "    y[ " << i << " ] = " << y[ i ] << std::endl;
+    }
   }
+
+  std::vector< Dune::FieldVector< double, 1 > > yint( size );
+  basis.integral( p, yint );
+  for( unsigned int i = 0; i < size; ++i )
+  {
+    if( fabs( yquad[ i ] - yint[ i ] ) < 1e-10 )
+      continue;
+    std::cerr << "Quadrature and Integral differ for basis function " << i << "." << std::endl;
+    std::cout << "    quadrature: " << yquad[ i ] << std::endl;
+    std::cout << "    integral:   " << yint[ i ] << std::endl;
+  }
+
 
   if( false )
   {

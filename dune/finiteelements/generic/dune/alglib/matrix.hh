@@ -67,12 +67,6 @@ namespace Dune
         return matrix_.gethighbound( 2 )+1;
       }
 
-      Vector getColumn( const unsigned int column,
-                        const unsigned int rowStart, const unsigned int rowEnd)
-      {
-        return matrix_.getcolumn(column,rowStart,rowEnd);
-      }
-
       const Field *rowPtr ( const unsigned int row ) const
       {
         assert(row<rows());

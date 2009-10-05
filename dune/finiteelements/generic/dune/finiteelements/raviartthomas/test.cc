@@ -1,7 +1,6 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#include <dune/finiteelements/vectest/veclagrangebasis.hh>
-#include <dune/finiteelements/quadrature/genericquadrature.hh>
+#include <dune/finiteelements/raviartthomas/raviartthomasbasis.hh>
 
 using namespace Dune;
 using namespace GenericGeometry;
@@ -12,43 +11,27 @@ bool test(unsigned int order) {
   typedef double StorageField;
   typedef AlgLib::MultiPrecision<512> ComputeField;
   // typedef double ComputeField;
-  //
-  static const int dimRange = 2;
 
   bool ret = true;
 
   for (unsigned int o=1; o<=order; ++o)
   {
     std::cout << "Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
-    typedef VecLagrangeBasisProvider<Topology::dimension,dimRange,StorageField,ComputeField> BasisProvider;
+    typedef RaviartThomasBasisProvider<Topology::dimension,StorageField,ComputeField> BasisProvider;
     const typename BasisProvider::Basis &basis = BasisProvider::basis(Topology::id,o);
 
     typedef Dune::LagrangePoints< Topology, StorageField > LagrangePoints;
     LagrangePoints points( o );
 
-    std::vector< Dune::FieldVector< double, dimRange > > y( basis.size() );
+    std::vector< Dune::FieldVector< double, Topology::dimension > > y( basis.size() );
     for( unsigned int index = 0; index < points.size(); ++index )
     {
       basis.evaluate( points[ index ].point(), y );
       bool first = true;
       for( unsigned int i = 0; i < y.size(); ++i)
       {
-        // std::cout << index << " " << i << " : " << y[i] << std::endl;
-        unsigned int r = i%dimRange;
-        if( fabs( y[ i ][r] - double( i/dimRange == index ) ) > 1e-10 )
-        {
-          if (first) {
-            std::cout << "ERROR: "
-                      << index << " -> "
-                      << "x = " << points[ index ].point()
-                      << " (codim = " << points[ index ].localKey().codim() << ", "
-                      << "subentity = " << points[ index ].localKey().subentity() << ", "
-                      << "index = " << points[ index ].localKey().index() << "):" << std::endl;
-            first = false;
-          }
-          std::cout << "         y[ " << i << " ][ " << r << " ] = " << y[ i ][r] << std::endl;
-          ret = false;
-        }
+        std::cout << index << " " << i << " : " << y[i] << std::endl;
+        first = false;
       }
     }
   }

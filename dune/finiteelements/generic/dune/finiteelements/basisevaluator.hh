@@ -170,6 +170,15 @@ namespace Dune
       basis_.template evaluate<deriv>(x,derivContainer);
       return typename Iterator<deriv>::All(derivContainer);
     }
+    template <unsigned int deriv,class DVector>
+    typename Iterator<deriv>::All evaluate(const DVector &x)
+    {
+      Base::template resize<deriv>();
+      std::vector<Derivatives<Field,dimension,dimRange,deriv,derivative> >& derivContainer =
+        reinterpret_cast<std::vector<Derivatives<Field,dimension,dimRange,deriv,derivative> >&>(container_);
+      basis_.template evaluate<deriv>(x,derivContainer);
+      return typename Iterator<deriv>::All(derivContainer);
+    }
 
   protected:
     StandardEvaluator ( const Basis &basis, unsigned int size )
@@ -209,6 +218,15 @@ namespace Dune
     }
     template <unsigned int deriv>
     typename Iterator<deriv>::All evaluate(const DomainVector &x)
+    {
+      resize< deriv >();
+      fill_.template apply<deriv>( x,Base::template evaluate<deriv>(x), vecContainer_ );
+      std::vector<Derivatives<Field,dimension,dimRange,deriv,Fill::layout> >& derivContainer =
+        reinterpret_cast<std::vector<Derivatives<Field,dimension,dimRange,deriv,Fill::layout> >&>(vecContainer_);
+      return typename Iterator<deriv>::All(derivContainer);
+    }
+    template <unsigned int deriv,class DVector>
+    typename Iterator<deriv>::All evaluate(const DVector &x)
     {
       resize< deriv >();
       fill_.template apply<deriv>( x,Base::template evaluate<deriv>(x), vecContainer_ );

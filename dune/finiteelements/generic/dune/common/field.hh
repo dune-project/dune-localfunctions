@@ -58,18 +58,35 @@ namespace Dune
     {
       return Field( 0 );
     }
+    static const Field epsilon()
+    {
+      return Field(1e-12);
+    }
+  };
+  template< unsigned int precision >
+  struct Zero< Dune::AlgLib::MultiPrecision< precision > >
+  {
+    typedef Dune::AlgLib::MultiPrecision< precision > Field;
+    operator Field () const
+    {
+      return Field( 0 );
+    }
+    static const Field epsilon()
+    {
+      return Field(1e-20);
+    }
   };
 
   template< class Field >
   inline bool operator< ( const Zero< Field > &, const Field &f )
   {
-    return f > 1e-12;
+    return f > Zero<Field>::epsilon();
   }
 
   template< class Field >
   inline bool operator< ( const Field &f, const Zero< Field > & )
   {
-    return f < -1e-12;
+    return f < -Zero<Field>::epsilon();
   }
 
   template< class Field >

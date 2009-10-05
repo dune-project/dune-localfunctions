@@ -29,7 +29,7 @@ namespace Dune
     typedef typename DiscreteFunctionSpace::GridView GridView;
     typedef typename GridView::template Codim< 0 >::Entity Entity;
 
-    VTKFunctionWrapper ( const DiscreteFunctionSpace &dfSpace, const std::vector< double > &dofs )
+    VTKFunctionWrapper ( const DiscreteFunctionSpace &dfSpace, const std::vector< RangeField > &dofs )
       : dfSpace_( dfSpace ),
         dofs_( dofs )
     {}

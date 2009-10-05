@@ -154,7 +154,9 @@ namespace Dune
             for( unsigned int i = 0; i < dimension-1; ++i )
               point[ i ] = scale * basePoint[ i ];
 
-            const Field weight = baseWeight * onedWeight * pow( scale, dimension-1 );
+            Field weight = baseWeight * onedWeight ;
+            for ( unsigned int p = 0; p<dimension-1; ++p)
+              weight *= scale;                    // pow( scale, dimension-1 );
             Base::insert( point, weight );
           }
         }
@@ -178,7 +180,8 @@ namespace Dune
       template< class Topology >
       static const Quadrature &quadrature ( const Key &order )
       {
-        return *(new GenericQuadrature< Topology, F, OneDQuad >( order ));
+        GenericQuadrature< Topology, F, OneDQuad > *quad = new GenericQuadrature< Topology, F, OneDQuad >( order );
+        return *quad;
       }
 
       static void release ( const Quadrature &quadrature )

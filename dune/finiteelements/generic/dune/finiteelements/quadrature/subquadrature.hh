@@ -6,6 +6,7 @@
 #include <dune/grid/genericgeometry/referencemappings.hh>
 
 #include <dune/finiteelements/quadrature/quadrature.hh>
+#include <dune/finiteelements/quadrature/genericquadrature.hh>
 
 namespace Dune
 {
@@ -23,6 +24,7 @@ namespace Dune
       static const unsigned int dimension = dim;
       static const unsigned int codimension = dimension - QuadratureCreator::dimension;
       typedef GenericGeometry::Quadrature< dimension, Field > Quadrature;
+      typedef typename QuadratureCreator::Quadrature SubQuadrature;
 
       typedef std::pair< unsigned int, typename QuadratureCreator::Key > Key;
 
@@ -40,13 +42,23 @@ namespace Dune
         Quadrature *subQuadrature = new Quadrature( topologyId );
 
         const typename QuadratureCreator::Quadrature *quadrature;
-        IfTopology< QuadratureMaker, dimension >::apply( subTopologyId, key.second, quadrature );
+        IfTopology< QuadratureMaker, dimension-codimension >::apply( subTopologyId, key.second, quadrature );
 
         const unsigned int numQuadraturePoints = quadrature->size();
         for( unsigned int qp = 0; qp < numQuadraturePoints; ++qp )
           subQuadrature->insert( mapping.global( quadrature->point( qp ) ), quadrature->weight( qp ) );
         QuadratureCreator::release( *quadrature );
 
+        return *subQuadrature;
+      }
+
+      static const SubQuadrature &
+      subQuadrature ( const unsigned int topologyId, const Key &key )
+      {
+        const unsigned int subTopologyId =
+          ReferenceTopologies<dimension>::get(topologyId).topologyId( codimension,key.first );
+        const SubQuadrature *subQuadrature;
+        IfTopology< QuadratureMaker, dimension-codimension >::apply( subTopologyId, key.second, subQuadrature );
         return *subQuadrature;
       }
 
@@ -59,6 +71,11 @@ namespace Dune
       static void release ( const Quadrature &quadrature )
       {
         delete &quadrature;
+      }
+
+      void release( const SubQuadrature &quad )
+      {
+        QuadratureCreator::release( quad );
       }
 
     private:
@@ -81,7 +98,25 @@ namespace Dune
     template< unsigned int dim, class QuadratureCreator >
     struct SubQuadratureProvider
       : public QuadratureProvider< SubQuadratureCreator< dim, QuadratureCreator > >
-    {};
+    {
+      typedef SubQuadratureCreator< dim, QuadratureCreator> Creator;
+      typedef typename QuadratureCreator::Quadrature SubQuadrature;
+      static const SubQuadrature &
+      subQuadrature(unsigned int topologyId, const typename Creator::Key &key)
+      {
+        return Creator::subQuadrature(topologyId,key);
+      }
+      template <class Topology>
+      static const SubQuadrature &
+      subQuadrature(const typename Creator::Key &key)
+      {
+        return subQuadrature(Topology::id,key);
+      }
+      void release( const SubQuadrature &quad )
+      {
+        Creator::release( quad );
+      }
+    };
 
   }
 

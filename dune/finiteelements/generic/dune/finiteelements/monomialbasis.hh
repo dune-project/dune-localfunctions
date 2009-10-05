@@ -677,6 +677,15 @@ namespace Dune
       evaluate<0>(x,&(values[0]));
     }
 
+    template< class DVector, class RVector >
+    void evaluate ( const DVector &x, RVector &values ) const
+    {
+      DomainVector bx;
+      for( int d = 0; d < dimension; ++d )
+        field_cast( x[ d ], bx[ d ] );
+      evaluate<0>( bx, values );
+    }
+
     void integral ( Field *const values ) const
     {
       Base::integral( order_, sizes( order_ ), values );
@@ -802,6 +811,23 @@ namespace Dune
     {
       evaluate<0>(x,values);
     }
+    template< class DVector, class RVector >
+    void evaluate ( const DVector &x, RVector &values ) const
+    {
+      DomainVector bx;
+      for( int d = 0; d < dimension; ++d )
+        field_cast( x[ d ], bx[ d ] );
+      evaluate<0>( bx, values );
+    }
+    template< unsigned int deriv, class DVector, class RVector >
+    void evaluate ( const DVector &x, RVector &values ) const
+    {
+      DomainVector bx;
+      for( int d = 0; d < dimension; ++d )
+        field_cast( x[ d ], bx[ d ] );
+      evaluate<deriv>( bx, values );
+    }
+
 
     virtual void integral ( Field *const values ) const = 0;
     template <class Vector>

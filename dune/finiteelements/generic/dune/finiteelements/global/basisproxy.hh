@@ -47,6 +47,16 @@ namespace Dune
       return basis().size();
     }
 
+    void evaluate ( const FieldVector<double,dimDomain> &x, std::vector< RangeVector > &values ) const
+    {
+      return evaluate( field_cast<Field>(x),values );
+    }
+    template< class LocalDofVector >
+    void evaluate ( const FieldVector<double,dimDomain>&x, const LocalDofVector &localDofs, RangeVector &value ) const
+    {
+      return evaluate( field_cast<Field>(x),localDofs,value );
+    }
+
     void evaluate ( const DomainVector &x, std::vector< RangeVector > &values ) const
     {
       values.resize( size() );

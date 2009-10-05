@@ -6,8 +6,8 @@
 #include <dune/finiteelements/p23d/p23dlocalbasis.hh>
 #include <dune/finiteelements/pk3d/pk3dlocalbasis.hh>
 
-#define USE_GENERIC 1
-const unsigned int iterations = 1;
+#define USE_GENERIC 0
+const unsigned int iterations = 1000000;
 
 using namespace Dune;
 using namespace GenericGeometry;
@@ -53,12 +53,12 @@ bool test(unsigned int order) {
 
   // typedef AlgLib::MultiPrecision<128> StorageField;
   typedef double StorageField;
-  typedef AlgLib::MultiPrecision<256> ComputeField;
-  // typedef double ComputeField;
+  // typedef AlgLib::MultiPrecision<256> ComputeField;
+  typedef double ComputeField;
 
   bool ret = true;
 
-  for (unsigned int o=1; o<=order; ++o)
+  for (unsigned int o=order; o<=order; ++o)
   {
     std::cout << "Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
 

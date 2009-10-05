@@ -22,6 +22,11 @@ namespace Dune
         geometry_( entity.geometry() )
     {}
 
+    template <class xF>
+    RangeVector operator() ( const Dune::FieldVector<xF,Entity::dimension> &x ) const
+    {
+      return this->operator()(field_cast<double>(x));
+    }
     RangeVector operator() ( const DomainVector &x ) const
     {
       return function_( geometry_.global( x ) );

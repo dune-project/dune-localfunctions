@@ -120,6 +120,14 @@ namespace Dune
         field_cast( x[ d ], bx[ d ] );
       evaluate<0>( bx, values );
     }
+    template< unsigned int deriv, class DVector, class RVector >
+    void evaluate ( const DVector &x, RVector &values ) const
+    {
+      DomainVector bx;
+      for( int d = 0; d < dimension; ++d )
+        field_cast( x[ d ], bx[ d ] );
+      evaluate<deriv>( bx, values );
+    }
 
   protected:
     PolynomialBasis(const PolynomialBasis &);

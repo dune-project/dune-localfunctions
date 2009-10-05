@@ -3,29 +3,43 @@
 #include <config.h>
 
 #include <dune/grid/genericgeometry/topologytypes.hh>
+#include <dune/grid/io/file/dgfparser/dgfpsggridtype.hh>
 #include <dune/grid/io/file/dgfparser/dgfgridtype.hh>
+#include <dune/grid/io/file/vtk/subsamplingvtkwriter.hh>
+#include <dune/grid/io/visual/grapedatadisplay.hh>
 
-#include <dune/finiteelements/orthonormalbasis/dgorthonormalbasis.hh>
-#include <dune/finiteelements/global/dofmapper.hh>
+#include <dune/finiteelements/orthonormalbasis/dgspace.hh>
 #include <dune/finiteelements/global/interpolation.hh>
+#include <dune/finiteelements/global/vtkfunctionwrapper.hh>
 
 const unsigned int dimension = GridType::dimension;
 
-typedef double StorageField;
-typedef Dune::AlgLib::MultiPrecision< 512 > ComputeField;
-typedef Dune::DGOrthonormalBasisProvider< dimension, StorageField, ComputeField > BasisProvider;
-
 typedef GridType::LeafGridView GridView;
-typedef Dune::DofMapper< GridView::IndexSet, BasisProvider > DofMapper;
+typedef Dune::OrthonormalDGSpace< GridView, double > Space;
+typedef Dune::Interpolation< Space > Interpolation;
+typedef Dune::VTKFunctionWrapper< Space > VTKFunction;
 
 typedef GridView::Codim< 0 >::Entity Entity;
 typedef GridView::Codim< 0 >::Iterator Iterator;
 
+struct Function
+{
+  typedef Dune::FieldVector< double, dimension > DomainVector;
+  typedef Dune::FieldVector< double, 1 > RangeVector;
+
+  RangeVector operator() ( const DomainVector &x ) const
+  {
+    return exp( -x.two_norm() );
+  }
+};
+
+
+
 int main ( int argc, char **argv )
 {
-  if( argc < 3 )
+  if( argc < 4 )
   {
-    std::cerr << "Usage: " << argv[ 0 ] << " <dgf-file> <order>" << std::endl;
+    std::cerr << "Usage: " << argv[ 0 ] << " <dgf-file> <order> <level>" << std::endl;
     return 2;
   }
 
@@ -34,15 +48,19 @@ int main ( int argc, char **argv )
   GridView gridView = gridPtr->leafView();
 
   const unsigned int order = atoi( argv[ 2 ] );
+  const unsigned int level = atoi( argv[ 3 ] );
 
-  DofMapper dofMapper( gridView.indexSet(), order );
+  Space space( gridView, order );
+  const Space::DofMapper &dofMapper = space.dofMapper();
+  std::vector< double > dofs( dofMapper.size() );
 
-  const Iterator end = gridView.end< 0 >();
-  for( Iterator it = gridView.begin< 0 >(); it != end; ++it )
-  {
-    const Entity &entity = *it;
-    const unsigned int topologyId = Dune::GenericGeometry::topologyId( entity.type() );
+  Interpolation interpolation( space );
+  interpolation( Function(), dofs );
 
-    const BasisProvider::Basis &basis = BasisProvider::basis( topologyId, order );
-  }
+  Dune::SubsamplingVTKWriter< GridView > vtkWriter( gridView, level );
+  vtkWriter.addCellData( new VTKFunction( space, dofs ) );
+  vtkWriter.write( "onb" );
+
+  Dune::GrapeDataDisplay< GridType > grape( gridView );
+  grape.display();
 }

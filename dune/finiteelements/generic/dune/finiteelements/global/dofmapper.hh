@@ -8,6 +8,8 @@
 #include <dune/grid/genericgeometry/conversion.hh>
 #include <dune/grid/genericgeometry/referencetopologies.hh>
 
+#include <dune/finiteelements/common/localcoefficients.hh>
+
 namespace Dune
 {
 
@@ -162,7 +164,7 @@ namespace Dune
 
     for( unsigned int i = 0; i < mapInfo.numDofs; ++i )
     {
-      LocalKey key = localCoefficients.localKey( i );
+      const LocalKey &key = localCoefficients.localKey( i );
       ++counts[ mapper( key.codim(), key.subEntity() ) ];
     }
 

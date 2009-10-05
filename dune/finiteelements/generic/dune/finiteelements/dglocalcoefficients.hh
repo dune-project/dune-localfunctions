@@ -45,21 +45,23 @@ namespace Dune
   // DGLocalCoefficientsCreator
   // --------------------------
 
-  template< class NumBasisFunctions >
+  template< class BasisCreator >
   struct DGLocalCoefficientsCreator
   {
-    static const unsigned int dimension = NumBasisFunctions::dimension;
+    static const unsigned int dimension = BasisCreator::dimension;
 
-    typedef typename NumBasisFunctions::Key Key;
+    typedef typename BasisCreator::Key Key;
 
     typedef DGLocalCoefficients LocalCoefficients;
 
     template< class Topology >
     static const LocalCoefficients &localCoefficients ( const Key &key )
     {
-      const unsigned int numCoefficients
-        = NumBasisFunctions::template numBasisFunctions< Topology >( key );
-      return *(new LocalCoefficients( numCoefficients ));
+      const typename BasisCreator::Basis &basis
+        = BasisCreator::template basis< Topology >( key );
+      const LocalCoefficients *coefficients = new LocalCoefficients( basis.size() );
+      BasisCreator::release( basis );
+      return *coefficients;
     }
 
     static void release ( const LocalCoefficients &localCoefficients )

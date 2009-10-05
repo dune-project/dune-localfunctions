@@ -167,6 +167,13 @@ namespace Dune
       return numCols_;
     }
 
+    template< class BasisIterator >
+    void mult ( const BasisIterator &x, std::vector< Field > &y ) const
+    {
+      typedef Derivatives< Field, BasisIterator::dimDomain, 1, 0, BasisIterator::layout > Deriv;
+      mult( x, reinterpret_cast< std::vector< Deriv > & >( y ) );
+    }
+
     template< class BasisIterator, class Vector >
     void mult ( const BasisIterator &x,
                 std::vector<Vector> &y ) const
@@ -175,6 +182,7 @@ namespace Dune
           Vector::size,0,BasisIterator::layout> Deriv;
       mult(x,reinterpret_cast<std::vector<Deriv>&>(y));
     }
+
     template< class BasisIterator, class Fy, int dimD, int dimR, unsigned int deriv,DerivativeLayout layout >
     void mult ( const BasisIterator &x,
                 std::vector<Dune::Derivatives<Fy,dimD,dimR,deriv,layout> > &y ) const

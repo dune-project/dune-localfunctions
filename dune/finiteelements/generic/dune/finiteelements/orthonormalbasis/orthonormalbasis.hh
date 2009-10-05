@@ -29,7 +29,7 @@ namespace Dune
 
     typedef AlgLib::MultiPrecision< Precision< CF >::value > ComputeField;
     typedef SparseCoeffMatrix< StorageField, 1 > CoefficientMatrix;
-    typedef StandardEvaluator< MonomialBasis > Evaluator;
+    typedef MonomialEvaluator< MonomialBasis > Evaluator;
     typedef PolynomialBasis< Evaluator, CoefficientMatrix > Basis;
 
     typedef typename GenericGeometry::SimplexTopology< dim >::type SimplexTopology;

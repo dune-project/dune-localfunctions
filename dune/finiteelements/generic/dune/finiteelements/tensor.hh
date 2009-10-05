@@ -644,6 +644,18 @@ namespace Dune
       field_cast(vec1.block(),vec2.block());
     }
   };
+  template <int dimD,unsigned int deriv,DerivativeLayout layout,
+      class F1, class F2>
+  struct DerivativeAssign<Derivatives<F1,dimD,1,deriv,layout>,
+      F2 >
+  {
+    typedef Derivatives<F1,dimD,1,deriv,layout> Vec1;
+    typedef F2 Vec2;
+    static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
+    {
+      field_cast(vec1.block(),vec2);
+    }
+  };
   template <int dimD,int dimR,
       class F1,unsigned int deriv,
       class F2>

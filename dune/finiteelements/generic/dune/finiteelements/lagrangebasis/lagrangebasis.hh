@@ -97,7 +97,7 @@ namespace Dune
 
     typedef unsigned int Key;
 
-    typedef StandardEvaluator< MonomialBasis > Evaluator;
+    typedef MonomialEvaluator< MonomialBasis > Evaluator;
     typedef AlgLib::MultiPrecision< Precision< CF >::value > ComputeField;
     typedef PolynomialBasisWithMatrix< Evaluator, SparseCoeffMatrix< StorageField, 1 > > Basis;
 

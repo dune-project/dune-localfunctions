@@ -14,6 +14,7 @@
 #include <dune/finiteelements/polynomialbasis.hh>
 namespace Dune
 {
+#if 0
   template <class MBasis>
   struct RaviartThomasFill
   {
@@ -96,6 +97,7 @@ namespace Dune
     }
     Fill fill_;
   };
+#endif
 
   template< class Topology, class F >
   class RaviartThomasInterpolation
@@ -108,17 +110,19 @@ namespace Dune
     static const unsigned int dimension = Topology::dimension;
 
   private:
-    LagrangePoints< Topology, F > lagrangePoints_;
+    typedef Dune::LagrangePoints< Field, dimension > LagrangePoints;
+    typedef Dune::LagrangePointsCreator< Field, dimension > LagrangePointsCreator;
+    const LagrangePoints &lagrangePoints_;
 
   public:
     RaviartThomasInterpolation ( const unsigned int order )
-      : lagrangePoints_( order+dimension )
+      : lagrangePoints_( LagrangePointsCreator::template lagrangePoints< Topology >( order+dimension ) )
     {}
 
     template< class Eval, class Matrix >
     void interpolate ( Eval &eval, Matrix &coefficients )
     {
-      typedef typename LagrangePoints< Topology, F >::iterator Iterator;
+      typedef typename LagrangePoints::iterator Iterator;
 
       coefficients.resize( eval.size(), eval.size( ) );
 
@@ -128,11 +132,13 @@ namespace Dune
       {
         if (it->localKey().codim()>1)
           continue;
-        else if (it->localKey().codim()==1)
-          fillBnd( row, it->localKey(), eval.evaluate(it->point()),
+        else if (it->localKey().codim()==1) {
+          std::cout << it->point() << " : " << std::endl;
+          fillBnd( row, it->localKey(), eval.template evaluate<0>(it->point()),
                    coefficients );
+        }
         else
-          fillInterior( row, it->localKey(), eval.evaluate(it->point()),
+          fillInterior( row, it->localKey(), eval.template evaluate<0>(it->point()),
                         coefficients );
       }
     }
@@ -142,11 +148,16 @@ namespace Dune
     {
       const Dune::FieldVector<double,dimension> &normal = GenericGeometry::ReferenceElement<Topology,double>::integrationOuterNormal(key.subEntity());
       unsigned int col = 0;
+      std::cout << "fillBnd: " << row << " = ";
       for ( ; !iter.done() ; ++iter,++col) {
         matrix(row,col) = 0.;
-        for (unsigned int d=0; d<dimension; ++d)
-          matrix(row,col) += iter.block()[d]*normal[d];
+        for (unsigned int d=0; d<dimension; ++d) {
+          matrix(row,col) += iter->block()[d]*normal[d];
+          std::cout << iter->block()[d].toDouble() << " , ";
+        }
+        std::cout << matrix(row,col).toDouble() << "; ";
       }
+      std::cout << std::endl;
       ++row;
     }
     template <class LocalKey, class Iterator,class Matrix>
@@ -156,7 +167,7 @@ namespace Dune
       unsigned int col = 0;
       for ( ; !iter.done() ; ++iter,++col)
         for (unsigned int d=0; d<dimension; ++d)
-          matrix(row+d,col) = iter.block()[d];
+          matrix(row+d,col) = iter->block()[d];
       row+=dimension;
     }
   };
@@ -165,31 +176,130 @@ namespace Dune
   template <class Topology,class scalar_t>
   struct RaviartThomasMatrix {
     enum {dim = Topology::dimension};
+    struct VecMatrix
+    {
+      typedef MultiIndex<dim> MI;
+      typedef MonomialBasis<Topology,MI> MIBasis;
+      VecMatrix(unsigned int order)
+      {
+        MIBasis basis(order+1);
+        FieldVector< MI, dim > x;
+        for( int i = 0; i < dim; ++i )
+          x[ i ].set( i, 1 );
+        std::vector< MI > val( basis.size() );
+        basis.evaluate( x, val );
+
+        col_ = basis.size();
+        unsigned int notHomogen = 0;
+        if (order>0)
+          notHomogen = basis.sizes()[order-1];
+        unsigned int homogen = basis.sizes()[order]-notHomogen;
+        row_ = (notHomogen*dim+homogen*(dim+1))*dim;
+        row1_ = basis.sizes()[order]*dim*dim;
+        mat_ = new double*[row_];
+        int row = 0;
+        for (int i=0; i<notHomogen+homogen; ++i)
+        {
+          for (int r=0; r<dim; ++r)
+          {
+            for (int rr=0; rr<dim; ++rr)
+            {
+              mat_[row] = new double[col_];
+              for (int j=0; j<col_; ++j)
+              {
+                mat_[row][j] = 0.;
+              }
+              if (r==rr)
+                mat_[row][i] = 1.;
+              ++row;
+            }
+          }
+        }
+        for (int i=0; i<homogen; ++i)
+        {
+          for (int r=0; r<dim; ++r)
+          {
+            mat_[row] = new double[col_];
+            for (int j=0; j<col_; ++j)
+            {
+              mat_[row][j] = 0.;
+            }
+            unsigned int q = -1;
+            MI xval = val[notHomogen+i];
+            xval *= x[r];
+            for (int w=homogen+notHomogen; w<val.size(); ++w)
+            {
+              if (val[w] == xval)
+              {
+                q=w;
+                break;
+              }
+            }
+            assert(q>=0);
+            mat_[row][q] = 1.;
+            ++row;
+          }
+        }
+      }
+      ~VecMatrix()
+      {
+        for (int i=0; i<rowSize(); ++i) {
+          std::cout << "mat(" << i << ") = ";
+          for (int j=0; j<colSize(i); ++j) {
+            std::cout << mat_[i][j] << " ";
+          }
+          std::cout << std::endl;
+          delete [] mat_[i];
+        }
+        delete [] mat_;
+      }
+      unsigned int colSize(int row) const {
+        return col_;
+      }
+      unsigned int rowSize() const {
+        return row_;
+      }
+      const scalar_t operator() ( int r, int c ) const
+      {
+        assert(r<row_ && c<col_);
+        return mat_[r][c];
+      }
+      unsigned int row_,col_,row1_;
+      double **mat_;
+    };
     typedef Dune::AlgLib::Matrix< scalar_t > mat_t;
     typedef MonomialBasis<Topology,scalar_t> MBasis;
-    RaviartThomasMatrix(unsigned int order) : order_(order)
+    RaviartThomasMatrix(unsigned int order) : order_(order),
+                                              vecMatrix_(order)
     {
-      MBasis basis(order);
-      RaviartThomasEvaluator< MBasis > eval(basis);
+      MBasis basis(order+1);
+      typedef MonomialEvaluator<MBasis> EvalMBasis;
+      typedef PolynomialBasisWithMatrix<EvalMBasis,SparseCoeffMatrix<scalar_t,dim> > TMBasis;
+      TMBasis tmBasis(basis);
+      tmBasis.fill(vecMatrix_);
+      StandardEvaluator<TMBasis> tmEval(tmBasis);
       RaviartThomasInterpolation< Topology, scalar_t  > interpolation(order_);
-      interpolation.interpolate( eval, matrix_ );
+      interpolation.interpolate( tmEval , matrix_ );
       matrix_.invert();
     }
-    int colSize(int row) const {
-      return matrix_.cols();
-      // return (dim+1)*basis_.size()-basis_.sizes(order_)[order_-1];
+    unsigned int colSize(int row) const {
+      return vecMatrix_.colSize(row);
     }
-    int rowSize() const {
-      return matrix_.rows();
-      // return (dim+1)*basis_.size()-basis_.sizes(order_)[order_-1];
+    unsigned int rowSize() const {
+      return vecMatrix_.rowSize();
     }
     const scalar_t operator() ( int r, int c ) const
     {
-      return matrix_(c,r);
-      // return ( (r==c)? scalar_t(1):scalar_t(0) );
+      int rmod = r%dim;
+      int rdiv = r/dim;
+      scalar_t ret = 0;
+      for (int k=0; k<matrix_.cols(); ++k) {
+        ret += matrix_(k,rdiv)*vecMatrix_(k*dim+rmod,c);
+      }
+      return ret;
     }
-    void print(std::ostream& out,int N = rowSize()) const {}
     int order_;
+    VecMatrix vecMatrix_;
     mat_t matrix_;
   };
 
@@ -200,35 +310,36 @@ namespace Dune
     typedef SF StorageField;
     typedef AlgLib::MultiPrecision< Precision<CF>::value > ComputeField;
     static const int dimension = dim;
-    typedef PolynomialBasisWithMatrix<RaviartThomasEvaluator<MBasis>,SparseCoeffMatrix<StorageField> > Basis;
+    typedef PolynomialBasisWithMatrix<MonomialEvaluator<MBasis>,SparseCoeffMatrix<StorageField,dim> > Basis;
     typedef unsigned int Key;
     typedef typename GenericGeometry::SimplexTopology< dim >::type SimplexTopology;
 
     template <class Topology>
-    struct Maker
+    static Basis &basis(unsigned int order)
     {
-      static void apply(unsigned int order,Basis* &basis)
+      const MBasis &_mBasis = MonomialBasisProvider<dimension,StorageField>::template basis<SimplexTopology>(order+1);
+      Basis *basis = new Basis(_mBasis);
+      RaviartThomasMatrix<Topology,ComputeField> matrix(order);
+      basis->fill(matrix);
+      std::cout << "BASIS SIZE: " << basis->size() << std::endl;
       {
-        // bool RTBasis_only_for_implemented_for_simplex = GenericGeometry::IsSimplex<Topology>::value ;
-        // assert(RTBasis_only_for_implemented_for_simplex);
-        const MBasis &_mBasis = MonomialBasisProvider<dimension,StorageField>::template basis<SimplexTopology>(order);
-        basis = new Basis(_mBasis);
-        RaviartThomasMatrix<Topology,ComputeField> matrix(order);
-        basis->fill(matrix);
-        {
-          typedef MultiIndex< dimension > MIField;
-          typedef VirtualMonomialBasis<dim,MIField> MBasisMI;
-          typedef PolynomialBasisWithMatrix<RaviartThomasEvaluator<MBasisMI>,SparseCoeffMatrix<StorageField> > BasisMI;
-          const MBasisMI &_mBasisMI = MonomialBasisProvider<dimension,MIField>::template basis<SimplexTopology>(order);
-          BasisMI basisMI(_mBasisMI);
-          basisMI.fill(matrix);
-          std::stringstream name;
-          name << "rt_" << Topology::name() << "_p" << order;
-          std::ofstream out(name.str().c_str());
-          basisPrint<0>(out,basisMI);
-        }
+        typedef MultiIndex< dimension > MIField;
+        typedef VirtualMonomialBasis<dim,MIField> MBasisMI;
+        typedef PolynomialBasisWithMatrix<MonomialEvaluator<MBasisMI>,SparseCoeffMatrix<StorageField,dimension> > BasisMI;
+        const MBasisMI &_mBasisMI = MonomialBasisProvider<dimension,MIField>::template basis<SimplexTopology>(order+1);
+        BasisMI basisMI(_mBasisMI);
+        basisMI.fill(matrix);
+        std::stringstream name;
+        name << "rt_" << Topology::name() << "_p" << order;
+        std::ofstream out(name.str().c_str());
+        basisPrint<0>(out,basisMI);
       }
-    };
+      return *basis;
+    }
+    static void release ( const Basis &basis )
+    {
+      delete &basis;
+    }
   };
 
   template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >

@@ -28,6 +28,7 @@ namespace Dune
     typedef typename Basis::DomainVector DomainVector;
     static const int dimension = Basis::dimension;
     static const int dimRange = Basis::dimRange;
+    // typedef std::vector<Dune::FieldVector<Field,1> > Container;
     typedef std::vector<Field> Container;
 
     template< class Deriv >
@@ -36,12 +37,28 @@ namespace Dune
     template <unsigned int deriv>
     struct Iterator
     {
-      typedef BaseIterator<Derivatives<Field,dimension,1,deriv,derivative> > All;
+      typedef BaseIterator<Derivatives<Field,dimension,dimRange,deriv,derivative> > All;
     };
+
+    MonomialEvaluator(const Basis &basis)
+      : basis_(basis),
+        order_(basis.order()),
+        size_(basis.size()),
+        container_(0)
+    {
+      resize<2>();
+    }
 
     unsigned int size() const
     {
       return size_;
+    }
+    template <unsigned int deriv>
+    typename Iterator<deriv>::All evaluate(const DomainVector &x)
+    {
+      resize<deriv>();
+      basis_.template evaluate<deriv>(x,container_);
+      return typename Iterator<deriv>::All(container_);
     }
 
   protected:
@@ -56,7 +73,7 @@ namespace Dune
     template <int deriv>
     void resize()
     {
-      const int totalSize = Derivatives<Field,dimension,1,deriv,derivative>::size*size_;
+      const int totalSize = Derivatives<Field,dimension,dimRange,deriv,derivative>::size*size_;
       container_.resize(totalSize);
     }
     MonomialEvaluator(const MonomialEvaluator&);
@@ -138,6 +155,7 @@ namespace Dune
     typedef typename Basis::DomainVector DomainVector;
     typedef std::vector<Field> Container;
     static const int dimension = Basis::dimension;
+    static const int dimRange = Basis::dimRange;
     typedef MonomialEvaluator<B> Base;
 
     template <unsigned int deriv>
@@ -151,20 +169,10 @@ namespace Dune
     typename Iterator<deriv>::All evaluate(const DomainVector &x)
     {
       Base::template resize<deriv>();
-      basis_.template evaluate<deriv>(x,container_);
+      std::vector<Derivatives<Field,dimension,dimRange,deriv,derivative> >& derivContainer =
+        reinterpret_cast<std::vector<Derivatives<Field,dimension,dimRange,deriv,derivative> >&>(container_);
+      basis_.template evaluate<deriv>(x,derivContainer);
       return typename Iterator<deriv>::All(container_);
-    }
-    typename Iterator<0>::All evaluate(const DomainVector &x)
-    {
-      return evaluate<0>(x);
-    }
-    typename Iterator<1>::All jacobian(const DomainVector &x)
-    {
-      return evaluate<1>(x);
-    }
-    typename Iterator<2>::All hessian(const DomainVector &x)
-    {
-      return evaluate<2>(x);
     }
 
   protected:

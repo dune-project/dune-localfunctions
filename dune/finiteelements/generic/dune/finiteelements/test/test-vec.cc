@@ -73,7 +73,7 @@ void vecTest(int testNr,unsigned int p)
   std::stringstream name;
   name << "vectest-" << testNr << ".out";
   std::ofstream out(name.str().c_str());
-  const int dimension = Topology::dimension;
+  const unsigned int dimension = Topology::dimension;
   typedef MultiIndex< dimension > Field;
 
   typedef MonomialBasis< Topology, Field > Basis;
@@ -89,7 +89,7 @@ void vecTest(int testNr,unsigned int p)
 
   out << ">>> Polynomial representation of the basis functions:" << std::endl;
   FieldVector< Field, dimension > x;
-  for( int i = 0; i < dimension; ++i )
+  for( unsigned int i = 0; i < dimension; ++i )
     x[ i ].set( i, 1 );
 
   out << "Values: " << std::endl;

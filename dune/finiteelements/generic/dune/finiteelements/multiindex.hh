@@ -111,6 +111,12 @@ namespace Dune
       return *this;
     }
 
+    bool operator== (const This &other) const
+    {
+      assert(!next_ && !other.next_);
+      return (vecZ_==other.vecZ_ && vecOMZ_==other.vecOMZ_ && factor_==other.factor_);
+    }
+
     This &operator*= ( const double f )
     {
       factor_ *= f;

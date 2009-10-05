@@ -14,9 +14,7 @@ namespace Dune {
 
     out << "% Number of base functions:  " << size << std::endl;
     out << "% Derivative order: " << deriv << std::endl;
-    // std::vector< typename Basis::RangeVector > y( size );
-    std::vector< Dune::FieldVector<Field,dimension+1> > y( size );
-    // std::vector< typename Basis::RangeVector > y( size*basis.derivSize(deriv) );
+    std::vector< Dune::FieldVector<Field,Basis::dimRange> > y( size );
     FieldVector< Field, dimension > x;
     for( int i = 0; i < dimension; ++i )
       x[ i ].set( i, 1 );

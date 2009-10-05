@@ -7,7 +7,6 @@
 
 #include <dune/alglib/multiprecision.hh>
 #include <dune/finiteelements/tensor.hh>
-const Dune::DerivativeLayout testLayout = Dune::value;
 
 #include <dune/finiteelements/quadrature/genericquadrature.hh>
 // #include <dune/finiteelements/lagrangepoints.hh>
@@ -24,30 +23,27 @@ const Dune::DerivativeLayout testLayout = Dune::value;
 #error "TOPOLOGY not defined."
 #endif
 
-template <int dimR>
+
+using namespace Dune;
+using namespace GenericGeometry;
+
 struct TestMatrix
 {
   template <class Basis>
   TestMatrix(const Basis &basis)
     : size_(basis.size()) {}
   unsigned int colSize(int row) const {
-    return size_*dimR;
+    return size_;
   }
   unsigned int rowSize() const {
-    return size_*dimR;
+    return size_;
   }
   const double operator() ( int r, int c ) const
   {
-    // return (r==c)?1:0; // (r+1)*(c+1);
-    std::cout << r <<  " " << c << " " << (r+1)*(c+1) << std::endl;
     return (r+1)*(c+1);
-    return pow(-1,c/2+r)*double(r)*double(c)*double(colSize(r)-c-1);
   }
   unsigned int size_;
 };
-
-using namespace Dune;
-using namespace GenericGeometry;
 
 #if 0
 template <class Topology>
@@ -79,6 +75,8 @@ void lagrangePointTest(unsigned int p)
       std::cout << "    y[ " << i << " ] = " << field_cast<double>(y[ i ]) << std::endl;
   }
 }
+#endif
+
 template <class Topology>
 void quadratureTest(unsigned int p)
 {
@@ -142,7 +140,7 @@ void polynomialBaseTest(unsigned int p)
   typedef StandardEvaluator<Basis> Evaluator;
   Evaluator eval(basis);
   PolynomialBasisWithMatrix<Evaluator> pBasis(basis);
-  TestMatrix<1> matrix(basis);
+  TestMatrix matrix(basis);
   pBasis.fill(matrix);
   const typename LagrangePoints::iterator end = points.end();
   for( typename LagrangePoints::iterator it = points.begin(); it != end; ++it )
@@ -156,19 +154,17 @@ void polynomialBaseTest(unsigned int p)
       std::cout << "    y[ " << i << " ] = " << field_cast<double>(y[ i ]) << std::endl;
   }
 }
-#endif
 template <class Topology>
 void multiIndexTest(unsigned int p)
 {
-  const int dimR = 2;
   const int dimension = Topology::dimension;
   typedef MultiIndex< dimension > Field;
 
   typedef MonomialBasis< Topology, Field > Basis;
   Basis mbasis(p);
-  typedef VectorialEvaluator<Basis,dimR> Evaluator;
+  typedef MonomialEvaluator<Basis,dimR> Evaluator;
   PolynomialBasisWithMatrix<Evaluator,SparseCoeffMatrix<double> > basis(mbasis);
-  TestMatrix<dimR> matrix(mbasis);
+  TestMatrix matrix(mbasis);
   basis.fill(matrix);
 
   unsigned int size = basis.size();
@@ -199,45 +195,11 @@ void multiIndexTest(unsigned int p)
     hess[ i ] = -42.3456789;
   basis.template evaluate<2>( x, hess );
   std::cout << hess  << std::endl;
-#if 0
+
   std::cout << ">>> integral of basis functions:" << std::endl;
   std::vector< Field > integral( size );
   basis.integral( integral );
   std::cout << integral << std::endl;
-
-  const int dimR = 2;
-  std::cout << ">>> Polynomial basis: " << std::endl;
-  typedef VectorialEvaluator<Basis,dimR> Evaluator;
-  Evaluator eval(basis);
-  typedef PolynomialBasisWithMatrix<Evaluator,SparseCoeffMatrix<double> > PBasis;
-  PBasis pBasis(basis);
-  TestMatrix<dimR> matrix(basis);
-  pBasis.fill(matrix);
-  basisPrint<0>(std::cout,pBasis);
-
-  {
-    const int dimR = 2;
-    std::cout << ">>> Polynomial basis (derivative): " << std::endl;
-    typedef VectorialEvaluator<Basis,dimR> Evaluator;
-    Evaluator eval(basis);
-    typedef PolynomialBasisWithMatrix<Evaluator,SparseCoeffMatrix<double> > PBasis;
-    PBasis pBasis(basis);
-    TestMatrix<dimR> matrix(basis);
-    pBasis.fill(matrix);
-    basisPrint<0>(std::cout,pBasis);
-  }
-  /*
-     {
-      std::cout << ">>> Vectorial Polynomial basis: " << std::endl;
-      typedef VectorialEvaluator<PBasis,dimR> PEvaluator;
-      PEvaluator peval(pBasis);
-      typedef PolynomialBasisWithMatrix<PEvaluator,SparseCoeffMatrix<double> > PPBasis;
-      PPBasis ppBasis(pBasis);
-      ppBasis.fill(matrix);
-      basisPrint<0>(std::cout,ppBasis);
-     }
-   */
-#endif
 }
 
 int main ( int argc, char **argv )
@@ -251,7 +213,7 @@ int main ( int argc, char **argv )
   int p = atoi( argv[ 1 ] );
 
   // lagrangePointTest<Topology>(p);
-  // quadratureTest<Topology>(p);
-  // polynomialBaseTest<Topology>(p);
+  quadratureTest<Topology>(p);
+  polynomialBaseTest<Topology>(p);
   multiIndexTest<Topology>(p);
 }

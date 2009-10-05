@@ -2,57 +2,48 @@
 // vi: set et ts=4 sw=2 sts=2:
 #include <config.h>
 
-#include <iostream>
+#include <dune/grid/genericgeometry/topologytypes.hh>
+#include <dune/grid/io/file/dgfparser/dgfgridtype.hh>
 
-#include <dune/alglib/multiprecision.hh>
-#include <dune/alglib/matrix.hh>
+#include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
+#include <dune/finiteelements/global/dofmapper.hh>
+#include <dune/finiteelements/global/interpolation.hh>
 
-#include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
-#include <dune/finiteelements/lagrangebasis/interpolation.hh>
-#include <dune/finiteelements/monomialbasis.hh>
+const unsigned int dimension = GridType::dimension;
 
-#ifndef TOPOLOGY
-#error "TOPOLOGY not defined."
-#endif
+typedef double StorageField;
+typedef Dune::AlgLib::MultiPrecision< 512 > ComputeField;
+typedef Dune::LagrangeBasisProvider< dimension, StorageField, ComputeField > BasisProvider;
 
-using namespace Dune::GenericGeometry;
+typedef GridType::LeafGridView GridView;
+typedef Dune::DofMapper< GridView::IndexSet, BasisProvider > DofMapper;
+typedef Dune::Interpolation< GridView, DofMapper, BasisProvider > Interpolation;
+
+typedef GridView::Codim< 0 >::Entity Entity;
+typedef GridView::Codim< 0 >::Iterator Iterator;
 
 int main ( int argc, char **argv )
 {
-  if( argc < 2 )
+  if( argc < 3 )
   {
-    std::cerr << "Usage: " << argv[ 0 ] << " <p>" << std::endl;
-    return 1;
+    std::cerr << "Usage: " << argv[ 0 ] << " <dgf-file> <order>" << std::endl;
+    return 2;
   }
 
-  int p = atoi( argv[ 1 ] );
+  Dune::GridPtr< GridType > gridPtr( argv[ 1 ] );
 
-  typedef Dune::AlgLib::MultiPrecision< 256 > Field;
-  typedef TOPOLOGY Topology;
+  GridView gridView = gridPtr->leafView();
 
-  Dune::MonomialBasis< Topology, Field > basis( p );
+  const unsigned int order = atoi( argv[ 2 ] );
 
-  Dune::LocalLagrangeInterpolation< Topology, Field  > interpolation( p );
+  DofMapper dofMapper( gridView.indexSet(), order );
 
-  Dune::AlgLib::Matrix< Field > matrix;
-  interpolation.interpolate( basis, matrix );
-
-  std::cout << "Matrix of evaluated base functions:" << std::endl;
-  for( unsigned int row = 0; row < matrix.rows(); ++row )
+  const Iterator end = gridView.end< 0 >();
+  for( Iterator it = gridView.begin< 0 >(); it != end; ++it )
   {
-    for( unsigned int col = 0; col < matrix.cols(); ++col )
-      std::cout << "   " << matrix( row, col );
-    std::cout << std::endl;
-  }
-  std::cout << std::endl;
+    const Entity &entity = *it;
+    const unsigned int topologyId = Dune::GenericGeometry::topologyId( entity.type() );
 
-  matrix.invert();
-  std::cout << "Inverse:" << std::endl;
-  for( unsigned int row = 0; row < matrix.rows(); ++row )
-  {
-    for( unsigned int col = 0; col < matrix.cols(); ++col )
-      std::cout << "   " << matrix( row, col );
-    std::cout << std::endl;
+    const BasisProvider::Basis &basis = BasisProvider::basis( topologyId, order );
   }
-  std::cout << std::endl;
 }

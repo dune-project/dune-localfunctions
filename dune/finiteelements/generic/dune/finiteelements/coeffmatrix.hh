@@ -68,30 +68,28 @@ namespace Dune
     template <class RangeVector>
     void print(std::ostream& out,
                std::vector< RangeVector > &x) const {
-      /*
-         size_t numLsg = numRows_;
-         Field *row = rows_[0];
-         for( unsigned int r=0;r<numLsg;++r )
-         {
-         out << "f_" << r << "(" << char('a');
-         for (int i=1;i<RangeVector::field_type::dimension;++i)
+      size_t numLsg = numRows_;
+      Vector *row = rows_[0];
+      for( unsigned int r=0; r<numLsg; ++r )
+      {
+        out << "f_" << r << "(" << char('a');
+        for (int i=1; i<RangeVector::dimension; ++i)
           out << "," << char('a'+i);
-         out << ")=";
-         RangeVector *itx = (&x[0]);
-         bool first = true;
-         for (; row != rows_[r+1]; ++row, ++itx) {
-          if (*row > 1e-15) {
-            out << ((!first)?" + ":"") << (*row) << "*" << (*itx);
+        out << ")=";
+        RangeVector *itx = (&x[0]);
+        bool first = true;
+        for (; row != rows_[r+1]; ++row, ++itx) {
+          if ((*row)[0] > 1e-15) {
+            out << ((!first) ? " + " : "") << (*row) << "*" << (*itx);
             first = false;
           }
-          else if (*row < -1e-15) {
-            out << " - " << -(*row) << "*" << (*itx);
+          else if ((*row)[0] < -1e-15) {
+            out << " - " << -((*row)[0]) << "*" << (*itx);
             first = false;
           }
-         }
-         out << std::endl;
-         }
-       */
+        }
+        out << std::endl;
+      }
     }
 
     template< class DomainVector, class RangeVector >

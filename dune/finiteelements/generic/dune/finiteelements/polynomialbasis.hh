@@ -52,7 +52,7 @@ namespace Dune
 
     void print(std::ofstream &out) const {
       typedef Dune::MultiIndex<dimension> MI;
-      typedef Dune::StandardMonomialBasis< dimension, MI > Basis;
+      typedef Dune::MonomialBasis< Topology, MI > Basis;
       Basis basis;
       const unsigned int size = basis.size( order_ );
       std::vector< MI > y( size );

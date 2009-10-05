@@ -476,6 +476,37 @@ namespace Dune
     mat_t matrix_;
   };
 
+  template <class Topology,class Field>
+  struct RaviartThomasInitialBasis;
+
+  template <unsigned int dimension,class Field>
+  struct RaviartThomasInitialBasis< typename GenericGeometry::SimplexTopology<dimension>::type,Field >
+  {
+    // typedef MonomialBasisProvider<dimension,ComputeField> TestBasisProvider;
+    // typedef MonomialBasisProvider<dimension-1,ComputeField> TestFaceBasisProvider;
+    typedef OrthonormalBasisProvider<dimension,ComputeField> TestBasisProvider;
+    typedef OrthonormalBasisProvider<dimension-1,ComputeField> TestFaceBasisProvider;
+    // typedef LagrangeBasisProvider<dimension,ComputeField> TestBasisProvider;
+    // typedef LagrangeBasisProvider<dimension-1,ComputeField> TestFaceBasisProvider;
+    // typedef LobattoBasisProvider<dimension,ComputeField> TestBasisProvider;
+    // typedef LobattoBasisProvider<dimension-1,ComputeField> TestFaceBasisProvider;
+
+    typedef typename TestBasisProvider::Basis TestBasis;
+    typedef typename TestFaceBasisProvider::Basis TestFaceBasis;
+    typedef StandardEvaluator<MBasis> EvalMBasis;
+    typedef PolynomialBasisWithMatrix<EvalMBasis,SparseCoeffMatrix<Field,dim> > TMBasis;
+
+    static const TestBasis &testBasis(order)
+    {
+      return TestBasisProvider::template basis<Topology>(order-1);
+    }
+    static const TestFaceBasis &testFaceBasis(order)
+    {
+      return TestFaceBasisProvider::template basis<Topology>(order);
+    }
+  };
+
+
   template< int dim, class SF, class CF >
   struct RaviartThomasBasisCreator
   {
@@ -491,15 +522,6 @@ namespace Dune
 
     typedef RaviartThomasL2Interpolation< ComputeField, dimension > LocalInterpolation;
 
-    // typedef MonomialBasisProvider<dimension,ComputeField> TestBasisProvider;
-    // typedef MonomialBasisProvider<dimension-1,ComputeField> TestFaceBasisProvider;
-    typedef OrthonormalBasisProvider<dimension,ComputeField> TestBasisProvider;
-    typedef OrthonormalBasisProvider<dimension-1,ComputeField> TestFaceBasisProvider;
-    // typedef LagrangeBasisProvider<dimension,ComputeField> TestBasisProvider;
-    // typedef LagrangeBasisProvider<dimension-1,ComputeField> TestFaceBasisProvider;
-    // typedef LobattoBasisProvider<dimension,ComputeField> TestBasisProvider;
-    // typedef LobattoBasisProvider<dimension-1,ComputeField> TestFaceBasisProvider;
-
     template< class Topology >
     static const LocalInterpolation &localInterpolation ( const Key &order )
     {
@@ -507,8 +529,10 @@ namespace Dune
       std::vector< FieldVector< ComputeField, dimension > > normal(size);
       for (int f=0; f<size; ++f)
         normal[f] = GenericGeometry::ReferenceElement<Topology,ComputeField>::integrationOuterNormal(f);
-      const typename TestBasisProvider::Basis &testBasis( TestBasisProvider::template basis<Topology>(order-1) );
-      const typename TestFaceBasisProvider::Basis &testFaceBasis( TestFaceBasisProvider::template basis<Topology>(order) );
+      typedef RaviartThomasInitialBasis<Topology,ComputeField> InitialBasis;
+
+      const typename InitialBase::TestBasis &testBasis( InitialBasis::testBasis(order) );
+      const typename InitialBase::TestFaceBasis &testFaceBasis( InitialBasis::testFaceBasis(order) );
       LocalInterpolation *interpolation = new LocalInterpolation(Topology::id,order,normal,testBasis,testFaceBasis);
       return *interpolation;
     }

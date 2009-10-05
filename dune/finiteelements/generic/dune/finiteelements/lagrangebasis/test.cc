@@ -62,9 +62,9 @@ bool test(unsigned int order) {
   {
     std::cout << "Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
 
-    typedef Dune::LagrangePoints< Topology, StorageField > LagrangePoints;
-    LagrangePoints points( o );
-
+    typedef Dune::LagrangePoints< StorageField, Topology::dimension > LagrangePoints;
+    typedef Dune::LagrangePointsCreator< StorageField, Topology::dimension > LagrangePointsCreator;
+    const LagrangePoints &points = LagrangePointsCreator::template lagrangePoints< Topology >( o );
 
 #if USE_GENERIC
     typedef LagrangeBasisProvider<Topology::dimension,StorageField,ComputeField> BasisProvider;

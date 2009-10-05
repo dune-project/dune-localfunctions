@@ -18,8 +18,14 @@ namespace Dune
   // Internal Forward Declarations
   // -----------------------------
 
-  template< class Topology, class F >
+  template< class F, unsigned int dim >
+  class LagrangePoint;
+
+  template< class F, unsigned int dim >
   class LagrangePoints;
+
+  template< class F, unsigned int dim >
+  class LagrangePointsCreator;
 
 
 
@@ -41,11 +47,6 @@ namespace Dune
 
     typedef FieldVector< Field, dimension > Vector;
 
-  private:
-    Vector point_;
-    LocalKey localKey_;
-
-  public:
     const Vector &point () const
     {
       return point_;
@@ -55,6 +56,10 @@ namespace Dune
     {
       return localKey_;
     }
+
+  private:
+    Vector point_;
+    LocalKey localKey_;
   };
 
 
@@ -72,7 +77,7 @@ namespace Dune
 
     typedef GenericGeometry::Point Topology;
 
-    friend class LagrangePoints< Topology, F >;
+    friend class LagrangePointsCreator< F, Topology::dimension >;
     friend class LagrangePointsImpl< GenericGeometry::Prism< Topology >, F >;
     friend class LagrangePointsImpl< GenericGeometry::Pyramid< Topology >, F >;
 
@@ -106,7 +111,7 @@ namespace Dune
 
     typedef GenericGeometry::Prism< BaseTopology > Topology;
 
-    friend class LagrangePoints< Topology, F >;
+    friend class LagrangePointsCreator< F, Topology::dimension >;
     friend class LagrangePointsImpl< GenericGeometry::Prism< Topology >, F >;
     friend class LagrangePointsImpl< GenericGeometry::Pyramid< Topology >, F >;
 
@@ -176,7 +181,7 @@ namespace Dune
 
     typedef GenericGeometry::Pyramid< BaseTopology > Topology;
 
-    friend class LagrangePoints< Topology, F >;
+    friend class LagrangePointsCreator< F, Topology::dimension >;
     friend class LagrangePointsImpl< GenericGeometry::Prism< Topology >, F >;
     friend class LagrangePointsImpl< GenericGeometry::Pyramid< Topology >, F >;
 
@@ -251,37 +256,31 @@ namespace Dune
 
   // LagnragePoints
   // --------------
-  template< class Topology, class F >
+
+  template< class F, unsigned int dim >
   class LagrangePoints
+    : public LocalCoefficientsInterface< LagrangePoints< F, dim > >
   {
-    typedef LagrangePoints< Topology, F > This;
-    typedef LagrangePointsImpl< Topology, F > Impl;
+    typedef LagrangePoints< F, dim > This;
+
+    friend class LagrangePointsCreator< F, dim >;
 
   public:
     typedef F Field;
 
-    static const unsigned int dimension = Topology::dimension;
+    static const unsigned int dimension = dim;
 
     typedef Dune::LagrangePoint< Field, dimension > LagrangePoint;
 
     typedef typename std::vector< LagrangePoint >::const_iterator iterator;
 
   private:
-    template< int codim >
-    struct Init;
-
-    unsigned int order_;
-    std::vector< LagrangePoint > points_;
+    LagrangePoints ( const unsigned int order, const unsigned int size )
+      : order_( order ),
+        points_( size )
+    {}
 
   public:
-    LagrangePoints ( const unsigned int order )
-      : order_( order ),
-        points_( Impl::size( order ) )
-    {
-      LagrangePoint *p = &(points_[ 0 ]);
-      GenericGeometry::ForLoop< Init, 0, dimension >::apply( order, p );
-    }
-
     const LagrangePoint &operator[] ( const unsigned int i ) const
     {
       return points_[ i ];
@@ -297,6 +296,11 @@ namespace Dune
       return points_.end();
     }
 
+    const LocalKey &localKey ( const unsigned int i ) const
+    {
+      return (*this)[ i ].localKey();
+    }
+
     unsigned int order () const
     {
       return order_;
@@ -306,25 +310,81 @@ namespace Dune
     {
       return points_.size();
     }
+
+  private:
+    unsigned int order_;
+    std::vector< LagrangePoint > points_;
   };
 
 
 
-  // LagrangePoints::Init
+  // LagrangePointsCreator
+  // ---------------------
 
-  template< class Topology, class F >
-  template< int dim >
-  struct LagrangePoints< Topology, F >::Init
+  template< class F, unsigned int dim >
+  class LagrangePointsCreator
   {
-    static void apply ( const unsigned int order, LagrangePoint *&p )
+    template< class T >
+    struct Topology;
+
+  public:
+    static const unsigned int dimension = dim;
+
+    typedef Dune::LagrangePoints< F, dimension > LagrangePoints;
+    typedef LagrangePoints LocalCoefficients;
+
+    typedef unsigned int Key;
+
+    template< class T >
+    static const LagrangePoints &lagrangePoints ( const Key &order );
+
+    template< class T >
+    static const LocalCoefficients &localCoefficients ( const Key &order )
     {
-      const unsigned int size = GenericGeometry::Size< Topology, dimension-dim >::value;
-      unsigned int count[ size ];
-      for( unsigned int i = 0; i < size; ++i )
-        count[ i ] = 0;
-      p += Impl::template setup< dimension-dim, dimension >( order, count, p );
+      return lagrangePoints< T >( order );
+    }
+
+    static void release ( const LagrangePoints &lagrangePoints )
+    {
+      delete &lagrangePoints;
     }
   };
+
+
+  template< class F, unsigned int dim >
+  template< class T >
+  struct LagrangePointsCreator< F, dim >::Topology
+  {
+    typedef LagrangePointsImpl< T, F > Impl;
+
+    template< int pdim >
+    struct Init
+    {
+      static void apply ( const unsigned int order, LagrangePoint *&p )
+      {
+        const unsigned int size = GenericGeometry::Size< T, dimension-pdim >::value;
+        unsigned int count[ size ];
+        for( unsigned int i = 0; i < size; ++i )
+          count[ i ] = 0;
+        p += Impl::template setup< dimension-pdim, dimension >( order, count, p );
+      }
+    };
+  };
+
+
+  template< class F, unsigned int dim >
+  template< class T >
+  inline const typename LagrangePointsCreator< F, dim >::LagrangePoints &
+  LagrangePointsCreator< F, dim >::lagrangePoints ( const Key &order )
+  {
+    typedef Dune::LagrangePoint< F, dimension > LagrangePoint;
+    typedef typename Topology< T >::Impl Impl;
+
+    LagrangePoints *lagrangePoints = new LagrangePoints( order, Impl::size( order ) );
+    LagrangePoint *p = &(lagrangePoints->points_[ 0 ]);
+    GenericGeometry::ForLoop< Topology< T >::template Init, 0, dimension >::apply( order, p );
+    return *lagrangePoints;
+  }
 
 }
 

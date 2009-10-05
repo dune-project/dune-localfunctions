@@ -10,6 +10,17 @@
 namespace Dune
 {
 
+  // Internal Forward Declarations
+  // -----------------------------
+
+  template< int dim >
+  class MultiIndex;
+
+  template< int dim >
+  std::ostream &operator<< ( std::ostream &, const MultiIndex< dim > & );
+
+
+
   // MultiIndex
   // ----------
 
@@ -17,6 +28,8 @@ namespace Dune
   class MultiIndex
   {
     typedef MultiIndex< dim > This;
+
+    friend std::ostream &operator<<<> ( std::ostream &, const This & );
 
   public:
     static const int dimension = dim;
@@ -99,7 +112,8 @@ namespace Dune
 
 
   template< int dim >
-  std::ostream &operator<< ( std::ostream &out, const MultiIndex< dim > &multiIndex )
+  inline std::ostream &
+  operator<< ( std::ostream &out, const MultiIndex< dim > &multiIndex )
   {
     if( multiIndex.absZ() == 0 )
       out << "1";

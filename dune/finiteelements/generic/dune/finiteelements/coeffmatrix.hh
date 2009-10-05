@@ -142,17 +142,18 @@ namespace Dune
       }
     }
 
-    template< class DomainVector, class RangeVector >
-    void mult ( const std::vector< DomainVector > &x,
+    /*
+       template< class DomainVector, class RangeVector >
+       void mult ( const std::vector< DomainVector > &x,
                 std::vector< RangeVector > &y ) const
-    {
-      typedef Mult<Vector,DomainVector> Multiply;
-      typedef typename Multiply::Result Result;
-      size_t numLsg = y.size();
-      assert( numLsg <= (size_t)numRows_ );
-      Vector *row = rows_[ 0 ];
-      for( size_t r = 0; r < numLsg; ++r )
-      {
+       {
+       typedef Mult<Vector,DomainVector> Multiply;
+       typedef typename Multiply::Result Result;
+       size_t numLsg = y.size();
+       assert( numLsg <= (size_t)numRows_ );
+       Vector *row = rows_[ 0 ];
+       for( size_t r = 0; r < numLsg; ++r )
+       {
         Result val(0.);
         const DomainVector *itx = &(x[ 0 ]);
         for( ; row != rows_[ r+1 ]; ++row, ++itx )
@@ -160,8 +161,9 @@ namespace Dune
           Multiply::add(*row,*itx,val);
         }
         field_cast(val,y[r]);
-      }
-    }
+       }
+       }
+     */
 
     template< class BasisVector, class RangeVector >
     void mult ( const BasisVector &x,

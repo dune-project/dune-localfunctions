@@ -85,13 +85,14 @@ namespace Dune
       }
       FieldVector<F,d> val_;
       const std::vector<F>& mBasis_;
-      int pos_,dim_;
+      unsigned int pos_;
+      int dim_;
       bool done_;
     };
     typedef Dune::FieldVector<F,d> value_type;
     typedef Iterator const_iterator;
     VecContainer(int size)
-      : mBasis_(size/d) {}
+      : mBasis_(size) {}
     Iterator begin() const
     {
       return Iterator(mBasis_,false);
@@ -105,58 +106,21 @@ namespace Dune
     {
       return mBasis_.size()*d;
     }
+    operator F*()
+    {
+      return &(mBasis_[0]);
+    }
     std::vector<F> mBasis_;
   };
-  template <int dim,int dimR,class SF>
-  struct VecBasis
-  {
-    typedef VirtualMonomialBasis<dim,SF> MBasis;
-    static const int dimension = dim;
-    typedef typename MBasis :: DomainVector DomainVector;
-    VecBasis(const VirtualMonomialBasis<dim,SF>& basis)
-      : basis_(basis) {}
-    int size(int order) const
-    {
-      return basis_.size(order)*dimR;
-    }
-    void evaluate(unsigned int order, const DomainVector &x,
-                  VecContainer<dimR,SF> &val ) const
-    {
-      basis_.evaluate(order,x,val.mBasis_);
-    }
-    const VirtualMonomialBasis<dim,SF>& basis_;
-  };
-  template< int dim, int dimR, class SF >
-  struct VecBasisCreator
-  {
-    typedef VecBasis<dim,dimR,SF> Basis;
-    typedef SF StorageField;
-    static const int dimension = dim;
-    typedef unsigned int Key;
-
-    template <class Topology>
-    struct Maker
-    {
-      static void apply(unsigned int order,Basis* &basis)
-      {
-        basis = new Basis(MonomialBasisProvider<dimension,StorageField>::template basis<Topology>(order));
-      }
-    };
-  };
-
-  template< int dim, int dimR, class SF>
-  struct VecBasisProvider
-    : public BasisProvider<VecBasisCreator<dim,dimR,SF> >
-  {};
 
   template< int dim, int dimR, class SF, class CF >
   struct VecLagrangeBasisCreator
   {
-    typedef VecBasis<dim,dimR,SF> VBasis;
+    typedef VirtualMonomialBasis<dim,SF> MBasis;
     typedef SF StorageField;
     typedef AlgLib::MultiPrecision< Precision<CF>::value > ComputeField;
     static const int dimension = dim;
-    typedef PolynomialBasisWithMatrix<VBasis,StorageField,dimR,VecContainer<dimR,StorageField> > Basis;
+    typedef PolynomialBasisWithMatrix<MBasis,StorageField,dimR,VecContainer<dimR,StorageField> > Basis;
     typedef unsigned int Key;
 
     template <class Topology>
@@ -164,8 +128,8 @@ namespace Dune
     {
       static void apply(unsigned int order,Basis* &basis)
       {
-        const VBasis &vBasis = VecBasisProvider<dimension,dimR,StorageField>::template basis<Topology>(order);
-        basis = new Basis(vBasis,order);
+        const MBasis &virtBasis = MonomialBasisProvider<dimension,StorageField>::template basis<Topology>(order);
+        basis = new Basis(virtBasis,order);
         VecLagrangeMatrix<Topology,ComputeField,dimR> matrix(order);
         basis->fill(matrix);
         std::stringstream name;

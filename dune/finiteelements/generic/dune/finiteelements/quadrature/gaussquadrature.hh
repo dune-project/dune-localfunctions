@@ -114,7 +114,7 @@ namespace Dune
 
       QuadraturePoint operator* () const
       {
-        return QuadraturePoint( points_->point( i ), points_->weight( i ) );
+        return QuadraturePoint( points_->point( index_ ), points_->weight( index_ ) );
       }
 
     private:

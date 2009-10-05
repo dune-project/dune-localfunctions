@@ -13,7 +13,7 @@ bool test(unsigned int order) {
   typedef AlgLib::MultiPrecision<512> ComputeField;
   // typedef double ComputeField;
 
-  static const int dimRange = 2;
+  static const int dimRange = 5;
 
   bool ret = true;
 

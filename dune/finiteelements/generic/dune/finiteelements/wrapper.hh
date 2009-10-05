@@ -78,6 +78,84 @@ private:
   int p_;
 };
 // ********************************************
+struct PrismWrapper {
+  PrismWrapper(double* storage,int p,
+               int *N)
+    : storage_(storage),
+      N_(N),
+      entry_(new double*[(p+1)*(p+1)]),
+      p_(p)
+  {
+    entry_[0] = storage_;
+    for (int r=1; r<=p) {
+      for (int c=1; c<=r) {
+        entry_[r*(2*p_+1)+c] =
+          entry_[r*(2*p_+1)+c-1]+N_[c-1];
+      }
+      for (int c=r+1; c<=2*r) {
+        entry_[r*(2*p_+1)+c] =
+          entry_[r*(2*p_+1)+c-1]+N_[c];
+      }
+    }
+  }
+  template <class Wrapper>
+  PrismWrapper(Wrapper& pw,
+               int* N)
+    : storage_(pw.storage_),
+      N_(N),
+      entry(new double*[(pw.p_+1)*(pw.p_+1)]),
+      p_(pw.p_)
+  {
+    entry_[0] = pw(0,0);
+    for (int r=1; r<=p) {
+      entry_[r*(2*p_+1)] = pw(r,0);
+      for (int c=1; c<=r) {
+        entry_[r*(2*p_+1)+c] =
+          entry_[r*(2*p_+1)+c-1]+N_[c-1];
+      }
+      for (int c=r+1; c<=2*r) {
+        entry_[r*(2*p_+1)+c] =
+          entry_[r*(2*p_+1)+c-1]+N_[c];
+      }
+    }
+  }
+  ~PrismWrapper()
+  {
+    delete [] entry_;
+  }
+  int p() {
+    return p_;
+  }
+  double* operator()(int r,int c) {
+    assert(r<=p_);
+    assert(c<=2*r);
+    return entry_[r*(2*p_+1)+c];
+  }
+  void fill(double z) {
+    for (int r=1; r<=p_; ++r) {
+      double *pos0=(*this)(r,0);
+      double *pos=pos0;
+      for (int c=0; c<r; ++c) {
+        for (int i=0; i<N_[c]; ++i,++pos0,++pos) {
+          (*pos) = z*(*pos0);
+        }
+      }
+      pos0=(*this)(r,2*r)+N_[c]-1;
+      pos=(*this)(r,2*r-1)+N_[c]-1;
+      for (int c=2*r-1; c>=0; --c) {
+        for (int i=N_[c]-1; i>=0; --i,--pos0,--pos) {
+          (*pos) = z*(*pos0);
+        }
+      }
+    }
+  }
+private:
+  double* storage_;
+  int *N_;
+  double **entry_;  // starting point for Arc
+  int p_;
+};
+// ********************************************
 template <int dim>
 struct Simplex {
   static void eval(int p,double *x,double* ret) {

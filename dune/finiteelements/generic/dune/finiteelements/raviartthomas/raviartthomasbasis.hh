@@ -482,7 +482,7 @@ namespace Dune
   template <class Topology,class Field>
   struct RaviartThomasInitialBasis
   {
-    typedef typename GenericGeometry::SimplexTopology<dimension>::type Topology;
+    static const unsigned int dimension = Topology::dimension;
     // typedef MonomialBasisProvider<dimension,Field> TestBasisProvider;
     // typedef MonomialBasisProvider<dimension-1,Field> TestFaceBasisProvider;
     typedef OrthonormalBasisProvider<dimension,Field> TestBasisProvider;

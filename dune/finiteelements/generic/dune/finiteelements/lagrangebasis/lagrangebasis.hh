@@ -26,6 +26,7 @@ namespace Dune
 
     typedef Dune::AlgLib::Matrix< scalar_t > mat_t;
     typedef Dune::LagrangePointsCreator< scalar_t, dimension > LagrangePointsCreator;
+    // typedef Dune::LabattoPointsCreator< scalar_t, dimension > LagrangePointsCreator;
     typedef LocalLagrangeInterpolationCreator< LagrangePointsCreator > LocalInterpolationCreator;
     typedef typename LocalInterpolationCreator::LocalInterpolation LocalInterpolation;
 

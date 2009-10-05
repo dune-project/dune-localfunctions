@@ -57,7 +57,7 @@ namespace Dune
       return localKey_;
     }
 
-  private:
+    // private:
     Vector point_;
     LocalKey localKey_;
   };
@@ -274,11 +274,16 @@ namespace Dune
 
     typedef typename std::vector< LagrangePoint >::const_iterator iterator;
 
-  private:
+    // private:
     LagrangePoints ( const unsigned int order, const unsigned int size )
       : order_( order ),
         points_( size )
     {}
+
+    void resize( const unsigned int size )
+    {
+      points_.resize(size);
+    }
 
   public:
     const LagrangePoint &operator[] ( const unsigned int i ) const
@@ -312,7 +317,7 @@ namespace Dune
       return points_.size();
     }
 
-  private:
+    // private:
     unsigned int order_;
     std::vector< LagrangePoint > points_;
   };

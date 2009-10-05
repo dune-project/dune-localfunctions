@@ -75,6 +75,10 @@ namespace Dune
     {
       return instance().template getBasis<Topology>(key);
     }
+
+    static void release ( const Basis &basis )
+    {}
+
   private:
     enum { numTopologies = (1 << dimension) };
     typedef std::map<Key,FieldVector<Basis*,numTopologies> > Storage;

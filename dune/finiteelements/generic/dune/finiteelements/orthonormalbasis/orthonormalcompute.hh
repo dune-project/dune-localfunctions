@@ -5,8 +5,8 @@
 #include <map>
 #include <iomanip>
 #include <cassert>
-#include <dune/alglib/qr/mpfr/qr.h>
-#include <dune/alglib/sevd/mpfr/sevd.h>
+#include <alglib/qr.h>
+#include <alglib/sevd.h>
 #include <dune/fem/space/lagrangespace/genericlagrangepoints.hh>
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
@@ -141,10 +141,11 @@ struct IntegralHelper {
     if (geo[d-1] == 1) {
       p *= factorial(1,alpha[d-1]);
       q *= factorial(d+alpha.abs(d-1),d+alpha.abs(d-1)+alpha[d-1]);
-    } else {
+    } else if (geo[d-1] == 2) {
       p *= 1.;
       q *= alpha[d-1]+1.;
     }
+    else abort();
   }
 };
 template <int dim>
@@ -154,10 +155,11 @@ struct IntegralHelper<1,dim> {
     if (geo[0] == 1) {
       p = 1.;
       q = alpha[0]+1;
-    } else {
+    } else if (geo[0] == 2) {
       p = 1.;
       q = alpha[0]+1;
     }
+    else abort();
   }
 };
 template <int dim,int ord>

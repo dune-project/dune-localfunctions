@@ -2,12 +2,47 @@
 // vi: set et ts=4 sw=2 sts=2:
 #ifndef DUNE_ORTHONORMALBASIS_HH
 #define DUNE_ORTHONORMALBASIS_HH
-const unsigned int Precision = 1024;
 #include "../coeffmatrix.hh"
 #include "../monomialbasis.hh"
+const unsigned int Precision = 1024;
 #include "orthonormalcompute.hh"
 namespace Dune
 {
+  template <class Topology>
+  struct TopologyToMultiIndex;
+  template <class Base>
+  struct TopologyToMultiIndex<GenericGeometry::Pyramid<Base> > {
+    typedef TopologyToMultiIndex<Base> BaseType;
+    template <int dim>
+    static void set(MultiIndex<dim>& mi) {
+      BaseType::set(mi);
+      mi.set(Base::dimension,1);
+    }
+  };
+  template <class Base>
+  struct TopologyToMultiIndex<GenericGeometry::Prism<Base> > {
+    typedef TopologyToMultiIndex<Base> BaseType;
+    template <int dim>
+    static void set(MultiIndex<dim>& mi) {
+      BaseType::set(mi);
+      mi.set(Base::dimension,2);
+    }
+  };
+  template <>
+  struct TopologyToMultiIndex<GenericGeometry::Pyramid<GenericGeometry::Point> > {
+    template <int dim>
+    static void set(MultiIndex<dim>& mi) {
+      mi.set(0,1);
+    }
+  };
+  template <>
+  struct TopologyToMultiIndex<GenericGeometry::Prism<GenericGeometry::Point> > {
+    template <int dim>
+    static void set(MultiIndex<dim>& mi) {
+      mi.set(0,2);
+    }
+  };
+  // **********************************************
   template <class Topology,int maxOrder,class F>
   struct ONBMatrix {
     enum {dim = Topology::dimension};
@@ -18,6 +53,7 @@ namespace Dune
       : calc(1)
     {
       MultiIndex<dim> geo;
+      TopologyToMultiIndex<Topology>::set(geo);
       calc.compute(geo);
     }
     int colSize(int row) const {
@@ -27,7 +63,31 @@ namespace Dune
       return calc.res.gethighbound(1)-1;
     }
     void set(int r,int c,double v) const {
-      v = calc.res(r,c).toDouble();
+      v = calc.res(r+1,c+1).toDouble();
+    }
+    void set(int r,int c,std::string v) const {
+      v = amp::ampf<128>(calc.res(r+1,c+1)).toDec();
+    }
+    void print(std::ostream& out) {
+      int N = rowSize();
+      for (int i=0; i<=N; ++i) {
+        out << "Polynomial : " << i << std::endl;
+        for (int j=0; j<=colSize(i); j++) {
+          double v = 0;
+          set(i,j,v);
+          if (fabs(v)<1e-20)
+            out << 0 << "\t\t" << std::flush;
+          else {
+            std::string v;
+            set(i,j,v);
+            out << v << "\t\t" << std::flush;
+          }
+        }
+        for (int j=i+1; j<=N; j++) {
+          assert(fabs(res(j,i).toDouble())<1e-10);
+        }
+        out << std::endl;
+      }
     }
     CalcCoeffs<dim,maxOrder> calc;
   };
@@ -48,6 +108,8 @@ namespace Dune
     {
       ONBMatrix<Topology,maxOrder,Field> onbMatrix;
       coeffMatrix_.fill(onbMatrix);
+      std::ofstream out("coeffs.out");
+      onbMatrix.print(out);
     }
 
     const int size (unsigned int order) const

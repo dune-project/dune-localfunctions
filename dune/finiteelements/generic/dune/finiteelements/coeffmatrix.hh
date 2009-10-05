@@ -58,7 +58,7 @@ namespace Dune
   private:
     Field *coeff_;
     Field **rows_;
-    unsigned int numRows_;
+    int numRows_;
   };
 }
 

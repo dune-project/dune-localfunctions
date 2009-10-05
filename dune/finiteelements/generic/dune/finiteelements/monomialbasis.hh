@@ -12,6 +12,35 @@
 namespace Dune
 {
 
+  template <class Field>
+  struct Unity {
+    operator Field() const {
+      return Field(1);
+    }
+  };
+  template <class Field>
+  struct Zero {
+    operator Field() const {
+      return Field(0);
+    }
+  };
+  template <class Field>
+  bool operator<(const Zero<Field>& ,const Field& f) {
+    return f>1e-12;
+  }
+  template <class Field>
+  bool operator<(const Field& f, const Zero<Field>&) {
+    return f<1e-12;
+  }
+  template <class Field>
+  bool operator>(const Zero<Field>& z,const Field& f) {
+    return f<z;
+  }
+  template <class Field>
+  bool operator>(const Field& f, const Zero<Field>& z) {
+    return z<f;
+  }
+
   // Internal Forward Declarations
   // -----------------------------
 
@@ -71,7 +100,7 @@ namespace Dune
                     const unsigned int *const offsets,
                     RangeVector *const values ) const
     {
-      values[ 0 ] = Field( 1 );
+      values[ 0 ] = Unity<Field>();
     }
 
     unsigned int maxOrder () const
@@ -264,11 +293,11 @@ namespace Dune
                            RangeVector *const values ) const
     {
       const Field &z = x[ dimDomain-1 ];
-      Field omz = Field( 1 ) - z;
+      Field omz = Unity<Field>() - z;
 
-      if( omz > 1e-12 ) // this number must depend on Field
+      if( Zero<Field>() < omz )
       {
-        const Field invomz = Field( 1 ) / omz;
+        const Field invomz = Unity<Field>() / omz;
         FieldVector< Field, dimDomain-1 > y;
         for( unsigned int i = 0; i < dimDomain-1; ++i )
           y[ i ] = x[ i ] * invomz;
@@ -277,7 +306,7 @@ namespace Dune
         baseBasis_.evaluate( order, y, offsets, values );
       }
       else
-        omz = Field( 0 );
+        omz = Zero<Field>();
 
       const unsigned int *const baseSizes = baseBasis_.sizes_;
       RangeVector *row0 = values;

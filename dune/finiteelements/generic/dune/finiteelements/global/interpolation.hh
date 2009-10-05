@@ -78,7 +78,10 @@ namespace Dune
         const unsigned int size = indices.size();
         assert( size == localDofs.size() );
         for( unsigned int i = 0; i < size; ++i )
+        {
+          assert( indices[ i ] < dofs.size() );
           dofs[ indices[ i ] ] = localDofs[ i ];
+        }
       }
     }
 

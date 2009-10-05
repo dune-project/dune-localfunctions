@@ -60,7 +60,7 @@ namespace Dune
     }
 
     template< class Entity >
-    void map ( const Entity &entity, std::vector< unsigned int > indices ) const;
+    void map ( const Entity &entity, std::vector< unsigned int > &indices ) const;
 
     unsigned int size ( const unsigned int topologyId ) const
     {
@@ -71,7 +71,7 @@ namespace Dune
     template< class Entity >
     unsigned int size ( const Entity &entity ) const
     {
-      return size( topologyId( entity.type() ) );
+      return size( GenericGeometry::topologyId( entity.type() ) );
     }
 
     unsigned int size () const
@@ -85,8 +85,6 @@ namespace Dune
     template< class Topology >
     void build ( const Key &key );
 
-    void setupSize ( const unsigned int codim, const unsigned int topologyId, const unsigned int size );
-
     const IndexSet &indexSet_;
     MapInfo mapInfo_[ numTopologies ];
     std::vector< IndexInfo > indexInfo_[ dimension+1 ];
@@ -97,7 +95,7 @@ namespace Dune
   template< class IndexSet, class Creator >
   template< class Entity >
   inline void DofMapper< IndexSet, Creator >
-  ::map ( const Entity &entity, std::vector< unsigned int > indices ) const
+  ::map ( const Entity &entity, std::vector< unsigned int > &indices ) const
   {
     typedef typename std::vector< SubEntityInfo >::const_iterator Iterator;
     const MapInfo &mapInfo = mapInfo_[ GenericGeometry::topologyId( entity.type() ) ];
@@ -127,7 +125,7 @@ namespace Dune
       for( Iterator it = indexInfo_[ codim ].begin(); it != end; ++it )
       {
         it->offset = size_;
-        size_ += indexSet_.size( it->type );
+        size_ += (it->size > 0 ? indexSet_.size( it->type ) * it->size : 0);
       }
     }
 
@@ -169,13 +167,15 @@ namespace Dune
 
     for( unsigned int codim = 0; codim <= dimension; ++codim )
     {
+      indexInfo_[ codim ].resize( 1 << (dimension-codim) );
+
       const unsigned int codimSize = refTopology.size( codim );
-
-      std::vector< IndexInfo > &indexInfo = indexInfo_[ codim ];
-      indexInfo.resize( codimSize );
-
       for( unsigned int subEntity = 0; subEntity < codimSize; ++subEntity )
       {
+        const unsigned int topologyId = refTopology.topologyId( codim, subEntity );
+        IndexInfo &indexInfo = indexInfo_[ codim ][ topologyId ];
+        indexInfo.type = refTopology.type( codim, subEntity );
+
         const unsigned int count = counts[ mapper( codim, subEntity ) ];
         if( count == 0 )
           continue;
@@ -186,20 +186,40 @@ namespace Dune
         subEntityInfo.numDofs = count;
         mapInfo.subEntityInfo.push_back( subEntityInfo );
 
-        setupSize( codim, refTopology.topologyId( codim, subEntity ), count );
+        if( indexInfo.size > 0 )
+        {
+          if( indexInfo.size != count )
+            DUNE_THROW( InvalidStateException, "Inconsistent LocalCoefficients." );
+        }
+        else
+          indexInfo.size = count;
       }
     }
 
     for( unsigned int i = 0; i < mapInfo.numDofs; ++i )
     {
       typedef typename std::vector< SubEntityInfo >::iterator Iterator;
-      LocalKey key = localCoefficients.localKey( i );
+      const LocalKey &key = localCoefficients.localKey( i );
 
       unsigned int *localDof = &(mapInfo.localDof[ 0 ]);
       const Iterator end = mapInfo.subEntityInfo.end();
-      for( Iterator it = mapInfo.subEntityInfo.begin(); it != end; ++it )
+      for( Iterator it = mapInfo.subEntityInfo.begin(); true; ++it )
       {
-        if( (it->codim == key.codim()) && (it->subEntity = key.subEntity()) )
+        if( it == end )
+        {
+          std::cerr << "Error: (subEntity = " << key.subEntity()
+                    << ", codim = " << key.codim()
+                    << ") not found in subEntityInfo" << std::endl;
+          std::cerr << "SubEntityInfo contains:" << std::endl;
+          for( it = mapInfo.subEntityInfo.begin(); it != end; ++it )
+          {
+            std::cerr << "  (subEntity = " << it->subEntity
+                      << ", codim = " << it->codim << ")" << std::endl;
+          }
+          abort();
+        }
+
+        if( (it->codim == key.codim()) && (it->subEntity == key.subEntity()) )
         {
           *(localDof + key.index()) = i;
           break;
@@ -209,23 +229,6 @@ namespace Dune
     }
 
     Creator::release( localCoefficients );
-  }
-
-
-  template< class IndexSet, class Creator >
-  inline void DofMapper< IndexSet, Creator >
-  ::setupSize ( const unsigned int codim, const unsigned int topologyId, const unsigned int size )
-  {
-    if( size == 0 )
-      return;
-    unsigned int &topologySize = indexInfo_[ codim ][ topologyId ].size;
-    if( topologySize > 0 )
-    {
-      if( topologySize != size )
-        DUNE_THROW( InvalidStateException, "Inconsistent LocalCoefficients." );
-    }
-    else
-      topologySize = size;
   }
 
 

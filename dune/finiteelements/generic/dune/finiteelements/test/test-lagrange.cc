@@ -4,6 +4,7 @@
 
 #include <dune/grid/genericgeometry/topologytypes.hh>
 #include <dune/grid/io/file/dgfparser/dgfgridtype.hh>
+#include <dune/grid/io/file/vtk/vtkwriter.hh>
 
 #include <dune/finiteelements/lagrangebasis/space.hh>
 #include <dune/finiteelements/global/interpolation.hh>
@@ -53,5 +54,7 @@ int main ( int argc, char **argv )
   Interpolation interpolation( space );
   interpolation( Function(), dofs );
 
-  VTKFunction vtkFunction( space, dofs );
+  Dune::VTKWriter< GridView > vtkWriter( gridView );
+  vtkWriter.addCellData( new VTKFunction( space, dofs ) );
+  vtkWriter.write( "lagrange" );
 }

@@ -59,11 +59,11 @@ namespace Dune
     {
       typedef typename LagrangePoints::iterator Iterator;
 
-      coefficients.resize( lagrangePoints_.size(), basis.size( ) );
+      coefficients.resize( lagrangePoints().size(), basis.size( ) );
 
       unsigned int index = 0;
-      const Iterator end = lagrangePoints_.end();
-      for( Iterator it = lagrangePoints_.begin(); it != end; ++it )
+      const Iterator end = lagrangePoints().end();
+      for( Iterator it = lagrangePoints().begin(); it != end; ++it )
         basis.evaluate( it->point(), coefficients.rowPtr( index++ ) );
     }
 
@@ -82,7 +82,7 @@ namespace Dune
 
     const LagrangePoints &lagrangePoints () const
     {
-      return lagrangePoints();
+      return lagrangePoints_;
     }
   };
 

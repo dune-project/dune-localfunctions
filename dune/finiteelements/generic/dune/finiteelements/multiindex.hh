@@ -49,6 +49,15 @@ namespace Dune
         vecOMZ_( other.vecOMZ_ )
     {}
 
+    int z(int i) const
+    {
+      return vecZ_[i];
+    }
+    int omz(int i) const
+    {
+      return vecOMZ_[i];
+    }
+
     This &operator= ( const This &other )
     {
       vecZ_   = other.vecZ_;
@@ -110,6 +119,7 @@ namespace Dune
     Vector vecOMZ_;
   };
 
+#if 0
 
   template< int dim >
   inline std::ostream &
@@ -155,7 +165,41 @@ namespace Dune
     return out;
   }
 
-
+#endif
+  template <int d>
+  std::ostream &operator<<(std::ostream& out,const MultiIndex<d>& mi) {
+    if (mi.absZ()==0)
+      out << "1";
+    else {
+      int absVal = 0;
+      for (int i=0; i<d; ++i) {
+        if (mi.vecZ_[i]==0)
+          continue;
+        else if (mi.vecZ_[i]==1)
+          out << char('a'+i);
+        else if (mi.vecZ_[i]>0)
+          out << char('a'+i) << "**(" << mi.vecZ_[i] << ")";
+        else if (mi.vecZ_[i]<0)
+          out << char('a'+i) << "**(" << mi.vecZ_[i] << ")";
+        absVal += mi.vecZ_[i];
+        if (absVal<mi.absZ()) out << "*";
+      }
+    }
+    if (mi.absOMZ()>0) {
+      for (int i=0; i<=mi.absZ(); ++i) {
+        if (mi.vecOMZ_[i]==0)
+          continue;
+        else if (mi.vecOMZ_[i]==1)
+          out << (1-char('a'+i));
+        else if (mi.vecOMZ_[i]>0)
+          out << (1-char('a'+i)) << "^" << mi.vecOMZ_[i];
+        else if (mi.vecOMZ_[i]<0)
+          out << (1-char('a'+i)) << "^" << mi.vecOMZ_[i];
+        if (i==mi.absZ()+1) out << "*";
+      }
+    }
+    return out;
+  }
 
   template< int dim >
   struct Unity< MultiIndex< dim > >

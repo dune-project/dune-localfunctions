@@ -5,57 +5,21 @@
 #include <sstream>
 #include "../coeffmatrix.hh"
 #include "../monomialbasis.hh"
+#include "../multiindex.hh"
 const unsigned int Precision = 1024;
 #include "orthonormalcompute.hh"
 namespace Dune
 {
-  template <class Topology>
-  struct TopologyToMultiIndex;
-  template <class Base>
-  struct TopologyToMultiIndex<GenericGeometry::Pyramid<Base> > {
-    typedef TopologyToMultiIndex<Base> BaseType;
-    template <int dim>
-    static void set(OldMultiIndex<dim>& mi) {
-      BaseType::set(mi);
-      mi.set(Base::dimension,1);
-    }
-  };
-  template <class Base>
-  struct TopologyToMultiIndex<GenericGeometry::Prism<Base> > {
-    typedef TopologyToMultiIndex<Base> BaseType;
-    template <int dim>
-    static void set(OldMultiIndex<dim>& mi) {
-      BaseType::set(mi);
-      mi.set(Base::dimension,2);
-    }
-  };
-  template <>
-  struct TopologyToMultiIndex<GenericGeometry::Pyramid<GenericGeometry::Point> > {
-    template <int dim>
-    static void set(OldMultiIndex<dim>& mi) {
-      mi.set(0,1);
-    }
-  };
-  template <>
-  struct TopologyToMultiIndex<GenericGeometry::Prism<GenericGeometry::Point> > {
-    template <int dim>
-    static void set(OldMultiIndex<dim>& mi) {
-      mi.set(0,2);
-    }
-  };
-  // **********************************************
-  template <class Topology,int maxOrder,class F>
+  template <class Topology,class F>
   struct ONBMatrix {
     enum {dim = Topology::dimension};
     typedef amp::ampf<Precision> scalar_t;
     typedef ap::template_1d_array< scalar_t > vec_t;
     typedef ap::template_2d_array< scalar_t > mat_t;
-    ONBMatrix()
+    ONBMatrix(int maxOrder)
       : calc(1)
     {
-      OldMultiIndex<dim> geo;
-      TopologyToMultiIndex<Topology>::set(geo);
-      calc.compute(geo);
+      calc.compute(maxOrder);
     }
     int colSize(int row) const {
       return row+1;
@@ -90,13 +54,13 @@ namespace Dune
         out << std::endl;
       }
     }
-    CalcCoeffs<dim,maxOrder> calc;
+    OrthonormalBasisCompute::CalcCoeffs<Topology> calc;
   };
-  template <class Topology,int maxOrder,class F>
+  template <class Topology,class F>
   class OrthonormalBasis
   {
     enum {dim = Topology::dimension};
-    typedef OrthonormalBasis<Topology,maxOrder,F> This;
+    typedef OrthonormalBasis<Topology,F> This;
     typedef StandardMonomialBasis<dim,F> Basis;
 
   public:
@@ -105,15 +69,15 @@ namespace Dune
     typedef typename Basis::DomainVector DomainVector;
     typedef typename Basis::RangeVector RangeVector;
 
-    OrthonormalBasis ()
+    OrthonormalBasis (int maxOrder)
       : basis_(), basisEval_(0)
     {
-      ONBMatrix<Topology,maxOrder,Field> onbMatrix;
+      ONBMatrix<Topology,Field> onbMatrix(maxOrder);
       coeffMatrix_.fill(onbMatrix);
       std::ofstream out("coeffs.out");
       onbMatrix.print(out);
       out << " ************ " << std::endl;
-      print(out);
+      print(out,maxOrder);
     }
 
     const int size (unsigned int order) const
@@ -125,22 +89,21 @@ namespace Dune
                     const DomainVector &x,
                     std::vector< RangeVector > &values ) const
     {
-      assert(order<=maxOrder);
       basisEval_.resize(size(order));
       basis_.evaluate(order,x,basisEval_);
       mult(basisEval_,values);
     }
 
-    void print(std::ofstream &out) {
+    void print(std::ofstream &out,int order) {
       typedef Dune::MultiIndex<dim> MI;
       typedef Dune::MonomialBasis< Topology, MI  > Basis;
       Basis basis;
-      const unsigned int size = basis.sizes( maxOrder )[ maxOrder ];
+      const unsigned int size = basis.sizes( order )[ order ];
       std::vector< Dune::FieldVector< MI,1> > y( size );
       Dune::FieldVector< MI, dim > x;
       for (int d=0; d<dim; ++d)
         x[d].set(d);
-      basis.evaluate( maxOrder, x, y );
+      basis.evaluate( order, x, y );
       coeffMatrix_.print(out,y);
     }
   private:

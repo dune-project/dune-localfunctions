@@ -36,4 +36,23 @@ int main ( int argc, char **argv )
 
   Dune::AlgLib::Matrix< Field > matrix;
   interpolation.interpolate( basis, matrix );
+
+  std::cout << "Matrix of evaluated base functions:" << std::endl;
+  for( unsigned int row = 0; row < matrix.rows(); ++row )
+  {
+    for( unsigned int col = 0; col < matrix.cols(); ++col )
+      std::cout << "   " << matrix( row, col );
+    std::cout << std::endl;
+  }
+  std::cout << std::endl;
+
+  matrix.invert();
+  std::cout << "Inverse:" << std::endl;
+  for( unsigned int row = 0; row < matrix.rows(); ++row )
+  {
+    for( unsigned int col = 0; col < matrix.cols(); ++col )
+      std::cout << "   " << matrix( row, col );
+    std::cout << std::endl;
+  }
+  std::cout << std::endl;
 }

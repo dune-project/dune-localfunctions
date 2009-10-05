@@ -115,6 +115,12 @@ namespace Dune
   };
 
   template<>
+  struct Precision< long double >
+  {
+    static const unsigned int value = 80;
+  };
+
+  template<>
   struct Precision< float >
   {
     static const unsigned int value = 32;
@@ -150,6 +156,12 @@ inline void field_cast ( const F1 &f1, F2 &f2 )
 
 template< unsigned int precision >
 inline void field_cast ( const Dune::AlgLib::MultiPrecision< precision > &f1, double &f2 )
+{
+  f2 = f1.toDouble();
+}
+
+template< unsigned int precision >
+inline void field_cast ( const Dune::AlgLib::MultiPrecision< precision > &f1, long double &f2 )
 {
   f2 = f1.toDouble();
 }

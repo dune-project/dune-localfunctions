@@ -158,7 +158,8 @@ namespace Dune
         for( ; it != colkEnd; ++row1, ++it )
           *it = z * (*row1);
         RangeVector *const row1End = row1 + sizes_[ k ];
-        for( ; it!=row1End; ++row0,++it )
+        assert( (unsigned int)(row1End - values) <= offsets[ k ] );
+        for( ; it != row1End; ++row0, ++it )
           *it = z * (*row0);
         row0 = row1;
       }
@@ -246,6 +247,7 @@ namespace Dune
       {
         RangeVector *const row1 = values+offsets[ k-1 ];
         RangeVector *const row1End = row1+sizes_[ k ];
+        assert( (unsigned int)(row1End - values) <= offsets[ k ] );
         for( RangeVector *it = row1 + baseSizes[ k ]; it!=row1End; ++row0,++it )
           *it = z * (*row0);
         row0 = row1;
@@ -281,6 +283,7 @@ namespace Dune
       {
         RangeVector *const row1 = values + offsets[ k-1 ];
         RangeVector *const row1End = row1 + sizes_[ k ];
+        assert( (unsigned int)(row1End - values) <= offsets[ k ] );
         RangeVector *const col0End = row1 + baseSizes[ k ];
         RangeVector *it = row1;
         for( ; it!=col0End; ++it )

@@ -1,5 +1,6 @@
-// -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
-// vi: set et ts=4 sw=2 sts=2:
+// NOTE: The current revision of this file was left untouched when the DUNE source files were reindented!
+// NOTE: It contained invalid syntax that could not be processed by uncrustify.
+
 #ifndef DUNE_MONOMIALBASIS_HH
 #define DUNE_MONOMIALBASIS_HH
 
@@ -13,13 +14,13 @@ namespace Dune
   // MonomialBasis
   // -------------
 
-  template< class Topology, class F, unsigned int k >
+  template< class Topology, class F >
   class MonomialBasis;
 
-  template< class F, unsigned int k >
-  class MonomialBasis< GenericGeometry::Point, F, k >
+  template< class F >
+  class MonomialBasis< GenericGeometry::Point, F >
   {
-    typedef MonomialBasis< GenericGeometry::Point, F, k > This;
+    typedef MonomialBasis< GenericGeometry::Point, F > This;
 
   public:
     typedef GenericGeometry::Point Topology;
@@ -31,14 +32,19 @@ namespace Dune
     typedef FieldVector< Field, dimDomain > DomainVector;
     typedef FieldVector< Field, dimRange > RangeVector;
 
-    static const unsigned int order = k;
-    static const unsigned int numBasisFunctions = 1;
+  private:
+    template< int dimD >
+    void evaluate ( const unsigned int order,
+                    const FieldVector< Field, dimD > &x,
+                    const unsigned int *const offsets,
+                    double *const values ) const
+    {}
   };
 
-  template< class BaseTopology, class F, unsigned int k >
-  class MonomialBasis< GenericGeometry::Prism< BaseTopology >, F, k >
+  template< class BaseTopology, class F >
+  class MonomialBasis< GenericGeometry::Prism< BaseTopology >, F >
   {
-    typedef MonomialBasis< GenericGeometry::Prism< BaseTopology >, F, k > This;
+    typedef MonomialBasis< GenericGeometry::Prism< BaseTopology >, F > This;
 
   public:
     typedef GenericGeometry::Prism< BaseTopology > Topology;
@@ -50,19 +56,24 @@ namespace Dune
     typedef FieldVector< Field, dimDomain > DomainVector;
     typedef FieldVector< Field, dimRange > RangeVector;
 
-  public:
-    static const unsigned int order = k;
+  private:
+    MonomialBasis< BaseTopology, Field > baseBasis;
+    int *sizes_;
 
-    // number of basis functions with exacly order k
-    static const unsigned int numBasisFunctions
-      = (order+1) * MonomialBasis< BaseTopology, Field, order >::numBasisFunctions
-        + MonomialBasis< Topology, Field, order-1 >::numBasisFunctions;
+  private:
+    template< int dimD >
+    void evaluate ( const unsigned int order,
+                    const FieldVector< Field, dimD > &x,
+                    const unsigned int *const offsets,
+                    double *const values ) const
+    {
+    }
   };
 
-  template< class BaseTopology, class F, unsigned int k >
-  class MonomialBasis< GenericGeometry::Pyramid< BaseTopology >, F, k >
+  template< class BaseTopology, class F >
+  class MonomialBasis< GenericGeometry::Pyramid< BaseTopology >, F >
   {
-    typedef MonomialBasis< GenericGeometry::Pyramid< BaseTopology >, F, k > This;
+    typedef MonomialBasis< GenericGeometry::Pyramid< BaseTopology >, F > This;
 
   public:
     typedef GenericGeometry::Pyramid< BaseTopology > Topology;
@@ -74,13 +85,52 @@ namespace Dune
     typedef FieldVector< Field, dimDomain > DomainVector;
     typedef FieldVector< Field, dimRange > RangeVector;
 
-  public:
-    static const unsigned int order = k;
+  private:
+    MonomialBasis< BaseTopology, Field > baseBasis;
+    int *sizes_;
 
-    // number of basis functions with exacly order k
-    static const unsigned int numBasisFunctions
-      = MonomialBasis< BaseTopology, Field, order >::numBasisFunctions
-        + MonomialBasis< Topology, Field, order-1 >::numBasisFunctions;
+  public:
+    MonomialBasis ()
+    {}
+
+  private:
+    template< int dimD >
+    void evaluateSimplex ( const int order,
+                           const FieldVector< Field, dimD > &x,
+                           const int *const offsets,
+                           double *const values ) const
+    {
+      baseBasis.evaluate( order, x, offsets, values );
+      const int baseSizes = baseBasis.sizes_;
+
+      for( int k = 0; k < p; ++k )
+      {
+        // evaluate all polynomials of order k
+        for( int j = k; j >= 0; --j )
+          
+
+      }
+    }
+
+    template< int dimD >
+    void evaluatePyramid ( const unsigned int order,
+                           const FieldVector< Field, dimD > &x,
+                           const unsigned int *const offsets,
+                           double *const values ) const
+    {
+    }
+
+    template< int dimD >
+    void evaluate ( const unsigned int order,
+                    const FieldVector< Field, dimD > &x,
+                    const unsigned int *const offsets,
+                    double *const values ) const
+    {
+      if( GenericGeometry::IsSimplex< Topology >::value )
+        evaluateSimplex( order, x, offsets, values );
+      else
+        evaluatePyramid( order, x, offsets, values );
+    }
   };
 }
 

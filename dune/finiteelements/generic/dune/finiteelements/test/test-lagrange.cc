@@ -3,6 +3,7 @@
 #include <config.h>
 
 #include <dune/grid/genericgeometry/topologytypes.hh>
+#include <dune/grid/io/file/dgfparser/dgfpsggridtype.hh>
 #include <dune/grid/io/file/dgfparser/dgfgridtype.hh>
 #include <dune/grid/io/file/vtk/vtkwriter.hh>
 #include <dune/grid/io/file/vtk/subsamplingvtkwriter.hh>
@@ -60,8 +61,8 @@ int main ( int argc, char **argv )
     std::cout << dofs[i] << std::endl;
   }
 
-  Dune::VTKWriter< GridView > vtkWriter( gridView );
-  // Dune::SubsamplingVTKWriter< GridView > vtkWriter( gridView,3 );
+  //Dune::VTKWriter< GridView > vtkWriter( gridView );
+  Dune::SubsamplingVTKWriter< GridView > vtkWriter( gridView,3 );
   vtkWriter.addVertexData( new VTKFunction( space, dofs ) );
   vtkWriter.write( "lagrange" );
 }

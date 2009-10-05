@@ -125,8 +125,6 @@ namespace Dune
       const Iterator end = indexInfo_[ codim ].end();
       for( Iterator it = indexInfo_[ codim ].begin(); it != end; ++it )
       {
-        std::cout << "type = " << it->type << ", size = " << it->size
-                  << ", offset = " << size_ << std::endl;
         it->offset = size_;
         size_ += (it->size > 0 ? indexSet_.size( it->type ) * it->size : 0);
       }

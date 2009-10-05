@@ -190,7 +190,7 @@ namespace Dune
 
         Field *row1 = row1begin;
         Field *it = row1begin + baseSizes[ k ];
-        for( unsigned int j = 1; j <= order; ++j )
+        for( unsigned int j = 1; j <= k; ++j )
         {
           Field *const end = it + baseSizes[ k ];
           assert( (unsigned int)(end - values) <= offsets[ k ] );
@@ -453,6 +453,25 @@ namespace Dune
     {
       evaluate( order, x, &(values[ 0 ]) );
     }
+
+    void integral ( const unsigned int order,
+                    Field *const values ) const
+    {
+      Base::integral( order, sizes( order ), values );
+    }
+
+    void integral ( const unsigned int order,
+                    RangeVector *const values ) const
+    {
+      integral( order, reinterpret_cast< Field * >( values ) );
+    }
+
+    void integral ( const unsigned int order,
+                    std::vector< RangeVector > &values ) const
+    {
+      integral( order, &(values[ 0 ]) );
+    }
+
   };
 
 

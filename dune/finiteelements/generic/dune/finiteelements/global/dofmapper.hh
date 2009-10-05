@@ -41,7 +41,8 @@ namespace Dune
     {
       unsigned int offset;
       unsigned int size;
-      GeometryType type;
+      unsigned int codim;
+      unsigned int topologyId;
 
       IndexInfo () : size( 0 ) {}
     };
@@ -128,7 +129,8 @@ namespace Dune
       for( Iterator it = indexInfo_[ codim ].begin(); it != end; ++it )
       {
         it->offset = size_;
-        size_ += (it->size > 0 ? indexSet_.size( it->type ) * it->size : 0);
+        const GeometryType type = GenericGeometry::geometryType( it->topologyId, dimension-(it->codim) );
+        size_ += (it->size > 0 ? indexSet_.size( type ) * it->size : 0);
       }
     }
 
@@ -178,7 +180,8 @@ namespace Dune
       {
         const unsigned int topologyId = refTopology.topologyId( codim, subEntity );
         IndexInfo &indexInfo = indexInfo_[ codim ][ topologyId >> 1 ];
-        indexInfo.type = refTopology.type( codim, subEntity );
+        indexInfo.codim = codim;
+        indexInfo.topologyId = topologyId;
 
         const unsigned int count = counts[ mapper( codim, subEntity ) ];
         if( count == 0 )

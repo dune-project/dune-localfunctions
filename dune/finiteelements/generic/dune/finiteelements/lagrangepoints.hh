@@ -47,8 +47,8 @@ namespace Dune
     static FieldVector< Field, dim > *
     setup ( const unsigned int order, FieldVector< Field, dim > *points )
     {
-      *points = Field( 0 );
-      return ++points;
+      *(points++) = Field( 0 );
+      return points;
     }
 
     static unsigned int size ( const unsigned int order )
@@ -119,27 +119,22 @@ namespace Dune
     static FieldVector< Field, dim > *
     setup ( const unsigned int order, FieldVector< Field, dim > *points )
     {
-      if (order == 0) {
-        FieldVector< Field, dim > *const end
-          = BaseImpl::template setup< dim >( 0 , points );
-        for( ; points != end; ++points )
-        {
-          for( unsigned int j = 0; j < dimension-1; ++j )
-            (*points)[ j ] *= 0.;
-          (*points)[ dimension-1 ] = 0.;
-        }
-      }
-      for( unsigned int i = 0; i <= order; ++i )
+      if( order > 0 )
       {
-        FieldVector< Field, dim > *const end
-          = BaseImpl::template setup< dim >( order - i, points );
-        for( ; points != end; ++points )
+        for( unsigned int i = 0; i <= order; ++i )
         {
-          for( unsigned int j = 0; j < dimension-1; ++j )
-            (*points)[ j ] *= Field( order - i ) / Field( order );
-          (*points)[ dimension-1 ] = Field( i ) / Field( order );
+          FieldVector< Field, dim > *const end
+            = BaseImpl::template setup< dim >( order - i, points );
+          for( ; points != end; ++points )
+          {
+            for( unsigned int j = 0; j < dimension-1; ++j )
+              (*points)[ j ] *= Field( order - i ) / Field( order );
+            (*points)[ dimension-1 ] = Field( i ) / Field( order );
+          }
         }
       }
+      else
+        *(points++) = Field( 0 );
       return points;
     }
 

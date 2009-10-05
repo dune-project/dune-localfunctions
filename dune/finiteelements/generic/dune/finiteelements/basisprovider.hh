@@ -4,6 +4,7 @@
 #define DUNE_BASISPROVIDER_HH
 
 #include <map>
+#include <dune/grid/genericgeometry/topologytypes.hh>
 
 namespace Dune
 {

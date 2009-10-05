@@ -4,6 +4,7 @@
 #define DUNE_ORTHONORMALBASIS_HH
 #include <sstream>
 #include <dune/finiteelements/polynomialbasis.hh>
+#include <dune/finiteelements/basisprovider.hh>
 #include "orthonormalcompute.hh"
 namespace Dune
 {
@@ -14,32 +15,36 @@ namespace Dune
     typedef SF StorageField;
     typedef AlgLib::MultiPrecision< Precision<CF>::value > ComputeField;
     static const int dimension = dim;
-    typedef FieldVector<StorageField,1> CoeffRangeVector;
+    typedef FieldMatrix<StorageField,1,1> CoeffRangeVector;
     typedef CoeffMatrix< CoeffRangeVector > CoefficientMatrix;
-    typedef PolynomialBasis<MBasis,CoefficientMatrix> Basis;
+    typedef PolynomialBasis<MBasis,CoefficientMatrix,std::vector<StorageField> > Basis;
+    typedef unsigned int Key;
 
-    template <class Topology,class VirtualBasis,class Basis>
-    static void apply(const VirtualBasis &virtBasis,unsigned int order,Basis* &basis)
+    template <class Topology>
+    struct Maker
     {
-      static MBasis _basis;
-      static CoefficientMatrix _coeffs;
-      if ( _coeffs.size() <= _basis.size(order) )
+      static void apply(unsigned int order,Basis* &basis)
       {
-        ONB::ONBMatrix<Topology,ComputeField> matrix(order);
-        _coeffs.fill(matrix);
-        basis = new Basis(_basis,_coeffs,order,_basis.size(order));
-        std::stringstream name;
-        name << "onb_" << Topology::name() << "_p" << order;
-        basis->template printBasis<Topology>(name.str(),matrix);
+        static MBasis _basis;
+        static CoefficientMatrix _coeffs;
+        if ( _coeffs.size() <= _basis.size(order) )
+        {
+          ONB::ONBMatrix<Topology,ComputeField> matrix(order);
+          _coeffs.fill(matrix);
+          basis = new Basis(_basis,_coeffs,order,_basis.size(order));
+          std::stringstream name;
+          name << "onb_" << Topology::name() << "_p" << order;
+          basis->template printBasis<Topology>(name.str(),matrix);
+        }
+        else
+          basis = new Basis(_basis,_coeffs,order,_basis.size(order));
       }
-      else
-        basis = new Basis(_basis,_coeffs,order,_basis.size(order));
-    }
+    };
   };
 
   template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
   struct OrthonormalBasisProvider
-    : public PolynomialBasisProvider<ONBasisCreator<dim,SF,CF> >
+    : public BasisProvider<ONBasisCreator<dim,SF,CF> >
   {};
 }
 #endif // DUNE_ORTHONORMALBASIS_HH

@@ -8,8 +8,8 @@ using namespace GenericGeometry;
 
 template <class Topology>
 bool test(unsigned int order) {
-  typedef AlgLib::MultiPrecision<128> StorageField;
-  // typedef double StorageField;
+  // typedef AlgLib::MultiPrecision<128> StorageField;
+  typedef double StorageField;
   typedef AlgLib::MultiPrecision<512> ComputeField;
   // typedef double ComputeField;
 
@@ -18,7 +18,7 @@ bool test(unsigned int order) {
   for (unsigned int o=1; o<=order; ++o)
   {
     std::cout << "Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
-    typedef LagrangeBasisProvider<Topology::dimension,StorageField> BasisProvider;
+    typedef LagrangeBasisProvider<Topology::dimension,StorageField,ComputeField> BasisProvider;
     const typename BasisProvider::Basis &basis = BasisProvider::basis(Topology::id,o);
 
     typedef Dune::LagrangePoints< Topology, StorageField > LagrangePoints;
@@ -64,7 +64,7 @@ int main ( int argc, char **argv )
 
   const unsigned int order = atoi( argv[ 1 ] );
 #ifdef TOPOLOGY
-  return (test<TOPOLOGY>(order,fixed) ? 0 : 1 );
+  return (test<TOPOLOGY>(order) ? 0 : 1 );
 #else
   bool tests = true;
   tests &= test<Prism<Point> > (order);

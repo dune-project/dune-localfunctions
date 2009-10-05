@@ -41,6 +41,18 @@ namespace Dune
     }
   };
 
+  template <class Field>
+  struct Mult<FieldMatrix<Field,1,1>,Field >
+  {
+    typedef FieldMatrix<Field,1,1> Vector1;
+    typedef Field Vector2;
+    typedef FieldVector<Field,1> Result;
+    static void add(const Vector1 &vec1, const Vector2 &vec2,
+                    Result &res)
+    {
+      res[0] += vec1[0][0]*vec2;
+    }
+  };
   template <class Field,int dimRange>
   struct Mult<FieldMatrix<Field,dimRange,dimRange>,FieldVector<Field,dimRange> >
   {
@@ -112,12 +124,12 @@ namespace Dune
         RangeVector *itx = (&x[0]);
         bool first = true;
         for (; row != rows_[r+1]; ++row, ++itx) {
-          if ((*row)[0] > 1e-15) {
-            out << ((!first) ? " + " : "") << (*row) << "*" << (*itx);
+          if ((*row)[0][0] > 1e-15) {
+            out << ((!first) ? " + " : "") << (*row)[0][0] << "*" << (*itx);
             first = false;
           }
-          else if ((*row)[0] < -1e-15) {
-            out << " - " << -((*row)[0]) << "*" << (*itx);
+          else if ((*row)[0][0] < -1e-15) {
+            out << " - " << -((*row)[0][0]) << "*" << (*itx);
             first = false;
           }
         }
@@ -141,7 +153,28 @@ namespace Dune
         for( ; row != rows_[ r+1 ]; ++row, ++itx )
         {
           Multiply::add(*row,*itx,val);
-          // val += (*itx) * (*row) ;
+        }
+        field_cast(val,y[r]);
+      }
+    }
+
+    template< class BasisVector, class RangeVector >
+    void mult ( const BasisVector &x,
+                std::vector< RangeVector > &y ) const
+    {
+      typedef typename BasisVector::value_type DomainVector;
+      typedef Mult<Vector,DomainVector> Multiply;
+      typedef typename Multiply::Result Result;
+      size_t numLsg = y.size();
+      assert( numLsg <= (size_t)numRows_ );
+      Vector *row = rows_[ 0 ];
+      for( size_t r = 0; r < numLsg; ++r )
+      {
+        Result val(0.);
+        typename BasisVector::const_iterator itx = x.begin();
+        for( ; row != rows_[ r+1 ]; ++row, ++itx )
+        {
+          Multiply::add(*row,*itx,val);
         }
         field_cast(val,y[r]);
       }
@@ -154,6 +187,9 @@ namespace Dune
       int size = 0;
       for( int r = 0; r < numRows_; ++r )
         size += mat.colSize( r );
+
+      delete [] coeff_;
+      delete [] rows_;
 
       coeff_ = new Vector[ size ];
       rows_ = new Vector*[ numRows_+1 ];

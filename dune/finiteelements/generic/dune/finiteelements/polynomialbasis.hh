@@ -3,6 +3,7 @@
 #ifndef DUNE_POLYNOMIALBASIS_HH
 #define DUNE_POLYNOMIALBASIS_HH
 #include <fstream>
+#include <dune/common/fmatrix.hh>
 #include <dune/finiteelements/coeffmatrix.hh>
 #include <dune/finiteelements/monomialbasis.hh>
 #include <dune/finiteelements/multiindex.hh>
@@ -12,13 +13,34 @@ namespace Dune
   // PolynomialBasis
   // ---------------
 
-  template<  class B, class CM >
+  /**
+   * \tparam B Basis set with
+   *           static const int dimension  -> dimension of reference element
+   *           typedef DomainVector        -> coordinates in reference element
+   *           int size(int order) const   -> number of basis functions
+   *           void evaluate( order, x, val ) const
+   *              int order
+   *              DomainVector x
+   *              Container val
+   * \tparam CM stroage for coefficience with
+   *           typedef Field -> field of coefficience
+   *           static const int dimRange -> coeficience are of type
+   *                                        FieldMatrix<Field,dimRange,dimRange>
+   *           void mult( val, y )
+   *              Container val
+   *              std::vector<RangeVector> y
+   * \tparam Container access to basis functions through forward iterator
+   *           typedef value_type
+   *           typedef const_iterator
+   *           const_iterator begin()
+   **/
+  template<  class B, class CM, class Container >
   class PolynomialBasis
   {
-    typedef PolynomialBasis< B, CM > This;
+    typedef PolynomialBasis< B, CM, Container > This;
 
     typedef B Basis;
-    enum {dimension = Basis::dimension};
+    static const int dimension = Basis::dimension;
 
     typedef CM CoefficientMatrix;
     typedef typename CoefficientMatrix::Field StorageField;
@@ -66,6 +88,7 @@ namespace Dune
     void printBasis(const std::string &name,
                     const FullMatrix &matrix)
     {
+#if 0
       {
         std::ofstream out((name+".out").c_str());
         out.precision(15);
@@ -78,8 +101,8 @@ namespace Dune
         out.setf(std::ios::scientific,std::ios::floatfield);
 
         typedef Dune::MultiIndex<dimension> MI;
-        typedef Dune::MonomialBasis< Topology, MI > Basis;
-        Basis basis;
+        typedef Dune::MonomialBasis< Topology, MI > MBasis;
+        MBasis basis;
         const unsigned int size = basis.size( order_ );
         std::vector< MI > y( size );
         Dune::FieldVector< MI, dimension > x;
@@ -88,31 +111,38 @@ namespace Dune
         basis.evaluate( order_, x, &(y[0]) );
         coeffMatrix_->print(out,y,size_);
       }
+#endif
     }
   protected:
     PolynomialBasis(const PolynomialBasis &);
     PolynomialBasis &operator=(const PolynomialBasis&);
     const Basis *basis_;
     const CoefficientMatrix* coeffMatrix_;
-    mutable std::vector<StorageField> basisEval_;
+    mutable Container basisEval_;
     unsigned int order_,size_;
   };
 
-  template< class B, class SF, int dimR >
+  /**
+   * Specialized version of PolynomialBasis with FieldMatrix for matrix
+   * coefficience and std::vector for container type with FieldVector as
+   * value type. This class stores the coefficient matrix with can be
+   * constructed via the fill method
+   */
+  template< class B, class SF, int dimR, class Container =  std::vector<Dune::FieldVector<SF,dimR> > >
   class PolynomialBasisWithMatrix
-    : public PolynomialBasis<B,CoeffMatrix<FieldVector<SF,dimR> > >
+    : public PolynomialBasis<B,CoeffMatrix<FieldMatrix<SF,dimR,dimR> > , Container>
   {
-    typedef PolynomialBasisWithMatrix< B, SF, dimR > This;
+    typedef PolynomialBasisWithMatrix< B, SF, dimR, Container > This;
 
     typedef B Basis;
     enum {dimension = Basis::dimension};
 
     static const int dimRange = dimR;
     typedef SF StorageField;
-    typedef FieldVector<StorageField,dimRange> CoeffRangeVector;
+    typedef FieldMatrix<StorageField,dimRange,dimRange> CoeffRangeVector;
     typedef CoeffMatrix< CoeffRangeVector > CoefficientMatrix;
 
-    typedef PolynomialBasis<B,CoefficientMatrix> Base;
+    typedef PolynomialBasis<Basis,CoefficientMatrix,Container> Base;
 
   public:
     typedef typename Basis::DomainVector DomainVector;
@@ -133,42 +163,6 @@ namespace Dune
     PolynomialBasisWithMatrix(const PolynomialBasisWithMatrix &);
     PolynomialBasisWithMatrix &operator=(const PolynomialBasisWithMatrix &);
     CoeffMatrix< CoeffRangeVector > coeffMatrix_;
-  };
-
-
-  template< class Creator >
-  struct PolynomialBasisProvider
-  {
-    typedef typename Creator :: StorageField StorageField;
-    static const int dimension = Creator :: dimension;
-    typedef typename Creator :: Basis Basis;
-
-    static const Basis &basis(unsigned int id,unsigned int order)
-    {
-      return instance().getBasis(id,order);
-    }
-  private:
-    friend struct MonomialBasisProvider<dimension,StorageField>;
-    enum { numTopologies = (1 << dimension) };
-    PolynomialBasisProvider()
-    {}
-    static PolynomialBasisProvider &instance()
-    {
-      static PolynomialBasisProvider instance;
-      return instance;
-    }
-    const Basis &getBasis(unsigned int id,unsigned int order)
-    {
-      if (order>=basis_.size())
-      {
-        basis_.resize(order+1,FieldVector<Basis*,numTopologies>(0));
-        MonomialBasisProvider<dimension,StorageField>::template callback<Creator>(id,order,basis_[order][id]);
-      }
-      else if (basis_[order][id] == 0)
-        MonomialBasisProvider<dimension,StorageField>::template callback<Creator>(id,order,basis_[order][id]);
-      return *(basis_[order][id]);
-    }
-    std::vector<FieldVector<Basis*,numTopologies> > basis_;
   };
 }
 #endif // DUNE_POLYNOMIALBASIS_HH

@@ -8,8 +8,8 @@ using namespace GenericGeometry;
 
 template <class Topology>
 bool test(unsigned int order) {
-  typedef AlgLib::MultiPrecision<128> StorageField;
-  // typedef double StorageField;
+  // typedef AlgLib::MultiPrecision<128> StorageField;
+  typedef double StorageField;
   typedef AlgLib::MultiPrecision<512> ComputeField;
   // typedef double ComputeField;
 
@@ -21,8 +21,6 @@ bool test(unsigned int order) {
     const typename BasisProvider::Basis &basis = BasisProvider::basis(Topology::id,o);
 
     const unsigned int size = basis.size( );
-
-    std::cout << "Basis size: " << size << std::endl;
 
     std::vector< FieldVector< double, 1 > > y( size );
 

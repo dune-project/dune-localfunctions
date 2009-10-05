@@ -8,6 +8,7 @@
 
 #include <dune/finiteelements/lagrangepoints.hh>
 #include <dune/finiteelements/lagrangeinterpolation.hh>
+#include <dune/finiteelements/basisprovider.hh>
 #include <dune/finiteelements/polynomialbasis.hh>
 namespace Dune
 {
@@ -28,7 +29,7 @@ namespace Dune
     int rowSize() const {
       return matrix_.rows();
     }
-    const Dune::FieldVector< scalar_t, 1 > operator() ( int r, int c ) const
+    const Dune::FieldMatrix< scalar_t, 1,1 > operator() ( int r, int c ) const
     {
       return matrix_(c,r);
     }
@@ -58,22 +59,27 @@ namespace Dune
     typedef AlgLib::MultiPrecision< Precision<CF>::value > ComputeField;
     static const int dimension = dim;
     typedef PolynomialBasisWithMatrix<MBasis,StorageField,1> Basis;
+    typedef unsigned int Key;
 
-    template <class Topology,class VirtualBasis,class Basis>
-    static void apply(const VirtualBasis &virtBasis,unsigned int order,Basis* &basis)
+    template <class Topology>
+    struct Maker
     {
-      basis = new Basis(virtBasis,order);
-      LagrangeMatrix<Topology,ComputeField> matrix(order);
-      basis->fill(matrix);
-      std::stringstream name;
-      name << "lagrange_" << Topology::name() << "_p" << order;
-      basis->template printBasis<Topology>(name.str(),matrix);
-    }
+      static void apply(unsigned int order,Basis* &basis)
+      {
+        const MBasis &virtBasis = MonomialBasisProvider<dimension,StorageField>::template basis<Topology>(order);
+        basis = new Basis(virtBasis,order);
+        LagrangeMatrix<Topology,ComputeField> matrix(order);
+        basis->fill(matrix);
+        std::stringstream name;
+        name << "lagrange_" << Topology::name() << "_p" << order;
+        basis->template printBasis<Topology>(name.str(),matrix);
+      }
+    };
   };
 
   template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
   struct LagrangeBasisProvider
-    : public PolynomialBasisProvider<LagrangeBasisCreator<dim,SF,CF> >
+    : public BasisProvider<LagrangeBasisCreator<dim,SF,CF> >
   {};
 }
 #endif // DUNE_ORTHONORMALBASIS_HH

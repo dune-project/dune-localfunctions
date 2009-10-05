@@ -323,7 +323,7 @@ namespace ONB {
       return calc.res.gethighbound(1)+1;
     }
 
-    const Dune::FieldVector< scalar_t, 1 > operator() ( int r, int c ) const
+    const scalar_t operator() ( int r, int c ) const
     {
       return calc.res(c,r);
     }

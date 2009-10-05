@@ -12,6 +12,8 @@
 
 #include <dune/common/field.hh>
 
+#include <dune/finiteelements/basisprovider.hh>
+
 namespace Dune
 {
 
@@ -575,6 +577,31 @@ namespace Dune
   };
 
   template< int dim, class F >
+  struct MonomialBasisCreator
+  {
+    typedef F StorageField;
+    typedef VirtualMonomialBasis<dim,StorageField> Basis;
+    static const int dimension = dim;
+    typedef unsigned int Key;
+
+    template <class Topology>
+    struct Maker
+    {
+      static void apply(unsigned int order,Basis* &basis)
+      {
+        basis = new VirtualMonomialBasisImpl<Topology,StorageField>;
+      }
+    };
+  };
+
+  template< int dim, class SF >
+  struct MonomialBasisProvider
+    : public BasisProvider<MonomialBasisCreator<dim,SF> >
+  {};
+
+
+#if 0
+  template< int dim, class F >
   struct MonomialBasisProvider
   {
     static const int dimension = dim;
@@ -585,21 +612,26 @@ namespace Dune
     {
       return instance().getBasis(id);
     }
+    template <class Topology>
+    static const Basis &basis()
+    {
+      return instance().template getBasis<Topology>();
+    }
 
     template <class Impl>
     static void callback(unsigned int topologyId)
     {
-      GenericGeometry::ForLoop<CallBack<Impl>::template Helper,0,numTopologies-1>::apply(topologyId);
+      GenericGeometry::IfTopology<CallBack<Impl>::template Helper,dim>::apply(topologyId);
     }
     template <class Impl,class T1>
     static void callback(unsigned int topologyId, T1 &t1)
     {
-      GenericGeometry::ForLoop<CallBack<Impl>::template Helper,0,numTopologies-1>::apply(topologyId,t1);
+      GenericGeometry::IfTopology<CallBack<Impl>::template Helper,dim>::apply(topologyId,t1);
     }
     template <class Impl,class T1,class T2>
     static void callback(unsigned int topologyId, T1 &t1, T2 &t2)
     {
-      GenericGeometry::ForLoop<CallBack<Impl>::template Helper,0,numTopologies-1>::apply(topologyId,t1,t2);
+      GenericGeometry::IfTopology<CallBack<Impl>::template Helper,dim>::apply(topologyId,t1,t2);
     }
 
   private:
@@ -632,39 +664,29 @@ namespace Dune
     template <class Impl>
     struct CallBack
     {
-      template <int tid>
+      template <class Topology>
       struct Helper
       {
-        typedef typename GenericGeometry::Topology<tid,dimension>::type Topology;
-        static void apply(unsigned int topologyId)
+        static void apply()
         {
-          if ((unsigned int)tid == topologyId)
-          {
-            Impl::template apply<Topology>(instance().template getBasis<Topology>());
-          }
+          Impl::template apply<Topology>(instance().template getBasis<Topology>());
         }
         template <class T1>
-        static void apply(unsigned int topologyId, T1 &t1)
+        static void apply(T1 &t1)
         {
-          if ((unsigned int)tid == topologyId)
-          {
-            Impl::template apply<Topology>(instance().template getBasis<Topology>(),t1);
-          }
+          Impl::template apply<Topology>(instance().template getBasis<Topology>(),t1);
         }
         template <class T1,class T2>
-        static void apply(unsigned int topologyId, T1 &t1, T2 &t2)
+        static void apply(T1 &t1, T2 &t2)
         {
-          if ((unsigned int)tid == topologyId)
-          {
-            Impl::template apply<Topology>(instance().template getBasis<Topology>(),t1,t2);
-          }
+          Impl::template apply<Topology>(instance().template getBasis<Topology>(),t1,t2);
         }
       };
     };
 
     FieldVector<Basis*,numTopologies> basis_;
   };
-
+#endif
 
 
   // StdMonomialTopology

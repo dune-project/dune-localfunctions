@@ -2,12 +2,16 @@
 // vi: set et ts=4 sw=2 sts=2:
 #ifndef DUNE_POLYNOMIALBASIS_HH
 #define DUNE_POLYNOMIALBASIS_HH
+
 #include <fstream>
+
 #include <dune/common/fmatrix.hh>
+
 #include <dune/finiteelements/coeffmatrix.hh>
 #include <dune/finiteelements/monomialbasis.hh>
 #include <dune/finiteelements/multiindex.hh>
 #include <dune/finiteelements/basisevaluator.hh>
+
 namespace Dune
 {
 
@@ -43,6 +47,7 @@ namespace Dune
     typedef CM CoefficientMatrix;
     typedef Eval Evaluator;
     typedef typename CoefficientMatrix::Field StorageField;
+
   public:
     static const int dimension = Evaluator::dimension;
     static const int dimRange = Evaluator::dimRange;
@@ -65,6 +70,7 @@ namespace Dune
     {
       return order_;
     }
+
     const unsigned int size () const
     {
       return size_;
@@ -77,6 +83,7 @@ namespace Dune
       assert(values.size()>=size());
       coeffMatrix_->mult( eval_.template evaluate<deriv>( x ), values );
     }
+
     template< class Vector >
     void evaluate ( const DomainVector &x,
                     Vector &values ) const

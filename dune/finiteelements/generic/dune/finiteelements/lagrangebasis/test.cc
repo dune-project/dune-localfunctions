@@ -6,8 +6,8 @@
 #include <dune/finiteelements/p23d/p23dlocalbasis.hh>
 #include <dune/finiteelements/pk3d/pk3dlocalbasis.hh>
 
-#define USE_GENERIC 0
-const unsigned int iterations = 1000000;
+#define USE_GENERIC 1
+const unsigned int iterations = 1;
 
 using namespace Dune;
 using namespace GenericGeometry;
@@ -58,7 +58,7 @@ bool test(unsigned int order) {
 
   bool ret = true;
 
-  for (unsigned int o=order; o<=order; ++o)
+  for (unsigned int o=1; o<=order; ++o)
   {
     std::cout << "Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
 

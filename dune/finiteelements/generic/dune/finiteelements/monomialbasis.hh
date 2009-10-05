@@ -71,14 +71,14 @@ namespace Dune
                     const unsigned int *const offsets,
                     Field *const values ) const
     {
-      values[ 0 ] = Unity<Field>();
+      values[ 0 ] = Unity< Field >();
     }
 
     void integral ( const unsigned int order,
                     const unsigned int *const offsets,
                     Field *const values ) const
     {
-      values[ 0 ] = Field( 1 );
+      values[ 0 ] = Unity< Field >();
     }
 
     unsigned int maxOrder () const
@@ -366,12 +366,12 @@ namespace Dune
         Field *it = row1;
         for( ; it != col0End; ++it )
           *it *= factor;
-        for( unsigned int i = 0; i < k; ++i )
+        for( unsigned int i = 1; i <= k; ++i )
         {
-          Field *const end = it + baseSizes[ i ];
+          Field *const end = it + baseSizes[ k-i ];
           assert( (unsigned int)(end - values) <= offsets[ k ] );
           for( ; it != end; ++row0, ++it )
-            *it = (factor * Field( i+1 )) * (*row0);
+            *it = (factor * Field( i )) * (*row0);
         }
         row0 = row1;
       }

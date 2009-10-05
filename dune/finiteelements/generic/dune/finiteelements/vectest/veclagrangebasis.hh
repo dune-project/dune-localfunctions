@@ -40,102 +40,7 @@ namespace Dune
     mat_t matrix_;
   };
 
-  template <class Evaluator,int d>
-  struct VecEvaluator
-  {
-    typedef Evaluator Container;
-    typedef typename Evaluator::Basis Basis;
-    typedef typename Evaluator::DomainVector DomainVector;
-    typedef typename Evaluator::Field Field;
-    static const int dimension = Evaluator :: dimension;
-
-    struct Iterator
-    {
-      typedef typename Container::Iterator CIter;
-      typedef Dune::FieldVector<typename CIter::RangeVector,d> RangeVector;
-      Iterator(const CIter& pos)
-        : pos_(pos),
-          dim_(0)
-      {
-        val_[dim_] = *pos_;
-      }
-      /*
-         Iterator(const Iterator& other)
-         : val_(other.val_),
-         eval_(other.eval_),
-         pos_(other.pos_),
-         dim_(other.dim_)
-         {
-         }
-         Iterator &operator=(const Iterator& other)
-         {
-         val_ = other.val_;
-         eval_ = other.eval_;
-         pos_ = other.pos_;
-         dim_ = other.dim_;
-         }
-       */
-      bool done()
-      {
-        return pos_.done();
-      }
-      const RangeVector& operator*() const
-      {
-        assert(!pos_.done());
-        return val_;
-      }
-      const Iterator &operator++()
-      {
-        val_[dim_] = 0;
-        ++dim_;
-        if (dim_ == d)
-        {
-          dim_ = 0;
-          ++pos_;
-          if (pos_.done())
-            return *this;
-        }
-        val_[dim_] = *pos_;
-        return *this;
-      }
-    private:
-      typename Container::Iterator pos_;
-      RangeVector val_;
-      int dim_;
-    };
-
-    VecEvaluator(const Basis &basis, unsigned int order)
-      : eval_(basis,order)
-    {}
-    Iterator evaluate(const DomainVector &x)
-    {
-      return Iterator(eval_.evaluate(x));
-    }
-    /*
-       void evaluate(const DomainVector &x)
-       {
-       eval_.evaluate(x);
-       }
-       Iterator begin() const
-       {
-       return Iterator(eval_,false);
-       }
-       Iterator end() const
-       {
-       return Iterator(eval_,true);
-       }
-     */
-    unsigned int order() const
-    {
-      return eval_.order();
-    }
-    unsigned int size() const
-    {
-      return eval_.size()*d;
-    }
-  private:
-    Evaluator eval_;
-  };
+  // **************************************************
 
   template< int dim, int dimR, class SF, class CF >
   struct VecLagrangeBasisCreator
@@ -144,8 +49,8 @@ namespace Dune
     typedef SF StorageField;
     typedef AlgLib::MultiPrecision< Precision<CF>::value > ComputeField;
     static const int dimension = dim;
-    typedef VecEvaluator<StandardEvaluator<MBasis>,dimR> Evaluator;
-    typedef PolynomialBasisWithMatrix<Evaluator> Basis;
+    typedef VectorialEvaluator<MBasis,dimR> Evaluator;
+    typedef PolynomialBasisWithMatrix<Evaluator,SparseCoeffMatrix<StorageField> > Basis;
     typedef unsigned int Key;
 
     template <class Topology>

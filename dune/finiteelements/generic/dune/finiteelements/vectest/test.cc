@@ -34,7 +34,7 @@ bool test(unsigned int order) {
       bool first = true;
       for( unsigned int i = 0; i < y.size(); ++i)
       {
-        // std::cout << index << " " << i << " : " << y[i] << std::endl;
+        std::cout << index << " " << i << " : " << y[i] << std::endl;
         unsigned int r = i%dimRange;
         Dune::FieldVector< double, dimRange > testy (0);
         testy[r] = double( i/dimRange == index );
@@ -45,7 +45,7 @@ bool test(unsigned int order) {
                       << index << " -> "
                       << "x = " << points[ index ].point()
                       << " (codim = " << points[ index ].localKey().codim() << ", "
-                      << "subentity = " << points[ index ].localKey().subentity() << ", "
+                      << "subentity = " << points[ index ].localKey().subEntity() << ", "
                       << "index = " << points[ index ].localKey().index() << "):" << std::endl;
             first = false;
           }

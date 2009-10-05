@@ -186,27 +186,19 @@ namespace Dune
 
     typename Iterator<0>::Single evaluate(const DomainVector &x)
     {
-      resize<0,false>();
-      basis_.evaluate(order_,x,container_);
-      return typename Iterator<0>::Single(container_);
+      return evaluate<0>(x);
     }
     typename Iterator<1>::Single jacobian(const DomainVector &x)
     {
-      resize<1,false>();
-      basis_.evaluate(order_,x,container_);
-      return typename Iterator<1>::Single(container_);
+      return evaluate<1>(x);
     }
     typename Iterator<0>::All evaluateAll(const DomainVector &x)
     {
-      resize<0,true>();
-      basis_.evaluate(order_,x,container_);
-      return typename Iterator<0>::All(container_);
+      return evaluateAll<1>(x);
     }
     typename Iterator<1>::All jacobianAll(const DomainVector &x)
     {
-      resize<1,true>();
-      basis_.evaluate(order_,x,container_);
-      return typename Iterator<1>::All(container_);
+      return evaluateAll<1>(x);
     }
     unsigned int order() const
     {
@@ -271,32 +263,111 @@ namespace Dune
 
     typename Iterator<0>::Single evaluate(const DomainVector &x)
     {
-      this->template resize<0,false>();
-      basis_.evaluate(x,container_);
-      return typename Iterator<0>::Single(container_);
+      return evaluate<0>(x);
     }
     typename Iterator<1>::Single jacobian(const DomainVector &x)
     {
-      this->template resize<1,false>();
-      basis_.evaluate(x,container_);
-      return typename Iterator<1>::Single(container_);
+      return evaluate<0>(x);
     }
     typename Iterator<0>::All evaluateAll(const DomainVector &x)
     {
-      this->template resize<0,true>();
-      basis_.evaluate(x,container_);
-      return typename Iterator<0>::All(container_);
+      return evaluate<0>(x);
     }
     typename Iterator<1>::All jacobianAll(const DomainVector &x)
     {
-      this->template resize<1,true>();
-      basis_.evaluate(x,container_);
-      return typename Iterator<1>::All(container_);
+      return evaluate<0>(x);
     }
   private:
     StandardEvaluator(const StandardEvaluator&);
     using Base::basis_;
     using Base::container_;
+  };
+
+  template <class B,int dimR>
+  struct VectorialEvaluator : public StandardEvaluator<B>
+  {
+    typedef B Basis;
+    typedef typename Basis::Field Field;
+    typedef typename Basis::DomainVector DomainVector;
+    typedef std::vector<Field> Container;
+    static const int dimension = Basis::dimension;
+    typedef StandardEvaluator<B> Base;
+
+    template <unsigned int deriv>
+    struct Iterator
+    {
+      typedef typename Base::template BaseIterator<Tensor<Field,dimension,dimR,deriv,true> > All;
+      typedef typename Base::template BaseIterator<Tensor<Field,dimension,dimR,deriv,false> > Single;
+    };
+
+    VectorialEvaluator(const Basis &basis,unsigned int order)
+      : Base(basis,order),
+        vecSize_(basis.size()*dimR)
+    {
+      resize<2,true>();
+    }
+    template <unsigned int deriv>
+    typename Iterator<deriv>::Single evaluate(const DomainVector &x)
+    {
+      fill( Base::template evaluate<deriv>(x) );
+      return typename Iterator<deriv>::Single(vecContainer_);
+    }
+    template <unsigned int deriv>
+    typename Iterator<deriv>::All evaluateAll(const DomainVector &x)
+    {
+      fill( Base::template evaluateAll<deriv>(x) );
+      return typename Iterator<deriv>::All(vecContainer_);
+    }
+    typename Iterator<0>::Single evaluate(const DomainVector &x)
+    {
+      return evaluate<0>(x);
+    }
+    typename Iterator<1>::Single jacobian(const DomainVector &x)
+    {
+      return evaluate<1>(x);
+    }
+    typename Iterator<0>::All evaluateAll(const DomainVector &x)
+    {
+      return evaluateAll<0>(x);
+    }
+    typename Iterator<1>::All jacobianAll(const DomainVector &x)
+    {
+      return evaluateAll<1>(x);
+    }
+    unsigned int size() const
+    {
+      return vecSize_;
+    }
+  protected:
+    template <int deriv,bool useAll>
+    void resize()
+    {
+      const int totalSize = Tensor<Field,dimension,dimR,deriv,useAll>::blockSize*vecSize_;
+      vecContainer_.resize(totalSize);
+    }
+    template <class Iter>
+    void fill(Iter iter)
+    {
+      typename Container::iterator vecIter = vecContainer_.begin();
+      for ( ; !iter.done(); ++iter)
+      {
+        const typename Iter::Block &block = iter.block();
+        for (int b=0; b<iter.blockSize; ++b)
+        {
+          for (int r1=0; r1<dimR; ++r1)
+          {
+            for (int r2=0; r2<dimR; ++r2)
+            {
+              *vecIter = (r1==r2 ? block[b] : Field(0));
+              ++vecIter;
+            }
+          }
+        }
+      }
+    }
+    VectorialEvaluator(const VectorialEvaluator&);
+    Container vecContainer_;
+    unsigned int vecSize_;
   };
 
 #if 0

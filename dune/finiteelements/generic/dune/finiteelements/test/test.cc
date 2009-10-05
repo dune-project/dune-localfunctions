@@ -10,14 +10,12 @@
 
 #include <dune/finiteelements/quadrature/genericquadrature.hh>
 // #include <dune/finiteelements/lagrangepoints.hh>
-#include <dune/finiteelements/monomialbasis.hh>
+#include <dune/finiteelements/generic/monomialbasis.hh>
 #include <dune/finiteelements/multiindex.hh>
-#include <dune/finiteelements/polynomialbasis.hh>
+#include <dune/finiteelements/generic/polynomialbasis.hh>
 #include <dune/finiteelements/basisprint.hh>
-#include <dune/finiteelements/basisevaluator.hh>
+#include <dune/finiteelements/generic/basisevaluator.hh>
 
-
-#include <dune/finiteelements/basisevaluator.hh>
 
 #ifndef TOPOLOGY
 #error "TOPOLOGY not defined."
@@ -100,11 +98,11 @@ void quadratureTest(unsigned int p)
   for( unsigned int qi = 0; qi < quadratureSize; ++qi )
   {
     basis.evaluate( quadrature.point( qi ), y );
-    std::cout << "x = " << quadrature.point( qi ) << ":" << std::endl;
+    // std::cout << "x = " << quadrature.point( qi ) << ":" << std::endl;
     for( unsigned int i = 0; i < size; ++i )
     {
       yquad[ i ] += quadrature.weight( qi ) * y[ i ];
-      std::cout << "    y[ " << i << " ] = " << y[ i ] << std::endl;
+      // std::cout << "    y[ " << i << " ] = " << y[ i ] << std::endl;
     }
   }
 
@@ -112,6 +110,7 @@ void quadratureTest(unsigned int p)
   basis.integral( yint );
   for( unsigned int i = 0; i < size; ++i )
   {
+    std::cout << i << " : " << yint[i] << std::endl;
     if( fabs( yquad[ i ] - yint[ i ] ) < 1e-10 )
       continue;
     std::cerr << "Quadrature and Integral differ for basis function " << i << "." << std::endl;
@@ -119,7 +118,7 @@ void quadratureTest(unsigned int p)
     std::cout << "    integral:   " << yint[ i ] << std::endl;
   }
 }
-
+#if 0
 template <class Topology>
 void polynomialBaseTest(unsigned int p)
 {
@@ -201,7 +200,7 @@ void multiIndexTest(unsigned int p)
   basis.integral( integral );
   std::cout << integral << std::endl;
 }
-
+#endif
 int main ( int argc, char **argv )
 {
   typedef TOPOLOGY Topology;
@@ -214,6 +213,6 @@ int main ( int argc, char **argv )
 
   // lagrangePointTest<Topology>(p);
   quadratureTest<Topology>(p);
-  polynomialBaseTest<Topology>(p);
-  multiIndexTest<Topology>(p);
+  // polynomialBaseTest<Topology>(p);
+  // multiIndexTest<Topology>(p);
 }

@@ -89,5 +89,40 @@ namespace Dune
     CoeffMatrix< CoeffRangeVector > coeffMatrix_;
     unsigned int order_;
   };
+
+  template< int dim, class SF, class Creator >
+  struct PolynomialBasisProvider
+  {
+    static const int dimension = dim;
+    typedef SF Field;
+    typedef VirtualMonomialBasis<dimension,SF> VirtualBasis;
+    typedef PolynomialBasis<1,VirtualBasis,SF> Basis;
+    static const Basis &basis(unsigned int id,unsigned int order)
+    {
+      return instance().getBasis(id,order);
+    }
+  private:
+    friend struct MonomialBasisProvider<dimension,SF>;
+    enum { numTopologies = (1 << dimension) };
+    PolynomialBasisProvider()
+    {}
+    static PolynomialBasisProvider &instance()
+    {
+      static PolynomialBasisProvider instance;
+      return instance;
+    }
+    const Basis &getBasis(unsigned int id,unsigned int order)
+    {
+      if (order>=basis_.size())
+      {
+        basis_.resize(order+1,FieldVector<Basis*,numTopologies>(0));
+        MonomialBasisProvider<dimension,SF>::template callback<Creator>(id,order,basis_[order][id]);
+      }
+      else if (basis_[order][id] == 0)
+        MonomialBasisProvider<dimension,SF>::template callback<Creator>(id,order,basis_[order][id]);
+      return *(basis_[order][id]);
+    }
+    std::vector<FieldVector<Basis*,numTopologies> > basis_;
+  };
 }
 #endif // DUNE_POLYNOMIALBASIS_HH

@@ -51,9 +51,23 @@ namespace Dune
     mat_t matrix_;
   };
 
-
   template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
-  struct LagrangeBasisProvider
+  struct LagrangeBasisCreator
+  {
+    typedef VirtualMonomialBasis<dim,SF> VirtualBasis;
+    typedef PolynomialBasis<1,VirtualBasis,SF> Basis;
+    template <class Topology>
+    static void apply(const VirtualBasis &virtBasis,unsigned int order,Basis* &basis)
+    {
+      const unsigned int id = Topology::id;
+      basis = new Basis(virtBasis,order);
+      LagrangeMatrix<Topology,CF> matrix(order);
+      basis->fill(matrix);
+    }
+  };
+
+  template< int dim, class SF, class Creator >
+  struct PolynomialBasisProvider
   {
     static const int dimension = dim;
     typedef SF Field;
@@ -66,11 +80,11 @@ namespace Dune
   private:
     friend struct MonomialBasisProvider<dimension,SF>;
     enum { numTopologies = (1 << dimension) };
-    LagrangeBasisProvider()
+    PolynomialBasisProvider()
     {}
-    static LagrangeBasisProvider &instance()
+    static PolynomialBasisProvider &instance()
     {
-      static LagrangeBasisProvider instance;
+      static PolynomialBasisProvider instance;
       return instance;
     }
     const Basis &getBasis(unsigned int id,unsigned int order)
@@ -78,22 +92,17 @@ namespace Dune
       if (order>=basis_.size())
       {
         basis_.resize(order+1,FieldVector<Basis*,numTopologies>(0));
-        MonomialBasisProvider<dimension,SF>::callback(*this,id,order);
+        MonomialBasisProvider<dimension,SF>::template callback<Creator>(id,order,basis_[order][id]);
       }
       else if (basis_[order][id] == 0)
-        MonomialBasisProvider<dimension,SF>::callback(*this,id,order);
+        MonomialBasisProvider<dimension,SF>::template callback<Creator>(id,order,basis_[order][id]);
       return *(basis_[order][id]);
-    }
-    template <class Topology>
-    void apply(const VirtualBasis &basis,unsigned int order)
-    {
-      const unsigned int id = Topology::id;
-      Basis *newBasis = new Basis(basis,order);
-      basis_[order][id] = newBasis;
-      LagrangeMatrix<Topology,CF> matrix(order);
-      basis_[order][id]->fill(matrix);
     }
     std::vector<FieldVector<Basis*,numTopologies> > basis_;
   };
+  template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
+  struct LagrangeBasisProvider
+    : public PolynomialBasisProvider<dim,SF,LagrangeBasisCreator<dim,SF,CF> >
+  {};
 }
 #endif // DUNE_ORTHONORMALBASIS_HH

@@ -587,14 +587,19 @@ namespace Dune
     }
 
     template <class Impl>
-    static void callback(Impl &impl, unsigned int topologyId)
+    static void callback(unsigned int topologyId)
     {
-      GenericGeometry::ForLoop<GetBasisHelper,0,numTopologies-1>::apply(impl,topologyId);
+      GenericGeometry::ForLoop<CallBack<Impl>::template Helper,0,numTopologies-1>::apply(topologyId);
     }
     template <class Impl,class T1>
-    static void callback(Impl &impl, unsigned int topologyId, T1 &t1)
+    static void callback(unsigned int topologyId, T1 &t1)
     {
-      GenericGeometry::ForLoop<GetBasisHelper,0,numTopologies-1>::apply(impl,topologyId,t1);
+      GenericGeometry::ForLoop<CallBack<Impl>::template Helper,0,numTopologies-1>::apply(topologyId,t1);
+    }
+    template <class Impl,class T1,class T2>
+    static void callback(unsigned int topologyId, T1 &t1, T2 &t2)
+    {
+      GenericGeometry::ForLoop<CallBack<Impl>::template Helper,0,numTopologies-1>::apply(topologyId,t1,t2);
     }
 
   private:
@@ -621,29 +626,40 @@ namespace Dune
       return *(basis_[id]);
     }
     template <class Topology>
-    void apply(const Basis &)
+    static void apply(const Basis &)
     {}
 
-    template <int tid>
-    struct GetBasisHelper
+    template <class Impl>
+    struct CallBack
     {
-      typedef typename GenericGeometry::Topology<tid,dimension>::type Topology;
-      template <class Impl>
-      static void apply(Impl &impl, unsigned int topologyId)
+      template <int tid>
+      struct Helper
       {
-        if ((unsigned int)tid == topologyId)
+        typedef typename GenericGeometry::Topology<tid,dimension>::type Topology;
+        static void apply(unsigned int topologyId)
         {
-          impl.template apply<Topology>(instance().template getBasis<Topology>());
+          if ((unsigned int)tid == topologyId)
+          {
+            Impl::template apply<Topology>(instance().template getBasis<Topology>());
+          }
         }
-      }
-      template <class Impl,class T1>
-      static void apply(Impl &impl, unsigned int topologyId, T1 &t1)
-      {
-        if ((unsigned int)tid == topologyId)
+        template <class T1>
+        static void apply(unsigned int topologyId, T1 &t1)
         {
-          impl.template apply<Topology>(instance().template getBasis<Topology>(),t1);
+          if ((unsigned int)tid == topologyId)
+          {
+            Impl::template apply<Topology>(instance().template getBasis<Topology>(),t1);
+          }
         }
-      }
+        template <class T1,class T2>
+        static void apply(unsigned int topologyId, T1 &t1, T2 &t2)
+        {
+          if ((unsigned int)tid == topologyId)
+          {
+            Impl::template apply<Topology>(instance().template getBasis<Topology>(),t1,t2);
+          }
+        }
+      };
     };
 
     FieldVector<Basis*,numTopologies> basis_;

@@ -67,7 +67,7 @@ namespace Dune
       {
         const int lastCol = matrix_.gethighbound( 2 );
         ap::const_raw_vector< RealField > rowVector = matrix_.getrow( row, 0, lastCol );
-        assert( (rowVector.GetStep() == 1) && (rowVector.GetLength() == cols()) );
+        assert( (rowVector.GetStep() == 1) && (rowVector.GetLength() == lastCol+1) );
         return static_cast< const Field * >( rowVector.GetData() );
       }
 
@@ -86,8 +86,8 @@ namespace Dune
 
       bool invert ()
       {
-        assert( matrix_.rows() == matrix_.cols() );
-        return inv::rmatrixinverse< precision >( matrix_, matrix_.rows() );
+        assert( rows() == cols() );
+        return inv::rmatrixinverse< precision >( matrix_, rows() );
       }
 
     private:

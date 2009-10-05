@@ -62,6 +62,15 @@ namespace Dune
       return ((const F &)a / (const F &)b);
     }
 
+
+
+    template< unsigned int precision >
+    inline std::ostream &
+    operator<< ( std::ostream &out, const MultiPrecision< precision > &value )
+    {
+      return out << value.toDec();
+    }
+
   }
 
 }

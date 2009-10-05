@@ -47,8 +47,11 @@ namespace Dune
           beta[ i ] = Field( i*i ) / Field( 4*(i*i)-1 );
         }
 
-        gqgenlobatto::generategausslobattoquadrature< precision >( alpha, beta, Field( 2 ), n, points_, weights_ );
-
+        bool succ = gqgenlobatto::generategausslobattoquadrature< precision >( alpha, beta, Field( 2 ), Field(-1),Field(1), n, points_, weights_ );
+        if (!succ)
+        {
+          std::cout << "Problem with computing Lobatto points!" << std::endl;
+        }
         const Field half = Field( 1 ) / Field( 2 );
         for( unsigned int i = 0; i < n; ++i )
         {

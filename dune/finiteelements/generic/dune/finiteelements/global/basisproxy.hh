@@ -17,11 +17,12 @@ namespace Dune
     typedef typename Basis::Field Field;
     static const int dimRange = Basis::dimRange;
     static const int dimDomain = Basis::dimension;
+    static const int dimWorld = Geometry::coorddimension;
     typedef typename Basis::DomainVector DomainVector;
     typedef FieldVector< Field, dimRange > RangeVector;
-    typedef FieldMatrix< Field, dimRange, dimDomain > Jacobian;
+    typedef FieldMatrix< Field, dimRange, dimWorld > Jacobian;
 
-    BasisProxy ( const Basis &basis, const Geometry &geoetry )
+    BasisProxy ( const Basis &basis, const Geometry &geometry )
       : basis_( &basis ),
         geometry_( &geometry )
     {}
@@ -65,13 +66,34 @@ namespace Dune
 
     void jacobian ( const DomainVector &x, std::vector< Jacobian > &jacobians ) const
     {
-      // ...
+      typedef Dune::Derivatives< Field, dimDomain, dimRange, 1, value > Derivatives;
+      static std::vector< Derivatives > derivatives;
+      derivatives.resize( basis.size() );
+      basis().template evaluate< 1 >( x, derivatives );
+      const Dune::FieldMatrix< Field, dimWorld, dimDomain > gjit = geometry().jacobianInterseTransposed( x );
+      for( unsigned int i = 0; i < basis.size(); ++i )
+      {
+        for( unsigned int r = 0; r < dimRange; ++r )
+          gjit.mv( derivatives[ i ][ r ], jacobians[ i ][ r ] );
+      }
     }
 
     template< class LocalDofVector >
     void jacobian ( const DomainVector &x, const LocalDofVector &localDofs, Jacobian &jacobian ) const
     {
-      // ...
+      typedef Dune::Derivatives< Field, dimDomain, dimRange, 1, value > Derivatives;
+      static std::vector< Derivatives > derivatives;
+      derivatives.resize( basis.size() );
+      basis().template evaluate< 1 >( x, derivatives );
+      Dune::FieldMatrix< Field, dimRange, dimDomain > j( Zero< Field >() );
+      for( unsigned int i = 0; i < basis.size(); ++i )
+      {
+        for( unsigned int r = 0; r < dimRange; ++r )
+          j[ r ].axpy( localDofs[ i ], derivatives[ i ][ r ] );
+      }
+      const Dune::FieldMatrix< Field, dimWorld, dimDomain > gjit = geometry().jacobianInterseTransposed( x );
+      for( unsigned int r = 0; r < dimRange; ++r )
+        gjit.mv( j[ r ], jacobian[ r ] );
     }
 
   private:

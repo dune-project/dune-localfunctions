@@ -3,7 +3,9 @@
 #include <config.h>
 
 #include <dune/grid/genericgeometry/topologytypes.hh>
+#if HAVE_DUNE_PSG
 #include <dune/grid/io/file/dgfparser/dgfpsggridtype.hh>
+#endif
 #include <dune/grid/io/file/dgfparser/dgfgridtype.hh>
 #include <dune/grid/io/file/vtk/subsamplingvtkwriter.hh>
 #include <dune/grid/io/visual/grapedatadisplay.hh>

@@ -99,7 +99,7 @@ namespace Dune
 
     typedef StandardEvaluator< MonomialBasis > Evaluator;
     typedef AlgLib::MultiPrecision< Precision< CF >::value > ComputeField;
-    typedef PolynomialBasisWithMatrix< Evaluator, SparseCoeffMatrix< StorageField > > Basis;
+    typedef PolynomialBasisWithMatrix< Evaluator, SparseCoeffMatrix< StorageField, 1 > > Basis;
 
     template< class Topology >
     static const Basis &basis ( const Key &order )

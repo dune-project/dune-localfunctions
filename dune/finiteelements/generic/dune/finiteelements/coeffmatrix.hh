@@ -96,7 +96,7 @@ namespace Dune
     void mult ( const BasisVector &x,
                 std::vector< RangeVector > &y ) const
     {
-      typedef typename BasisVector::RangeVector DomainVector;
+      typedef typename BasisVector::Block DomainVector;
       typedef Mult<Field,DomainVector> Multiply;
       size_t numLsg = y.size();
       assert( numLsg <= (size_t)numRows_ );
@@ -108,7 +108,7 @@ namespace Dune
         BasisVector itx = x;
         for( ; row != rows_[ r+1 ]; ++row, ++itx )
         {
-          Multiply::add(*row,*itx,val);
+          Multiply::add(*row,itx.block(),val);
         }
         field_cast(val,y[r]);
       }
@@ -117,6 +117,7 @@ namespace Dune
     template< class FullMatrix >
     void fill ( const FullMatrix &mat )
     {
+      unsigned int zeros = 0;
       numRows_ = mat.rowSize();
       numCols_ = 0;
       int size = 0;
@@ -136,8 +137,18 @@ namespace Dune
         rows_[ r+1 ] = rows_[ r ] + mat.colSize( r );
         int c = 0;
         for( Field *it = rows_[ r ]; it != rows_[ r+1 ]; ++it, ++c )
-          field_cast(mat(r,c),*it);
+        {
+          Field val;
+          field_cast(mat(r,c),val);
+          if (std::abs(val)<1e-10)
+            ++zeros;
+          *it = val;
+        }
       }
+      std::cout << "Entries: " << (rows_[numRows_]-rows_[0]) << " "
+                << "Zeros: " << zeros << " "
+                << "Precentage: " << 100.*double(zeros)/double(rows_[numRows_]-rows_[0])
+                << std::endl;
     }
 
   private:
@@ -212,7 +223,7 @@ namespace Dune
     void mult ( const BasisVector &x,
                 std::vector< RangeVector > &y ) const
     {
-      typedef typename BasisVector::RangeVector DomainVector;
+      typedef typename BasisVector::Block DomainVector;
       typedef Mult<Field,DomainVector> Multiply;
       size_t numLsg = y.size();
       assert( numLsg <= (size_t)numRows_ );
@@ -226,7 +237,7 @@ namespace Dune
         for( ; row != rows_[ r+1 ]; ++row, ++skipIt )
         {
           itx += *skipIt;
-          Multiply::add(*row,*itx,val);
+          Multiply::add(*row,itx.block(),val);
         }
         field_cast(val,y[r]);
       }

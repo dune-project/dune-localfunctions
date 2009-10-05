@@ -7,6 +7,7 @@
 #include <dune/finiteelements/coeffmatrix.hh>
 #include <dune/finiteelements/monomialbasis.hh>
 #include <dune/finiteelements/multiindex.hh>
+#include <dune/finiteelements/basisevaluator.hh>
 namespace Dune
 {
 
@@ -41,22 +42,27 @@ namespace Dune
 
     typedef CM CoefficientMatrix;
     typedef Eval Evaluator;
-
-    static const int dimension = Evaluator::dimension;
     typedef typename CoefficientMatrix::Field StorageField;
-
   public:
+    static const int dimension = Evaluator::dimension;
     typedef typename Evaluator::Basis Basis;
     typedef typename Evaluator::DomainVector DomainVector;
+    typedef typename CoefficientMatrix::Field Field;
 
     PolynomialBasis (const Basis &basis,
                      const CoefficientMatrix &coeffMatrix,
                      int order, unsigned int size)
       : coeffMatrix_(&coeffMatrix),
         eval_(basis,order),
+        order_(order),
         size_(size)
     {
       assert(size <= coeffMatrix.size());
+    }
+
+    const unsigned int order () const
+    {
+      return order_;
     }
 
     const unsigned int size () const
@@ -132,7 +138,7 @@ namespace Dune
     PolynomialBasis &operator=(const PolynomialBasis&);
     const CoefficientMatrix* coeffMatrix_;
     mutable Evaluator eval_;
-    unsigned int size_;
+    unsigned int order_,size_;
   };
 
   /**

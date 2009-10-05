@@ -350,95 +350,98 @@ namespace Dune
     unsigned int size_;
   };
 
-  template <class Topology, class RTInterpolation>
-  struct RaviartThomasMatrix {
-    typedef typename RTInterpolation::Field Field;
+  template <class Topology, class Field>
+  struct RTVecMatrix
+  {
     enum {dim = Topology::dimension};
-    struct VecMatrix
+    typedef MultiIndex<dim> MI;
+    typedef MonomialBasis<Topology,MI> MIBasis;
+    RTVecMatrix(unsigned int order)
     {
-      typedef MultiIndex<dim> MI;
-      typedef MonomialBasis<Topology,MI> MIBasis;
-      VecMatrix(unsigned int order)
-      {
-        MIBasis basis(order+1);
-        FieldVector< MI, dim > x;
-        for( int i = 0; i < dim; ++i )
-          x[ i ].set( i, 1 );
-        std::vector< MI > val( basis.size() );
-        basis.evaluate( x, val );
+      MIBasis basis(order+1);
+      FieldVector< MI, dim > x;
+      for( int i = 0; i < dim; ++i )
+        x[ i ].set( i, 1 );
+      std::vector< MI > val( basis.size() );
+      basis.evaluate( x, val );
 
-        col_ = basis.size();
-        unsigned int notHomogen = 0;
-        if (order>0)
-          notHomogen = basis.sizes()[order-1];
-        unsigned int homogen = basis.sizes()[order]-notHomogen;
-        row_ = (notHomogen*dim+homogen*(dim+1))*dim;
-        row1_ = basis.sizes()[order]*dim*dim;
-        mat_ = new Field*[row_];
-        int row = 0;
-        for (unsigned int i=0; i<notHomogen+homogen; ++i)
+      col_ = basis.size();
+      unsigned int notHomogen = 0;
+      if (order>0)
+        notHomogen = basis.sizes()[order-1];
+      unsigned int homogen = basis.sizes()[order]-notHomogen;
+      row_ = (notHomogen*dim+homogen*(dim+1))*dim;
+      row1_ = basis.sizes()[order]*dim*dim;
+      mat_ = new Field*[row_];
+      int row = 0;
+      for (unsigned int i=0; i<notHomogen+homogen; ++i)
+      {
+        for (unsigned int r=0; r<dim; ++r)
         {
-          for (unsigned int r=0; r<dim; ++r)
-          {
-            for (unsigned int rr=0; rr<dim; ++rr)
-            {
-              mat_[row] = new Field[col_];
-              for (unsigned int j=0; j<col_; ++j)
-              {
-                mat_[row][j] = 0.;
-              }
-              if (r==rr)
-                mat_[row][i] = 1.;
-              ++row;
-            }
-          }
-        }
-        for (unsigned int i=0; i<homogen; ++i)
-        {
-          for (unsigned int r=0; r<dim; ++r)
+          for (unsigned int rr=0; rr<dim; ++rr)
           {
             mat_[row] = new Field[col_];
             for (unsigned int j=0; j<col_; ++j)
             {
               mat_[row][j] = 0.;
             }
-            unsigned int w;
-            MI xval = val[notHomogen+i];
-            xval *= x[r];
-            for (w=homogen+notHomogen; w<val.size(); ++w)
-            {
-              if (val[w] == xval)
-              {
-                mat_[row][w] = 1.;
-                break;
-              }
-            }
-            assert(w<val.size());
+            if (r==rr)
+              mat_[row][i] = 1.;
             ++row;
           }
         }
       }
-      ~VecMatrix()
+      for (unsigned int i=0; i<homogen; ++i)
       {
-        for (unsigned int i=0; i<rowSize(); ++i) {
-          delete [] mat_[i];
+        for (unsigned int r=0; r<dim; ++r)
+        {
+          mat_[row] = new Field[col_];
+          for (unsigned int j=0; j<col_; ++j)
+          {
+            mat_[row][j] = 0.;
+          }
+          unsigned int w;
+          MI xval = val[notHomogen+i];
+          xval *= x[r];
+          for (w=homogen+notHomogen; w<val.size(); ++w)
+          {
+            if (val[w] == xval)
+            {
+              mat_[row][w] = 1.;
+              break;
+            }
+          }
+          assert(w<val.size());
+          ++row;
         }
-        delete [] mat_;
       }
-      unsigned int colSize(int row) const {
-        return col_;
+    }
+    ~RTVecMatrix()
+    {
+      for (unsigned int i=0; i<rowSize(); ++i) {
+        delete [] mat_[i];
       }
-      unsigned int rowSize() const {
-        return row_;
-      }
-      const Field operator() ( int r, int c ) const
-      {
-        assert(r<(int)row_ && c<(int)col_);
-        return mat_[r][c];
-      }
-      unsigned int row_,col_,row1_;
-      Field **mat_;
-    };
+      delete [] mat_;
+    }
+    unsigned int colSize(int row) const {
+      return col_;
+    }
+    unsigned int rowSize() const {
+      return row_;
+    }
+    const Field operator() ( int r, int c ) const
+    {
+      assert(r<(int)row_ && c<(int)col_);
+      return mat_[r][c];
+    }
+    unsigned int row_,col_,row1_;
+    Field **mat_;
+  };
+
+  template <class Topology, class RTInterpolation>
+  struct RaviartThomasMatrix {
+    typedef typename RTInterpolation::Field Field;
+    enum {dim = Topology::dimension};
     typedef Dune::AlgLib::Matrix< Field > mat_t;
     typedef MonomialBasis<Topology,Field> MBasis;
     RaviartThomasMatrix(const RTInterpolation &interpolation) :
@@ -472,37 +475,70 @@ namespace Dune
     }
     int order_;
     const RTInterpolation &interpolation_;
-    VecMatrix vecMatrix_;
+    RTVecMatrix<Topology,Field> vecMatrix_;
     mat_t matrix_;
   };
 
   template <class Topology,class Field>
-  struct RaviartThomasInitialBasis;
+  struct RaviartThomasInitialBasis
+  {
+    static const unsigned int dimension=Topology::dimension;
+    typedef OrthonormalBasisProvider<dimension,Field> TestBasisProvider;
+    typedef OrthonormalBasisProvider<dimension-1,Field> TestFaceBasisProvider;
+
+    typedef typename TestBasisProvider::Basis TestBasis;
+    typedef typename TestFaceBasisProvider::Basis TestFaceBasis;
+
+    static const TestBasis &testBasis(unsigned int order)
+    {
+      return TestBasisProvider::template basis<Topology>(order-1);
+    }
+    static const TestFaceBasis &testFaceBasis(unsigned int order)
+    {
+      return TestFaceBasisProvider::template basis<Topology>(order);
+    }
+    static const TestBasis &initialBasis(unsigned int order)
+    {
+      return TestBasisProvider::template basis<Topology>(order);
+    }
+  };
 
   template <unsigned int dimension,class Field>
   struct RaviartThomasInitialBasis< typename GenericGeometry::SimplexTopology<dimension>::type,Field >
   {
-    // typedef MonomialBasisProvider<dimension,ComputeField> TestBasisProvider;
-    // typedef MonomialBasisProvider<dimension-1,ComputeField> TestFaceBasisProvider;
-    typedef OrthonormalBasisProvider<dimension,ComputeField> TestBasisProvider;
-    typedef OrthonormalBasisProvider<dimension-1,ComputeField> TestFaceBasisProvider;
-    // typedef LagrangeBasisProvider<dimension,ComputeField> TestBasisProvider;
-    // typedef LagrangeBasisProvider<dimension-1,ComputeField> TestFaceBasisProvider;
-    // typedef LobattoBasisProvider<dimension,ComputeField> TestBasisProvider;
-    // typedef LobattoBasisProvider<dimension-1,ComputeField> TestFaceBasisProvider;
+    typedef typename GenericGeometry::SimplexTopology<dimension>::type Topology;
+    // typedef MonomialBasisProvider<dimension,Field> TestBasisProvider;
+    // typedef MonomialBasisProvider<dimension-1,Field> TestFaceBasisProvider;
+    typedef OrthonormalBasisProvider<dimension,Field> TestBasisProvider;
+    typedef OrthonormalBasisProvider<dimension-1,Field> TestFaceBasisProvider;
+    // typedef LagrangeBasisProvider<dimension,Field> TestBasisProvider;
+    // typedef LagrangeBasisProvider<dimension-1,Field> TestFaceBasisProvider;
+    // typedef LobattoBasisProvider<dimension,Field> TestBasisProvider;
+    // typedef LobattoBasisProvider<dimension-1,Field> TestFaceBasisProvider;
 
     typedef typename TestBasisProvider::Basis TestBasis;
     typedef typename TestFaceBasisProvider::Basis TestFaceBasis;
-    typedef StandardEvaluator<MBasis> EvalMBasis;
-    typedef PolynomialBasisWithMatrix<EvalMBasis,SparseCoeffMatrix<Field,dim> > TMBasis;
 
-    static const TestBasis &testBasis(order)
+    typedef MonomialBasisProvider<dimension,Field> MBasisProvider;
+    typedef typename MBasisProvider::Basis MBasis;
+    typedef StandardEvaluator<MBasis> EvalMBasis;
+    typedef PolynomialBasisWithMatrix<EvalMBasis,SparseCoeffMatrix<Field,dimension> > RTPreBasis;
+
+    static const TestBasis &testBasis(unsigned int order)
     {
       return TestBasisProvider::template basis<Topology>(order-1);
     }
-    static const TestFaceBasis &testFaceBasis(order)
+    static const TestFaceBasis &testFaceBasis(unsigned int order)
     {
       return TestFaceBasisProvider::template basis<Topology>(order);
+    }
+    static const RTPreBasis &initialBasis(unsigned int order)
+    {
+      static RTVecMatrix<Topology,Field> _vecMatrix(order);
+      MBasis mBasis( MBasisProvider::template basis<Topology>(order+1) );
+      static RTPreBasis _rtPreBasis(mBasis);
+      _rtPreBasis.fill(_vecMatrix);
+      return _rtPreBasis;
     }
   };
 
@@ -527,12 +563,12 @@ namespace Dune
     {
       const unsigned int size = GenericGeometry::Size<Topology,1>::value;
       std::vector< FieldVector< ComputeField, dimension > > normal(size);
-      for (int f=0; f<size; ++f)
+      for (unsigned int f=0; f<size; ++f)
         normal[f] = GenericGeometry::ReferenceElement<Topology,ComputeField>::integrationOuterNormal(f);
       typedef RaviartThomasInitialBasis<Topology,ComputeField> InitialBasis;
 
-      const typename InitialBase::TestBasis &testBasis( InitialBasis::testBasis(order) );
-      const typename InitialBase::TestFaceBasis &testFaceBasis( InitialBasis::testFaceBasis(order) );
+      const typename InitialBasis::TestBasis &testBasis( InitialBasis::testBasis(order) );
+      const typename InitialBasis::TestFaceBasis &testFaceBasis( InitialBasis::testFaceBasis(order) );
       LocalInterpolation *interpolation = new LocalInterpolation(Topology::id,order,normal,testBasis,testFaceBasis);
       return *interpolation;
     }

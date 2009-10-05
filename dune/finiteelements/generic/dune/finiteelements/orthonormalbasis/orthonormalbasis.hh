@@ -7,28 +7,23 @@
 #include "orthonormalcompute.hh"
 namespace Dune
 {
-
-  template< class Topology, class SF, class CF = typename ComputeField< SF, 512 >::Type >
-  class OrthonormalBasis
-    : public PolynomialBasis<1,StandardMonomialBasis<Topology::dimension,SF>,SF>
+  template< class CF >
+  struct ONBasisCreator
   {
-    enum {dimension = Topology::dimension};
-
-    typedef SF StorageField;
-    typedef CF ComputationField;
-
-    typedef StandardMonomialBasis<dimension,StorageField> Basis;
-    typedef PolynomialBasis<1,Basis,SF> Base;
-
-  public:
-    typedef typename Basis::DomainVector DomainVector;
-
-    OrthonormalBasis (int order)
-      : Base(order)
+    template <class Topology,class VirtualBasis,class Basis>
+    static void apply(const VirtualBasis &virtBasis,unsigned int order,Basis* &basis)
     {
-      ONB::ONBMatrix<Topology,ComputationField> onbMatrix(order);
-      fill(onbMatrix);
+      static StandardMonomialBasis<Topology::dimension,typename VirtualBasis::Field> _basis;
+      basis = new Basis(_basis,order);
+      ONB::ONBMatrix<Topology,CF> matrix(order);
+      basis->fill(matrix);
     }
   };
+
+  template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
+  struct OrthonormalBasisProvider
+    : public PolynomialBasisProvider<dim,SF,ONBasisCreator<CF>,
+          StandardMonomialBasis<dim,SF> >
+  {};
 }
 #endif // DUNE_ORTHONORMALBASIS_HH

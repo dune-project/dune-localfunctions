@@ -1,7 +1,6 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
 #include <dune/finiteelements/orthonormalbasis.hh>
-
 #include <dune/finiteelements/quadrature/genericquadrature.hh>
 
 using namespace Dune;
@@ -10,38 +9,42 @@ using namespace GenericGeometry;
 template <class Topology>
 bool test(unsigned int order) {
   typedef AlgLib::MultiPrecision<128> StorageField;
-  std::cout << "Testing " << Topology::name() << " in dimension " << Topology::dimension << std::endl;
 
   bool ret = true;
-  OrthonormalBasis< Topology, StorageField > basis( order );
-
-  const unsigned int size = basis.size( );
-  std::vector< FieldVector< double, 1 > > y( size );
-
-  std::vector< FieldVector< double, 1 > > m( size * size );
-  for( unsigned int i = 0; i < size * size; ++i )
-    m[ i ] = 0;
-
-  GenericQuadrature< Topology > quadrature( 2*order+1 );
-  const unsigned int quadratureSize = quadrature.size();
-  for( unsigned int qi = 0; qi < quadratureSize; ++qi )
+  for (unsigned int o=1; o<=order; ++o)
   {
-    basis.evaluate( quadrature.point( qi ), y );
+    std::cout << "Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
+    typedef OrthonormalBasisProvider<Topology::dimension,StorageField> BasisProvider;
+    const typename BasisProvider::Basis &basis = BasisProvider::basis(Topology::id,o);
+
+    const unsigned int size = basis.size( );
+    std::vector< FieldVector< double, 1 > > y( size );
+
+    std::vector< FieldVector< double, 1 > > m( size * size );
+    for( unsigned int i = 0; i < size * size; ++i )
+      m[ i ] = 0;
+
+    GenericQuadrature< Topology > quadrature( 2*order+1 );
+    const unsigned int quadratureSize = quadrature.size();
+    for( unsigned int qi = 0; qi < quadratureSize; ++qi )
+    {
+      basis.evaluate( quadrature.point( qi ), y );
+      for( unsigned int i = 0; i < size; ++i )
+      {
+        for( unsigned int j = 0; j < size; ++j )
+          m[ i*size + j ] += quadrature.weight( qi ) * y[ i ] * y[ j ];
+      }
+    }
+
     for( unsigned int i = 0; i < size; ++i )
     {
       for( unsigned int j = 0; j < size; ++j )
-        m[ i*size + j ] += quadrature.weight( qi ) * y[ i ] * y[ j ];
-    }
-  }
-
-  for( unsigned int i = 0; i < size; ++i )
-  {
-    for( unsigned int j = 0; j < size; ++j )
-    {
-      const double value = m[ i*size + j ];
-      if( fabs( value - double( i == j ) ) > 1e-10 ) {
-        std::cout << "i = " << i << ", j = " << j << ": " << value << std::endl;
-        ret = false;
+      {
+        const double value = m[ i*size + j ];
+        if( fabs( value - double( i == j ) ) > 1e-10 ) {
+          std::cout << "i = " << i << ", j = " << j << ": " << value << std::endl;
+          ret = false;
+        }
       }
     }
   }

@@ -291,7 +291,7 @@ namespace Dune
 
     VecEvaluator ( const Basis &basis, const Fill &fill )
       : Base( basis, basis.size() ),
-        fill_( fill )
+        fill_( fill ),
         size_( basis.size()*dimRange )
     {
       resize<2,true>();
@@ -370,7 +370,7 @@ namespace Dune
         const typename Iter::Block &block = iter.block();
         for (int r1=0; r1<dimR; ++r1)
         {
-          for (int b=0; b<Iter::blockSize; ++b)
+          for (unsigned int b=0; b<Iter::blockSize; ++b)
           {
             for (int r2=0; r2<dimR; ++r2)
             {

@@ -150,6 +150,13 @@ namespace Dune
     This &operator+= ( const This &other )
     {
       assert(!other.next_);
+      if (std::abs(other.factor_)<1e-10)
+        return *this;
+      if (std::abs(factor_)<1e-10)
+      {
+        *this = other;
+        return *this;
+      }
       if (!sameMultiIndex(other))
       {
         if (next_)
@@ -283,7 +290,7 @@ namespace Dune
   template <int d>
   std::ostream &operator<<(std::ostream& out,const std::vector<MultiIndex<d> >& y) {
     for (unsigned int r=0; r<y.size(); ++r) {
-      out << "f_" << r << "(" << char('a');
+      out << "f_{" << r << "}(" << char('a');
       for (int i=1; i<d; ++i)
         out << "," << char('a'+i);
       out << ")=";
@@ -296,7 +303,7 @@ namespace Dune
                            const std::vector<Dune::FieldVector<MultiIndex<d>,dimR> >& y) {
     out << "\\begin{eqnarray*}" << std::endl;
     for (unsigned int k=0; k<y.size(); ++k) {
-      out << "f_" << k << "(" << char('a');
+      out << "f_{" << k << "}(" << char('a');
       for (int i=1; i<d; ++i)
         out << "," << char('a'+i);
       out << ") &=& ( ";
@@ -312,17 +319,6 @@ namespace Dune
   template <int d>
   std::ostream &operator<<(std::ostream& out,const MultiIndex<d>& val)
   {
-    /*
-       if (mi.next_)
-       {
-        assert( &mi != mi.next_ );
-        out << *(mi.next_);
-        if (mi.absZ()==0 && std::abs(mi.factor())<1e-10)
-          return out;
-        else
-          out << " + ";
-       }
-     */
     bool first = true;
     const MultiIndex<d> *m = &val;
     do {
@@ -352,20 +348,25 @@ namespace Dune
       if (m->absZ()==0)
         out << f;
       else {
-        if ( std::abs(f-1.)>1e-10)
-          out << f;
-        int absVal = 0;
-        for (int i=0; i<d; ++i) {
-          if (m->vecZ_[i]==0)
-            continue;
-          else if (m->vecZ_[i]==1)
-            out << char('a'+i);
-          else if (m->vecZ_[i]>0)
-            out << char('a'+i) << "^" << m->vecZ_[i] << "";
-          else if (m->vecZ_[i]<0)
-            out << char('a'+i) << "^" << m->vecZ_[i] << "";
-          absVal += m->vecZ_[i];
-          if (absVal<m->absZ()) out << "";
+        if ( std::abs(f)<1e-10)
+          out << 0;
+        else
+        {
+          if ( std::abs(f-1.)>1e-10)
+            out << f;
+          int absVal = 0;
+          for (int i=0; i<d; ++i) {
+            if (m->vecZ_[i]==0)
+              continue;
+            else if (m->vecZ_[i]==1)
+              out << char('a'+i);
+            else if (m->vecZ_[i]>0)
+              out << char('a'+i) << "^" << m->vecZ_[i] << "";
+            else if (m->vecZ_[i]<0)
+              out << char('a'+i) << "^" << m->vecZ_[i] << "";
+            absVal += m->vecZ_[i];
+            if (absVal<m->absZ()) out << "";
+          }
         }
       }
       /*
@@ -419,8 +420,7 @@ namespace Dune
     // zero does not acutally exist
     operator Field ()
     {
-      assert( false );
-      return Field();
+      return Field(0);
     }
   };
 

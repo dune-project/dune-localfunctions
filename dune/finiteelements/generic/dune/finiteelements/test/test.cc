@@ -162,10 +162,28 @@ void multiIndexTest(unsigned int p)
   FieldVector< Field, dimension > x;
   for( int i = 0; i < dimension; ++i )
     x[ i ].set( i, 1 );
+
+  std::cout << "Values: " << std::endl;
   std::vector< Field > val( size );
-  basis.evaluate( x, val );
+  for( unsigned int i = 0; i < val.size(); ++i )
+    val[ i ] = -42.3456789;
+  basis.template evaluate( x, val );
   std::cout << val << std::endl;
 
+  std::cout << "Values+Jacobian: " << std::endl;
+  std::vector< Field > deriv( size*basis.derivSize(1) );
+  for( unsigned int i = 0; i < deriv.size(); ++i )
+    deriv[ i ] = -42.3456789;
+  basis.template evaluate<1>( x, deriv );
+  std::cout << deriv << std::endl;
+
+  std::cout << "Values+Jacobian+Hessian: " << std::endl;
+  std::vector< Field > hess( size*basis.derivSize(2) );
+  for( unsigned int i = 0; i < hess.size(); ++i )
+    hess[ i ] = -42.3456789;
+  basis.template evaluate<2>( x, hess );
+  std::cout << hess  << std::endl;
+#if 0
   std::cout << ">>> integral of basis functions:" << std::endl;
   std::vector< Field > integral( size );
   basis.integral( integral );
@@ -190,6 +208,7 @@ void multiIndexTest(unsigned int p)
      ppBasis.fill(matrix);
      basisPrint<0>(std::cout,ppBasis);
    */
+#endif
 }
 
 int main ( int argc, char **argv )

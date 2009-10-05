@@ -260,24 +260,48 @@ namespace Dune
   // -------------------
 
 
-  template< int dim, class F >
+  template< int mydim, int dim, class F >
   struct MonomialBasisHelper
   {
+    typedef MonomialBasisSize< typename GenericGeometry::SimplexTopology< mydim >::type > MySize;
     typedef MonomialBasisSize< typename GenericGeometry::SimplexTopology< dim >::type > Size;
-
 
     static void copy ( const unsigned int deriv, F *&wit, F *&rit,
                        const unsigned int numBaseFunctions, const F &z )
     {
+      // n(d,k) = size<k>[d];
+      MySize &mySize = MySize::instance();
       Size &size = Size::instance();
+
       const F *const rend = rit + size( deriv )*numBaseFunctions;
       for( ; rit != rend; )
       {
-        for( unsigned d = 0; d <= deriv; ++d )
+        F *prit = rit;
+
+        *wit = z * *rit;
+        ++rit, ++wit;
+
+        for( unsigned d = 1; d <= deriv; ++d )
         {
-          const F *const drend = rit + size.sizes_[ d ];
+          const F *const derivEnd = rit + mySize.sizes_[ d ];
+          const F *const drend = rit + mySize.sizes_[ d ] - mySize.sizes_[ d-1 ];
           for( ; rit != drend ; ++rit, ++wit )
             *wit = z * *rit;
+          for (unsigned int j=1; j<d; ++j)
+          {
+            const F *const drend = rit + mySize.sizes_[ d-j ] - mySize.sizes_[ d-j-1 ];
+            for( ; rit != drend ; ++prit, ++rit, ++wit )
+              *wit = F(j) * *prit + z * *rit;
+          }
+          *wit = F(d) * *prit + z * *rit;
+          ++prit, ++rit, ++wit;
+          std::cout << "FINISHED: " << d << std::endl;
+          assert(derivEnd == rit);
+          rit += size.sizes_[d] - mySize.sizes_[d];
+          prit += size.sizes_[d-1] - mySize.sizes_[d-1];
+          const F *const emptyWitEnd = wit + size.sizes_[d] - mySize.sizes_[d];
+          for ( ; wit != emptyWitEnd; ++wit )
+            *wit = Zero<F>();
         }
       }
     }
@@ -308,8 +332,6 @@ namespace Dune
     friend class MonomialBasis< Topology, Field >;
     friend class MonomialBasisImpl< GenericGeometry::Prism< Topology >, Field >;
     friend class MonomialBasisImpl< GenericGeometry::Pyramid< Topology >, Field >;
-
-    typedef MonomialBasisHelper< dimDomain, Field > Helper;
 
     template< int dimD >
     void evaluate ( const unsigned int deriv, const unsigned int order,
@@ -363,7 +385,7 @@ namespace Dune
                     const unsigned int block, const unsigned int *const offsets,
                     Field *const values ) const
     {
-      typedef MonomialBasisHelper< dimD, Field > Helper;
+      typedef MonomialBasisHelper< dimDomain, dimD, Field > Helper;
       const BaseSize &size = BaseSize::instance();
 
       const Field &z = x[ dimDomain-1 ];
@@ -500,7 +522,7 @@ namespace Dune
                     const unsigned int block, const unsigned int *const offsets,
                     Field *const values ) const
     {
-      typedef MonomialBasisHelper< dimD, Field > Helper;
+      typedef MonomialBasisHelper< dimDomain, dimD, Field > Helper;
       const BaseSize &size = BaseSize::instance();
 
       if( GenericGeometry::IsSimplex< Topology >::value )

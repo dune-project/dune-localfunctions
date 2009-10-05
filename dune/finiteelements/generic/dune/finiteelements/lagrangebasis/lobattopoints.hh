@@ -14,6 +14,7 @@
 #include <dune/finiteelements/basisprint.hh>
 #include <dune/finiteelements/generic/polynomialbasis.hh>
 
+#include <dune/grid/genericgeometry/referenceelements.hh>
 #include <dune/grid/genericgeometry/referencemappings.hh>
 #include <dune/finiteelements/quadrature/lobattoquadrature.hh>
 #include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
@@ -79,12 +80,12 @@ namespace Dune {
       }
       for ( unsigned int d=0; d<dimStart; ++d )
       {
-        points[startPos].point_[d] -= points1D[i-2];
+        points[startPos].point_[d] = -points1D[i-2];
       }
 
       return startPos+1;
     }
-    template <int dim>
+    template <unsigned int dim>
     static void setup(const std::vector<Field> &points1D,
                       LagrangePoint< Field, dim > *points )
     {
@@ -236,15 +237,20 @@ namespace Dune {
                           const std::vector<Field> &points1D,
                           LagrangePoints &points)
         {
-          static const unsigned int topologyId = Topology::id;
-          typedef GenericGeometry::ReferenceTopologies<dimension> RefElem;
-          const unsigned int size = RefElem::get(topologyId).size(codim);
-          for (unsigned int i =  0; i < size; ++i)
-          {
-            const unsigned int subTopologyId = RefElem::get(topologyId).topologyId(codim,i);
-            GenericGeometry::IfTopology<Setup<Topology>::template Init,dimension-codim>::apply(subTopologyId,order,i,points1D,points);
-          }
+          const unsigned int size = GenericGeometry::Size<Topology,codim>::value;
+          GenericGeometry::ForLoop<InitSub,0,size-1>::apply(order,points1D,points);
         }
+        template <int i>
+        struct InitSub
+        {
+          typedef typename GenericGeometry::SubTopology<Topology,codim,i>::type SubTopology;
+          static void apply(const unsigned int order,
+                            const std::vector<Field> &points1D,
+                            LagrangePoints &points)
+          {
+            Setup<Topology>::template Init<SubTopology>::template apply<i>(order,points1D,points);
+          }
+        };
       };
       template <class SubTopology>
       struct Init
@@ -254,8 +260,8 @@ namespace Dune {
         typedef typename RefMappings::Container RefMappingsContainer;
         typedef typename RefMappingsContainer::template Codim< codimension >::Mapping Mapping;
         typedef LobattoInnerPoints<Field,SubTopology> InnerPoints;
+        template <unsigned int subEntity>
         static void apply(const unsigned int order,
-                          unsigned int subEntity,
                           const std::vector<Field> &points1D,
                           LagrangePoints &points)
         {
@@ -264,31 +270,34 @@ namespace Dune {
           if (size==0)
             return;
           points.resize(oldSize+size);
-
+          std::vector< LagrangePoint<Field,dimension-codimension> > subPoints(size);
           /*
              std::cout << Topology::name() << " " << SubTopology::name() << " : "
                     << " ( " << codimension <<  " , " << subEntity << " ) "
                     << oldSize << " " << size << std::endl;
            */
-
-          LagrangePoint<Field,dimension> *p = &(points.points_[oldSize]);
-          InnerPoints::template setup<dim>(points1D,p);
+          InnerPoints::template setup<dimension-codimension>( points1D,&(subPoints[0]) );
 
           const RefMappingsContainer &refMappings = RefMappings::container( Topology::id );
           const Mapping &mapping = refMappings.template mapping< codimension >( subEntity );
 
-          unsigned int nr = 0;
-          for ( ; p != &(points.points_[oldSize+size]); ++p )
+          LagrangePoint<Field,dimension> *p = &(points.points_[oldSize]);
+          for ( unsigned int nr = 0; nr<size; ++nr, ++p)
           {
             /*
                std::cout << "   " << nr << " : "
-                      << p->point_ << " -> "
-                      << mapping.global( reinterpret_cast< const Dune::FieldVector<Field,dimension-codimension>& >(p->point_) )
+                      << subPoints[nr].point_ << " -> "
+                      << mapping.global( subPoints[nr].point_ )
                       << std::endl;
              */
-            if (codimension>0)
-              p->point_ = mapping.global( reinterpret_cast< const Dune::FieldVector<Field,dimension-codimension>& >(p->point_) );
-            p->localKey_ = LocalKey( subEntity, codimension, nr++ );
+            p->point_ = mapping.global( subPoints[nr].point_ );
+            p->localKey_ = LocalKey( subEntity, codimension, nr );
+            #ifndef NDEBUG
+            bool test = GenericGeometry::ReferenceElement<Topology,Field>::checkInside(p->point_);
+            if (!test)
+              std::cout << "not inside" << std::endl;
+            // assert( test );
+            #endif
           }
         }
       };

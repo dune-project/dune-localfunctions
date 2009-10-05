@@ -1,8 +1,8 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#include <dune/finiteelements/lagrangebasis.hh>
 #include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
 #include <dune/finiteelements/lagrangebasis/lobattopoints.hh>
+#include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
 #include <dune/finiteelements/quadrature/genericquadrature.hh>
 #include <dune/finiteelements/p13d/p13dlocalbasis.hh>
 #include <dune/finiteelements/p23d/p23dlocalbasis.hh>
@@ -66,10 +66,9 @@ bool test(unsigned int order, bool verbose = false) {
 
     typedef Dune::LagrangePoints< double, Topology::dimension > LagrangePoints;
 
-    // typedef Dune::LagrangePointsCreator< StorageField, Topology::dimension > LagrangePointsCreator;
+    // typedef Dune::LagrangePointsCreator< double, Topology::dimension > LagrangePointsCreator;
     typedef Dune::LobattoPointsCreator< double, Topology::dimension > LagrangePointsCreator;
     const LagrangePoints &points = LagrangePointsCreator::template lagrangePoints< Topology >( o );
-
 #if USE_GENERIC
     // typedef LagrangeBasisProvider<Topology::dimension,StorageField,ComputeField> BasisProvider;
     typedef LobattoBasisProvider<Topology::dimension,StorageField,ComputeField> BasisProvider;

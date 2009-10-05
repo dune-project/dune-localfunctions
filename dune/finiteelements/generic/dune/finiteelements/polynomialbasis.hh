@@ -70,6 +70,9 @@ namespace Dune
                     std::vector< RangeVector > &values ) const
     {
       assert(values.size()>=size());
+      assert(values.size()>=basis_->size(order_));
+      assert(basisEval_.size()>=basis_->size(order_));
+      assert(basisEval_.size()>=coeffMatrix_->baseSize());
       basis_->evaluate( order_, x, basisEval_ );
       coeffMatrix_->mult( basisEval_, values );
     }

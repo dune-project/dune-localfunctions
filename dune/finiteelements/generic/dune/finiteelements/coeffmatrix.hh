@@ -96,7 +96,8 @@ namespace Dune
     CoeffMatrix()
       : coeff_(0),
         rows_(0),
-        numRows_(0)
+        numRows_(0),
+        numCols_(0)
     {}
 
     ~CoeffMatrix()
@@ -108,6 +109,10 @@ namespace Dune
     const unsigned int size () const
     {
       return numRows_;
+    }
+    const unsigned int baseSize () const
+    {
+      return numCols_;
     }
 
     template <class RangeVector>
@@ -184,9 +189,12 @@ namespace Dune
     void fill ( const FullMatrix &mat )
     {
       numRows_ = mat.rowSize();
+      numCols_ = 0;
       int size = 0;
-      for( int r = 0; r < numRows_; ++r )
+      for( int r = 0; r < numRows_; ++r ) {
         size += mat.colSize( r );
+        numCols_ = std::max( numCols_ , mat.colSize( r ) );
+      }
 
       delete [] coeff_;
       delete [] rows_;
@@ -208,7 +216,7 @@ namespace Dune
     CoeffMatrix &operator= (const CoeffMatrix&);
     Vector *coeff_;
     Vector **rows_;
-    int numRows_;
+    int numRows_,numCols_;
   };
 
 }

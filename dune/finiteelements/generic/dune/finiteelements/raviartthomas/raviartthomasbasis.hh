@@ -17,21 +17,27 @@ namespace Dune
   {
     struct Iterator
     {
-      Iterator(const std::vector<F>& mBasis)
-        : mBasis_(mBasis), pos_(0), dim_(0) {
+      Iterator(const std::vector<F>& mBasis, bool end)
+        : mBasis_(mBasis),
+          pos_(0), dim_(0),
+          done_(end) {
         val_[dim_] = mBasis_[pos_];
       }
       Iterator(const Iterator& other)
-        : mBasis_(other.mBasis_), pos_(other.pos_), dim_(other.dim_)
+        : mBasis_(other.mBasis_),
+          pos_(other.pos_), dim_(other.dim_),
+          done_(other.done_)
       {}
       Iterator &operator=(const Iterator& other)
       {
         mBasis_ = other.mBasis;
         pos_ = other.pos_;
         dim_ = other.dim_;
+        done_ = other.done_;
       }
       const FieldVector<F,d>& operator*() const
       {
+        assert(!done_);
         return val_;
       }
       const Iterator &operator++()
@@ -44,20 +50,33 @@ namespace Dune
         }
         else
           ++dim_;
-        val_[dim_] = mBasis_[pos_];
+        if (pos_==mBasis_.size())
+          done_ = true;
+        else
+          val_[dim_] = mBasis_[pos_];
         return *this;
       }
       FieldVector<F,d> val_;
       const std::vector<F>& mBasis_;
       int pos_,dim_;
+      bool done_;
     };
     typedef Dune::FieldVector<F,d> value_type;
     typedef Iterator const_iterator;
     RaviartThomasContainer(int size)
-      : mBasis_(size) {}
+      : mBasis_(size/d) {}
     Iterator begin() const
     {
-      return Iterator(mBasis_);
+      return Iterator(mBasis_,false);
+    }
+    Iterator end() const
+    {
+      return Iterator(mBasis_,true);
+    }
+    // for debuging
+    int size() const
+    {
+      return mBasis_.size()*d;
     }
     std::vector<F> mBasis_;
   };
@@ -71,15 +90,16 @@ namespace Dune
       : basis_(basis) {}
     int size(int order) const
     {
-      return basis_.size(order);
+      return basis_.size(order)*dim;
     }
     void evaluate(unsigned int order, const DomainVector &x,
-                  RaviartThomasContainer<dimension,SF> &val ) const
+                  RaviartThomasContainer<dim,SF> &val ) const
     {
       basis_.evaluate(order,x,val.mBasis_);
     }
-    const VirtualMonomialBasis<dimension,SF>& basis_;
+    const VirtualMonomialBasis<dim,SF>& basis_;
   };
+
   template< int dim, class SF >
   struct RaviartThomasMonomialBasisCreator
   {

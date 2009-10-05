@@ -12,7 +12,7 @@ bool test(unsigned int order) {
   typedef double StorageField;
   typedef AlgLib::MultiPrecision<512> ComputeField;
   // typedef double ComputeField;
-  //
+
   static const int dimRange = 2;
 
   bool ret = true;
@@ -22,6 +22,7 @@ bool test(unsigned int order) {
     std::cout << "Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
     typedef VecLagrangeBasisProvider<Topology::dimension,dimRange,StorageField,ComputeField> BasisProvider;
     const typename BasisProvider::Basis &basis = BasisProvider::basis(Topology::id,o);
+    std::cout << "Basis size " << basis.size() << std::endl;
 
     typedef Dune::LagrangePoints< Topology, StorageField > LagrangePoints;
     LagrangePoints points( o );

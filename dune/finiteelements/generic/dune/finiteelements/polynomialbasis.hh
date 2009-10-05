@@ -77,23 +77,20 @@ namespace Dune
     }
 
     template< unsigned int deriv, class Vector >
-    void evaluate ( const DomainVector &x,
-                    Vector &values ) const
+    void evaluate ( const DomainVector &x, Vector &values ) const
     {
       assert(values.size()>=size());
       coeffMatrix_->mult( eval_.template evaluate<deriv>( x ), values );
     }
 
     template< class Vector >
-    void evaluate ( const DomainVector &x,
-                    Vector &values ) const
+    void evaluate ( const DomainVector &x, Vector &values ) const
     {
       evaluate<0>(x,values);
     }
 
     template< class DVector, class RVector >
-    void evaluate ( const DVector &x,
-                    RVector &values ) const
+    void evaluate ( const DVector &x, RVector &values ) const
     {
       DomainVector bx;
       for( int d = 0; d < dimension; ++d )

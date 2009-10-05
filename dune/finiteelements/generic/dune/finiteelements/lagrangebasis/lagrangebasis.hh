@@ -7,10 +7,8 @@
 #include <dune/alglib/matrix.hh>
 
 #include <dune/finiteelements/lagrangepoints.hh>
-#include <dune/finiteelements/monomialbasis.hh>
 #include <dune/finiteelements/lagrangeinterpolation.hh>
-#include <dune/finiteelements/coeffmatrix.hh>
-#include <dune/finiteelements/multiindex.hh>
+#include <dune/finiteelements/polynomialbasis.hh>
 namespace Dune
 {
   template <class Topology,class scalar_t>
@@ -30,27 +28,20 @@ namespace Dune
     int rowSize() const {
       return matrix_.rows();
     }
-    void set(int r,int c,scalar_t &v) const {
-      v = matrix_(c,r);
+    const Dune::FieldVector< scalar_t, 1 > operator() ( int r, int c ) const
+    {
+      return matrix_(c,r);
     }
-    void set(int r,int c,double &v) const {
-      v = matrix_(c,r).toDouble();
-    }
-    void set(int r,int c,std::string &v) const {
-      v = amp::ampf<128>(matrix_(c,r)).toDec();
-    }
-    void print(std::ostream& out) {
+    void print(std::ostream& out) const {
       int N = rowSize();
       for (int i=0; i<N; ++i) {
         out << "Polynomial : " << i << std::endl;
         for (int j=0; j<colSize(i); j++) {
-          double v = 0;
-          set(i,j,v);
+          double v = matrix_(j,i).toDouble();
           if (fabs(v)<1e-20)
             out << 0 << "\t\t" << std::flush;
           else {
-            std::string v;
-            set(i,j,v);
+            Dune::AlgLib::MultiPrecision<128> v = matrix_(j,i);
             out << v << "\t\t" << std::flush;
           }
         }
@@ -61,64 +52,17 @@ namespace Dune
   };
 
 
-  template <class Topology,class F>
-  class LagrangeBasis
+  template< class Topology, class SF, class CF = typename ComputeField< SF, 512 >::Type >
+  struct LagrangeBasis
+    : public PolynomialBasis<1,MonomialBasis<Topology,SF>,SF,CF>
   {
-    enum {dim = Topology::dimension};
-    typedef LagrangeBasis<Topology,F> This;
-    typedef StandardMonomialBasis<dim,F> Basis;
-    static const unsigned int Precision = 1024;
-    typedef Dune::AlgLib::MultiPrecision< Precision > scalar_t;
-
-  public:
-    typedef F Field;
-
-    typedef typename Basis::DomainVector DomainVector;
-    typedef typename Basis::RangeVector RangeVector;
-
+    typedef PolynomialBasis<1,MonomialBasis<Topology,SF>,SF,CF> Base;
     LagrangeBasis (int order)
-      : basis_(), order_(order),
-        basisEval_(basis_.size(order))
+      : Base(order)
     {
-      LagrangeMatrix<Topology,scalar_t> matrix(order);
-      coeffMatrix_.fill(matrix);
-      std::ofstream out("coeffs.out");
-      out.precision(15);
-      out.setf(std::ios::scientific,std::ios::floatfield);
-      matrix.print(out);
-      out << " ************ " << std::endl;
-      print(out);
+      LagrangeMatrix<Topology,CF> matrix(order);
+      this->fill(matrix);
     }
-
-    const int size () const
-    {
-      return basis_.size(order_);
-    }
-
-    void evaluate ( const DomainVector &x,
-                    std::vector< RangeVector > &values ) const
-    {
-      basis_.evaluate(order_,x,basisEval_);
-      coeffMatrix_.mult(basisEval_,values);
-    }
-
-    void print(std::ofstream &out) {
-      typedef Dune::MultiIndex<dim> MI;
-      typedef Dune::MonomialBasis< Topology, MI  > Basis;
-      Basis basis;
-      const unsigned int size = basis.size( order_ );
-      std::vector< Dune::FieldVector< MI,1> > y( size );
-      Dune::FieldVector< MI, dim > x;
-      for (int d=0; d<dim; ++d)
-        x[d].set(d);
-      basis.evaluate( order_, x, y );
-      coeffMatrix_.print(out,y);
-    }
-  private:
-    const Basis basis_;
-    int order_;
-    mutable std::vector<RangeVector> basisEval_;
-    CoeffMatrix<scalar_t> coeffMatrix_;
   };
 }
 #endif // DUNE_ORTHONORMALBASIS_HH

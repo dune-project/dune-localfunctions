@@ -15,7 +15,7 @@ bool test(unsigned int order) {
   bool ret = true;
   OrthonormalBasis< Topology, StorageField > basis( order );
 
-  const unsigned int size = basis.size( order );
+  const unsigned int size = basis.size( );
   std::vector< FieldVector< double, 1 > > y( size );
 
   std::vector< FieldVector< double, 1 > > m( size * size );
@@ -26,7 +26,7 @@ bool test(unsigned int order) {
   const unsigned int quadratureSize = quadrature.size();
   for( unsigned int qi = 0; qi < quadratureSize; ++qi )
   {
-    basis.evaluate( order, quadrature.point( qi ), y );
+    basis.evaluate( quadrature.point( qi ), y );
     for( unsigned int i = 0; i < size; ++i )
     {
       for( unsigned int j = 0; j < size; ++j )

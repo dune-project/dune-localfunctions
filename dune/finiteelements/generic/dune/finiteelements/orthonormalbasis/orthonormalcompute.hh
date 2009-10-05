@@ -321,7 +321,7 @@ namespace ONB {
       return calc.res(c+1,r+1);
     }
 
-    void print(std::ostream& out) {
+    void print(std::ostream& out) const {
       int N = rowSize();
       for (int i=0; i<N; ++i) {
         out << "Polynomial : " << i << std::endl;

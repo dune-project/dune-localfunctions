@@ -77,7 +77,7 @@ namespace Dune
 
     static const unsigned int dimension = Topology::dimension;
 
-  private:
+    // private: ???
     friend class LagrangePoints< Topology, Field >;
     friend class LagrangePointsImpl< GenericGeometry::Prism< Topology >, Field >;
     friend class LagrangePointsImpl< GenericGeometry::Pyramid< Topology >, Field >;
@@ -111,7 +111,7 @@ namespace Dune
 
     static const unsigned int dimension = Topology::dimension;
 
-  private:
+    // private: ???
     friend class LagrangePoints< Topology, Field >;
     friend class LagrangePointsImpl< GenericGeometry::Prism< Topology >, Field >;
     friend class LagrangePointsImpl< GenericGeometry::Pyramid< Topology >, Field >;
@@ -181,7 +181,7 @@ namespace Dune
 
     static const unsigned int dimension = Topology::dimension;
 
-  private:
+    // private: ???
     friend class LagrangePoints< Topology, Field >;
     friend class LagrangePointsImpl< GenericGeometry::Prism< Topology >, Field >;
     friend class LagrangePointsImpl< GenericGeometry::Pyramid< Topology >, Field >;

@@ -10,6 +10,37 @@
 
 namespace Dune
 {
+  template <class Vector1,class Vector2>
+  struct Mult;
+  template <class Field,int dimRange,int dimDomain>
+  struct Mult<FieldVector<Field,dimRange>,FieldVector<Field,dimDomain> >
+  {
+    typedef FieldVector<Field,dimRange> Vector1;
+    typedef FieldVector<Field,dimDomain> Vector2;
+    typedef FieldMatrix<Field,dimRange,dimRange> Result;
+    static void add(const Vector1 &vec1, const Vector2 &vec2,
+                    Result &res)
+    {
+      for (int r=0; r<dimRange; ++r)
+        for (int d=0; d<dimDomain; ++d)
+          res[r][d] += vec1[r]*vec2[d];
+    }
+  };
+  template <class Field,int dimRange>
+  struct Mult<FieldVector<Field,dimRange>,Field>
+  {
+    typedef FieldVector<Field,dimRange> Vector1;
+    typedef Field Vector2;
+    typedef FieldVector<Field,dimRange> Result;
+    static void add(const Vector1 &vec1, const Vector2 &vec2,
+                    Result &res)
+    {
+      for (int r=0; r<dimRange; ++r)
+        res[r] += vec1[r]*vec2;
+    }
+  };
+
+
   template< class V >
   class CoeffMatrix
   {
@@ -64,17 +95,25 @@ namespace Dune
     }
 
     template< class DomainVector, class RangeVector >
-    void mult ( const std::vector< DomainVector > &x, std::vector< RangeVector > &y ) const
+    void mult ( const std::vector< DomainVector > &x,
+                std::vector< RangeVector > &y ) const
     {
+      typedef Mult<Vector,DomainVector> Multiply;
+      typedef typename Multiply::Result Result;
       size_t numLsg = y.size();
       assert( numLsg <= (size_t)numRows_ );
       Vector *row = rows_[ 0 ];
       for( size_t r = 0; r < numLsg; ++r )
       {
-        Vector val = Zero<Vector>();
+        Result val(0.);
         const DomainVector *itx = &(x[ 0 ]);
-        for( ; row != rows_[ r+1 ]; ++row, ++itx)
-          val += (*row) * (*itx) ;
+        int i=0;
+        for( ; row != rows_[ r+1 ]; ++row, ++itx, ++i)
+        {
+          assert(i<x.size());
+          Multiply::add(*row,*itx,val);
+          // val += (*itx) * (*row) ;
+        }
         field_cast(val,y[r]);
       }
     }

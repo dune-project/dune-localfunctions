@@ -135,8 +135,7 @@ namespace Dune
           for( unsigned int j = 0; j < rows; ++j )
             (*this)( i, j ) = Field( 0 );
 
-          const unsigned int nonZero = sparseMatrix.nonZero();
-
+          const unsigned int nonZero = sparseMatrix.nonZero( i );
           for( unsigned int k = 0; k < nonZero; ++k )
           {
             if( !sparseMatrix.isZero( i, k ) )

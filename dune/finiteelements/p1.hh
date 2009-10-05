@@ -3,38 +3,80 @@
 #ifndef DUNE_P1LOCALFINITEELEMENT_HH
 #define DUNE_P1LOCALFINITEELEMENT_HH
 
-#include "p11d.hh"
-#include "p12d.hh"
-#include "p13d.hh"
+#include <dune/common/geometrytype.hh>
+
+#include "common/localfiniteelement.hh"
+#include "p1/p1localbasis.hh"
+#include "p1/p1localcoefficients.hh"
+#include "p1/p1localinterpolation.hh"
 
 namespace Dune
 {
 
-  /** \todo Please doc me !
+  /** \todo The local p1 finite element on simplices
+      \tparam D Domain data type
+      \tparam R Range data type
+      \tparam dim Dimension of the simplex
    */
-  template<class D, class R, int d>
-  class P1LocalFiniteElement;
+  template<class D, class R, int dim>
+  class P1LocalFiniteElement
+    : public LocalFiniteElementInterface<
+          LocalFiniteElementTraits<P1LocalBasis<D,R,dim>,P1LocalCoefficients<dim>,
+              P1LocalInterpolation<dim,P1LocalBasis<D,R,dim> > >
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
+          , P1LocalFiniteElement<D,R,dim>
+#endif
+          >
+  {
+  public:
+    /** \todo Please doc me !
+     */
+    typedef LocalFiniteElementTraits<P1LocalBasis<D,R,dim>,P1LocalCoefficients<dim>,
+        P1LocalInterpolation<dim,P1LocalBasis<D,R,dim> > > Traits;
 
-  /** \todo Please doc me !
-   */
-  template<class D, class R>
-  class P1LocalFiniteElement<D, R, 1>
-    : public P11DLocalFiniteElement<D, R>
-  {};
+    /** \todo Please doc me !
+     */
+    P1LocalFiniteElement ()
+    {
+      gt.makeSimplex(dim);
+    }
 
-  /** \todo Please doc me !
-   */
-  template<class D, class R>
-  class P1LocalFiniteElement<D, R, 2>
-    : public P12DLocalFiniteElement<D, R>
-  {};
+    /** \todo Please doc me !
+     */
+    const typename Traits::LocalBasisType& localBasis () const
+    {
+      return basis;
+    }
 
-  /** \todo Please doc me !
-   */
-  template<class D, class R>
-  class P1LocalFiniteElement<D, R, 3>
-    : public P13DLocalFiniteElement<D, R>
-  {};
+    /** \todo Please doc me !
+     */
+    const typename Traits::LocalCoefficientsType& localCoefficients () const
+    {
+      return coefficients;
+    }
+
+    /** \todo Please doc me !
+     */
+    const typename Traits::LocalInterpolationType& localInterpolation () const
+    {
+      return interpolation;
+    }
+
+    /** \todo Please doc me !
+     */
+    GeometryType type () const
+    {
+      return gt;
+    }
+
+  private:
+    P1LocalBasis<D,R,dim> basis;
+    P1LocalCoefficients<dim> coefficients;
+    P1LocalInterpolation<dim,P1LocalBasis<D,R,dim> > interpolation;
+    GeometryType gt;
+  };
+
+
 
 }
 

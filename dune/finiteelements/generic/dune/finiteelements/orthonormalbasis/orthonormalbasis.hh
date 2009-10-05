@@ -43,14 +43,16 @@ namespace Dune
                     const DomainVector &x,
                     std::vector< RangeVector > &values ) const
     {
-      basisEval_.resize(size(order));
+      basisEval_.resize( size( order ) );
       basis_.evaluate(order,x,basisEval_);
+      for( unsigned int i = 0; i < size( order ); ++i )
+        std::cout << ">>>>>> " << basisEval_[ i ] << std::endl;
       mult(basisEval_,values);
     }
 
     void print(std::ofstream &out,int order) {
       typedef Dune::MultiIndex<dim> MI;
-      typedef Dune::MonomialBasis< Topology, MI  > Basis;
+      typedef Dune::StandardMonomialBasis< dim, MI > Basis;
       Basis basis;
       const unsigned int size = basis.sizes( order )[ order ];
       std::vector< Dune::FieldVector< MI,1> > y( size );

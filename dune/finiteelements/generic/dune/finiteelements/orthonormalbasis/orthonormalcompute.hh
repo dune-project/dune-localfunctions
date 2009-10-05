@@ -98,7 +98,7 @@ namespace ONB {
       void compute(int ord) {
         // get all multiindecies for monomial basis
         typedef Dune::MultiIndex<dim> MI;
-        typedef Dune::MonomialBasis< Topology, MI  > Basis;
+        typedef Dune::StandardMonomialBasis< dim, MI  > Basis;
         Basis basis;
         const unsigned int size = basis.sizes( ord )[ ord ];
         std::vector< Dune::FieldVector< MI,1> > y( size );
@@ -113,8 +113,10 @@ namespace ONB {
         // Aufstellen der Matrix fuer die Bilinearform xSy
         // S_ij = int_A x^(i+j)
         scalar_t p,q;
-        for (int i=1; i<=size; ++i) {
-          for (int j=1; j<=size; j++) {
+        for( unsigned int i=1; i<=size; ++i )
+        {
+          for( unsigned int j=1; j<=size; j++ )
+          {
             Integral<Topology>::compute(y[i-1]*y[j-1],p,q);
             S(i,j) = p;
             S(i,j) /= q;

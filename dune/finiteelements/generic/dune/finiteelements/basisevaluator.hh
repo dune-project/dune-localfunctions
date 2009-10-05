@@ -19,6 +19,7 @@
 
 namespace Dune
 {
+
   template <class B>
   struct MonomialEvaluator
   {
@@ -35,7 +36,7 @@ namespace Dune
     template <unsigned int deriv>
     struct Iterator
     {
-      typedef BaseIterator<Derivatives<Field,dimension,1,deriv,testLayout> > All;
+      typedef BaseIterator<Derivatives<Field,dimension,1,deriv,derivative> > All;
     };
 
   protected:
@@ -50,7 +51,7 @@ namespace Dune
     template <int deriv>
     void resize()
     {
-      const int totalSize = Derivatives<Field,dimension,1,deriv,testLayout>::size*size_;
+      const int totalSize = Derivatives<Field,dimension,1,deriv,derivative>::size*size_;
       container_.resize(totalSize);
     }
     MonomialEvaluator(const MonomialEvaluator&);
@@ -195,7 +196,7 @@ namespace Dune
     template <unsigned int deriv>
     struct Iterator
     {
-      typedef typename Base::template BaseIterator<Derivatives<Field,dimension,dimRange,deriv,testLayout> > All;
+      typedef typename Base::template BaseIterator<Derivatives<Field,dimension,dimRange,deriv,derivative> > All;
     };
 
     VecEvaluator ( const Basis &basis, const Fill &fill )
@@ -237,7 +238,7 @@ namespace Dune
     template <int deriv>
     void resize()
     {
-      const int totalSize = Derivatives<Field,dimension,dimRange,deriv,testLayout>::size*size_;
+      const int totalSize = Derivatives<Field,dimension,dimRange,deriv,derivative>::size*size_;
       vecContainer_.resize(totalSize);
     }
 
@@ -353,9 +354,9 @@ namespace Dune
 
   template <class B,int dimR>
   struct VectorialEvaluator
-    : public VecEvaluator<B,DiagonalFill<dimR,testLayout> >
+    : public VecEvaluator<B,DiagonalFill<dimR,derivative> >
   {
-    typedef DiagonalFill<dimR,testLayout> Fill;
+    typedef DiagonalFill<dimR,derivative> Fill;
     typedef VecEvaluator< B,Fill > Base;
     VectorialEvaluator(const B &basis)
       : Base(basis,fill_,basis.size()*dimR)

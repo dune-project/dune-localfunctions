@@ -3,6 +3,8 @@
 #ifndef DUNE_ALGLIB_MATRIX_HH
 #define DUNE_ALGLIB_MATRIX_HH
 
+#include <cassert>
+
 #include <dune/alglib/multiprecision.hh>
 
 #include <alglib/ap.h>
@@ -27,7 +29,8 @@ namespace Dune
       typedef MultiPrecision< precision > Field;
 
     private:
-      typedef ap::template_2d_array< amp::ampf< precision >, aligned > RealMatrix;
+      typedef amp::ampf< precision > RealField;
+      typedef ap::template_2d_array< RealField, aligned > RealMatrix;
 
     public:
       operator const RealMatrix & () const
@@ -63,7 +66,7 @@ namespace Dune
       const Field *rowPtr ( const unsigned int row ) const
       {
         const int lastCol = matrix_.gethighbound( 2 );
-        ap::const_raw_vector< Field > rowVector = matrix_.getrow( row, 0, lastCol );
+        ap::const_raw_vector< RealField > rowVector = matrix_.getrow( row, 0, lastCol );
         assert( (rowVector.GetStep() == 1) && (rowVector.GetLength() == cols()) );
         return static_cast< const Field * >( rowVector.GetData() );
       }
@@ -71,8 +74,8 @@ namespace Dune
       Field *rowPtr ( const unsigned int row )
       {
         const int lastCol = matrix_.gethighbound( 2 );
-        ap::raw_vector< Field > rowVector = matrix_.getrow( row, 0, lastCol );
-        assert( (rowVector.GetStep() == 1) && (rowVector.GetLength() == cols()) );
+        ap::raw_vector< RealField > rowVector = matrix_.getrow( row, 0, lastCol );
+        assert( (rowVector.GetStep() == 1) && (rowVector.GetLength() == lastCol+1) );
         return static_cast< Field * >( rowVector.GetData() );
       }
 

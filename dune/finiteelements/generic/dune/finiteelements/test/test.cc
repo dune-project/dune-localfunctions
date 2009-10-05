@@ -54,7 +54,7 @@ int main ( int argc, char **argv )
   std::cout << std::endl;
   std::cout << ">>> Testing quadrature of order " << (2*p+1) << "..." << std::endl;
 
-  typedef QuadratureRuleImpl< Topology > Quadrature;
+  typedef GenericQuadratureRule< Topology > Quadrature;
   Quadrature quadrature( 2*p+1 );
   const Quadrature::iterator qend = quadrature.end();
   for( Quadrature::iterator qit = quadrature.begin(); qit != qend; ++qit )

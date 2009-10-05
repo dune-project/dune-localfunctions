@@ -13,24 +13,19 @@ int main ( int argc, char **argv )
 
   std::vector< Dune::FieldVector< double, 1 > > y( lagrange.size() );
 
-  int index = 0;
-  const LagrangePoints::iterator end = points.end();
-  for( LagrangePoints::iterator it = points.begin(); it != end; ++it,++index )
+  for( unsigned int index = 0; index < points.size(); ++index )
   {
-    lagrange.evaluate( it->point(), y );
+    lagrange.evaluate( points[ index ].point(), y );
     std::cout << index << " -> "
-              << "x = " << it->point()
-              << " (codim = " << it->localKey().codim() << ", "
-              << "subentity = " << it->localKey().subentity() << ", "
-              << "index = " << it->localKey().index() << "):" << std::endl;
-    for( unsigned int i = 0; i < y.size(); ++i ) {
-      if ( i  == index ) {
-        if (fabs(y[ i ] - 1.0) > 1e-10)
-          std::cout << "    y[ " << i << " ] = " << y[ i ] << std::endl;
-      } else {
-        if (fabs(y[ i ]) > 1e-10)
-          std::cout << "    y[ " << i << " ] = " << y[ i ] << std::endl;
-      }
+              << "x = " << points[ index ].point()
+              << " (codim = " << points[ index ].localKey().codim() << ", "
+              << "subentity = " << points[ index ].localKey().subentity() << ", "
+              << "index = " << points[ index ].localKey().index() << "):" << std::endl;
+
+    for( unsigned int i = 0; i < y.size(); ++i )
+    {
+      if( fabs( y[ i ] - double( i == index ) ) > 1e-10 )
+        std::cout << "    y[ " << i << " ] = " << y[ i ] << std::endl;
     }
   }
 }

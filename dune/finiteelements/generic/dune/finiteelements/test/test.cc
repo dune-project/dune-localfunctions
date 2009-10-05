@@ -145,11 +145,16 @@ int main ( int argc, char **argv )
   const LagrangePoints::iterator end = points.end();
   for( LagrangePoints::iterator it = points.begin(); it != end; ++it )
   {
-    basis.evaluate( p, *it, y );
-    std::cout << "x = " << *it << ":" << std::endl;
+    basis.evaluate( p, it->point(), y );
+    std::cout << "x = " << it->point()
+              << " (codim = " << it->localKey().codim() << ", "
+              << "subentity = " << it->localKey().subentity() << ", "
+              << "index = " << it->localKey().index() << "):" << std::endl;
     for( unsigned int i = 0; i < size; ++i )
       std::cout << "    y[ " << i << " ] = " << y[ i ] << std::endl;
   }
+
+  if( false )
   {
     typedef Dune::StandardBiMonomialBasis< 3,double > Basis;
     Basis basis;
@@ -162,12 +167,14 @@ int main ( int argc, char **argv )
     const LagrangePoints::iterator end = points.end();
     for( LagrangePoints::iterator it = points.begin(); it != end; ++it )
     {
-      basis.evaluate( p, *it, y );
-      std::cout << "x = " << *it << ":" << std::endl;
+      basis.evaluate( p, it->point(), y );
+      std::cout << "x = " << it->point() << ":" << std::endl;
       for( unsigned int i = 0; i < size; ++i )
         std::cout << "    y[ " << i << " ] = " << y[ i ] << std::endl;
     }
   }
+
+  if( false )
   {
     enum {dim=Topology::dimension};
     typedef Dune::MultiIndex<dim> MI;
@@ -179,7 +186,7 @@ int main ( int argc, char **argv )
     for (int d=0; d<dim; ++d)
       x[d].set(d);
     basis.evaluate( p, x, y );
-    for (int i=0; i<y.size(); ++i)
-      std::cout << y[i] << std::endl;
+    for( size_t i = 0; i < y.size(); ++i )
+      std::cout << y[ i ] << std::endl;
   }
 }

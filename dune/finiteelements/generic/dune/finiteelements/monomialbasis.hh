@@ -103,6 +103,13 @@ namespace Dune
       values[ 0 ] = Unity<Field>();
     }
 
+    void integral ( const unsigned int order,
+                    const unsigned int *const offsets,
+                    RangeVector *const values ) const
+    {
+      values[ 0 ] = Field( 1 );
+    }
+
     unsigned int maxOrder () const
     {
       return maxOrder_;
@@ -197,6 +204,36 @@ namespace Dune
       }
     }
 
+    void integral ( const unsigned int order,
+                    const unsigned int *const offsets,
+                    RangeVector *const values ) const
+    {
+      // fill first column
+      baseBasis_.integral( order, offsets, values );
+      const unsigned int *const baseSizes = baseBasis_.sizes_;
+
+      RangeVector *row0 = values;
+      for( unsigned int k = 1; k <= order; ++k )
+      {
+        RangeVector *const row1begin = values + offsets[ k-1 ];
+        RangeVector *const row1End = row1begin + sizes_[ k ];
+        assert( (unsigned int)(row1End - values) <= offsets[ k ] );
+
+        RangeVector *row1 = row1begin;
+        RangeVector *it = row1begin + baseSizes[ k ];
+        for( unsigned int j = 1; j <= order; ++j )
+        {
+          RangeVector *const end = it + baseSizes[ k ];
+          assert( (unsigned int)(end - values) <= offsets[ k ] );
+          for( ; it != end; ++row1, ++it )
+            *it = (Field( j ) / Field( j+1 )) * (*row1);
+        }
+        for( ; it != row1End; ++row0, ++it )
+          *it = (Field( k ) / Field( k+1 )) * (*row0);
+        row0 = row1;
+      }
+    }
+
     unsigned int maxOrder() const
     {
       return baseBasis_.maxOrder();
@@ -280,7 +317,7 @@ namespace Dune
         RangeVector *const row1 = values+offsets[ k-1 ];
         RangeVector *const row1End = row1+sizes_[ k ];
         assert( (unsigned int)(row1End - values) <= offsets[ k ] );
-        for( RangeVector *it = row1 + baseSizes[ k ]; it!=row1End; ++row0,++it )
+        for( RangeVector *it = row1 + baseSizes[ k ]; it != row1End; ++row0, ++it )
           *it = z * (*row0);
         row0 = row1;
       }
@@ -318,9 +355,9 @@ namespace Dune
         assert( (unsigned int)(row1End - values) <= offsets[ k ] );
         RangeVector *const col0End = row1 + baseSizes[ k ];
         RangeVector *it = row1;
-        for( ; it!=col0End; ++it )
+        for( ; it != col0End; ++it )
           *it = (*it) * omzk;
-        for( ; it!=row1End; ++row0,++it )
+        for( ; it != row1End; ++row0, ++it )
           *it = z * (*row0);
         row0 = row1;
         omzk *= omz;
@@ -337,6 +374,35 @@ namespace Dune
         evaluateSimplex( order, x, offsets, values );
       else
         evaluatePyramid( order, x, offsets, values );
+    }
+
+    void integral ( const unsigned int order,
+                    const unsigned int *const offsets,
+                    RangeVector *const values ) const
+    {
+      // fill first column
+      baseBasis_.integral( order, offsets, values );
+
+      const unsigned int *const baseSizes = baseBasis_.sizes_;
+      RangeVector *row0 = values;
+      for( unsigned int k = 0; k <= order; ++k )
+      {
+        const Field factor = (Field( 1 ) / Field( k + dimDomain ));
+
+        RangeVector *const row1 = values+offsets[ k-1 ];
+        RangeVector *const col0End = row1 + baseSizes[ k ];
+        RangeVector *it = row1;
+        for( ; it != col0End; ++it )
+          *it = factor * (*it);
+        for( unsigned int i = 0; i < k; ++i )
+        {
+          RangeVector *const end = it + baseSizes[ i ];
+          assert( (unsigned int)(end - values) <= offsets[ k ] );
+          for( ; it != end; ++row0, ++it )
+            *it = (factor * Field( i+1 )) * (*row0);
+        }
+        row0 = row1;
+      }
     }
 
     unsigned int maxOrder() const

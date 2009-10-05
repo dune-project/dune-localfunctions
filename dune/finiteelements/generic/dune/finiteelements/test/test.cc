@@ -7,6 +7,7 @@
 #include <dune/finiteelements/lagrangepoints.hh>
 #include <dune/finiteelements/monomialbasis.hh>
 #include <dune/finiteelements/multiindex.hh>
+#include <dune/alglib/multiprecision.hh>
 
 #include <dune/finiteelements/quadrature/genericquadrature.hh>
 
@@ -27,13 +28,14 @@ int main ( int argc, char **argv )
   int p = atoi( argv[ 1 ] );
 
   typedef TOPOLOGY Topology;
+  typedef Dune::AlgLib::MultiPrecision<640> Field;
   const int dimension = Topology::dimension;
 
-  Dune::MonomialBasis< Topology, double > basis;
+  Dune::MonomialBasis< Topology, Field > basis;
   const unsigned int size = basis.size( p );
-  std::vector< Dune::FieldVector< double, 1 > > y( size );
+  std::vector< Field > y( size );
 
-  typedef Dune::LagrangePoints< Topology, double > LagrangePoints;
+  typedef Dune::LagrangePoints< Topology, Field > LagrangePoints;
   LagrangePoints points( p );
 
   std::cout << "Number of base functions:  " << size << std::endl;
@@ -42,19 +44,20 @@ int main ( int argc, char **argv )
   const LagrangePoints::iterator end = points.end();
   for( LagrangePoints::iterator it = points.begin(); it != end; ++it )
   {
-    basis.evaluate( p, it->point(), y );
-    std::cout << "x = " << it->point()
+    basis.evaluate( p, it->point(), &(y[0]) );
+    std::cout << "x = " << field_cast<double>(it->point())
               << " (codim = " << it->localKey().codim() << ", "
               << "subentity = " << it->localKey().subentity() << ", "
               << "index = " << it->localKey().index() << "):" << std::endl;
     for( unsigned int i = 0; i < size; ++i )
-      std::cout << "    y[ " << i << " ] = " << y[ i ] << std::endl;
+      std::cout << "    y[ " << i << " ] = " << field_cast<double>(y[ i ]) << std::endl;
   }
 
+#if 0
   std::cout << std::endl;
   std::cout << ">>> Testing quadrature of order " << (2*p+1) << "..." << std::endl;
 
-  std::vector< Dune::FieldVector< double, 1 > > yquad( size );
+  std::vector< Dune::FieldVector< Field, 1 > > yquad( size );
   for( unsigned int i = 0; i < size; ++i )
     yquad[ i ] = 0;
 
@@ -118,4 +121,5 @@ int main ( int argc, char **argv )
     for( size_t i = 0; i < y.size(); ++i )
       std::cout << y[ i ] << std::endl;
   }
+#endif
 }

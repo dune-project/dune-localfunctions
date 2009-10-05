@@ -251,21 +251,23 @@ namespace Dune
         {
           Field val;
           field_cast(mat(r,c),val);
-          if (val < Zero<Field>() && Zero<Field>() < val)
-          {
-            ++(*sit);
-          } else
+          if (val < Zero<Field>() || Zero<Field>() < val)
           {
             *cit = val;
             ++sit;
             ++cit;
             *sit = 1;
+          } else
+          {
+            ++(*sit);
           }
         }
         rows_[ r+1 ] = cit;
       }
       if (verbose)
-        std::cout << "Entries: " << (rows_[numRows_]-rows_[0]) << std::endl;
+        std::cout << "Entries: " << (rows_[numRows_]-rows_[0])
+                  << " full: " << numCols_*numRows_
+                  << std::endl;
     }
 
   private:

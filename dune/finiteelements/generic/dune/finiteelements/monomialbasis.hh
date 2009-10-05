@@ -772,7 +772,13 @@ namespace Dune
 
     virtual void evaluate ( const unsigned int deriv, const DomainVector &x,
                             Field *const values ) const = 0;
-    template < unsigned int deriv, class Field,int size >
+    template < unsigned int deriv >
+    void evaluate ( const DomainVector &x,
+                    Field *const values ) const
+    {
+      evaluate( deriv, x, values );
+    }
+    template < unsigned int deriv, int size >
     void evaluate ( const DomainVector &x,
                     Dune::FieldVector<Field,size> *const values ) const
     {

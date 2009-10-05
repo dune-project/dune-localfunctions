@@ -15,14 +15,16 @@
  * double* operator()(int p,int i) -> Api
  *
  **/
-struct PyramidWrapper {
-  PyramidWrapper(double* storage,
-                 int* N,int p)
+struct SimplexWrapper {
+  SimplexWrapper(double* storage,int p)
     : storage_(storage),
+      N_(0),
       row_(new double*[p+1]),
       incr_(new int[p+1]), // Arc = row[p]+incr[c]
       p_(p)
-  {
+  {}
+  void set(int *N) {
+    N_=N;
     incr_[0]=0;
     row_[0]=storage_;
     for (int r=0; r<p_; ++r) {
@@ -30,9 +32,10 @@ struct PyramidWrapper {
       row_[r+1]=row_[r]+incr_[r+1];
     }
   }
-  PyramidWrapper(PyramidWrapper& pw,
+  SimplexWrapper(SimplexWrapper& pw,
                  int* N)
     : storage_(pw.storage_),
+      N_(N),
       row_(new double*[pw.p_+1]),      // are Arr from pw
       incr_(new int[pw.p_+1]),     // increments are new
       p_(pw.p_)
@@ -44,19 +47,49 @@ struct PyramidWrapper {
       row_[r+1]=pw(r+1,r+1);
     }
   }
-  ~PyramidWrapper()
+  ~SimplexWrapper()
   {
     delete [] incr_;
     delete [] row_;
   }
+  int p() {
+    return p_;
+  }
   double* operator()(int r,int c) {
-    assert(r<=p);
+    assert(r<=p_);
     assert(c<=r);
     return row_[r]+incr_[c];
   }
+  void fill(double z) {
+    for (int r=1; r<=p_; ++r) {
+      double *pos0=(*this)(r,0);
+      double *pos=pos0;
+      for (int c=0; c<r; ++c) {
+        for (int i=0; i<N_[c]; ++i,++pos0,++pos) {
+          (*pos) = z*(*pos0);
+        }
+      }
+    }
+  }
 private:
   double* storage_;
+  int *N_;
   int *incr_;
   double **row_;  // starting point for Ai0
   int p_;
+};
+
+template <int dim>
+struct Simplex {
+  static void eval(int p,double *x,double* ret) {
+    SimplexWrapper myMat(ret,p);
+    Simplex<dim>::eval(x,myMat);
+  }
+  static void eval(double *x,SimplexWrapper& mat) {
+    int N[mat.p()];
+    // compute sizes N[k] = |Phi_k|
+    SimplexWrapper myMat(mat,N);
+    Simplex<dim-1>::eval(x,myMat);
+    myMat.fill(x[dim]);
+  }
 };

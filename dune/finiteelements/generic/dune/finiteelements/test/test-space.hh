@@ -44,7 +44,7 @@ struct Function
       else
         return (1.+sin( x.two_norm()*2.*M_PI ))*0.2;
     else
-      return exp( -x.two_norm() );
+      return exp( -x.two_norm2() );
   }
   unsigned int problem_;
 };

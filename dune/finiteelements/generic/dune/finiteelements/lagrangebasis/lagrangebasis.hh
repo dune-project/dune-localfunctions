@@ -7,8 +7,9 @@
 #include <dune/alglib/multiprecision.hh>
 #include <dune/alglib/matrix.hh>
 
-#include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
 #include <dune/finiteelements/lagrangebasis/interpolation.hh>
+#include <dune/finiteelements/multiindex.hh>
+#include <dune/finiteelements/monomialbasis.hh>
 #include <dune/finiteelements/basisprovider.hh>
 #include <dune/finiteelements/basisprint.hh>
 #include <dune/finiteelements/polynomialbasis.hh>
@@ -19,14 +20,15 @@ namespace Dune
   // LagrangeMatrix
   // --------------
 
-  template< class Topology, class scalar_t >
+  template< class Topology, class scalar_t,
+      class LPCreator >
   struct LagrangeMatrix
   {
     static const unsigned int dimension = Topology::dimension;
 
+    typedef LPCreator LagrangePointsCreator;
     typedef Dune::AlgLib::Matrix< scalar_t > mat_t;
-    typedef Dune::LagrangePointsCreator< scalar_t, dimension > LagrangePointsCreator;
-    // typedef Dune::LabattoPointsCreator< scalar_t, dimension > LagrangePointsCreator;
+    // typedef Dune::LagrangePointsCreator< scalar_t, dimension > LagrangePointsCreator;
     typedef LocalLagrangeInterpolationCreator< LagrangePointsCreator > LocalInterpolationCreator;
     typedef typename LocalInterpolationCreator::LocalInterpolation LocalInterpolation;
 
@@ -84,7 +86,9 @@ namespace Dune
   // LagrangeBasisCreator
   // --------------------
 
-  template< unsigned int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
+  template< unsigned int dim,
+      template <class Field,unsigned int> class LPCreator,
+      class SF, class CF = typename ComputeField< SF, 512 >::Type >
   struct LagrangeBasisCreator
   {
     static const unsigned int dimension = dim;
@@ -102,13 +106,27 @@ namespace Dune
     typedef AlgLib::MultiPrecision< Precision< CF >::value > ComputeField;
     typedef PolynomialBasisWithMatrix< Evaluator, SparseCoeffMatrix< StorageField, 1 > > Basis;
 
+    typedef LPCreator<ComputeField,dim> LPointsCreator;
+
     template< class Topology >
     static const Basis &basis ( const Key &order )
     {
       const MonomialBasis &monomialBasis = MonomialBasisProvider::template basis< Topology >( order );
       Basis *basis = new Basis( monomialBasis );
-      LagrangeMatrix< Topology, ComputeField > matrix( order );
+      LagrangeMatrix< Topology, ComputeField, LPointsCreator> matrix( order );
       basis->fill( matrix );
+      {
+        typedef MultiIndex< dimension > MIField;
+        typedef VirtualMonomialBasis<dim,MIField> MBasisMI;
+        typedef PolynomialBasisWithMatrix<StandardEvaluator<MBasisMI>,SparseCoeffMatrix<StorageField,dimension> > BasisMI;
+        const MBasisMI &_mBasisMI = Dune::MonomialBasisProvider<dimension,MIField>::template basis<Topology>(order);
+        BasisMI basisMI(_mBasisMI);
+        basisMI.fill(matrix);
+        std::stringstream name;
+        name << "rt_" << Topology::name() << "_p" << order;
+        std::ofstream out(name.str().c_str());
+        basisPrint<0>(out,basisMI);
+      }
       return *basis;
     }
 
@@ -119,14 +137,6 @@ namespace Dune
   };
 
 
-
-  // LagrangeBasisProvider
-  // ---------------------
-
-  template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
-  struct LagrangeBasisProvider
-    : public BasisProvider< LagrangeBasisCreator< dim, SF, CF > >
-  {};
 
 }
 

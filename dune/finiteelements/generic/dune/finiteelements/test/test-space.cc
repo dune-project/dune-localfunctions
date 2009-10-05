@@ -14,6 +14,11 @@ std::string name("dglagrange");
 typedef Dune::LagrangeSpace< GridView, double > Space;
 std::string name("lagrange");
 #endif
+#ifdef LOBATTO
+#include <dune/finiteelements/lagrangebasis/lobattospace.hh>
+typedef Dune::LobattoLagrangeSpace< GridView, double > Space;
+std::string name("lobatto");
+#endif
 #ifdef ONB
 #include <dune/finiteelements/orthonormalbasis/dgspace.hh>
 typedef Dune::OrthonormalDGSpace< GridView, double > Space;

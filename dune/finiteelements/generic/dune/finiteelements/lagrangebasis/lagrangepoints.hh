@@ -6,11 +6,14 @@
 #include <vector>
 
 #include <dune/common/fvector.hh>
+#include <dune/common/field.hh>
 
 #include <dune/grid/genericgeometry/topologytypes.hh>
 #include <dune/grid/genericgeometry/subtopologies.hh>
 
 #include <dune/finiteelements/common/localcoefficients.hh>
+#include <dune/finiteelements/basisprovider.hh>
+#include <dune/finiteelements/lagrangebasis.hh>
 
 namespace Dune
 {
@@ -392,6 +395,16 @@ namespace Dune
     GenericGeometry::ForLoop< Topology< T >::template Init, 0, dimension >::apply( order, p );
     return *lagrangePoints;
   }
+
+  // LagrangeBasisProvider
+  // ---------------------
+
+  template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
+  struct LagrangeBasisProvider
+    : public BasisProvider<
+          LagrangeBasisCreator< dim, LagrangePointsCreator, SF, CF > >
+  {};
+
 
 }
 

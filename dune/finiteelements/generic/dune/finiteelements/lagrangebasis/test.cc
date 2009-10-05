@@ -1,6 +1,8 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
 #include <dune/finiteelements/lagrangebasis.hh>
+#include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
+#include <dune/finiteelements/lagrangebasis/labattopoints.hh>
 #include <dune/finiteelements/quadrature/genericquadrature.hh>
 #include <dune/finiteelements/p13d/p13dlocalbasis.hh>
 #include <dune/finiteelements/p23d/p23dlocalbasis.hh>
@@ -49,12 +51,12 @@ struct SpecialBasis : public Pk3DLocalBasis<double,double,1>
 };
 
 template <class Topology>
-bool test(unsigned int order) {
+bool test(unsigned int order, bool verbose = false) {
 
-  // typedef AlgLib::MultiPrecision<128> StorageField;
-  typedef double StorageField;
-  // typedef AlgLib::MultiPrecision<256> ComputeField;
-  typedef double ComputeField;
+  typedef AlgLib::MultiPrecision<128> StorageField;
+  // typedef double StorageField;
+  typedef AlgLib::MultiPrecision<256> ComputeField;
+  // typedef double ComputeField;
 
   bool ret = true;
 
@@ -62,22 +64,25 @@ bool test(unsigned int order) {
   {
     std::cout << "# Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
 
-    typedef Dune::LagrangePoints< StorageField, Topology::dimension > LagrangePoints;
-    typedef Dune::LagrangePointsCreator< StorageField, Topology::dimension > LagrangePointsCreator;
-    // typedef Dune::LabattoPointsCreator< StorageField, Topology::dimension > LagrangePointsCreator;
+    typedef Dune::LagrangePoints< double, Topology::dimension > LagrangePoints;
+
+    // typedef Dune::LagrangePointsCreator< StorageField, Topology::dimension > LagrangePointsCreator;
+    typedef Dune::LobattoPointsCreator< double, Topology::dimension > LagrangePointsCreator;
     const LagrangePoints &points = LagrangePointsCreator::template lagrangePoints< Topology >( o );
 
 #if USE_GENERIC
-    typedef LagrangeBasisProvider<Topology::dimension,StorageField,ComputeField> BasisProvider;
+    // typedef LagrangeBasisProvider<Topology::dimension,StorageField,ComputeField> BasisProvider;
+    typedef LobattoBasisProvider<Topology::dimension,StorageField,ComputeField> BasisProvider;
     const typename BasisProvider::Basis &basis = BasisProvider::basis(Topology::id,o);
     std::vector< Dune::FieldVector< double, 1 > > y( basis.size() );
     for (unsigned int count = 0; count < iterations; ++count)
     {
       for( unsigned int index = 0; index < points.size(); ++index )
       {
-        // std::cout << index << "   " << points[ index ].point() << " "
-        //                             << points[ index ].localKey()
-        //           << std::endl;
+        if (verbose)
+          std::cout << index << "   " << points[ index ].point() << " "
+                    << points[ index ].localKey()
+                    << std::endl;
         basis.evaluate( points[ index ].point(), y );
         bool first = true;
         if (iterations==1)
@@ -86,7 +91,7 @@ bool test(unsigned int order) {
           {
             if( fabs( y[ i ] - double( i == index ) ) > 1e-10 )
             {
-              if (first) {
+              if (first && verbose) {
                 std::cout << "ERROR: "
                           << index << " -> "
                           << "x = " << points[ index ].point()
@@ -95,7 +100,10 @@ bool test(unsigned int order) {
                           << "index = " << points[ index ].localKey().index() << "):" << std::endl;
                 first = false;
               }
-              std::cout << "         y[ " << i << " ] = " << y[ i ] << std::endl;
+              if (verbose)
+                std::cout << "         y[ " << i << " ] = " << y[ i ] << " "
+                          << "         error : " << fabs( y[ i ] - double( i == index ) )
+                          << std::endl;
               ret = false;
             }
           }
@@ -134,7 +142,8 @@ bool test(unsigned int order) {
       }
     }
 #endif
-    std::cout << std::endl << std::endl << std::endl;
+    if (verbose)
+      std::cout << std::endl << std::endl << std::endl;
   }
   if (!ret) {
     std::cout << "   FAILED !" << std::endl;
@@ -151,7 +160,7 @@ int main ( int argc, char **argv )
 
   const unsigned int order = atoi( argv[ 1 ] );
 #ifdef TOPOLOGY
-  return (test<TOPOLOGY>(order) ? 0 : 1 );
+  return (test<TOPOLOGY>(order,true) ? 0 : 1 );
 #else
   bool tests = true;
   tests &= test<Prism<Point> > (order);
@@ -164,8 +173,8 @@ int main ( int argc, char **argv )
   tests &= test<Prism<Pyramid<Pyramid<Point> > > >(order);
   tests &= test<Pyramid<Pyramid<Pyramid<Point> > > >(order);
 
-  tests &= test<Pyramid<Prism<Prism<Point> > > >(order);
-  // std::cout << "NOT CHECKING PYRAMID!" << std::endl;
+  // tests &= test<Pyramid<Prism<Prism<Point> > > >(order);
+  std::cout << "NOT CHECKING PYRAMID!" << std::endl;
 
   tests &= test<Prism<Prism<Prism<Prism<Point> > > > >(order);
   tests &= test<Pyramid<Pyramid<Pyramid<Pyramid<Point> > > > >(order);

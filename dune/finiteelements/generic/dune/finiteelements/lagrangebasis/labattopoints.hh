@@ -1,37 +1,41 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
+#ifndef DUNE_LOBATTOBASIS_HH
+#define DUNE_LOBATTOBASIS_HH
+
+#include <fstream>
+#include <dune/alglib/multiprecision.hh>
+#include <dune/alglib/matrix.hh>
+#include <dune/common/field.hh>
+
+#include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
+#include <dune/finiteelements/lagrangebasis/interpolation.hh>
+#include <dune/finiteelements/basisprovider.hh>
+#include <dune/finiteelements/basisprint.hh>
+#include <dune/finiteelements/polynomialbasis.hh>
+
 #include <dune/grid/genericgeometry/referencemappings.hh>
+#include <dune/finiteelements/quadrature/lobattoquadrature.hh>
+#include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
+
 namespace Dune {
   template <class Field>
-  struct LabattoPoints1D
+  struct LobattoPoints
   {
-    LabattoPoints1D(unsigned int order)
+    LobattoPoints(unsigned int order) : points_(0)
     {
+      if (order<2)
+        return;
       points_.resize(order-1);
-      for (unsigned int i=1; i<order; ++i)
-        points_[i-1] = Field(i)/Field(order);
-      if (order==3) {
-        points_[0] = 0.1;
-        points_[1] = 0.9;
+      typedef AlgLib::MultiPrecision< Precision< Field >::value > MPField;
+      GenericGeometry::LobattoPoints<MPField> lobatto(order+1);
+      for (unsigned int i=1; i<order; ++i) {
+        points_[i-1] = field_cast<Field>(lobatto.point(i));
       }
-      if (order==4) {
-        points_[0] = 0.15;
-        points_[1] = 0.5;
-        points_[2] = 0.85;
-      }
-      if (order==5) {
-        points_[0] = 0.1;
-        points_[1] = 0.3;
-        points_[2] = 0.7;
-        points_[3] = 0.9;
-      }
-      if (order==6) {
-        points_[0] = 0.09;
-        points_[1] = 0.28;
-        points_[2] = 0.5;
-        points_[3] = 0.72;
-        points_[4] = 0.91;
-      }
+      /*
+         for (unsigned int i=1;i<order;++i)
+         points_[i-1] = Field(i)/Field(order);
+       */
     }
     const unsigned int size()
     {
@@ -49,10 +53,10 @@ namespace Dune {
   };
 
   template <class Field,class Topology>
-  struct LabattoInnerPoints;
+  struct LobattoInnerPoints;
 
   template <class Field>
-  struct LabattoInnerPoints<Field,GenericGeometry::Point>
+  struct LobattoInnerPoints<Field,GenericGeometry::Point>
   {
     static const unsigned int dimension = 0;
     static unsigned int size(const unsigned int order)
@@ -69,6 +73,10 @@ namespace Dune {
     {
       const unsigned int order = points1D.size()+1;
       unsigned int i = order+1-iup;
+      if (i-2>=points1D.size())
+      {
+        return startPos;
+      }
       for ( unsigned int d=0; d<dimStart; ++d )
       {
         points[startPos].point_[d] -= points1D[i-2];
@@ -80,20 +88,20 @@ namespace Dune {
     static void setup(const std::vector<Field> &points1D,
                       LagrangePoint< Field, dim > *points )
     {
-      points->point_[0] = 0;
+      points->point_[0] = Zero<Field>();
     }
   };
   template <class Field,class Base>
-  struct LabattoInnerPoints<Field,GenericGeometry::Pyramid<Base> >
+  struct LobattoInnerPoints<Field,GenericGeometry::Pyramid<Base> >
   {
-    typedef LabattoInnerPoints<Field,Base> LabattoBase;
+    typedef LobattoInnerPoints<Field,Base> LobattoBase;
     static const unsigned int dimension = Base::dimension+1;
     static unsigned int size(const unsigned int order)
     {
       if (order<=dimension) return 0;
       unsigned int size=0;
-      for (unsigned int o=1; o<=order-dimension; ++o)
-        size += LabattoBase::size(o+1);
+      for (unsigned int o=0; o<order-dimension; ++o)
+        size += LobattoBase::size(o+dimension);
       return size;
     }
     template <unsigned int dim>
@@ -105,10 +113,10 @@ namespace Dune {
       LagrangePoint< Field, dim > *points )
     {
       const unsigned int order = points1D.size()+1;
-      unsigned int endPos;
+      unsigned int endPos = startPos;
       for (unsigned int i=2; i<=order-iup; ++i)
       {
-        endPos = LabattoBase::template setupSimplex<dim>(iup+i-1,dimStart,startPos,points1D,points);
+        endPos = LobattoBase::template setupSimplex<dim>(iup+i-1,dimStart,startPos,points1D,points);
         for (unsigned int j=startPos; j<endPos; ++j)
         {
           for (unsigned int d=0; d<dimStart; ++d)
@@ -131,14 +139,14 @@ namespace Dune {
       unsigned int startPos=0,endPos=0;
       for (unsigned int i=2; i<=order; ++i)
       {
-        endPos = LabattoBase::template setupSimplex<dim>(i-1,dimension,startPos,points1D,points);
+        endPos = LobattoBase::template setupSimplex<dim>(i-1,dimension,startPos,points1D,points);
 
         for (unsigned int j=startPos; j<endPos; ++j)
         {
           for (unsigned int d=0; d<dimension; ++d)
           {
             if ( d==0 )
-              points[j].point_[d] += 1.+dimension*points1D[i-2];
+              points[j].point_[d] += 1.+int(dimension)*points1D[i-2];
             else
               points[j].point_[d] += 1.-points1D[i-2];
             points[j].point_[d] /= (dimension+1);
@@ -149,13 +157,13 @@ namespace Dune {
     }
   };
   template <class Field,class Base>
-  struct LabattoInnerPoints<Field,GenericGeometry::Prism<Base> >
+  struct LobattoInnerPoints<Field,GenericGeometry::Prism<Base> >
   {
-    typedef LabattoInnerPoints<Field,Base> LabattoBase;
+    typedef LobattoInnerPoints<Field,Base> LobattoBase;
     static const unsigned int dimension = Base::dimension+1;
     static unsigned int size(const unsigned int order)
     {
-      return LabattoBase::size(order)*(order-1);
+      return LobattoBase::size(order)*(order-1);
     }
     template <unsigned int dim>
     static unsigned int setupSimplex(
@@ -165,7 +173,24 @@ namespace Dune {
       const std::vector<Field> &points1D,
       LagrangePoint< Field, dim > *points )
     {
-      abort();
+      const unsigned int order = points1D.size()+1;
+      unsigned int endPos = startPos;
+      for (unsigned int i=2; i<=order-iup; ++i)
+      {
+        endPos = LobattoBase::template setupSimplex<dim>(iup+i-1,dimStart,startPos,points1D,points);
+        for (unsigned int j=startPos; j<endPos; ++j)
+        {
+          for (unsigned int d=0; d<dimStart; ++d)
+          {
+            if ( d==dimStart-dimension )
+              points[j].point_[d] += dimStart*points1D[i-2];
+            else
+              points[j].point_[d] -= points1D[i-2];
+          }
+        }
+        startPos = endPos;
+      }
+      return endPos;
     }
     template <unsigned int dim>
     static void setup(const std::vector<Field> &points1D,
@@ -174,9 +199,9 @@ namespace Dune {
       const unsigned int order = points1D.size()+1;
       assert(dim>=dimension);
       assert(points1D.size()==order-1);
-      LabattoBase::template setup<dim>(points1D,points);
-      const unsigned int baseSize = LabattoBase::size(order);
-      for (unsigned int q=0; q<order-1; q++)
+      LobattoBase::template setup<dim>(points1D,points);
+      const unsigned int baseSize = LobattoBase::size(order);
+      for (unsigned int q=0; q<points1D.size(); q++)
       {
         for (unsigned int i=0; i<baseSize; ++i)
         {
@@ -189,8 +214,8 @@ namespace Dune {
     }
   };
 
-  template <class Field,int dim>
-  struct LabattoPointsCreator
+  template <class Field,unsigned int dim>
+  struct LobattoPointsCreator
   {
   public:
     static const unsigned int dimension = dim;
@@ -208,6 +233,7 @@ namespace Dune {
       {
         static const unsigned int codim = dimension-pdim;
         static void apply(const unsigned int order,
+                          const std::vector<Field> &points1D,
                           LagrangePoints &points)
         {
           static const unsigned int topologyId = Topology::id;
@@ -216,7 +242,7 @@ namespace Dune {
           for (unsigned int i =  0; i < size; ++i)
           {
             const unsigned int subTopologyId = RefElem::get(topologyId).topologyId(codim,i);
-            GenericGeometry::IfTopology<Setup<Topology>::template Init,dimension-codim>::apply(subTopologyId,order,i,points);
+            GenericGeometry::IfTopology<Setup<Topology>::template Init,dimension-codim>::apply(subTopologyId,order,i,points1D,points);
           }
         }
       };
@@ -227,21 +253,26 @@ namespace Dune {
         typedef GenericGeometry::ReferenceMappings< Field, dimension > RefMappings;
         typedef typename RefMappings::Container RefMappingsContainer;
         typedef typename RefMappingsContainer::template Codim< codimension >::Mapping Mapping;
-        typedef LabattoInnerPoints<Field,SubTopology> InnerPoints;
+        typedef LobattoInnerPoints<Field,SubTopology> InnerPoints;
         static void apply(const unsigned int order,
                           unsigned int subEntity,
+                          const std::vector<Field> &points1D,
                           LagrangePoints &points)
         {
           unsigned int oldSize = points.size();
           unsigned int size = InnerPoints::size(order);
+          if (size==0)
+            return;
           points.resize(oldSize+size);
+
           /*
              std::cout << Topology::name() << " " << SubTopology::name() << " : "
                     << " ( " << codimension <<  " , " << subEntity << " ) "
                     << oldSize << " " << size << std::endl;
            */
+
           LagrangePoint<Field,dimension> *p = &(points.points_[oldSize]);
-          InnerPoints::template setup<dim>(LabattoPoints1D<Field>(order).points_,p);
+          InnerPoints::template setup<dim>(points1D,p);
 
           const RefMappingsContainer &refMappings = RefMappings::container( Topology::id );
           const Mapping &mapping = refMappings.template mapping< codimension >( subEntity );
@@ -255,7 +286,8 @@ namespace Dune {
                       << mapping.global( reinterpret_cast< const Dune::FieldVector<Field,dimension-codimension>& >(p->point_) )
                       << std::endl;
              */
-            p->point_ = mapping.global( reinterpret_cast< const Dune::FieldVector<Field,dimension-codimension>& >(p->point_) );
+            if (codimension>0)
+              p->point_ = mapping.global( reinterpret_cast< const Dune::FieldVector<Field,dimension-codimension>& >(p->point_) );
             p->localKey_ = LocalKey( subEntity, codimension, nr++ );
           }
         }
@@ -266,7 +298,8 @@ namespace Dune {
     static const LagrangePoints &lagrangePoints ( const Key &order )
     {
       LagrangePoints *lagrangePoints = new LagrangePoints( order, 0 );
-      GenericGeometry::ForLoop<Setup<Topology>::template InitCodim,0,dimension>::apply(order,*lagrangePoints);
+      LobattoPoints<Field> points1D(order);
+      GenericGeometry::ForLoop<Setup<Topology>::template InitCodim,0,dimension>::apply(order,points1D.points_,*lagrangePoints);
       return *lagrangePoints;
     }
 
@@ -281,4 +314,15 @@ namespace Dune {
       delete &lagrangePoints;
     }
   };
+
+  //
+  // LobattoBasisProvider
+  // ---------------------
+
+  template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
+  struct LobattoBasisProvider
+    : public BasisProvider<
+          LagrangeBasisCreator< dim, LobattoPointsCreator, SF, CF > >
+  {};
 }
+#endif // DUNE_LOBATTOBASIS_HH

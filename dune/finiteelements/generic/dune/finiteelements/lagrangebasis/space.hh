@@ -3,6 +3,8 @@
 #ifndef DUNE_LAGRANGEBASIS_SPACE_HH
 #define DUNE_LAGRANGEBASIS_SPACE_HH
 
+#include <dune/finiteelements/lagrangebasis/interpolation.hh>
+#include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
 #include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
 #include <dune/finiteelements/global/dofmapper.hh>
 #include <dune/finiteelements/global/basisproxy.hh>

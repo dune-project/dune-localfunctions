@@ -3,8 +3,6 @@
 #ifndef DUNE_LAGRANGEBASIS_INTERPOLATION_HH
 #define DUNE_LAGRANGEBASIS_INTERPOLATION_HH
 
-#include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
-#include <dune/finiteelements/lagrangebasis/labattopoints.hh>
 
 namespace Dune
 {
@@ -15,22 +13,22 @@ namespace Dune
   template< class Topology, class F >
   class MonomialBasis;
 
-
+  template< class LPCreator >
+  struct LocalLagrangeInterpolationCreator;
 
   // LocalLagrangeInterpolation
   // --------------------------
 
-  template< class LP >
+  template< class LPCreator >
   class LocalLagrangeInterpolation
   {
-    typedef LocalLagrangeInterpolation< LP > This;
+    typedef LocalLagrangeInterpolation< LPCreator > This;
 
-    template< class LagrangePointsCreator >
-    // template< class LabattoPointsCreator >
-    friend class LocalLagrangeInterpolationCreator;
+    // template< class LPCreator >
+    friend class LocalLagrangeInterpolationCreator< LPCreator >;
 
   public:
-    typedef LP LagrangePoints;
+    typedef typename LPCreator::LagrangePoints LagrangePoints;
     typedef typename LagrangePoints::Field Field;
 
     static const unsigned int dimension = LagrangePoints::dimension;
@@ -93,23 +91,20 @@ namespace Dune
   // LocalLagrangeInterpolationCreator
   // ---------------------------------
 
-  template< class LagrangePointsCreator >
-  // template< class LabattoPointsCreator >
+  template< class LPCreator >
   struct LocalLagrangeInterpolationCreator
   {
+    typedef LPCreator LagrangePointsCreator;
     typedef typename LagrangePointsCreator::Key Key;
     typedef typename LagrangePointsCreator::LagrangePoints LagrangePoints;
-    // typedef typename LabattoPointsCreator::Key Key;
-    // typedef typename LabattoPointsCreator::LagrangePoints LagrangePoints;
 
-    typedef LocalLagrangeInterpolation< LagrangePoints > LocalInterpolation;
+    typedef LocalLagrangeInterpolation< LagrangePointsCreator > LocalInterpolation;
 
     template< class Topology >
     static const LocalInterpolation &localInterpolation ( const Key &key )
     {
       const LagrangePoints &lagrangePoints
         = LagrangePointsCreator::template lagrangePoints< Topology >( key );
-      // = LabattoPointsCreator::template lagrangePoints< Topology >( key );
       return *(new LocalInterpolation( lagrangePoints ));
     }
 
@@ -118,7 +113,6 @@ namespace Dune
       const LagrangePoints &lagrangePoints = localInterpolation.lagrangePoints();
       delete &localInterpolation;
       LagrangePointsCreator::release( lagrangePoints );
-      // LabattoPointsCreator::release( lagrangePoints );
     }
   };
 

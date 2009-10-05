@@ -47,12 +47,13 @@ namespace Dune
       return basis().size();
     }
 
-    void evaluate ( const FieldVector<double,dimDomain> &x, std::vector< RangeVector > &values ) const
+    template <class Fx>
+    void evaluate ( const FieldVector<Fx,dimDomain> &x, std::vector< RangeVector > &values ) const
     {
       return evaluate( field_cast<Field>(x),values );
     }
-    template< class LocalDofVector >
-    void evaluate ( const FieldVector<double,dimDomain>&x, const LocalDofVector &localDofs, RangeVector &value ) const
+    template< class Fx, class LocalDofVector >
+    void evaluate ( const FieldVector<Fx,dimDomain>&x, const LocalDofVector &localDofs, RangeVector &value ) const
     {
       return evaluate( field_cast<Field>(x),localDofs,value );
     }

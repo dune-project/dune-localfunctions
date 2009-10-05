@@ -4,10 +4,9 @@
 #ifndef DUNE_PK_LOCALFINITEELEMENT_HH
 #define DUNE_PK_LOCALFINITEELEMENT_HH
 
-#include "p11d.hh"
+#include "p1.hh"
 #include "pk2d.hh"
 #include "pk3d.hh"
-
 
 namespace Dune
 {
@@ -35,7 +34,7 @@ namespace Dune
    */
   template<class D, class R>
   class PkLocalFiniteElement<D, R, 1, 1>
-    : public P11DLocalFiniteElement<D, R>
+    : public P1LocalFiniteElement<D, R, 1>
   {
   public:
     PkLocalFiniteElement()

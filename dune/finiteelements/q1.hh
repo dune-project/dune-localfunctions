@@ -3,7 +3,7 @@
 #ifndef DUNE_Q1LOCALFINITEELEMENT_HH
 #define DUNE_Q1LOCALFINITEELEMENT_HH
 
-#include "p11d.hh"
+#include "p1.hh"
 #include "q12d.hh"
 #include "q13d.hh"
 
@@ -19,7 +19,7 @@ namespace Dune
    */
   template<class D, class R>
   class Q1LocalFiniteElement<D, R, 1>
-    : public P11DLocalFiniteElement<D, R>
+    : public P1LocalFiniteElement<D, R, 1>
   {};
 
   /** \todo Please doc me !

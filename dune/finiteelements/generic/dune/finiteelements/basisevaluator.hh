@@ -101,7 +101,8 @@ namespace Dune
     {
       typedef typename Tensor::Block Block;
       typedef typename Tensor::Range Range;
-      static const int blockSize = Tensor::blockSize;
+      // static const int blockSize = Tensor::blockSize;
+      enum {blockSize = Tensor::blockSize};
       typedef typename Container::iterator CIter;
       BaseIterator(Container &container)
         : pos_(container.begin()), end_(container.end())
@@ -312,8 +313,8 @@ namespace Dune
     }
     VecEvaluator(const VecEvaluator&);
     Container vecContainer_;
-    unsigned int size_;
     const Fill &fill_;
+    unsigned int size_;
   };
 
   template <int dimR>
@@ -332,7 +333,7 @@ namespace Dune
         const typename Iter::Block &block = iter.block();
         for (int r1=0; r1<dimR; ++r1)
         {
-          for (int b=0; b<iter.blockSize; ++b)
+          for (int b=0; b<Iter::blockSize; ++b)
           {
             for (int r2=0; r2<dimR; ++r2)
             {

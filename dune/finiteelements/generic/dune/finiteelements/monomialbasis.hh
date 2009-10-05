@@ -571,6 +571,10 @@ namespace Dune
       size_.computeSizes( order );
       return size_.numBaseFunctions_;
     }
+    const unsigned int *sizes ( ) const
+    {
+      return sizes(order_);
+    }
     const unsigned int size ( ) const
     {
       return sizes( order_ )[ order_ ];

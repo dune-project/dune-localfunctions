@@ -1,7 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_LAGRANGEBASIS_HH
-#define DUNE_LAGRANGEBASIS_HH
+#ifndef DUNE_RAVIARTTHOMASBASIS_HH
+#define DUNE_RAVIARTTHOMASBASIS_HH
 #include <fstream>
 #include <dune/alglib/multiprecision.hh>
 #include <dune/alglib/matrix.hh>
@@ -23,15 +23,12 @@ namespace Dune
     template <class Domain,class Iter,class Field>
     void operator()(const Domain &x, Iter iter,std::vector<Field> &vecContainer) const
     {
+      unsigned int order = basis_.order();
       typedef std::vector<Field> Container;
       typename Container::iterator vecIter = vecContainer.begin();
       unsigned int notHomogen = 0;
-      if (basis_.order()>0)
-        notHomogen = basis_.sizes(basis_.order())[basis_.order()-1];
-      std::cout << " Order: " << basis_.order()
-                << " notHomo: " << notHomogen
-                << " Homo:    " << basis_.size()-notHomogen
-                << std::endl;
+      if (order>0)
+        notHomogen = basis_.sizes()[order-1];
       for (unsigned int baseFunc = 0 ;
            baseFunc<notHomogen; ++iter, ++baseFunc)
       {
@@ -89,9 +86,10 @@ namespace Dune
   private:
     unsigned int totalSize(const B &basis)
     {
+      unsigned int order = basis.order();
       unsigned int notHomogen = 0;
       if (basis.order()>0)
-        notHomogen = basis.sizes(basis.order())[basis.order()-1];
+        notHomogen = basis.sizes()[order-1];
       unsigned int homogen = basis.size()-notHomogen;
       return notHomogen*dimension+homogen*(dimension+1);
     }
@@ -133,9 +131,8 @@ namespace Dune
           fillBnd( row, it->localKey(), eval.evaluate(it->point()),
                    coefficients );
         else
-          for (int d=0; d<dimension; ++d)
-            fillInterior( row, it->localKey(), eval.evaluate(it->point()),
-                          coefficients );
+          fillInterior( row, it->localKey(), eval.evaluate(it->point()),
+                        coefficients );
       }
     }
     template <class LocalKey, class Iterator,class Matrix>
@@ -146,7 +143,7 @@ namespace Dune
       unsigned int col = 0;
       for ( ; !iter.done() ; ++iter,++col) {
         matrix(row,col) = 0.;
-        for (int d=0; d<dimension; ++d)
+        for (unsigned int d=0; d<dimension; ++d)
           matrix(row,col) += iter.block()[d]*normal[d];
       }
       ++row;
@@ -157,7 +154,7 @@ namespace Dune
     {
       unsigned int col = 0;
       for ( ; !iter.done() ; ++iter,++col)
-        for (int d=0; d<dimension; ++d)
+        for (unsigned int d=0; d<dimension; ++d)
           matrix(row+d,col) = iter.block()[d];
       row+=dimension;
     }
@@ -168,21 +165,22 @@ namespace Dune
   struct RaviartThomasMatrix {
     enum {dim = Topology::dimension};
     typedef Dune::AlgLib::Matrix< scalar_t > mat_t;
-    typedef StandardMonomialBasis<dim,scalar_t> MBasis;
-    RaviartThomasMatrix(int order) : basis_(order), order_(order)
+    typedef MonomialBasis<Topology,scalar_t> MBasis;
+    RaviartThomasMatrix(unsigned int order) : order_(order)
     {
-      typedef Dune::MonomialBasis< Topology, scalar_t > MBasis;
       MBasis basis(order);
       RaviartThomasEvaluator< MBasis > eval(basis);
-      RaviartThomasInterpolation< Topology, scalar_t  > interpolation(order);
+      RaviartThomasInterpolation< Topology, scalar_t  > interpolation(order_);
       interpolation.interpolate( eval, matrix_ );
       matrix_.invert();
     }
     int colSize(int row) const {
-      return (dim+1)*basis_.size()-basis_.sizes(order_)[order_-1];
+      return matrix_.cols();
+      // return (dim+1)*basis_.size()-basis_.sizes(order_)[order_-1];
     }
     int rowSize() const {
-      return (dim+1)*basis_.size()-basis_.sizes(order_)[order_-1];
+      return matrix_.rows();
+      // return (dim+1)*basis_.size()-basis_.sizes(order_)[order_-1];
     }
     const scalar_t operator() ( int r, int c ) const
     {
@@ -190,7 +188,6 @@ namespace Dune
       // return ( (r==c)? scalar_t(1):scalar_t(0) );
     }
     void print(std::ostream& out,int N = rowSize()) const {}
-    MBasis basis_;
     int order_;
     mat_t matrix_;
   };
@@ -198,12 +195,13 @@ namespace Dune
   template< int dim, class SF, class CF >
   struct RaviartThomasBasisCreator
   {
-    typedef StandardMonomialBasis<dim,SF> MBasis;
+    typedef VirtualMonomialBasis<dim,SF> MBasis;
     typedef SF StorageField;
     typedef AlgLib::MultiPrecision< Precision<CF>::value > ComputeField;
     static const int dimension = dim;
     typedef PolynomialBasisWithMatrix<RaviartThomasEvaluator<MBasis>,SparseCoeffMatrix<StorageField> > Basis;
     typedef unsigned int Key;
+    typedef typename GenericGeometry::SimplexTopology< dim >::type SimplexTopology;
 
     template <class Topology>
     struct Maker
@@ -212,7 +210,7 @@ namespace Dune
       {
         // bool RTBasis_only_for_implemented_for_simplex = GenericGeometry::IsSimplex<Topology>::value ;
         // assert(RTBasis_only_for_implemented_for_simplex);
-        static MBasis _mBasis(order);
+        const MBasis &_mBasis = MonomialBasisProvider<dimension,StorageField>::template basis<SimplexTopology>(order);
         basis = new Basis(_mBasis);
         RaviartThomasMatrix<Topology,ComputeField> matrix(order);
         basis->fill(matrix);
@@ -228,4 +226,4 @@ namespace Dune
     : public BasisProvider<RaviartThomasBasisCreator<dim,SF,CF> >
   {};
 }
-#endif // DUNE_ORTHONORMALBASIS_HH
+#endif // DUNE_RAVIARTTHOMASBASIS_HH

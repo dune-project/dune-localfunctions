@@ -1,5 +1,11 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
+#ifndef DUNE_TENSOR_HH
+#define DUNE_TENSOR_HH
+
+#include <dune/common/fvector.hh>
+#include <dune/common/misc.hh>
+
 namespace Dune
 {
   template <class F,int dimD,unsigned int deriv>
@@ -106,6 +112,7 @@ namespace Dune
     typedef Derivative<F,dimD,dimR,deriv-1> Base;
     typedef Tensor<F,dimD,deriv> ThisTensor;
     static const unsigned int size = Base::size+ThisTensor::size*dimR;
+    typedef Dune::FieldVector<F,size> Block;
 
     This &operator=(const F& f)
     {
@@ -125,17 +132,26 @@ namespace Dune
       tensor<dorder>() = t;
       return *this;
     }
-    template <int totalSize>
-    This &operator=(const Dune::FieldVector<Dune::FieldVector<F,totalSize>,dimR> &t)
+    /*
+       This &operator=(const Dune::FieldVector<Dune::FieldVector<F,size>,dimR> &t)
+       {
+       reinterpret_cast<Dune::FieldVector<Dune::FieldVector<F,size>,dimR> &>(*this) = t;
+       return *this;
+       }
+     */
+    This &operator=(const Block &t)
     {
-      reinterpret_cast<Dune::FieldVector<Dune::FieldVector<F,totalSize>,dimR> &>(*this) = t;
+      block() = t;
       return *this;
     }
-    template <int totalSize>
-    This &operator=(const Dune::FieldVector<F,totalSize> &t)
+
+    Block &block()
     {
-      reinterpret_cast<Dune::FieldVector<F,totalSize> &>(*this) = t;
-      return *this;
+      return reinterpret_cast<Block&>(*this);
+    }
+    const Block &block() const
+    {
+      return reinterpret_cast<const Block&>(*this);
     }
 
     template <unsigned int dorder>
@@ -167,6 +183,8 @@ namespace Dune
     typedef Derivative<F,dimD,dimR,0> This;
     typedef Tensor<F,dimD,0> ThisTensor;
     static const unsigned int size = ThisTensor::size*dimR;
+    typedef Dune::FieldVector<F,size> Block;
+
     This &operator=(const F& f)
     {
       for (int r=0; r<dimR; ++r)
@@ -178,18 +196,29 @@ namespace Dune
       tensor_ = t;
       return *this;
     }
-    template <int totalSize>
-    This &operator=(const Dune::FieldVector<Dune::FieldVector<F,totalSize>,dimR> &t)
+    /*
+       template <int totalSize>
+       This &operator=(const Dune::FieldVector<Dune::FieldVector<F,totalSize>,dimR> &t)
+       {
+       reinterpret_cast<Dune::FieldVector<Dune::FieldVector<F,totalSize>,dimR> &>(*this) = t;
+       return *this;
+       }
+     */
+
+    This &operator=(const Block &t)
     {
-      reinterpret_cast<Dune::FieldVector<Dune::FieldVector<F,totalSize>,dimR> &>(*this) = t;
+      block() = t;
       return *this;
     }
-    template <int totalSize>
-    This &operator=(const Dune::FieldVector<F,totalSize> &t)
+    Block &block()
     {
-      reinterpret_cast<Dune::FieldVector<F,totalSize> &>(*this) = t;
-      return *this;
+      return reinterpret_cast<Block&>(*this);
     }
+    const Block &block() const
+    {
+      return reinterpret_cast<const Block&>(*this);
+    }
+
     ThisTensor &operator[](int r) {
       return tensor_[r];
     }
@@ -210,7 +239,7 @@ namespace Dune
   template <class F,int dimD,int dimR,unsigned int deriv>
   std::ostream &operator<< ( std::ostream &out, const Derivative< F,dimD,dimR,deriv > &d )
   {
-    out << Derivative< F,dimD,dimR,deriv-1 >(d);
+    out << static_cast<const Derivative< F,dimD,dimR,deriv-1 > &>(d);
     out << " ( ";
     out << d[0];
     for (int r=1; r<dimR; ++r)
@@ -245,3 +274,4 @@ namespace Dune
     return out;
   }
 }
+#endif // DUNE_TENSOR_HH

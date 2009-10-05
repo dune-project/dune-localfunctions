@@ -77,7 +77,7 @@ namespace Dune
         BasisVector itx = x;
         for( ; row != rows_[ r+1 ]; ++row, ++itx )
         {
-          Multiply::add(*row,itx.block(),val);
+          Multiply::add(*row,itx->block(),val);
         }
         field_cast(val,y[r]);
       }
@@ -178,7 +178,7 @@ namespace Dune
         for( ; row != rows_[ r+1 ]; ++row, ++skipIt )
         {
           itx += *skipIt;
-          Multiply::add(*row,itx.block(),val);
+          Multiply::add(*row,itx->block(),val);
         }
         field_cast(val,y[r]);
       }

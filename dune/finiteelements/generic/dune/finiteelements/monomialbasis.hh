@@ -842,13 +842,10 @@ namespace Dune
     typedef unsigned int Key;
 
     template <class Topology>
-    struct Maker
+    static void basis(unsigned int order,Basis* &basis)
     {
-      static void apply(unsigned int order,Basis* &basis)
-      {
-        basis = new VirtualMonomialBasisImpl<Topology,StorageField>(order);
-      }
-    };
+      basis = new VirtualMonomialBasisImpl<Topology,StorageField>(order);
+    }
   };
 
   template< int dim, class SF >

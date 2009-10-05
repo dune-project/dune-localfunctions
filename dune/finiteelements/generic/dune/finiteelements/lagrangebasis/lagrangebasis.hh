@@ -68,29 +68,26 @@ namespace Dune
     typedef unsigned int Key;
 
     template <class Topology>
-    struct Maker
+    static void basis(unsigned int order,Basis* &basis)
     {
-      static void apply(unsigned int order,Basis* &basis)
-      {
-        const MBasis &virtBasis = MonomialBasisProvider<dimension,BasisField>::template basis<Topology>(order);
+      const MBasis &virtBasis = MonomialBasisProvider<dimension,BasisField>::template basis<Topology>(order);
 
-        basis = new Basis(virtBasis);
-        LagrangeMatrix<Topology,ComputeField> matrix(order);
-        basis->fill(matrix);
-        {
-          typedef MultiIndex< dimension > MIField;
-          typedef VirtualMonomialBasis<dim,MIField> MBasisMI;
-          typedef PolynomialBasisWithMatrix<StandardEvaluator<MBasisMI>,SparseCoeffMatrix<StorageField> > BasisMI;
-          const MBasisMI &_mBasisMI = MonomialBasisProvider<dimension,MIField>::template basis<Topology>(order);
-          BasisMI basisMI(_mBasisMI);
-          basisMI.fill(matrix);
-          std::stringstream name;
-          name << "lagrange_" << Topology::name() << "_p" << order;
-          std::ofstream out(name.str().c_str());
-          basisPrint<0>(out,basisMI);
-        }
+      basis = new Basis(virtBasis);
+      LagrangeMatrix<Topology,ComputeField> matrix(order);
+      basis->fill(matrix);
+      {
+        typedef MultiIndex< dimension > MIField;
+        typedef VirtualMonomialBasis<dim,MIField> MBasisMI;
+        typedef PolynomialBasisWithMatrix<StandardEvaluator<MBasisMI>,SparseCoeffMatrix<StorageField> > BasisMI;
+        const MBasisMI &_mBasisMI = MonomialBasisProvider<dimension,MIField>::template basis<Topology>(order);
+        BasisMI basisMI(_mBasisMI);
+        basisMI.fill(matrix);
+        std::stringstream name;
+        name << "lagrange_" << Topology::name() << "_p" << order;
+        std::ofstream out(name.str().c_str());
+        basisPrint<1>(out,basisMI);
       }
-    };
+    }
   };
 
   template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >

@@ -91,7 +91,7 @@ namespace Dune
       if ( b == basis_.end() )
         b = basis_.insert(std::make_pair(key,FieldVector<Basis*,numTopologies>(0))).first;
       if (b->second[id] == 0)
-        GenericGeometry::IfTopology<BasisCreator::template Maker,dimension>::apply(id,key,b->second[id]);
+        GenericGeometry::IfTopology<Maker,dimension>::apply(id,key,b->second[id]);
       return *(b->second[id]);
     }
     template <class Topology>
@@ -102,10 +102,17 @@ namespace Dune
       if ( b == basis_.end() )
         b = basis_.insert(std::make_pair(key,FieldVector<Basis*,numTopologies>(0))).first;
       if (b->second[id] == 0)
-        GenericGeometry::IfTopology<BasisCreator::template Maker,dimension>::apply(id,key,b->second[id]);
+        BasisCreator::template basis<Topology>(key,b->second[id]);
       return *(b->second[id]);
     }
     Storage basis_;
+    template <class Topology>
+    struct Maker {
+      static void apply(Key key,Basis* &basis)
+      {
+        BasisCreator::template basis<Topology>(key,basis);
+      };
+    };
   };
 }
 #endif // DUNE_BASISPROVIDER_HH

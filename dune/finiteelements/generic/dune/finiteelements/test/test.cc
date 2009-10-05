@@ -32,7 +32,7 @@ struct TestMatrix
   }
   const double operator() ( int r, int c ) const
   {
-    return (r==c) ? 1.0 : 0.0;
+    return (r+1)*(c+1);
     return pow(-1,c/2+r)*double(r)*double(c)*double(colSize(r)-c-1);
   }
   unsigned int size_;

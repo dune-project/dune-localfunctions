@@ -23,33 +23,30 @@ namespace Dune
     typedef typename GenericGeometry::SimplexTopology< dim >::type SimplexTopology;
 
     template <class Topology>
-    struct Maker
+    static void basis(unsigned int order,Basis* &basis)
     {
-      static void apply(unsigned int order,Basis* &basis)
+      const MBasis &_basis = MonomialBasisProvider<dimension,StorageField>::template basis<SimplexTopology>(order);
+      static CoefficientMatrix _coeffs;
+      if ( _coeffs.size() <= _basis.size() )
       {
-        const MBasis &_basis = MonomialBasisProvider<dimension,StorageField>::template basis<SimplexTopology>(order);
-        static CoefficientMatrix _coeffs;
-        if ( _coeffs.size() <= _basis.size() )
-        {
-          ONB::ONBMatrix<Topology,ComputeField> matrix(order);
-          _coeffs.fill(matrix);
-          basis = new Basis(_basis,_coeffs,_basis.size());
-        }
-        else
-          basis = new Basis(_basis,_coeffs,_basis.size());
-        {
-          typedef MultiIndex< dimension > MIField;
-          typedef VirtualMonomialBasis<dim,MIField> MBasisMI;
-          typedef PolynomialBasis<StandardEvaluator<MBasisMI>,SparseCoeffMatrix<StorageField> > BasisMI;
-          const MBasisMI &_mBasisMI = MonomialBasisProvider<dimension,MIField>::template basis<SimplexTopology>(order);
-          BasisMI basisMI(_mBasisMI,_coeffs,_basis.size());
-          std::stringstream name;
-          name << "onb_" << Topology::name() << "_p" << order;
-          std::ofstream out(name.str().c_str());
-          basisPrint<0>(out,basisMI);
-        }
+        ONB::ONBMatrix<Topology,ComputeField> matrix(order);
+        _coeffs.fill(matrix);
+        basis = new Basis(_basis,_coeffs,_basis.size());
       }
-    };
+      else
+        basis = new Basis(_basis,_coeffs,_basis.size());
+      {
+        typedef MultiIndex< dimension > MIField;
+        typedef VirtualMonomialBasis<dim,MIField> MBasisMI;
+        typedef PolynomialBasis<StandardEvaluator<MBasisMI>,SparseCoeffMatrix<StorageField> > BasisMI;
+        const MBasisMI &_mBasisMI = MonomialBasisProvider<dimension,MIField>::template basis<SimplexTopology>(order);
+        BasisMI basisMI(_mBasisMI,_coeffs,_basis.size());
+        std::stringstream name;
+        name << "onb_" << Topology::name() << "_p" << order;
+        std::ofstream out(name.str().c_str());
+        basisPrint<0>(out,basisMI);
+      }
+    }
   };
 
   template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >

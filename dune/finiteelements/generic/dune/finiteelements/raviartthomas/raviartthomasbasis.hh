@@ -100,110 +100,120 @@ namespace Dune
       : order_(order)
     {}
 
-    template< class Eval, class Matrix >
-    void interpolate ( Eval &eval, Matrix &coefficients )
+    template< class Basis, class Matrix >
+    void interpolate ( Basis &basis, Matrix &coefficients )
     {
-      coefficients.resize( eval.size(), eval.size( ) );
-      for (unsigned int i=0; i<eval.size(); ++i)
-        for (unsigned int j=0; j<eval.size(); ++j)
+      std::vector< Dune::FieldVector<Field,dimension> > basisVal;
+      basisVal.resize(basis.size());
+      std::vector< Field > testBasisVal;
+
+      coefficients.resize( basis.size(), basis.size( ) );
+      for (unsigned int i=0; i<basis.size(); ++i)
+        for (unsigned int j=0; j<basis.size(); ++j)
           coefficients(i,j) = Zero<Field>();
       unsigned int row = 0;
 
-      typedef Dune::GenericGeometry::GenericQuadratureProvider< dimension-1, double > FaceQuadratureProvider;
+      // boundary dofs:
+      typedef GenericGeometry::ReferenceElement<Topology,Field> RefElem;
+
+      typedef Dune::GenericGeometry::GenericQuadratureProvider< dimension-1, Field > FaceQuadratureProvider;
       typedef Dune::GenericGeometry::SubQuadratureProvider< dimension, FaceQuadratureProvider> SubQuadratureProvider;
       typedef MonomialBasisProvider<dimension-1,Field> MBasisProvider;
-      typedef GenericGeometry::ReferenceElement<Topology,double> RefElem;
-      // boundary dofs:
+
       unsigned int nrFaces = RefElem::template Codim<1>::size;
       for (unsigned int f=0; f<nrFaces; ++f)
       {
         const typename SubQuadratureProvider::Quadrature &faceQuad = SubQuadratureProvider::template quadrature<Topology>( std::make_pair(f,2*order_+1) );
         const typename SubQuadratureProvider::SubQuadrature &faceSubQuad = SubQuadratureProvider::template subQuadrature<Topology>( std::make_pair(f,2*order_+1) );
+        const Dune::FieldVector<Field,dimension> &normal = RefElem::integrationOuterNormal(f);
 
         const typename MBasisProvider::Basis &mBasis = MBasisProvider::basis(faceSubQuad.topologyId(),order_);
-        StandardEvaluator<typename MBasisProvider::Basis> mEval(mBasis);
-
-        const Dune::FieldVector<double,dimension> &normal = RefElem::integrationOuterNormal(f);
+        testBasisVal.resize(mBasis.size());
 
         const unsigned int quadratureSize = faceQuad.size();
         for( unsigned int qi = 0; qi < quadratureSize; ++qi )
         {
+          mBasis.template evaluate<0>(faceSubQuad.point(qi),testBasisVal);
+          basis.template evaluate<0>(faceQuad.point(qi),basisVal);
           fillBnd( row,
-                   mEval.template evaluate<0>(faceSubQuad.point(qi)),
-                   eval.template evaluate<0>(faceQuad.point(qi)),
-                   normal,
-                   faceQuad.weight(qi),
+                   testBasisVal, basisVal,
+                   normal, faceQuad.weight(qi),
                    coefficients);
         }
-        row += mEval.size();
+        row += mBasis.size();
       }
       // element dofs
-      if (row<eval.size())
+      if (row<basis.size())
       {
-        typedef Dune::GenericGeometry::GenericQuadratureProvider< dimension, double > QuadratureProvider;
         typedef MonomialBasisProvider<dimension,Field> MBasisProvider;
         const typename MBasisProvider::Basis &mBasis = MBasisProvider::template basis<Topology>(order_-1);
-        StandardEvaluator<typename MBasisProvider::Basis> mEval(mBasis);
+        testBasisVal.resize(mBasis.size());
 
+        typedef Dune::GenericGeometry::GenericQuadratureProvider< dimension, Field > QuadratureProvider;
         const typename QuadratureProvider::Quadrature &elemQuad = QuadratureProvider::template quadrature<Topology>(2*order_+1);
         const unsigned int quadratureSize = elemQuad.size();
         for( unsigned int qi = 0; qi < quadratureSize; ++qi )
         {
+          mBasis.template evaluate<0>(elemQuad.point(qi),testBasisVal);
+          basis.template evaluate<0>(elemQuad.point(qi),basisVal);
           fillInterior( row,
-                        mEval.template evaluate<0>(elemQuad.point(qi)),
-                        eval.template evaluate<0>(elemQuad.point(qi)),
+                        testBasisVal, basisVal,
                         elemQuad.weight(qi),
                         coefficients );
         }
-        row += mEval.size()*dimension;
+        row += mBasis.size()*dimension;
       }
-      assert(row==eval.size());
+      assert(row==basis.size());
     }
 
   private:
     /** /brief evaluate boundary functionals **/
-    template <class MIterator, class RTIterator,class Matrix>
+    template <class MVal, class RTVal,class Matrix>
     void fillBnd (unsigned int startRow,
-                  MIterator miter,
-                  RTIterator rtiter,
-                  const FieldVector<double,dimension> &normal,
+                  const MVal &mVal,
+                  const RTVal &rtVal,
+                  const FieldVector<Field,dimension> &normal,
                   const Field &weight,
                   Matrix &matrix) const
     {
-      unsigned int col = 0;
-      for ( ; !rtiter.done() ; ++rtiter,++col)
+      const unsigned int endRow = startRow+mVal.size();
+      typename RTVal::const_iterator rtiter = rtVal.begin();
+      for ( unsigned int col = 0; col < matrix.cols() ; ++rtiter,++col)
       {
-        Field cFactor = Zero<Field>();
-        for (unsigned int d=0; d<dimension; ++d)
-          cFactor += rtiter->block()[d]*normal[d];
-        MIterator riter = miter;
+        Field cFactor = (*rtiter)*normal;
+        typename MVal::const_iterator miter = mVal.begin();
         for (unsigned int row = startRow;
-             !riter.done(); ++riter, ++row )
-          matrix(row,col) += weight*(cFactor*riter->block()[0]);
+             row!=endRow; ++miter, ++row )
+          matrix(row,col) += weight*(cFactor*(*miter));
       }
     }
-    template <class MIterator, class RTIterator,class Matrix>
+    template <class MVal, class RTVal,class Matrix>
     void fillInterior (unsigned int startRow,
-                       MIterator miter,
-                       RTIterator rtiter,
+                       const MVal &mVal,
+                       const RTVal &rtVal,
                        Field weight,
                        Matrix &matrix) const
     {
-      unsigned int col = 0;
-      for ( ; !rtiter.done() ; ++rtiter,++col)
+      const unsigned int endRow = startRow+mVal.size()*dimension;
+      typename RTVal::const_iterator rtiter = rtVal.begin();
+      for ( unsigned int col = 0; col < matrix.cols() ; ++rtiter,++col)
       {
-        MIterator riter = miter;
+        typename MVal::const_iterator miter = mVal.begin();
         for (unsigned int row = startRow;
-             !riter.done(); ++riter )
-          for (unsigned int i=0; i<dimension; ++i,++row)
-            matrix(row,col) += weight*(rtiter->block()[i]*riter->block()[0]);
+             row!=endRow; ++miter,row+=dimension )
+        {
+          for (unsigned int i=0; i<dimension; ++i)
+            matrix(row+i,col) += weight*(*rtiter)[i]*(*miter);
+        }
       }
     }
+
     unsigned int order_;
   };
 
   template <class Topology,class scalar_t>
   struct RaviartThomasMatrix {
+    typedef scalar_t Field;
     enum {dim = Topology::dimension};
     struct VecMatrix
     {
@@ -225,7 +235,7 @@ namespace Dune
         unsigned int homogen = basis.sizes()[order]-notHomogen;
         row_ = (notHomogen*dim+homogen*(dim+1))*dim;
         row1_ = basis.sizes()[order]*dim*dim;
-        mat_ = new double*[row_];
+        mat_ = new Field*[row_];
         int row = 0;
         for (unsigned int i=0; i<notHomogen+homogen; ++i)
         {
@@ -233,7 +243,7 @@ namespace Dune
           {
             for (unsigned int rr=0; rr<dim; ++rr)
             {
-              mat_[row] = new double[col_];
+              mat_[row] = new Field[col_];
               for (unsigned int j=0; j<col_; ++j)
               {
                 mat_[row][j] = 0.;
@@ -248,7 +258,7 @@ namespace Dune
         {
           for (unsigned int r=0; r<dim; ++r)
           {
-            mat_[row] = new double[col_];
+            mat_[row] = new Field[col_];
             for (unsigned int j=0; j<col_; ++j)
             {
               mat_[row][j] = 0.;
@@ -289,7 +299,7 @@ namespace Dune
         return mat_[r][c];
       }
       unsigned int row_,col_,row1_;
-      double **mat_;
+      Field **mat_;
     };
     typedef Dune::AlgLib::Matrix< scalar_t > mat_t;
     typedef MonomialBasis<Topology,scalar_t> MBasis;
@@ -301,10 +311,9 @@ namespace Dune
       typedef PolynomialBasisWithMatrix<EvalMBasis,SparseCoeffMatrix<scalar_t,dim> > TMBasis;
       TMBasis tmBasis(basis);
       tmBasis.fill(vecMatrix_);
-      StandardEvaluator<TMBasis> tmEval(tmBasis);
       // RaviartThomasLagrangeInterpolation< Topology, scalar_t  > interpolation(order_);
       RaviartThomasL2Interpolation< Topology, scalar_t  > interpolation(order_);
-      interpolation.interpolate( tmEval , matrix_ );
+      interpolation.interpolate( tmBasis , matrix_ );
       matrix_.invert();
     }
     unsigned int colSize(int row) const {

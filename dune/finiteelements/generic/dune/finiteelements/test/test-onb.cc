@@ -11,6 +11,7 @@
 #include <dune/finiteelements/orthonormalbasis/dgspace.hh>
 #include <dune/finiteelements/global/interpolation.hh>
 #include <dune/finiteelements/global/vtkfunctionwrapper.hh>
+#include <dune/finiteelements/global/grapefunctionwrapper.hh>
 
 const unsigned int dimension = GridType::dimension;
 
@@ -62,5 +63,7 @@ int main ( int argc, char **argv )
   vtkWriter.write( "onb" );
 
   Dune::GrapeDataDisplay< GridType > grape( gridView );
+  Dune::GrapeFunctionWrapper< Space > grapeFunction( space, dofs );
+  grape.addData( grapeFunction.interface() );
   grape.display();
 }

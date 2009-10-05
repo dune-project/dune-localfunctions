@@ -6,10 +6,12 @@
 #include <dune/grid/io/file/dgfparser/dgfpsggridtype.hh>
 #include <dune/grid/io/file/dgfparser/dgfgridtype.hh>
 #include <dune/grid/io/file/vtk/subsamplingvtkwriter.hh>
+#include <dune/grid/io/visual/grapedatadisplay.hh>
 
 #include <dune/finiteelements/lagrangebasis/space.hh>
 #include <dune/finiteelements/global/interpolation.hh>
 #include <dune/finiteelements/global/vtkfunctionwrapper.hh>
+#include <dune/finiteelements/global/grapefunctionwrapper.hh>
 
 const unsigned int dimension = GridType::dimension;
 
@@ -59,4 +61,9 @@ int main ( int argc, char **argv )
   Dune::SubsamplingVTKWriter< GridView > vtkWriter( gridView, level );
   vtkWriter.addVertexData( new VTKFunction( space, dofs ) );
   vtkWriter.write( "lagrange" );
+
+  Dune::GrapeDataDisplay< GridType > grape( gridView );
+  Dune::GrapeFunctionWrapper< Space > grapeFunction( space, dofs );
+  grape.addData( grapeFunction.interface() );
+  grape.display();
 }

@@ -9,37 +9,10 @@
 
 #include <dune/grid/genericgeometry/topologytypes.hh>
 
+#include <dune/grid/finiteelements/field.hh>
+
 namespace Dune
 {
-
-  template <class Field>
-  struct Unity {
-    operator Field() const {
-      return Field(1);
-    }
-  };
-  template <class Field>
-  struct Zero {
-    operator Field() const {
-      return Field(0);
-    }
-  };
-  template <class Field>
-  bool operator<(const Zero<Field>& ,const Field& f) {
-    return f>1e-12;
-  }
-  template <class Field>
-  bool operator<(const Field& f, const Zero<Field>&) {
-    return f<1e-12;
-  }
-  template <class Field>
-  bool operator>(const Zero<Field>& z,const Field& f) {
-    return f<z;
-  }
-  template <class Field>
-  bool operator>(const Field& f, const Zero<Field>& z) {
-    return z<f;
-  }
 
   // MultiIndex class for monomial basis
   template <int dim>

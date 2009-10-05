@@ -213,13 +213,13 @@ namespace Dune
     const ThisTensor &operator[](int r) const {
       return tensor_[r];
     }
+  protected:
     template <class Fy,int dimRy>
     void assign(const FieldVector<Fy,size*dimRy> &y,unsigned int r)
     {
       Base::template assign<Fy,dimRy>(reinterpret_cast<const FieldVector<Fy,Base::size*dimRy>&>(y),r);
       tensor_[0] = reinterpret_cast<const FieldVector<Fy,ThisTensor::size>&>(y[Base::size*dimRy+r*ThisTensor::size]);
     }
-  protected:
     template <class Fy>
     void assign(unsigned int r,const FieldVector<Fy,size/dimR> &y)
     {
@@ -665,7 +665,7 @@ namespace Dune
     typedef FieldVector<F2,dimR> Vec2;
     static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
-      field_cast(reinterpret_cast<const FieldVector<F1,dimR>&>(vec1.template tensor<0>()),vec2);
+      field_cast(vec1.template block<0>(),vec2);
     }
   };
   template <int dimD,int dimR,

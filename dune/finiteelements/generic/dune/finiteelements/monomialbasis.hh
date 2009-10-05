@@ -661,13 +661,13 @@ namespace Dune
     void evaluate ( const DomainVector &x,
                     Derivatives<Field,dimension,1,deriv,layout> *values ) const
     {
-      evaluate(deriv,x,reinterpret_cast<Field*>(values));
+      evaluate<deriv>(x,&(values->block()));
     }
     template< unsigned int deriv >
     void evaluate ( const DomainVector &x,
-                    FieldVector<Field,1> *values ) const
+                    FieldVector<Field,Derivatives<Field,dimension,1,deriv,value>::size> *values ) const
     {
-      evaluate(0,x,reinterpret_cast<Field*>(values));
+      evaluate(0,x,&(values[0][0]));
     }
 
     template<class Vector >
@@ -776,13 +776,13 @@ namespace Dune
     void evaluate ( const DomainVector &x,
                     Dune::FieldVector<Field,size> *const values ) const
     {
-      evaluate( deriv, x, reinterpret_cast< Field * >( values ) );
+      evaluate( deriv, x, &(values[0][0]) );
     }
     template<unsigned int deriv, DerivativeLayout layout >
     void evaluate ( const DomainVector &x,
                     Derivatives<Field,dimension,1,deriv,layout> *values ) const
     {
-      evaluate(deriv, x,reinterpret_cast<Field*>(&(values[0])));
+      evaluate<deriv>(x,&(values->block()));
     }
     template <unsigned int deriv, class Vector>
     void evaluate ( const DomainVector &x,

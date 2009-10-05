@@ -90,6 +90,7 @@ namespace Dune
     static const unsigned int dimDomain = Deriv::dimDomain;
     static const unsigned int dimRange = Deriv::dimRange;
 
+    typedef std::vector<Deriv> Container;
     typedef typename Container::iterator CIter;
 
     explicit BaseIterator ( Container &container )
@@ -100,13 +101,13 @@ namespace Dune
     const Deriv &operator*() const
     {
       assert(!done());
-      return reinterpret_cast<const Deriv&>(*pos_);
+      return *pos_;
     }
 
     Deriv &operator*()
     {
       assert(!done());
-      return reinterpret_cast<Deriv&>(*pos_);
+      return *pos_;
     }
 
     const Deriv *operator->() const
@@ -126,13 +127,13 @@ namespace Dune
 
     BaseIterator &operator++ ()
     {
-      pos_ += blockSize;
+      pos_ += 1; // blockSize;
       return *this;
     }
 
     BaseIterator &operator+= ( unsigned int skip )
     {
-      pos_ += skip*blockSize;
+      pos_ += skip; // *blockSize;
       return *this;
     }
 
@@ -167,7 +168,7 @@ namespace Dune
       std::vector<Derivatives<Field,dimension,dimRange,deriv,derivative> >& derivContainer =
         reinterpret_cast<std::vector<Derivatives<Field,dimension,dimRange,deriv,derivative> >&>(container_);
       basis_.template evaluate<deriv>(x,derivContainer);
-      return typename Iterator<deriv>::All(container_);
+      return typename Iterator<deriv>::All(derivContainer);
     }
 
   protected:
@@ -211,15 +212,9 @@ namespace Dune
     {
       resize< deriv >();
       fill_.template apply<deriv>( x,Base::template evaluate<deriv>(x), vecContainer_ );
-      return typename Iterator<deriv>::All(vecContainer_);
-    }
-    typename Iterator<0>::All evaluate(const DomainVector &x)
-    {
-      return evaluate<0>(x);
-    }
-    typename Iterator<1>::All jacobian(const DomainVector &x)
-    {
-      return evaluate<1>(x);
+      std::vector<Derivatives<Field,dimension,dimRange,deriv,Fill::layout> >& derivContainer =
+        reinterpret_cast<std::vector<Derivatives<Field,dimension,dimRange,deriv,Fill::layout> >&>(vecContainer_);
+      return typename Iterator<deriv>::All(derivContainer);
     }
     unsigned int size() const
     {

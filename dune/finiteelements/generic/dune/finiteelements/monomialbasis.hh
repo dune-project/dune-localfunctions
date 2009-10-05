@@ -283,7 +283,9 @@ namespace Dune
 
         for( unsigned d = 1; d <= deriv; ++d )
         {
+          #ifndef NDEBUG
           const F *const derivEnd = rit + mySize.sizes_[ d ];
+          #endif
           const F *const drend = rit + mySize.sizes_[ d ] - mySize.sizes_[ d-1 ];
           for( ; rit != drend ; ++rit, ++wit )
             *wit = z * *rit;

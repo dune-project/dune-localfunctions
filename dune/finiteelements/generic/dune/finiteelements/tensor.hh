@@ -8,6 +8,7 @@
 
 namespace Dune
 {
+  // Structure for scalar tensor of order deriv
   template <class F,int dimD,unsigned int deriv>
   struct Tensor
   {
@@ -59,12 +60,21 @@ namespace Dune
   };
   // ****************************************
   // ****************************************
-#if 0
+  // Structure for all derivatives up to order deriv
+  // for scalar function
   template <class F,int dimD,unsigned int deriv>
   struct ScalarDerivatives : public ScalarDerivatives<F,dimD,deriv-1>
   {
     typedef ScalarDerivatives<F,dimD,deriv-1> Base;
+    typedef Tensor<F,dimD,deriv> ThisTensor;
+    static const unsigned int size = Base::size+ThisTensor::size;
 
+    ThisTensor &tensor() {
+      return tensor_;
+    }
+    const ThisTensor &tensor() const {
+      return tensor_;
+    }
     template <unsigned int dorder>
     Tensor<F,dimD,dorder> &tensor()
     {
@@ -80,45 +90,82 @@ namespace Dune
     {
       return tensor_;
     }
-    Tensor<F,dimD,deriv> tensor_;
+    ThisTensor tensor_;
   };
   template <class F,int dimD>
   struct ScalarDerivatives<F,dimD,0>
   {
-    Tensor<F,dimD,0> &tensor()
-    {
+    typedef Tensor<F,dimD,0> ThisTensor;
+    static const unsigned int size = ThisTensor::size;
+    ThisTensor &tensor() {
       return tensor_;
     }
-    Tensor<F,dimD,0> tensor_;
+    const ThisTensor &tensor() const {
+      return tensor_;
+    }
+    ThisTensor tensor_;
   };
   // ***********************************************************
+  // Structure for all derivatives up to order deriv
+  // for vector valued function
+  enum DerivativeLayout {value,derivative};
+  template <class F,int dimD,int dimR,unsigned int deriv,
+      DerivativeLayout layout>
+  struct Derivatives;
+
+  // Implemnetation for derivative based layout
   template <class F,int dimD,int dimR,unsigned int deriv>
-  struct Derivatives<F,dimD,deriv>
+  struct Derivatives<F,dimD,dimR,deriv,derivative>
   {
+    typedef Derivatives<F,dimD,dimR,deriv,derivative> This;
     typedef ScalarDerivatives<F,dimD,deriv> ScalarDeriv;
+    static const unsigned int size = ScalarDeriv::size*dimR;
+    typedef Dune::FieldVector<F,size> Block;
+
+    This &operator=(const F& f)
+    {
+      block() = f;
+      return *this;
+    }
+    This &operator=(const Block &t)
+    {
+      block() = t;
+      return *this;
+    }
+
+    Block &block()
+    {
+      return reinterpret_cast<Block&>(*this);
+    }
+    const Block &block() const
+    {
+      return reinterpret_cast<const Block&>(*this);
+    }
+
     ScalarDeriv &operator[](int r) {
+      return deriv_[r];
+    }
+    const ScalarDeriv &operator[](int r) const {
       return deriv_[r];
     }
   protected:
     Dune::FieldVector<ScalarDeriv,dimR> deriv_;
   };
-#endif
-  // *************************************************
-  // *************************************************
+
+  // Implemnetation for valued based layout
   template <class F,int dimD,int dimR,unsigned int deriv>
-  struct Derivative : public Derivative<F,dimD,dimR,deriv-1>
+  struct Derivatives<F,dimD,dimR,deriv,value>
+    : public Derivatives<F,dimD,dimR,deriv-1,value>
   {
-    typedef Derivative<F,dimD,dimR,deriv> This;
-    typedef Derivative<F,dimD,dimR,deriv-1> Base;
+    typedef Derivatives<F,dimD,dimR,deriv,value> This;
+    typedef Derivatives<F,dimD,dimR,deriv-1,value> Base;
     typedef Tensor<F,dimD,deriv> ThisTensor;
     static const unsigned int size = Base::size+ThisTensor::size*dimR;
     typedef Dune::FieldVector<F,size> Block;
 
     This &operator=(const F& f)
     {
-      Base::operator=(f);
-      for (int r=0; r<dimR; ++r)
-        tensor_[r] = f;
+      block() = f;
       return *this;
     }
     This &operator=(const Dune::FieldVector<ThisTensor,dimR> &t)
@@ -132,13 +179,6 @@ namespace Dune
       tensor<dorder>() = t;
       return *this;
     }
-    /*
-       This &operator=(const Dune::FieldVector<Dune::FieldVector<F,size>,dimR> &t)
-       {
-       reinterpret_cast<Dune::FieldVector<Dune::FieldVector<F,size>,dimR> &>(*this) = t;
-       return *this;
-       }
-     */
     This &operator=(const Block &t)
     {
       block() = t;
@@ -178,9 +218,9 @@ namespace Dune
     Dune::FieldVector<ThisTensor,dimR> tensor_;
   };
   template <class F,int dimD,int dimR>
-  struct Derivative<F,dimD,dimR,0>
+  struct Derivatives<F,dimD,dimR,0,value>
   {
-    typedef Derivative<F,dimD,dimR,0> This;
+    typedef Derivatives<F,dimD,dimR,0,value> This;
     typedef Tensor<F,dimD,0> ThisTensor;
     static const unsigned int size = ThisTensor::size*dimR;
     typedef Dune::FieldVector<F,size> Block;
@@ -196,14 +236,6 @@ namespace Dune
       tensor_ = t;
       return *this;
     }
-    /*
-       template <int totalSize>
-       This &operator=(const Dune::FieldVector<Dune::FieldVector<F,totalSize>,dimR> &t)
-       {
-       reinterpret_cast<Dune::FieldVector<Dune::FieldVector<F,totalSize>,dimR> &>(*this) = t;
-       return *this;
-       }
-     */
 
     This &operator=(const Block &t)
     {
@@ -231,15 +263,41 @@ namespace Dune
     }
     Dune::FieldVector<ThisTensor,dimR> tensor_;
   };
+  // ***********************************************
   template <class F,int dimD,unsigned int deriv>
   std::ostream &operator<< ( std::ostream &out, const Tensor< F,dimD,deriv > &tensor )
   {
     return out << tensor.block;
   }
-  template <class F,int dimD,int dimR,unsigned int deriv>
-  std::ostream &operator<< ( std::ostream &out, const Derivative< F,dimD,dimR,deriv > &d )
+  template <class F,int dimD,unsigned int deriv>
+  std::ostream &operator<< ( std::ostream &out, const ScalarDerivatives< F,dimD,deriv > &d )
   {
-    out << static_cast<const Derivative< F,dimD,dimR,deriv-1 > &>(d);
+    out << static_cast<const ScalarDerivatives< F,dimD,deriv-1 > &>(d);
+    out << " , " << d.tensor() << std::endl;
+    return out;
+  }
+  template <class F,int dimD>
+  std::ostream &operator<< ( std::ostream &out, const ScalarDerivatives< F,dimD,0 > &d )
+  {
+    out << d.tensor() << std::endl;
+    return out;
+  }
+  template <class F,int dimD,int dimR,unsigned int deriv>
+  std::ostream &operator<< ( std::ostream &out, const Derivatives< F,dimD,dimR,deriv,derivative > &d )
+  {
+    out << " ( ";
+    out << d[0];
+    for (int r=1; r<dimR; ++r)
+    {
+      out << " , " << d[r];
+    }
+    out << " ) " << std::endl;
+    return out;
+  }
+  template <class F,int dimD,int dimR,unsigned int deriv>
+  std::ostream &operator<< ( std::ostream &out, const Derivatives< F,dimD,dimR,deriv,value > &d )
+  {
+    out << static_cast<const Derivatives< F,dimD,dimR,deriv-1,value > &>(d);
     out << " ( ";
     out << d[0];
     for (int r=1; r<dimR; ++r)
@@ -250,7 +308,7 @@ namespace Dune
     return out;
   }
   template <class F,int dimD,int dimR>
-  std::ostream &operator<< ( std::ostream &out, const Derivative< F,dimD,dimR,0 > &d )
+  std::ostream &operator<< ( std::ostream &out, const Derivatives< F,dimD,dimR,0,derivative > &d )
   {
     out << " ( ";
     out << d[0];
@@ -261,11 +319,23 @@ namespace Dune
     out << " ) " << std::endl;
     return out;
   }
-  template <class F,int dimD,int dimR,unsigned int deriv>
-  std::ostream &operator<< ( std::ostream &out, const std::vector<Derivative< F,dimD,dimR,deriv > > &y )
+  template <class F,int dimD,int dimR>
+  std::ostream &operator<< ( std::ostream &out, const Derivatives< F,dimD,dimR,0,value > &d )
+  {
+    out << " ( ";
+    out << d[0];
+    for (int r=1; r<dimR; ++r)
+    {
+      out << " , " << d[r];
+    }
+    out << " ) " << std::endl;
+    return out;
+  }
+  template <class F,int dimD,int dimR,unsigned int deriv,DerivativeLayout layout>
+  std::ostream &operator<< ( std::ostream &out, const std::vector<Derivatives< F,dimD,dimR,deriv,layout > > &y )
   {
     out << "Number of basis functions: " << y.size() << std::endl;
-    for (int i=0; i<y.size(); ++i)
+    for (unsigned int i=0; i<y.size(); ++i)
     {
       out << "Base " << i << " : " << std::endl;
       out << y[i];

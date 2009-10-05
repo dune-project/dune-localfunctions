@@ -6,13 +6,19 @@
 #include <vector>
 
 #include <dune/alglib/multiprecision.hh>
+#include <dune/finiteelements/tensor.hh>
+const Dune::DerivativeLayout testLayout = Dune::value;
+
 #include <dune/finiteelements/quadrature/genericquadrature.hh>
-#include <dune/finiteelements/lagrangepoints.hh>
+// #include <dune/finiteelements/lagrangepoints.hh>
 #include <dune/finiteelements/monomialbasis.hh>
 #include <dune/finiteelements/multiindex.hh>
-#include <dune/finiteelements/basisevaluator.hh>
 #include <dune/finiteelements/polynomialbasis.hh>
 #include <dune/finiteelements/basisprint.hh>
+#include <dune/finiteelements/basisevaluator.hh>
+
+
+#include <dune/finiteelements/basisevaluator.hh>
 
 #ifndef TOPOLOGY
 #error "TOPOLOGY not defined."
@@ -32,6 +38,7 @@ struct TestMatrix
   }
   const double operator() ( int r, int c ) const
   {
+    // return (r==c)?1:0; // (r+1)*(c+1);
     return (r+1)*(c+1);
     return pow(-1,c/2+r)*double(r)*double(c)*double(colSize(r)-c-1);
   }
@@ -41,6 +48,7 @@ struct TestMatrix
 using namespace Dune;
 using namespace GenericGeometry;
 
+#if 0
 template <class Topology>
 void lagrangePointTest(unsigned int p)
 {
@@ -69,7 +77,6 @@ void lagrangePointTest(unsigned int p)
     for( unsigned int i = 0; i < size; ++i )
       std::cout << "    y[ " << i << " ] = " << field_cast<double>(y[ i ]) << std::endl;
   }
-
 }
 template <class Topology>
 void quadratureTest(unsigned int p)
@@ -113,6 +120,7 @@ void quadratureTest(unsigned int p)
     std::cout << "    integral:   " << yint[ i ] << std::endl;
   }
 }
+
 template <class Topology>
 void polynomialBaseTest(unsigned int p)
 {
@@ -147,10 +155,11 @@ void polynomialBaseTest(unsigned int p)
       std::cout << "    y[ " << i << " ] = " << field_cast<double>(y[ i ]) << std::endl;
   }
 }
+#endif
 template <class Topology>
 void multiIndexTest(unsigned int p)
 {
-  const int dimR = 3;
+  const int dimR = 2;
   const int dimension = Topology::dimension;
   typedef MultiIndex< dimension > Field;
 
@@ -170,21 +179,21 @@ void multiIndexTest(unsigned int p)
     x[ i ].set( i, 1 );
 
   std::cout << "Values: " << std::endl;
-  std::vector< Derivative<Field,dimension,dimR,0> > val( size );
+  std::vector< Derivatives<Field,dimension,dimR,0,testLayout> > val( size );
   for( unsigned int i = 0; i < val.size(); ++i )
     val[ i ] = -42.3456789;
   basis.template evaluate( x, val );
   std::cout << val << std::endl;
 
   std::cout << "Values+Jacobian: " << std::endl;
-  std::vector< Derivative<Field,dimension,dimR,1> > deriv( size );
+  std::vector< Derivatives<Field,dimension,dimR,1,testLayout> > deriv( size );
   for( unsigned int i = 0; i < deriv.size(); ++i )
     deriv[ i ] = -42.3456789;
   basis.template evaluate<1>( x, deriv );
   std::cout << deriv << std::endl;
 
   std::cout << "Values+Jacobian+Hessian: " << std::endl;
-  std::vector< Derivative<Field,dimension,dimR,2> > hess( size );
+  std::vector< Derivatives<Field,dimension,dimR,2,testLayout> > hess( size );
   for( unsigned int i = 0; i < hess.size(); ++i )
     hess[ i ] = -42.3456789;
   basis.template evaluate<2>( x, hess );

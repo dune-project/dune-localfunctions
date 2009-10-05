@@ -35,7 +35,7 @@ namespace Dune
     template <unsigned int deriv>
     struct Iterator
     {
-      typedef BaseIterator<Derivative<Field,dimension,1,deriv> > All;
+      typedef BaseIterator<Derivatives<Field,dimension,1,deriv,testLayout> > All;
     };
 
   protected:
@@ -50,7 +50,7 @@ namespace Dune
     template <int deriv>
     void resize()
     {
-      const int totalSize = Derivative<Field,dimension,1,deriv>::size*size_;
+      const int totalSize = Derivatives<Field,dimension,1,deriv,testLayout>::size*size_;
       container_.resize(totalSize);
     }
     MonomialEvaluator(const MonomialEvaluator&);
@@ -195,7 +195,7 @@ namespace Dune
     template <unsigned int deriv>
     struct Iterator
     {
-      typedef typename Base::template BaseIterator<Derivative<Field,dimension,dimRange,deriv> > All;
+      typedef typename Base::template BaseIterator<Derivatives<Field,dimension,dimRange,deriv,testLayout> > All;
     };
 
     VecEvaluator ( const Basis &basis, const Fill &fill )
@@ -237,7 +237,7 @@ namespace Dune
     template <int deriv>
     void resize()
     {
-      const int totalSize = Derivative<Field,dimension,dimRange,deriv>::size*size_;
+      const int totalSize = Derivatives<Field,dimension,dimRange,deriv,testLayout>::size*size_;
       vecContainer_.resize(totalSize);
     }
 
@@ -248,8 +248,56 @@ namespace Dune
     unsigned int size_;
   };
 
+  template <int dimR,DerivativeLayout layout>
+  struct DiagonalFill;
+
   template <int dimR>
-  struct DiagonalFill
+  struct DiagonalFill<dimR,derivative>
+  {
+    static const int dimRange = dimR;
+    template <int deriv, class Domain, class Iter,class Field>
+    void apply(const Domain &x,
+               Iter iter,std::vector<Field> &vecContainer) const
+    {
+      typedef std::vector<Field> Container;
+      typename Container::iterator vecIter = vecContainer.begin();
+      for ( ; !iter.done(); ++iter)
+      {
+        const typename Iter::Block &block = iter->block();
+        for (int r1=0; r1<dimR; ++r1)
+        {
+          unsigned int b = 0;
+          apply<Field>(r1,x,block,b,vecIter);
+        }
+      }
+    }
+    template <class Field, class Domain, class Block,class VecIter>
+    void apply(int r1, const Domain &x,
+               const Block &block,unsigned int &b,
+               VecIter &vecIter) const
+    {
+      unsigned int bStart = b;
+      unsigned int bEnd = b+Block::size;
+      apply<Field>(r1,x,block,bStart,bEnd,vecIter);
+      b=bEnd;
+    }
+    template <class Field, class Domain, class Block,class VecIter>
+    void apply(int r1, const Domain &x,const Block &block,
+               unsigned int bStart, unsigned int bEnd,
+               VecIter &vecIter) const
+    {
+      for (int r2=0; r2<dimR; ++r2)
+      {
+        for (unsigned int bb=bStart; bb<bEnd; ++bb)
+        {
+          *vecIter = (r1==r2 ? block[bb] : Field(0));
+          ++vecIter;
+        }
+      }
+    }
+  };
+  template <int dimR>
+  struct DiagonalFill<dimR,value>
   {
     static const int dimRange = dimR;
     template <int deriv, class Domain, class Iter,class Field>
@@ -305,9 +353,9 @@ namespace Dune
 
   template <class B,int dimR>
   struct VectorialEvaluator
-    : public VecEvaluator<B,DiagonalFill<dimR> >
+    : public VecEvaluator<B,DiagonalFill<dimR,testLayout> >
   {
-    typedef DiagonalFill<dimR> Fill;
+    typedef DiagonalFill<dimR,testLayout> Fill;
     typedef VecEvaluator< B,Fill > Base;
     VectorialEvaluator(const B &basis)
       : Base(basis,fill_,basis.size()*dimR)

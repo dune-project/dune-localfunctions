@@ -50,7 +50,6 @@ namespace Dune
     typedef typename Creator::Key Key;
 
     static const unsigned int dimension = Creator::dimension;
-
     static const unsigned int numTopologies = (1 << dimension);
 
     DofMapper ( const IndexSet &indexSet, const Key &key )

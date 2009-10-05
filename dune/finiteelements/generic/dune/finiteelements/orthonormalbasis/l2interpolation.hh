@@ -20,27 +20,29 @@ namespace Dune
     typedef B Basis;
     typedef Q Quadrature;
 
-    typedef typename Basis::Field Field;
-
     static const unsigned int dimension = Basis::dimension;
 
-    template< class Function >
-    void interpolate ( const Function &function, std::vector< Field > &coefficients ) const
+    template< class Function, class DofField >
+    void interpolate ( const Function &function, std::vector< DofField > &coefficients ) const
     {
       typedef typename Quadrature::Iterator Iterator;
+      typedef FieldVector< DofField, Basis::dimRange > RangeVector;
 
-      coefficients.resize( basis().size() );
-      for( unsigned int i = 0; i < basis_.size(); ++i )
-        coefficients[ i ] = Zero< Field >();
+      const unsigned int size = basis().size();
+      static std::vector< RangeVector > basisValues( size );
+
+      coefficients.resize( size );
+      for( unsigned int i = 0; i < size; ++i )
+        coefficients[ i ] = Zero< DofField >();
 
       const Iterator end = quadrature().end();
       for( Iterator it = quadrature().begin(); it != end; ++it )
       {
-        basis().evaluate( it->point(), basisValues_ );
-        Field factor = it->weight();
-        factor *= function( it->point() )[0];
-        for( unsigned int i = 0; i < basis().size(); ++i )
-          coefficients[ i ] += factor * basisValues_[ i ];
+        basis().evaluate( it->point(), basisValues );
+        RangeVector factor = field_cast< DofField >( function( it->point() ) );
+        factor *= field_cast< DofField >( it->weight() );
+        for( unsigned int i = 0; i < size; ++i )
+          coefficients[ i ] += factor * basisValues[ i ];
       }
     }
 
@@ -57,14 +59,11 @@ namespace Dune
   private:
     LocalL2Interpolation ( const Basis &basis, const Quadrature &quadrature )
       : basis_( basis ),
-        quadrature_( quadrature ),
-        basisValues_( basis.size() )
+        quadrature_( quadrature )
     {}
 
     const Basis &basis_;
     const Quadrature &quadrature_;
-
-    mutable std::vector< Field > basisValues_;
   };
 
 

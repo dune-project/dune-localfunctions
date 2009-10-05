@@ -90,13 +90,13 @@ namespace Dune
     unsigned int order_;
   };
 
-  template< int dim, class SF, class Creator >
+  template< int dim, class SF,
+      class Creator, class MBasis = VirtualMonomialBasis<dim,SF> >
   struct PolynomialBasisProvider
   {
     static const int dimension = dim;
     typedef SF Field;
-    typedef VirtualMonomialBasis<dimension,SF> VirtualBasis;
-    typedef PolynomialBasis<1,VirtualBasis,SF> Basis;
+    typedef PolynomialBasis<1,MBasis,SF> Basis;
     static const Basis &basis(unsigned int id,unsigned int order)
     {
       return instance().getBasis(id,order);

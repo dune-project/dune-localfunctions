@@ -10,6 +10,7 @@
 #include <dune/finiteelements/lagrangepoints.hh>
 #include <dune/finiteelements/lagrangeinterpolation.hh>
 #include <dune/finiteelements/basisprovider.hh>
+#include <dune/finiteelements/basisprint.hh>
 #include <dune/finiteelements/polynomialbasis.hh>
 namespace Dune
 {
@@ -214,11 +215,6 @@ namespace Dune
         basis = new Basis(_mBasis);
         RaviartThomasMatrix<Topology,ComputeField> matrix(order);
         basis->fill(matrix);
-        /*
-           std::stringstream name;
-           name << "lagrange_" << Topology::name() << "_p" << order;
-           basis->template printBasis<Topology>(name.str(),matrix);
-         */
         {
           typedef MultiIndex< dimension > MIField;
           typedef VirtualMonomialBasis<dim,MIField> MBasisMI;
@@ -226,7 +222,10 @@ namespace Dune
           const MBasisMI &_mBasisMI = MonomialBasisProvider<dimension,MIField>::template basis<SimplexTopology>(order);
           BasisMI basisMI(_mBasisMI);
           basisMI.fill(matrix);
-          basisPrint(basisMI);
+          std::stringstream name;
+          name << "rt_" << Topology::name() << "_p" << order;
+          std::ofstream out(name.str().c_str());
+          basisPrint<0>(out,basisMI);
         }
       }
     };

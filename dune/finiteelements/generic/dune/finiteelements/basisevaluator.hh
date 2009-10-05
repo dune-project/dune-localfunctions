@@ -94,7 +94,9 @@ namespace Dune
     typedef B Basis;
     typedef typename Basis::Field Field;
     typedef typename Basis::DomainVector DomainVector;
+    typedef typename Basis::RangeVector RangeVector;
     static const int dimension = Basis::dimension;
+    static const int dimRange = Basis::dimRange;
     typedef std::vector<Field> Container;
     template <class Tensor>
     struct BaseIterator
@@ -243,11 +245,12 @@ namespace Dune
   {
     typedef B Basis;
     typedef typename Basis::Field Field;
-    typedef typename Basis::DomainVector DomainVector;
-    typedef std::vector<Field> Container;
     static const int dimension = Basis::dimension;
+    static const int dimRange = Basis::dimRange*Fill::dimRange;
+    typedef typename Basis::DomainVector DomainVector;
+    typedef typename Dune::FieldVector<Field,dimRange> RangeVector;
+    typedef std::vector<Field> Container;
     typedef StandardEvaluator<B> Base;
-    static const int dimRange = Fill::dimRange;
 
     template <unsigned int deriv>
     struct Iterator

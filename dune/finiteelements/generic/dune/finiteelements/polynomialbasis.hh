@@ -45,8 +45,10 @@ namespace Dune
     typedef typename CoefficientMatrix::Field StorageField;
   public:
     static const int dimension = Evaluator::dimension;
+    static const int dimRange = Evaluator::dimRange;
     typedef typename Evaluator::Basis Basis;
     typedef typename Evaluator::DomainVector DomainVector;
+    typedef typename Evaluator::RangeVector RangeVector;
     typedef typename CoefficientMatrix::Field Field;
 
     PolynomialBasis (const Basis &basis,
@@ -69,9 +71,9 @@ namespace Dune
       return size_;
     }
 
-    template< unsigned int deriv, class RangeVector >
+    template< unsigned int deriv, class Vector >
     void evaluate ( const DomainVector &x,
-                    std::vector< RangeVector > &values ) const
+                    Vector &values ) const
     {
       assert(values.size()>=size());
       coeffMatrix_->mult( eval_.template evaluate<deriv>( x ), values );
@@ -93,35 +95,6 @@ namespace Dune
       evaluate<0>( bx, values );
     }
 
-    template <class Topology,class FullMatrix>
-    void printBasis(const std::string &name,
-                    const FullMatrix &matrix)
-    {
-#if 0
-      {
-        std::ofstream out((name+".out").c_str());
-        out.precision(15);
-        out.setf(std::ios::scientific,std::ios::floatfield);
-        matrix.print(out,size_);
-      }
-      {
-        std::ofstream out((name+".gnu").c_str());
-        out.precision(15);
-        out.setf(std::ios::scientific,std::ios::floatfield);
-
-        typedef Dune::MultiIndex<dimension> MI;
-        typedef Dune::MonomialBasis< Topology, MI > MBasis;
-        MBasis basis;
-        const unsigned int size = basis.size( order_ );
-        std::vector< MI > y( size );
-        Dune::FieldVector< MI, dimension > x;
-        for (int d=0; d<dimension; ++d)
-          x[d].set(d);
-        basis.evaluate( order_, x, &(y[0]) );
-        coeffMatrix_->print(out,y,size_);
-      }
-#endif
-    }
   protected:
     PolynomialBasis(const PolynomialBasis &);
     PolynomialBasis &operator=(const PolynomialBasis&);

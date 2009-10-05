@@ -553,10 +553,13 @@ namespace Dune
 
   public:
     static const unsigned int dimension = Base::dimDomain;
+    static const unsigned int dimRange = 1;
 
     typedef typename Base::Field Field;
 
     typedef typename Base::DomainVector DomainVector;
+
+    typedef Dune::FieldVector<Field,dimRange> RangeVector;
 
     typedef MonomialBasisSize<Topology> Size;
 
@@ -628,8 +631,8 @@ namespace Dune
     {
       Base::integral( order_, sizes( order_ ), values );
     }
-    template <class RangeVector>
-    void integral ( std::vector< RangeVector > &values ) const
+    template <class Vector>
+    void integral ( Vector &values ) const
     {
       integral( &(values[ 0 ]) );
     }
@@ -695,8 +698,10 @@ namespace Dune
   public:
     typedef F Field;
     static const int dimension = dim;
+    static const unsigned int dimRange = 1;
 
     typedef FieldVector<Field,dimension> DomainVector;
+    typedef FieldVector<Field,dimRange> RangeVector;
 
     explicit VirtualMonomialBasis(unsigned int order)
       : order_(order) {}
@@ -723,9 +728,9 @@ namespace Dune
     {
       evaluate( deriv, x, reinterpret_cast< Field * >( values ) );
     }
-    template <unsigned int deriv, class RangeVector>
+    template <unsigned int deriv, class Vector>
     void evaluate ( const DomainVector &x,
-                    std::vector< RangeVector > &values ) const
+                    Vector &values ) const
     {
       evaluate( deriv, x, &(values[ 0 ]) );
     }
@@ -737,8 +742,8 @@ namespace Dune
     }
 
     virtual void integral ( Field *const values ) const = 0;
-    template <class RangeVector>
-    void integral ( std::vector< RangeVector > &values ) const
+    template <class Vector>
+    void integral ( Vector &values ) const
     {
       integral( &(values[ 0 ]) );
     }

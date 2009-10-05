@@ -4,22 +4,22 @@
 #define BASISPRINT
 #include <dune/finiteelements/multiindex.hh>
 namespace Dune {
-  template <class Basis>
-  void basisPrint(Basis &basis)
+  template <int deriv,class Basis>
+  void basisPrint(std::ostream &out, Basis &basis)
   {
     const int dimension = Basis::dimension;
     typedef MultiIndex< dimension > Field;
 
     unsigned int size = basis.size();
 
-    std::cout << "Polynomial representation of the basis functions:" << std::endl;
-    std::cout << "Number of base functions:  " << size << std::endl;
-    std::vector< Dune::FieldVector<Field,dimension> > y( size );
+    out << "% Number of base functions:  " << size << std::endl;
+    out << "% Derivative order: " << deriv << std::endl;
+    std::vector< typename Basis::RangeVector > y( size );
     FieldVector< Field, dimension > x;
     for( int i = 0; i < dimension; ++i )
       x[ i ].set( i, 1 );
-    basis.evaluate( x, y );
-    std::cout << y << std::endl;
+    basis.template evaluate<deriv>( x, y );
+    out << y << std::endl;
   }
 };
 #endif // BASISPRINT

@@ -9,6 +9,7 @@
 #include <dune/finiteelements/lagrangepoints.hh>
 #include <dune/finiteelements/lagrangeinterpolation.hh>
 #include <dune/finiteelements/basisprovider.hh>
+#include <dune/finiteelements/basisprint.hh>
 #include <dune/finiteelements/polynomialbasis.hh>
 namespace Dune
 {
@@ -57,7 +58,6 @@ namespace Dune
     typedef SF StorageField;
 
     typedef StorageField BasisField;
-    // typedef Dune::MultiIndex< dim > BasisField;
 
     typedef VirtualMonomialBasis<dim,BasisField> MBasis;
     typedef StandardEvaluator<MBasis> Evaluator;
@@ -77,9 +77,18 @@ namespace Dune
         basis = new Basis(virtBasis);
         LagrangeMatrix<Topology,ComputeField> matrix(order);
         basis->fill(matrix);
-        std::stringstream name;
-        name << "lagrange_" << Topology::name() << "_p" << order;
-        basis->template printBasis<Topology>(name.str(),matrix);
+        {
+          typedef MultiIndex< dimension > MIField;
+          typedef VirtualMonomialBasis<dim,MIField> MBasisMI;
+          typedef PolynomialBasisWithMatrix<StandardEvaluator<MBasisMI>,SparseCoeffMatrix<StorageField> > BasisMI;
+          const MBasisMI &_mBasisMI = MonomialBasisProvider<dimension,MIField>::template basis<Topology>(order);
+          BasisMI basisMI(_mBasisMI);
+          basisMI.fill(matrix);
+          std::stringstream name;
+          name << "lagrange_" << Topology::name() << "_p" << order;
+          std::ofstream out(name.str().c_str());
+          basisPrint<0>(out,basisMI);
+        }
       }
     };
   };

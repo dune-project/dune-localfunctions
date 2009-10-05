@@ -12,6 +12,7 @@
 #include <dune/finiteelements/multiindex.hh>
 #include <dune/finiteelements/basisevaluator.hh>
 #include <dune/finiteelements/polynomialbasis.hh>
+#include <dune/finiteelements/basisprint.hh>
 
 #ifndef TOPOLOGY
 #error "TOPOLOGY not defined."
@@ -31,7 +32,7 @@ struct TestMatrix
   }
   const double operator() ( int r, int c ) const
   {
-    return double(r+1)*double(c+1);
+    return pow(-1,c/2+r)*double(r)*double(c)*double(colSize(r)-c-1);
   }
   unsigned int size_;
 };
@@ -174,14 +175,21 @@ void multiIndexTest(unsigned int p)
   std::cout << ">>> Polynomial basis: " << std::endl;
   typedef VectorialEvaluator<Basis,dimR> Evaluator;
   Evaluator eval(basis);
-  PolynomialBasisWithMatrix<Evaluator,SparseCoeffMatrix<double> > pBasis(basis);
+  typedef PolynomialBasisWithMatrix<Evaluator,SparseCoeffMatrix<double> > PBasis;
+  PBasis pBasis(basis);
   TestMatrix<dimR> matrix(basis);
   pBasis.fill(matrix);
-  std::vector< Dune::FieldVector<Field,dimR> > y( pBasis.size() );
-  pBasis.evaluate( x, y );
-  std::cout << y << std::endl;
-  //for( unsigned int i = 0; i < size; ++i )
-  //  std::cout << "    y[ " << i << " ] = " << y[ i ] << std::endl;
+  basisPrint<0>(std::cout,pBasis);
+
+  /*
+     std::cout << ">>> Vectorial Polynomial basis: " << std::endl;
+     typedef VectorialEvaluator<PBasis,dimR> PEvaluator;
+     PEvaluator peval(pBasis);
+     typedef PolynomialBasisWithMatrix<PEvaluator,SparseCoeffMatrix<double> > PPBasis;
+     PPBasis ppBasis(pBasis);
+     ppBasis.fill(matrix);
+     basisPrint<0>(std::cout,ppBasis);
+   */
 }
 
 int main ( int argc, char **argv )

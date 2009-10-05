@@ -61,35 +61,6 @@ namespace Dune
       return numCols_;
     }
 
-    template <class RangeVector>
-    void print(std::ostream& out,
-               std::vector< RangeVector > &x,
-               unsigned int numLsg = size()) const {
-      /*
-         Vector *row = rows_[0];
-         for( unsigned int r=0;r<numLsg;++r )
-         {
-          out << "f_" << r << "(" << char('a');
-          for (int i=1;i<RangeVector::dimension;++i)
-            out << "," << char('a'+i);
-          out << ")=";
-          RangeVector *itx = (&x[0]);
-          bool first = true;
-          for (; row != rows_[r+1]; ++row, ++itx) {
-            if ((*row)[0][0] > 1e-15) {
-              out << ((!first)?" + ":"") << (*row)[0][0] << "*" << (*itx);
-              first = false;
-            }
-            else if ((*row)[0][0] < -1e-15) {
-              out << " - " << -((*row)[0][0]) << "*" << (*itx);
-              first = false;
-            }
-          }
-          out << std::endl;
-         }
-       */
-    }
-
     template< class BasisVector, class RangeVector >
     void mult ( const BasisVector &x,
                 std::vector< RangeVector > &y ) const
@@ -113,7 +84,7 @@ namespace Dune
     }
 
     template< class FullMatrix >
-    void fill ( const FullMatrix &mat )
+    void fill ( const FullMatrix &mat, bool verbose = false )
     {
       unsigned int zeros = 0;
       numRows_ = mat.rowSize();
@@ -143,10 +114,11 @@ namespace Dune
           *it = val;
         }
       }
-      std::cout << "Entries: " << (rows_[numRows_]-rows_[0]) << " "
-                << "Zeros: " << zeros << " "
-                << "Precentage: " << 100.*double(zeros)/double(rows_[numRows_]-rows_[0])
-                << std::endl;
+      if (verbose)
+        std::cout << "Entries: " << (rows_[numRows_]-rows_[0]) << " "
+                  << "Zeros: " << zeros << " "
+                  << "Precentage: " << 100.*double(zeros)/double(rows_[numRows_]-rows_[0])
+                  << std::endl;
     }
 
   private:
@@ -188,35 +160,6 @@ namespace Dune
       return numCols_;
     }
 
-    template <class RangeVector>
-    void print(std::ostream& out,
-               std::vector< RangeVector > &x,
-               unsigned int numLsg = size()) const {
-      /*
-         Vector *row = rows_[0];
-         for( unsigned int r=0;r<numLsg;++r )
-         {
-          out << "f_" << r << "(" << char('a');
-          for (int i=1;i<RangeVector::dimension;++i)
-            out << "," << char('a'+i);
-          out << ")=";
-          RangeVector *itx = (&x[0]);
-          bool first = true;
-          for (; row != rows_[r+1]; ++row, ++itx) {
-            if ((*row)[0][0] > 1e-15) {
-              out << ((!first)?" + ":"") << (*row)[0][0] << "*" << (*itx);
-              first = false;
-            }
-            else if ((*row)[0][0] < -1e-15) {
-              out << " - " << -((*row)[0][0]) << "*" << (*itx);
-              first = false;
-            }
-          }
-          out << std::endl;
-         }
-       */
-    }
-
     template< class BasisVector, class RangeVector >
     void mult ( const BasisVector &x,
                 std::vector< RangeVector > &y ) const
@@ -242,7 +185,7 @@ namespace Dune
     }
 
     template< class FullMatrix >
-    void fill ( const FullMatrix &mat )
+    void fill ( const FullMatrix &mat, bool verbose=false )
     {
       numRows_ = mat.rowSize();
       numCols_ = 0;
@@ -282,7 +225,8 @@ namespace Dune
         }
         rows_[ r+1 ] = cit;
       }
-      std::cout << "Entries: " << (rows_[numRows_]-rows_[0]) << std::endl;
+      if (verbose)
+        std::cout << "Entries: " << (rows_[numRows_]-rows_[0]) << std::endl;
     }
 
   private:

@@ -52,8 +52,8 @@ namespace Dune
         vecOMZ_( other.vecZ_ ),
         factor_( other.factor_ )
     {
-      const This *o = &other;
-      if (o->next_)
+      assert(!other.next_);
+      if (other.next_)
       {
         next_ = new MultiIndex( *(other.next_) );
       }
@@ -74,6 +74,11 @@ namespace Dune
         next_ = 0;
     }
 
+    ~MultiIndex()
+    {
+      remove();
+    }
+
     int z(int i) const
     {
       return vecZ_[i];
@@ -89,19 +94,19 @@ namespace Dune
 
     This &operator= ( const This &other )
     {
+      remove();
       vecZ_   = other.vecZ_;
       vecOMZ_ = other.vecOMZ_;
       factor_ = other.factor_;
-      assert(!next_);
       if (other.next_)
-      {
-        next_ = new MultiIndex;
-        next_ = other.next_;
-      }
+        next_ = new MultiIndex(*(other.next_));
       return *this;
     }
     This &operator= ( const double f )
     {
+      remove();
+      vecZ_ = 0;
+      vecOMZ_ = 0;
       factor_ = f;
       return *this;
     }
@@ -109,31 +114,42 @@ namespace Dune
     This &operator*= ( const double f )
     {
       factor_ *= f;
+      if (next_)
+        (*next_) *= f;
       return *this;
     }
     This &operator/= ( const double f )
     {
       factor_ /= f;
+      if (next_)
+        (*next_) /= f;
       return *this;
     }
 
     This &operator*= ( const This &other )
     {
+      assert(!other.next_);
       vecZ_   += other.vecZ_;
       vecOMZ_ += other.vecOMZ_;
       factor_ *= other.factor_;
+      if (next_)
+        (*next_) *= other;
       return *this;
     }
     This &operator/= ( const This &other )
     {
+      assert(!other.next_);
       vecZ_   -= other.vecZ_;
       vecOMZ_ -= other.vecOMZ_;
       factor_ /= other.factor_;
+      if (next_)
+        (*next_) /= other;
       return *this;
     }
 
     This &operator+= ( const This &other )
     {
+      assert(!other.next_);
       if (!sameMultiIndex(other))
       {
         if (next_)
@@ -149,10 +165,11 @@ namespace Dune
     }
     This &operator-= ( const This &other )
     {
+      assert(!other.next_);
       if (!sameMultiIndex(other))
       {
         if (next_)
-          next_+=other;
+          next_-=other;
         else
         {
           next_ = new This(other);
@@ -229,6 +246,16 @@ namespace Dune
     }
 
   private:
+    void remove()
+    {
+      if (next_)
+      {
+        next_->remove();
+        delete next_;
+        next_ = 0;
+      }
+    }
+
     typedef Dune::FieldVector< int, dimension > Vector;
 
     Vector vecZ_;
@@ -267,68 +294,97 @@ namespace Dune
   template <int d,int dimR>
   std::ostream &operator<<(std::ostream& out,
                            const std::vector<Dune::FieldVector<MultiIndex<d>,dimR> >& y) {
+    out << "\\begin{eqnarray*}" << std::endl;
     for (unsigned int k=0; k<y.size(); ++k) {
       out << "f_" << k << "(" << char('a');
       for (int i=1; i<d; ++i)
         out << "," << char('a'+i);
-      out << ") = ( ";
+      out << ") &=& ( ";
       out << y[k][0] ;
       for (unsigned int r=1; r<dimR; ++r) {
         out << " , " << y[k][r] ;
       }
-      out << " )" << std::endl;
+      out << " ) \\\\" << std::endl;
     }
+    out << "\\end{eqnarray*}" << std::endl;
     return out;
   }
   template <int d>
-  std::ostream &operator<<(std::ostream& out,const MultiIndex<d>& mi) {
-    if (mi.next_)
-    {
-      assert( &mi != mi.next_ );
-      out << *(mi.next_) << " + ";
-    }
-    if (mi.absZ()==0 && std::abs(mi.factor())<1e-10)
-      out << "0";
-    else if (mi.absZ()==0)
-      out << mi.factor();
-    else {
-      if ( std::abs(mi.factor()-1.)>1e-10)
-        out << mi.factor();
-      int absVal = 0;
-      for (int i=0; i<d; ++i) {
-        if (mi.vecZ_[i]==0)
+  std::ostream &operator<<(std::ostream& out,const MultiIndex<d>& val)
+  {
+    /*
+       if (mi.next_)
+       {
+        assert( &mi != mi.next_ );
+        out << *(mi.next_);
+        if (mi.absZ()==0 && std::abs(mi.factor())<1e-10)
+          return out;
+        else
+          out << " + ";
+       }
+     */
+    bool first = true;
+    const MultiIndex<d> *m = &val;
+    do {
+      if (m->absZ()==0 && std::abs(m->factor())<1e-10)
+      {
+        if (!m->next_ || !first)
+        {
+          out << "0";
+          break;
+        }
+        else {
+          m = m->next_;
           continue;
-        else if (mi.vecZ_[i]==1)
-          out << char('a'+i);
-        /*
-           else if (mi.vecZ_[i]>0)
-           out << char('a'+i) << "**(" << mi.vecZ_[i] << ")";
-           else if (mi.vecZ_[i]<0)
-           out << char('a'+i) << "**(" << mi.vecZ_[i] << ")";
-           absVal += mi.vecZ_[i];
-           if (absVal<mi.absZ()) out << "*";
-         */
-        else if (mi.vecZ_[i]>0)
-          out << char('a'+i) << "^" << mi.vecZ_[i] << "";
-        else if (mi.vecZ_[i]<0)
-          out << char('a'+i) << "^" << mi.vecZ_[i] << "";
-        absVal += mi.vecZ_[i];
-        if (absVal<mi.absZ()) out << "";
+        }
       }
-    }
-    if (mi.absOMZ()>0) {
-      for (int i=0; i<=mi.absZ(); ++i) {
-        if (mi.vecOMZ_[i]==0)
-          continue;
-        else if (mi.vecOMZ_[i]==1)
-          out << (1-char('a'+i));
-        else if (mi.vecOMZ_[i]>0)
-          out << (1-char('a'+i)) << "^" << mi.vecOMZ_[i];
-        else if (mi.vecOMZ_[i]<0)
-          out << (1-char('a'+i)) << "^" << mi.vecOMZ_[i];
-        if (i==mi.absZ()+1) out << "*";
+      if (m->factor()>0 && !first)
+        out << " + ";
+      else if (m->factor()<0)
+        if (!first)
+          out << " - ";
+        else
+          out << "- ";
+      else
+        out << "  ";
+      first = false;
+      double f = std::abs(m->factor());
+      if (m->absZ()==0)
+        out << f;
+      else {
+        if ( std::abs(f-1.)>1e-10)
+          out << f;
+        int absVal = 0;
+        for (int i=0; i<d; ++i) {
+          if (m->vecZ_[i]==0)
+            continue;
+          else if (m->vecZ_[i]==1)
+            out << char('a'+i);
+          else if (m->vecZ_[i]>0)
+            out << char('a'+i) << "^" << m->vecZ_[i] << "";
+          else if (m->vecZ_[i]<0)
+            out << char('a'+i) << "^" << m->vecZ_[i] << "";
+          absVal += m->vecZ_[i];
+          if (absVal<m->absZ()) out << "";
+        }
       }
-    }
+      /*
+         if (mi.absOMZ()>0) {
+         for (int i=0;i<=mi.absZ();++i) {
+          if (mi.vecOMZ_[i]==0)
+            continue;
+          else if (mi.vecOMZ_[i]==1)
+            out << (1-char('a'+i));
+          else if (mi.vecOMZ_[i]>0)
+            out << (1-char('a'+i)) << "^" << mi.vecOMZ_[i];
+          else if (mi.vecOMZ_[i]<0)
+            out << (1-char('a'+i)) << "^" << mi.vecOMZ_[i];
+          if (i==mi.absZ()+1) out << "*";
+         }
+         }
+       */
+      m = m->next_;
+    } while (m);
     return out;
   }
 

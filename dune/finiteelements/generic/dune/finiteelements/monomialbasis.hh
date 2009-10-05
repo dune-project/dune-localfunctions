@@ -212,8 +212,8 @@ namespace Dune
 
       // fill first column
       baseBasis_.evaluate( order, x, offsets, values );
-      const unsigned int *const baseSizes = baseBasis_.sizes_;
 
+      const unsigned int *const baseSizes = baseBasis_.sizes_;
       RangeVector *row0 = values;
       for( unsigned int k = 1; k <= order; ++k )
       {
@@ -243,11 +243,11 @@ namespace Dune
 
         // fill first column
         baseBasis_.evaluate( order, y, offsets, values );
-        const unsigned int *const baseSizes = baseBasis_.sizes_;
       }
       else
         omz = Field( 0 );
 
+      const unsigned int *const baseSizes = baseBasis_.sizes_;
       RangeVector *row0 = values;
       const Field &omzk = omz;
       for( unsigned int k = 1; k <= order; ++k )
@@ -290,8 +290,8 @@ namespace Dune
       numBaseFunctions_ = new unsigned int[ order+1 ];
 
       baseBasis_.computeSizes( order );
-      const unsigned int *const baseNBF = baseBasis_.numBaseFunctions_;
 
+      const unsigned int *const baseNBF = baseBasis_.numBaseFunctions_;
       sizes_[ 0 ] = 1;
       numBaseFunctions_[ 0 ] = 1;
       for( unsigned int k = 1; k <= order; ++k )

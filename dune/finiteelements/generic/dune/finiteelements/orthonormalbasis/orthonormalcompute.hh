@@ -3,20 +3,30 @@
 #ifndef DUNE_ORTHONORMALCOMPUTE_HH
 #define DUNE_ORTHONORMALCOMPUTE_HH
 
+#include <cassert>
 #include <iostream>
 #include <fstream>
-#include <map>
 #include <iomanip>
-#include <cassert>
+#include <map>
+
 #include <alglib/qr.h>
 #include <alglib/sevd.h>
+
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
+
 #include <dune/alglib/multiprecision.hh>
 #include <dune/alglib/vector.hh>
 #include <dune/alglib/matrix.hh>
 
-namespace ONB {
+#include <dune/grid/genericgeometry/topologytypes.hh>
+
+#include <dune/finiteelements/monomialbasis.hh>
+#include <dune/finiteelements/multiindex.hh>
+
+namespace ONB
+{
+
   template <class scalar_t>
   scalar_t factorial(int start,int end) {
     scalar_t ret(1);

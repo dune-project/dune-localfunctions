@@ -171,7 +171,7 @@ namespace Dune
     {
       typedef F Field;
       static const unsigned int dimension = dim;
-      typedef GenericGeometry::Quadrature< dim, F > Quadrature;
+      typedef GenericGeometry::Quadrature< dimension, Field > Quadrature;
 
       typedef unsigned int Key;
 

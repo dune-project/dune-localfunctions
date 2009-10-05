@@ -54,9 +54,9 @@ namespace Dune
 
   template< class Topology, class SF, class CF = typename ComputeField< SF, 512 >::Type >
   struct LagrangeBasis
-    : public PolynomialBasis<1,MonomialBasis<Topology,SF>,SF,CF>
+    : public PolynomialBasis<1,MonomialBasis<Topology,SF>,SF>
   {
-    typedef PolynomialBasis<1,MonomialBasis<Topology,SF>,SF,CF> Base;
+    typedef PolynomialBasis<1,MonomialBasis<Topology,SF>,SF> Base;
     LagrangeBasis (int order)
       : Base(order)
     {

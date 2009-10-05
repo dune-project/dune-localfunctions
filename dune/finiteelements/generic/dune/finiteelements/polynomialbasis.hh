@@ -8,8 +8,7 @@
 #include <dune/finiteelements/multiindex.hh>
 namespace Dune
 {
-  template< int dimRange, class B,
-      class SF, class CF >
+  template< int dimRange, class B, class SF>
   class PolynomialBasis
   {
     typedef B Basis;
@@ -17,7 +16,6 @@ namespace Dune
     enum {dimension = Topology::dimension};
 
     typedef SF StorageField;
-    typedef CF ComputationField;
 
   public:
     typedef typename Basis::DomainVector DomainVector;

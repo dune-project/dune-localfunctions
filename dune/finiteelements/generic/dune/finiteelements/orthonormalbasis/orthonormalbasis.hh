@@ -10,7 +10,7 @@ namespace Dune
 
   template< class Topology, class SF, class CF = typename ComputeField< SF, 512 >::Type >
   class OrthonormalBasis
-    : public PolynomialBasis<1,StandardMonomialBasis<Topology::dimension,SF>,SF,CF>
+    : public PolynomialBasis<1,StandardMonomialBasis<Topology::dimension,SF>,SF>
   {
     enum {dimension = Topology::dimension};
 
@@ -18,7 +18,7 @@ namespace Dune
     typedef CF ComputationField;
 
     typedef StandardMonomialBasis<dimension,StorageField> Basis;
-    typedef PolynomialBasis<1,Basis,SF,CF> Base;
+    typedef PolynomialBasis<1,Basis,SF> Base;
 
   public:
     typedef typename Basis::DomainVector DomainVector;

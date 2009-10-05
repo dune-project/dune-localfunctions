@@ -487,6 +487,88 @@ namespace Dune
     }
 
   };
+  template< int dim, class F >
+  class VirtualMonomialBasis
+  {
+    typedef VirtualMonomialBasis< dim, F > This;
+
+  public:
+    typedef F Field;
+    static const int dimension = dim;
+
+    typedef FieldVector<Field,dimension> DomainVector;
+
+    const unsigned int *sizes ( unsigned int order ) const = 0;
+
+    const unsigned int size ( unsigned int order ) const
+    {
+      return sizes( order )[ order ];
+    }
+
+    void evaluate ( const unsigned int order,
+                    const DomainVector &x,
+                    Field *const values ) const = 0;
+    void evaluate ( const unsigned int order,
+                    const DomainVector &x,
+                    FieldVector<Field,1> *const values ) const
+    {
+      evaluate( order, x, reinterpret_cast< Field * >( values ) );
+    }
+    template <class RangeVector>
+    void evaluate ( const unsigned int order,
+                    const DomainVector &x,
+                    std::vector< RangeVector > &values ) const
+    {
+      evaluate( order, x, &(values[ 0 ]) );
+    }
+
+    void integral ( const unsigned int order,
+                    Field *const values ) const = 0;
+    void integral ( const unsigned int order,
+                    FieldVector<Field,1> *const values ) const
+    {
+      integral( order, reinterpret_cast< Field * >( values ) );
+    }
+    template <class RangeVector>
+    void integral ( const unsigned int order,
+                    std::vector< RangeVector > &values ) const
+    {
+      integral( order, &(values[ 0 ]) );
+    }
+  };
+  template< class Topology, class F >
+  class VirtualMonomialBasisImpl
+    : public VirtualMonomialBasis< Topology::dimension, F >
+  {
+    typedef VirtualMonomialBasis< Topology::dimension, F > Base;
+    typedef VirtualMonomialBasisImpl< Topology, F > This;
+
+  public:
+    typedef typename Base::Field Field;
+    typedef typename Base::DomainVector DomainVector;
+
+    const unsigned int *sizes ( unsigned int order ) const
+    {
+      return basis_.sizes(order);
+    }
+
+    void evaluate ( const unsigned int order,
+                    const DomainVector &x,
+                    Field *const values ) const
+    {
+      basis_.evaluate(order,x,values);
+    }
+
+    void integral ( const unsigned int order,
+                    Field *const values ) const
+    {
+      basis_.integral(order,values);
+    }
+
+  private:
+    MonomialBasis<Topology,Field> basis_;
+  };
+
 
 
 

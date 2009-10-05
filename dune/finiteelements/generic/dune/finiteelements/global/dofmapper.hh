@@ -128,9 +128,14 @@ namespace Dune
       const Iterator end = indexInfo_[ codim ].end();
       for( Iterator it = indexInfo_[ codim ].begin(); it != end; ++it )
       {
+        const unsigned int topologyId = it->topologyId;
+        const unsigned int dim = dimension - (it->codim);
         it->offset = size_;
-        const GeometryType type = GenericGeometry::geometryType( it->topologyId, dimension-(it->codim) );
-        size_ += (it->size > 0 ? indexSet_.size( type ) * it->size : 0);
+        if( (it->size > 0) && GenericGeometry::hasGeometryType( topologyId, dim ) )
+        {
+          const GeometryType type = GenericGeometry::geometryType( topologyId, dim );
+          size_ += indexSet_.size( type ) * it->size;
+        }
       }
     }
 

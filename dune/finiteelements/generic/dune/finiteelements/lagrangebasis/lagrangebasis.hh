@@ -9,7 +9,7 @@
 
 #include <dune/finiteelements/lagrangebasis/interpolation.hh>
 #include <dune/finiteelements/multiindex.hh>
-#include <dune/finiteelements/monomialbasis.hh>
+#include <dune/finiteelements/generic/monomialbasis.hh>
 #include <dune/finiteelements/basisprovider.hh>
 #include <dune/finiteelements/basisprint.hh>
 #include <dune/finiteelements/polynomialbasis.hh>

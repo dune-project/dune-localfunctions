@@ -21,7 +21,7 @@
 
 #include <dune/grid/genericgeometry/topologytypes.hh>
 
-#include <dune/finiteelements/monomialbasis.hh>
+#include <dune/finiteelements/generic/monomialbasis.hh>
 #include <dune/finiteelements/multiindex.hh>
 
 namespace ONBCompute

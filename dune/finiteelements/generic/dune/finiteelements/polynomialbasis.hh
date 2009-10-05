@@ -8,7 +8,7 @@
 #include <dune/common/fmatrix.hh>
 
 #include <dune/finiteelements/coeffmatrix.hh>
-#include <dune/finiteelements/monomialbasis.hh>
+#include <dune/finiteelements/generic/monomialbasis.hh>
 #include <dune/finiteelements/multiindex.hh>
 #include <dune/finiteelements/basisevaluator.hh>
 

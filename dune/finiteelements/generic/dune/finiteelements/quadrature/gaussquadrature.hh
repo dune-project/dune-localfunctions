@@ -139,7 +139,7 @@ namespace Dune
       static const unsigned int dimension = Base::dimension;
 
       explicit GaussQuadrature ( unsigned int order )
-        : Base( 0 )
+        : Base( (unsigned int)(0) )
       {
         typedef AlgLib::MultiPrecision< Precision< Field >::value > MPField;
         GaussPoints< MPField > gaussPoints( (order+1) / 2 );

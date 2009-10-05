@@ -148,7 +148,7 @@ namespace Dune
       {
         const unsigned int vcodim = (codim > 0 ? codim : 1);
         const unsigned int numBaseM = GenericGeometry::Size< BaseTopology, vcodim-1 >::value;
-        const unsigned int n = BaseImpl::template setup< vcodim-1, dim >( order, count, points );
+        const unsigned int n = BaseImpl::template setup< vcodim-1, dim >( order, count+numBaseN, points );
         for( unsigned int j = 0; j < n; ++j )
         {
           LocalKey &key = points[ j ].localKey_;
@@ -156,6 +156,7 @@ namespace Dune
           points[ j + n ].point_ = points[ j ].point_;
           points[ j + n ].point_[ dimension-1 ] = Field( 1 );
           points[ j + n ].localKey_ = LocalKey( key.subentity() + numBaseM, codim, key.index() );
+          ++count[ key.subentity() + numBaseM ];
         }
         size += 2*n;
       }
@@ -213,12 +214,12 @@ namespace Dune
         const unsigned int vcodim = (codim < dimension ? codim : dimension-1);
         for( unsigned int i = order-1; i > 0; --i )
         {
-          const unsigned int n = BaseImpl::template setup< vcodim, dim >( i, count, points );
+          const unsigned int n = BaseImpl::template setup< vcodim, dim >( i, count+numBaseM, points );
           LagrangePoint< Field, dim > *const end = points + n;
           for( ; points != end; ++points )
           {
             LocalKey &key = points->localKey_;
-            key = LocalKey( key.subentity(), codim, key.index() );
+            key = LocalKey( key.subentity()+numBaseM, codim, key.index() );
             for( unsigned int j = 0; j < dimension-1; ++j )
               points->point_[ j ] *= Field( i ) / Field( order );
             points->point_[ dimension-1 ] = Field( order - i ) / Field( order );

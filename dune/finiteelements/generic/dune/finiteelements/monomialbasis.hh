@@ -654,6 +654,58 @@ namespace Dune
     {}
   };
 
+  template <class F,int dimD,int dimR,unsigned int deriv>
+  struct Tensor
+  {
+    typedef Tensor<F,dimD,dimR,deriv-1> Base;
+    static const int single = Base::single*dimD;
+    static const int all = Base::all+single;
+    typedef Dune::FieldVector<Dune::FieldVector<F,single>,dimR> Single;
+    typedef Dune::FieldVector<Dune::FieldVector<F,all>,dimR> All;
+  };
+  template <class F,int dimD,int dimR>
+  struct Tensor<F,dimD,dimR,2>
+  {
+    struct HJV
+    {
+      typedef FieldVector<FieldMatrix<F,dimD,dimD>,dimR> Hessian;
+      typedef FieldMatrix<F,dimR,dimD> Jacobian;
+      typedef FieldVector<F,dimR> Value;
+      Hessian hessian;
+      Jacobian jacobian;
+      Value value;
+    };
+    typedef Tensor<F,dimD,dimR,1> Base;
+    static const int single = Base::single*dimD;
+    static const int all = Base::all+single;
+    typedef typename HJV::Hessian Single;
+    typedef HJV All;
+  };
+  template <class F,int dimD,int dimR>
+  struct Tensor<F,dimD,dimR,1>
+  {
+    struct JV
+    {
+      typedef FieldMatrix<F,dimR,dimD> Jacobian;
+      typedef FieldVector<F,dimR> Value;
+      Jacobian jacobian;
+      Value value;
+    };
+    typedef Tensor<F,dimD,dimR,0> Base;
+    static const int single = Base::single*dimD;
+    static const int all = Base::all+single;
+    typedef typename JV::Jacobian Single;
+    typedef JV All;
+  };
+  template <class F,int dimD,int dimR>
+  struct Tensor<F,dimD,dimR,0>
+  {
+    static const int single = 1;
+    static const int all = 1;
+    typedef Dune::FieldVector<F,dimR> Single;
+    typedef Dune::FieldVector<F,dimR> All;
+  };
+
   template <class B>
   struct StandardEvaluator
   {
@@ -662,25 +714,34 @@ namespace Dune
     typedef typename Basis::DomainVector DomainVector;
     typedef std::vector<Field> Container;
     static const int dimension = Basis::dimension;
-    struct Iterator
+    template <class BlockType>
+    struct BaseIterator
     {
-      typedef typename Container::value_type RangeVector;
+      static const int blockSize = sizeof(BlockType)/sizeof(Field);
+      typedef BlockType RangeVector;
       typedef typename Container::const_iterator CIter;
-      Iterator(const Container &container)
+      BaseIterator(const Container &container)
         : pos_(container.begin()), end_(container.end())
       {}
       const RangeVector &operator*() const
       {
         assert(!done());
-        return *pos_;
+        return reinterpret_cast<const RangeVector&>(*pos_);
       }
       bool done() const
       {
         return pos_==end_;
       }
-      Iterator operator++()
+      BaseIterator &operator++()
       {
-        ++pos_;
+        assert(blockSize == 1);
+        pos_ += blockSize;
+        return *this;
+      }
+      BaseIterator &operator+=(unsigned int skip)
+      {
+        assert(blockSize == 1);
+        pos_ += skip*blockSize;
         return *this;
       }
     private:
@@ -693,23 +754,34 @@ namespace Dune
         order_(order),
         container_(basis.size(order))
     {}
-    Iterator evaluate(const DomainVector &x)
+    template <unsigned int deriv>
+    struct Iterator
+    {
+      typedef BaseIterator<typename Tensor<Field,dimension,1,deriv>::All> All;
+      typedef BaseIterator<typename Tensor<Field,dimension,1,deriv>::Single> Single;
+    };
+    typename Iterator<0>::Single evaluate(const DomainVector &x)
     {
       basis_.evaluate(order_,x,container_);
-      return Iterator(container_);
+      return typename Iterator<0>::Single(container_);
+    }
+    typename Iterator<1>::Single jacobian(const DomainVector &x)
+    {
+      basis_.evaluate(order_,x,container_);
+      return typename Iterator<1>::Single(container_);
+    }
+    template <unsigned int deriv>
+    typename Iterator<deriv>::Single evaluate(const DomainVector &x)
+    {
+      basis_.evaluate(order_,x,container_);
+      return typename Iterator<deriv>::Single(container_);
     }
     /*
-       void evaluate(const DomainVector &x)
+       template <unsigned int deriv>
+       typename Iterator<deriv>::All evaluateAll(const DomainVector &x)
        {
-       basis_.evaluate(order_,x,container_);
-       }
-       Iterator begin() const
-       {
-       return container_.begin();
-       }
-       Iterator end() const
-       {
-       return container_.end();
+       basis_.evaluateAll<deriv>(order_,x,container_);
+       return typename Iterator<deriv>::All(container_);
        }
      */
     unsigned int order() const
@@ -727,18 +799,6 @@ namespace Dune
     Container container_;
   };
 
-  template <class F,unsigned int deriv,int dimD,int dimR>
-  struct Tensor
-  {
-    typedef typename Tensor<F,deriv-1,dimD,dimR>::Type BaseType;
-    typedef Dune::FieldVector<BaseType,dimD> Type;
-  };
-  template <class F,int dimD,int dimR>
-  struct Tensor<F,0,dimD,dimR>
-  {
-    typedef Dune::FieldVector<F,dimR> Type;
-  };
-
   template <class B,class F>
   struct MultiIndexEvaluator
   {
@@ -747,38 +807,16 @@ namespace Dune
     typedef std::vector<typename Basis::Field> Container;
     static const int dimension = Basis::dimension;
     typedef Dune::FieldVector<Field,dimension> DomainVector;
-    template <unsigned int deriv>
-    struct Iterator
+    template <class BlockType>
+    struct BaseIterator
     {
-      typedef typename Tensor<Field,deriv,dimension,1>::Type RangeVector;
+      typedef BlockType RangeVector;
       typedef typename Container::const_iterator CIter;
-      Iterator(const DomainVector &x,unsigned int order,
-               const Container &container)
+      BaseIterator(const std::vector<DomainVector> &x,
+                   const Container &container)
         : pos_(container.begin()), end_(container.end()),
-          x_(order+1),
-          factor_(order+1)
+          x_(x)
       {
-        for (int d=0; d<dimension; ++d)
-        {
-          x_[0][d] = 1;
-          for (int i=1; i<=order; ++i) {
-            x_[i][d]=x_[i-1][d]*x[d];
-          }
-        }
-        for (int i=0; i<=order; ++i)
-        {
-          if (i<deriv)
-            factor_[i] = 0.;
-          else
-          {
-            factor_[i] = 1.;
-            for (int a=0; a<deriv; ++a)
-            {
-              factor_[i] *= (i-a);
-            }
-          }
-          // std::cout << "factor [ " << i << " ] = " << factor_[i] << std::endl;
-        }
         set();
       }
       const RangeVector &operator*() const
@@ -790,7 +828,7 @@ namespace Dune
       {
         return pos_==end_;
       }
-      Iterator operator++()
+      BaseIterator operator++()
       {
         ++pos_;
         if (!done())
@@ -805,35 +843,52 @@ namespace Dune
         {
           unsigned int o = pos_->z(d);
           assert(o<x_.size());
-          if (o-deriv>=0)
-            val_[0]  *= factor_[o]*x_[o-deriv][d];
+          val_[0]  *= x_[o][d];
         }
       }
       CIter pos_;
       const CIter end_;
-      std::vector<DomainVector> x_;
-      std::vector<Field> factor_;
+      const std::vector<DomainVector> &x_;
       RangeVector val_;
     };
 
     MultiIndexEvaluator(const Basis &basis,unsigned int order)
       : basis_(basis),
         order_(order),
-        container_(basis.size(order))
+        container_(basis.size(order)),
+        x_(order+1)
     {
       typename Basis::DomainVector x;
       for( int i = 0; i < dimension; ++i )
         x[ i ].set( i, 1 );
       basis_.evaluate(order_,x,container_);
     }
-    Iterator<0> evaluate(const DomainVector &x)
+    template <unsigned int deriv>
+    struct Iterator
     {
-      return Iterator<0>(x,order_,container_);
+      typedef BaseIterator<typename Tensor<Field,dimension,1,deriv>::All> All;
+      typedef BaseIterator<typename Tensor<Field,dimension,1,deriv>::Single> Single;
+    };
+    typename Iterator<0>::Single evaluate(const DomainVector &x)
+    {
+      setX(x);
+      return typename Iterator<0>::Single(x_,container_);
     }
     template <unsigned int deriv>
-    Iterator<deriv> evaluate(const DomainVector &x)
+    typename Iterator<deriv>::Single evaluate(const DomainVector &x)
     {
-      return Iterator<deriv>(x,order_,container_);
+      setX(x);
+      return typename Iterator<deriv>::Single(x_,container_);
+    }
+    void setX(const DomainVector &x)
+    {
+      for (int d=0; d<dimension; ++d)
+      {
+        x_[0][d] = 1;
+        for (int i=1; i<=order_; ++i) {
+          x_[i][d]=x_[i-1][d]*x[d];
+        }
+      }
     }
     unsigned int order() const
     {
@@ -848,6 +903,7 @@ namespace Dune
     const Basis &basis_;
     unsigned int order_;
     Container container_;
+    std::vector<DomainVector> x_;
   };
 }
 

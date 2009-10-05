@@ -54,12 +54,15 @@ namespace Dune
   template< int dim, class SF, class CF >
   struct LagrangeBasisCreator
   {
-    typedef VirtualMonomialBasis<dim,SF> MBasis;
     typedef SF StorageField;
+    typedef VirtualMonomialBasis<dim,StorageField> MBasis;
+    typedef StandardEvaluator<MBasis> Evaluator;
+    // typedef Dune::MultiIndex< dim > MIF;
+    // typedef VirtualMonomialBasis<dim,MIF> MBasis;
+    // typedef MultiIndexEvaluator<MBasis,StorageField> Evaluator;
     typedef AlgLib::MultiPrecision< Precision<CF>::value > ComputeField;
     static const int dimension = dim;
-    typedef StandardEvaluator<MBasis> Evaluator;
-    typedef PolynomialBasisWithMatrix<Evaluator> Basis;
+    typedef PolynomialBasisWithMatrix<Evaluator,SparseCoeffMatrix<StorageField> > Basis;
     typedef unsigned int Key;
 
     template <class Topology>
@@ -68,6 +71,7 @@ namespace Dune
       static void apply(unsigned int order,Basis* &basis)
       {
         const MBasis &virtBasis = MonomialBasisProvider<dimension,StorageField>::template basis<Topology>(order);
+        // const MBasis &virtBasis = MonomialBasisProvider<dimension,MIF>::template basis<Topology>(order);
         basis = new Basis(virtBasis,order);
         LagrangeMatrix<Topology,ComputeField> matrix(order);
         basis->fill(matrix);

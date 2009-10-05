@@ -136,7 +136,7 @@ namespace Dune
           for( unsigned int j = 0; j < n; ++j )
           {
             LocalKey &key = points->localKey_;
-            key = LocalKey( key.subentity(), codim, key.index() );
+            key = LocalKey( key.subEntity(), codim, key.index() );
             points->point_[ dimension-1 ] = Field( i ) / Field( order );
             ++points;
           }
@@ -152,11 +152,11 @@ namespace Dune
         for( unsigned int j = 0; j < n; ++j )
         {
           LocalKey &key = points[ j ].localKey_;
-          key = LocalKey( key.subentity() + numBaseN, codim, key.index() );
+          key = LocalKey( key.subEntity() + numBaseN, codim, key.index() );
           points[ j + n ].point_ = points[ j ].point_;
           points[ j + n ].point_[ dimension-1 ] = Field( 1 );
-          points[ j + n ].localKey_ = LocalKey( key.subentity() + numBaseM, codim, key.index() );
-          ++count[ key.subentity() + numBaseM ];
+          points[ j + n ].localKey_ = LocalKey( key.subEntity() + numBaseM, codim, key.index() );
+          ++count[ key.subEntity() + numBaseM ];
         }
         size += 2*n;
       }
@@ -205,7 +205,7 @@ namespace Dune
         for( ; points != end; ++points )
         {
           LocalKey &key = points->localKey_;
-          key = LocalKey( key.subentity(), codim, key.index() );
+          key = LocalKey( key.subEntity(), codim, key.index() );
         }
       }
 
@@ -219,7 +219,7 @@ namespace Dune
           for( ; points != end; ++points )
           {
             LocalKey &key = points->localKey_;
-            key = LocalKey( key.subentity()+numBaseM, codim, key.index() );
+            key = LocalKey( key.subEntity()+numBaseM, codim, key.index() );
             for( unsigned int j = 0; j < dimension-1; ++j )
               points->point_[ j ] *= Field( i ) / Field( order );
             points->point_[ dimension-1 ] = Field( order - i ) / Field( order );

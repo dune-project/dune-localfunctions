@@ -34,10 +34,10 @@ namespace Dune
    *           typedef const_iterator
    *           const_iterator begin()
    **/
-  template<  class CM, class Eval >
+  template< class Eval, class CM >
   class PolynomialBasis
   {
-    typedef PolynomialBasis< CM, Eval > This;
+    typedef PolynomialBasis< Eval, CM > This;
 
     typedef CM CoefficientMatrix;
     typedef Eval Evaluator;
@@ -64,17 +64,28 @@ namespace Dune
       return size_;
     }
 
+    /*
+       template< class RangeVector, unsigned int deriv >
+       void evaluateAll ( const DomainVector &x,
+                       std::vector< RangeVector > &values ) const
+       {
+       assert(values.size()>=size());
+       coeffMatrix_->mult( eval_.evaluateAll<deriv>( x ), values );
+       }
+     */
+    template< class RangeVector, unsigned int deriv >
+    void evaluate ( const DomainVector &x,
+                    std::vector< RangeVector > &values ) const
+    {
+      assert(values.size()>=size());
+      coeffMatrix_->mult( eval_.template evaluate<deriv>( x ), values );
+    }
     template< class RangeVector >
     void evaluate ( const DomainVector &x,
                     std::vector< RangeVector > &values ) const
     {
       assert(values.size()>=size());
-      /*
-         eval_.evaluate( x );
-         coeffMatrix_->mult( eval_, values );
-       */
-      eval_.evaluate( x );
-      coeffMatrix_->mult( eval_.evaluate( x ), values );
+      coeffMatrix_->mult( eval_.template evaluate<0>( x ), values );
     }
 
     template< class DomainVector, class RangeVector >
@@ -130,16 +141,16 @@ namespace Dune
    * value type. This class stores the coefficient matrix with can be
    * constructed via the fill method
    */
-  template< class Eval >
+  template< class Eval, class CM = CoeffMatrix<typename Eval::Field> >
   class PolynomialBasisWithMatrix
-    : public PolynomialBasis<CoeffMatrix<typename Eval::Field> , Eval >
+    : public PolynomialBasis< Eval, CM >
   {
     typedef typename Eval::Field StorageField;
     typedef Eval Evaluator;
-    typedef CoeffMatrix< StorageField > CoefficientMatrix;
+    typedef CM CoefficientMatrix;
 
-    typedef PolynomialBasisWithMatrix< Evaluator > This;
-    typedef PolynomialBasis<CoefficientMatrix,Evaluator> Base;
+    typedef PolynomialBasisWithMatrix< Evaluator, CM > This;
+    typedef PolynomialBasis<Evaluator,CM> Base;
 
     typedef typename Base::Basis Basis;
   public:

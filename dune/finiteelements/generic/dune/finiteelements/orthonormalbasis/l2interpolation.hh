@@ -37,7 +37,8 @@ namespace Dune
       for( Iterator it = quadrature().begin(); it != end; ++it )
       {
         basis().evaluate( it->point(), basisValues_ );
-        const Field factor = it->weight() * function( it->point() );
+        Field factor = it->weight();
+        factor *= function( it->point() )[0];
         for( unsigned int i = 0; i < basis().size(); ++i )
           coefficients[ i ] += factor * basisValues_[ i ];
       }

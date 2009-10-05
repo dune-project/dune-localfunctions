@@ -5,6 +5,8 @@
 
 #include <alglib/gqgengauss.h>
 
+#include <dune/common/field.hh>
+
 #include <dune/alglib/multiprecision.hh>
 #include <dune/alglib/vector.hh>
 
@@ -53,18 +55,13 @@ namespace Dune
         }
       }
 
-      QuadraturePoint< Field, 1 > operator[] ( const unsigned int i ) const
-      {
-        return QuadraturePoint< Field, 1 >( point( i ), weight( i ) );
-      }
-
       Field point ( const unsigned int i ) const
       {
         assert( i < points_.size() );
         return points_[ i ];
       }
 
-      Field weight ( const unsigned int i )
+      Field weight ( const unsigned int i ) const
       {
         assert( i < weights_.size() );
         return weights_[ i ];
@@ -87,14 +84,11 @@ namespace Dune
     // ---------------
 
     template< class F >
-    class GaussQuadrature;
-
-    template< unsigned int precision >
-    class GaussQuadrature< AlgLib::MultiPrecision< precision > >
-      : public Quadrature< 1, AlgLib::MultiPrecision< precision > >
+    class GaussQuadrature
+      : public Quadrature< 1, F >
     {
-      typedef GaussQuadrature< AlgLib::MultiPrecision< precision > > This;
-      typedef Quadrature< 1, AlgLib::MultiPrecision< precision > > Base;
+      typedef GaussQuadrature< F > This;
+      typedef Quadrature< 1, F > Base;
 
     public:
       typedef typename Base::Field Field;
@@ -103,31 +97,17 @@ namespace Dune
       explicit GaussQuadrature ( unsigned int order )
         : Base( 0 )
       {
-        GaussPoints< Field > gaussPoints( (order+1) / 2 );
+        typedef AlgLib::MultiPrecision< Precision< Field >::value > MPField;
+        GaussPoints< MPField > gaussPoints( (order+1) / 2 );
         for( unsigned int i = 0; i < gaussPoints.size(); ++i )
-          Base::insert( gaussPoints[ i ] );
+        {
+          const Field point = field_cast< Field >( gaussPoints.point( i ) );
+          const Field weight = field_cast< Field >( gaussPoints.weight( i ) );
+          Base::insert( point, weight );
+        }
       }
     };
 
-    template<>
-    class GaussQuadrature< double >
-      : public Quadrature< 1, double >
-    {
-      typedef GaussQuadrature< double > This;
-      typedef Quadrature< 1, double > Base;
-
-    public:
-      typedef Base::Field Field;
-      static const unsigned int dimension = Base::dimension;
-
-      explicit GaussQuadrature ( unsigned int order )
-        : Base( 0 )
-      {
-        GaussPoints< AlgLib::MultiPrecision< 128 > > gaussPoints( (order+2) / 2 );
-        for( unsigned int i = 0; i < gaussPoints.size(); ++i )
-          Base::insert( gaussPoints.point( i ).toDouble(), gaussPoints.weight( i ).toDouble() );
-      }
-    };
   }
 
 }

@@ -32,6 +32,7 @@ struct TestMatrix
   }
   const double operator() ( int r, int c ) const
   {
+    return (r==c) ? 1.0 : 0.0;
     return pow(-1,c/2+r)*double(r)*double(c)*double(colSize(r)-c-1);
   }
   unsigned int size_;
@@ -149,7 +150,7 @@ void polynomialBaseTest(unsigned int p)
 template <class Topology>
 void multiIndexTest(unsigned int p)
 {
-  const int dimR = 2;
+  const int dimR = 3;
   const int dimension = Topology::dimension;
   typedef MultiIndex< dimension > Field;
 

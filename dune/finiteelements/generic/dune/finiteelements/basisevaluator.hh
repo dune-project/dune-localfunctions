@@ -207,7 +207,7 @@ namespace Dune
     typename Iterator<deriv>::All evaluate(const DomainVector &x)
     {
       resize< deriv >();
-      fill_( x,Base::template evaluate<deriv>(x), vecContainer_ );
+      fill_.template operator()<deriv>( x,Base::template evaluate<deriv>(x), vecContainer_ );
       return typename Iterator<deriv>::All(vecContainer_);
     }
     typename Iterator<0>::All evaluate(const DomainVector &x)
@@ -250,29 +250,51 @@ namespace Dune
   struct DiagonalFill
   {
     static const int dimRange = dimR;
-    template <class Domain, class Iter,class Field>
+    template <int deriv, class Domain, class Iter,class Field>
     void operator()(const Domain &x,
                     Iter iter,std::vector<Field> &vecContainer) const
     {
       typedef std::vector<Field> Container;
       typename Container::iterator vecIter = vecContainer.begin();
-      std::cout << vecContainer.size() << std::endl;
       for ( ; !iter.done(); ++iter)
       {
         const typename Iter::Block &block = iter.block();
         for (int r1=0; r1<dimR; ++r1)
         {
-          for (unsigned int b=0; b<Iter::blockSize; ++b)
-          {
-            for (int r2=0; r2<dimR; ++r2)
-            {
-              assert(vecIter != vecContainer.end());
-              *vecIter = (r1==r2 ? block[b] : Field(0));
-              ++vecIter;
-            }
-          }
+          unsigned int b = 0;
+          apply<Field>(Int2Type<deriv>(),r1,x,block,b,vecIter);
         }
       }
+    }
+    template <class Field, class Domain, class Block,class VecIter,int deriv>
+    void apply(const Int2Type<deriv>&, int r1, const Domain &x,
+               const Block &block,unsigned int &b,
+               VecIter &vecIter) const
+    {
+      apply<Field>(Int2Type<deriv-1>(),r1,x,block,b,vecIter);
+      unsigned int bStart = b;
+      unsigned int bEnd = b+Tensor<Field,Domain::dimension,deriv>::size;
+      for (int r2=0; r2<dimR; ++r2)
+      {
+        for (unsigned int bb=bStart; bb<bEnd; ++bb)
+        {
+          *vecIter = (r1==r2 ? block[bb] : Field(0));
+          ++vecIter;
+        }
+      }
+      b=bEnd;
+    }
+    template <class Field, class Domain, class Block,class VecIter>
+    void apply(const Int2Type<0>&, int r1, const Domain &x,
+               const Block &block,unsigned int &b,
+               VecIter &vecIter) const
+    {
+      for (int r2=0; r2<dimR; ++r2)
+      {
+        *vecIter = (r1==r2 ? block[b] : Field(0));
+        ++vecIter;
+      }
+      ++b;
     }
   };
 

@@ -308,27 +308,37 @@ namespace Dune
 
         // fill first column
         baseBasis_.evaluate( order, y, offsets, values );
-      }
-      else
-        omz = Zero<Field>();
 
-      const unsigned int *const baseSizes = baseBasis_.sizes_;
-      Field *row0 = values;
-      Field omzk = omz;
-      for( unsigned int k = 1; k <= order; ++k )
-      {
-        Field *const row1 = values + offsets[ k-1 ];
-        Field *const row1End = row1 + sizes_[ k ];
-        assert( (unsigned int)(row1End - values) <= offsets[ k ] );
-        Field *const col0End = row1 + baseSizes[ k ];
-        Field *it = row1;
-        for( ; it != col0End; ++it )
-          *it = (*it) * omzk;
-        for( ; it != row1End; ++row0, ++it )
-          *it = z * (*row0);
-        row0 = row1;
-        omzk *= omz;
+        const unsigned int *const baseSizes = baseBasis_.sizes_;
+        Field *row0 = values;
+        Field omzk = omz;
+        for( unsigned int k = 1; k <= order; ++k )
+        {
+          Field *const row1 = values + offsets[ k-1 ];
+          Field *const row1End = row1 + sizes_[ k ];
+          assert( (unsigned int)(row1End - values) <= offsets[ k ] );
+          Field *const col0End = row1 + baseSizes[ k ];
+          Field *it = row1;
+          for( ; it != col0End; ++it )
+            *it = (*it) * omzk;
+          for( ; it != row1End; ++row0, ++it )
+            *it = z * (*row0);
+          row0 = row1;
+          omzk *= omz;
+        }
       }
+      else {
+        Field *it = values;
+        for( unsigned int k = 0; k <= order; ++k )
+        {
+          Field *const rowEnd = it + (sizes_[ k ] - 1);
+          for( ; it != rowEnd; ++it )
+            *it = Zero<Field>();
+          *it = Unity<Field>();
+          ++it;
+        }
+      }
+
     }
 
     template< int dimD >

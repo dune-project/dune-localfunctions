@@ -25,7 +25,9 @@ namespace Dune
     {
       typedef std::vector<Field> Container;
       typename Container::iterator vecIter = vecContainer.begin();
-      unsigned int notHomogen = basis_.sizes(basis_.order())[basis_.order()-1];
+      unsigned int notHomogen = 0;
+      if (basis_.order()>0)
+        notHomogen = basis_.sizes(basis_.order())[basis_.order()-1];
       std::cout << " Order: " << basis_.order()
                 << " notHomo: " << notHomogen
                 << " Homo:    " << basis_.size()-notHomogen
@@ -85,10 +87,12 @@ namespace Dune
         fill_(basis)
     {}
   private:
-    void totalSize(const B &basis)
+    unsigned int totalSize(const B &basis)
     {
-      unsigned int notHomogen = basis.sizes(basis.order())[basis.order()-1];
-      unsigned int homogen = basis_.size()-notHomogen;
+      unsigned int notHomogen = 0;
+      if (basis.order()>0)
+        notHomogen = basis.sizes(basis.order())[basis.order()-1];
+      unsigned int homogen = basis.size()-notHomogen;
       return notHomogen*dimension+homogen*(dimension+1);
     }
     Fill fill_;
@@ -109,7 +113,7 @@ namespace Dune
 
   public:
     RaviartThomasInterpolation ( const unsigned int order )
-      : lagrangePoints_( order+2 )
+      : lagrangePoints_( order+dimension )
     {}
 
     template< class Eval, class Matrix >

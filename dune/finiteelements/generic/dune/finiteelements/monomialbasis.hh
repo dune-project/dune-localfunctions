@@ -19,6 +19,8 @@
 namespace Dune
 {
 
+
+
   // Internal Forward Declarations
   // -----------------------------
 
@@ -36,16 +38,16 @@ namespace Dune
   template<>
   class MonomialBasisSize< GenericGeometry::Point >
   {
-  public:
     typedef MonomialBasisSize< GenericGeometry::Point > This;
-    static This &instance()
+
+  public:
+    static This &instance ()
     {
       static This _instance;
       return _instance;
     }
 
     typedef GenericGeometry::Point Topology;
-    static const unsigned int dimDomain = Topology::dimension;
 
     friend class MonomialBasisSize< GenericGeometry::Prism< Topology > >;
     friend class MonomialBasisSize< GenericGeometry::Pyramid< Topology > >;
@@ -68,6 +70,11 @@ namespace Dune
     {
       delete[] sizes_;
       delete[] numBaseFunctions_;
+    }
+
+    unsigned int operator() ( const unsigned int order ) const
+    {
+      return numBaseFunctions_[ order ];
     }
 
     unsigned int maxOrder () const
@@ -100,16 +107,16 @@ namespace Dune
   template< class BaseTopology >
   class MonomialBasisSize< GenericGeometry::Prism< BaseTopology > >
   {
+    typedef MonomialBasisSize< GenericGeometry::Prism< BaseTopology > > This;
 
   public:
-    typedef MonomialBasisSize< GenericGeometry::Prism< BaseTopology > > This;
-    static This &instance() {
+    static This &instance ()
+    {
       static This _instance;
       return _instance;
     }
 
     typedef GenericGeometry::Prism< BaseTopology > Topology;
-    static const unsigned int dimDomain = Topology::dimension;
 
     friend class MonomialBasisSize< GenericGeometry::Prism< Topology > >;
     friend class MonomialBasisSize< GenericGeometry::Pyramid< Topology > >;
@@ -132,6 +139,11 @@ namespace Dune
     {
       delete[] sizes_;
       delete[] numBaseFunctions_;
+    }
+
+    unsigned int operator() ( const unsigned int order ) const
+    {
+      return numBaseFunctions_[ order ];
     }
 
     unsigned int maxOrder() const
@@ -170,15 +182,16 @@ namespace Dune
   template< class BaseTopology >
   class MonomialBasisSize< GenericGeometry::Pyramid< BaseTopology > >
   {
-  public:
     typedef MonomialBasisSize< GenericGeometry::Pyramid< BaseTopology > > This;
-    static This &instance() {
+
+  public:
+    static This &instance ()
+    {
       static This _instance;
       return _instance;
     }
 
     typedef GenericGeometry::Pyramid< BaseTopology > Topology;
-    static const unsigned int dimDomain = Topology::dimension;
 
     friend class MonomialBasisSize< GenericGeometry::Prism< Topology > >;
     friend class MonomialBasisSize< GenericGeometry::Pyramid< Topology > >;
@@ -201,6 +214,11 @@ namespace Dune
     {
       delete[] sizes_;
       delete[] numBaseFunctions_;
+    }
+
+    unsigned int operator() ( const unsigned int order ) const
+    {
+      return numBaseFunctions_[ order ];
     }
 
     unsigned int maxOrder() const
@@ -236,8 +254,10 @@ namespace Dune
     }
   };
 
-  // Internal Forward Declarations
-  // -----------------------------
+
+
+  // MonomialBasisHelper
+  // -------------------
 
 
   template< int dim, class F >
@@ -245,26 +265,21 @@ namespace Dune
   {
     typedef MonomialBasisSize< typename GenericGeometry::SimplexTopology< dim >::type > Size;
 
-    static void
-    copy ( const unsigned int deriv, F *&wit, F *&rit, const unsigned int numBaseFunc, const F &z )
+
+    static void copy ( const unsigned int deriv, F *&wit, F *&rit,
+                       const unsigned int numBaseFunctions, const F &z )
     {
       Size &size = Size::instance();
-      const F *const rend = rit + numBaseFunc;
+      const F *const rend = rit + size( deriv )*numBaseFunctions;
       for( ; rit != rend; )
       {
-        for ( unsigned d=0; d<=deriv; ++d )
+        for( unsigned d = 0; d <= deriv; ++d )
         {
-          const unsigned int endS = size.sizes_[d];
-          for ( unsigned s=0; s<endS; ++s,++rit, ++wit )
+          const F *const drend = rit + size.sizes_[ d ];
+          for( ; rit != drend ; ++rit, ++wit )
             *wit = z * *rit;
         }
       }
-    }
-    static void
-    setPoint( const unsigned int deriv, F *&wit)
-    {
-      // Size &size = Size::instance();
-      *wit = Unity<F>();
     }
   };
 
@@ -299,11 +314,13 @@ namespace Dune
     template< int dimD >
     void evaluate ( const unsigned int deriv, const unsigned int order,
                     const FieldVector< Field, dimD > &x,
-                    const unsigned int *const offsets,
+                    const unsigned int block, const unsigned int *const offsets,
                     Field *const values ) const
     {
-      Field *row0 = values;
-      Helper::setPoint(deriv,row0);
+      *values = Unity< F >();
+      F *const end = values + block;
+      for( Field *it = values+1 ; it != end; ++it )
+        *it = Zero< F >();
     }
 
     void integral ( const unsigned int order,
@@ -332,7 +349,6 @@ namespace Dune
     friend class MonomialBasisImpl< GenericGeometry::Prism< Topology >, Field >;
     friend class MonomialBasisImpl< GenericGeometry::Pyramid< Topology >, Field >;
 
-    typedef MonomialBasisHelper< dimDomain, Field > Helper;
     typedef MonomialBasisSize< BaseTopology > BaseSize;
     typedef MonomialBasisSize< Topology > Size;
 
@@ -344,23 +360,24 @@ namespace Dune
     template< int dimD >
     void evaluate ( const unsigned int deriv, const unsigned int order,
                     const FieldVector< Field, dimD > &x,
-                    const unsigned int *const offsets,
+                    const unsigned int block, const unsigned int *const offsets,
                     Field *const values ) const
     {
+      typedef MonomialBasisHelper< dimD, Field > Helper;
       const BaseSize &size = BaseSize::instance();
 
       const Field &z = x[ dimDomain-1 ];
 
       // fill first column
-      baseBasis_.evaluate( deriv , order, x, offsets, values );
+      baseBasis_.evaluate( deriv, order, x, block, offsets, values );
 
       Field *row0 = values;
       for( unsigned int k = 1; k <= order; ++k )
       {
-        Field *row1 = values + offsets[ k-1 ];
-        Field *wit = row1 + size.sizes_[ k ];
+        Field *row1 = values + block*offsets[ k-1 ];
+        Field *wit = row1 + block*size.sizes_[ k ];
         Helper::copy( deriv, wit, row1, k*size.sizes_[ k ], z );
-        Helper::copy( deriv, wit, row0, size.numBaseFunctions_[ k-1 ], z );
+        Helper::copy( deriv, wit, row0, size( k-1 ), z );
         row0 = row1;
       }
     }
@@ -416,7 +433,6 @@ namespace Dune
     friend class MonomialBasisImpl< GenericGeometry::Prism< Topology >, Field >;
     friend class MonomialBasisImpl< GenericGeometry::Pyramid< Topology >, Field >;
 
-    typedef MonomialBasisHelper< dimDomain, Field > Helper;
     typedef MonomialBasisSize< BaseTopology > BaseSize;
     typedef MonomialBasisSize< Topology > Size;
 
@@ -428,21 +444,20 @@ namespace Dune
     template< int dimD >
     void evaluateSimplexBase ( const unsigned int deriv, const unsigned int order,
                                const FieldVector< Field, dimD > &x,
-                               const unsigned int *const offsets,
+                               const unsigned int block, const unsigned int *const offsets,
                                Field *const values,
                                const BaseSize &size ) const
     {
-      baseBasis_.evaluate( deriv, order, x, offsets, values );
+      baseBasis_.evaluate( deriv, order, x, block, offsets, values );
     }
 
     template< int dimD >
     void evaluatePyramidBase ( const unsigned int deriv, const unsigned int order,
                                const FieldVector< Field, dimD > &x,
-                               const unsigned int *const offsets,
+                               const unsigned int block, const unsigned int *const offsets,
                                Field *const values,
                                const BaseSize &size ) const
     {
-
       Field omz = Unity< Field >() - x[ dimDomain-1 ];
 
       if( Zero< Field >() < omz )
@@ -453,13 +468,13 @@ namespace Dune
           y[ i ] = x[ i ] * invomz;
 
         // fill first column
-        baseBasis_.evaluate( deriv, order, y, offsets, values );
+        baseBasis_.evaluate( deriv, order, y, block, offsets, values );
 
         Field omzk = omz;
         for( unsigned int k = 1; k <= order; ++k )
         {
-          Field *it = values + offsets[ k-1 ];
-          Field *const end = it + size.sizes_[ k ];
+          Field *it = values + block*offsets[ k-1 ];
+          Field *const end = it + block*size.sizes_[ k ];
           for( ; it != end; ++it )
             *it *= omzk;
           omzk *= omz;
@@ -471,8 +486,8 @@ namespace Dune
         *values = Unity< Field >();
         for( unsigned int k = 1; k <= order; ++k )
         {
-          Field *it = values + offsets[ k-1 ];
-          Field *const end = it + size.sizes_[ k ];
+          Field *it = values + block*offsets[ k-1 ];
+          Field *const end = it + block*size.sizes_[ k ];
           for( ; it != end; ++it )
             *it = Zero< Field >();
         }
@@ -482,22 +497,23 @@ namespace Dune
     template< int dimD >
     void evaluate ( const unsigned int deriv, const unsigned int order,
                     const FieldVector< Field, dimD > &x,
-                    const unsigned int *const offsets,
+                    const unsigned int block, const unsigned int *const offsets,
                     Field *const values ) const
     {
+      typedef MonomialBasisHelper< dimD, Field > Helper;
       const BaseSize &size = BaseSize::instance();
 
       if( GenericGeometry::IsSimplex< Topology >::value )
-        evaluateSimplexBase( deriv, order, x, offsets, values, size );
+        evaluateSimplexBase( deriv, order, x, block, offsets, values, size );
       else
-        evaluatePyramidBase( deriv, order, x, offsets, values, size );
+        evaluatePyramidBase( deriv, order, x, block, offsets, values, size );
 
       Field *row0 = values;
       for( unsigned int k = 1; k <= order; ++k )
       {
-        Field *row1 = values + offsets[ k-1 ];
-        Field *wit = row1 + size.sizes_[ k ];
-        Helper::copy( deriv, wit, row0, size.numBaseFunctions_[ k-1 ], x[ dimDomain-1 ] );
+        Field *row1 = values + block*offsets[ k-1 ];
+        Field *wit = row1 + block*size.sizes_[ k ];
+        Helper::copy( deriv, wit, row0, size( k-1 ), x[ dimDomain-1 ] );
         row0 = row1;
       }
     }
@@ -574,25 +590,34 @@ namespace Dune
       size_.computeSizes( order );
       return size_.numBaseFunctions_;
     }
-    const unsigned int *sizes ( ) const
+
+    const unsigned int *sizes () const
     {
-      return sizes(order_);
+      return sizes( order_ );
     }
-    const unsigned int size ( ) const
+
+    const unsigned int size () const
     {
-      return sizes( order_ )[ order_ ];
+      size_.computeSizes( order_ );
+      return size_( order_ );
     }
-    const unsigned int order ( ) const
+
+    const unsigned int derivSize ( const unsigned int deriv ) const
+    {
+      typedef typename GenericGeometry::SimplexTopology< dimension >::type SimplexTopology;
+      MonomialBasisSize< SimplexTopology >::instance().computeSizes( deriv );
+      return MonomialBasisSize< SimplexTopology >::instance() ( deriv );
+    }
+
+    const unsigned int order () const
     {
       return order_ ;
     }
 
-    void evaluate ( unsigned int deriv, const DomainVector &x,
+    void evaluate ( const unsigned int deriv, const DomainVector &x,
                     Field *const values ) const
     {
-      typedef typename GenericGeometry::SimplexTopology< dimension >::type SimplexTopology;
-      MonomialBasisSize< SimplexTopology >::instance().computeSizes( deriv );
-      Base::evaluate( deriv, order_, x, sizes( order_ ), values );
+      Base::evaluate( deriv, order_, x, derivSize( deriv ), sizes( order_ ), values );
     }
 
     template <unsigned int deriv>

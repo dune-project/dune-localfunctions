@@ -4,6 +4,8 @@
 #define DUNE_ALGLIB_MATRIX_HH
 
 #include <alglib/ap.h>
+#include <alglib/amp.h>
+#include <alglib/inv.h>
 
 namespace Dune
 {
@@ -11,16 +13,19 @@ namespace Dune
   namespace AlgLib
   {
 
-    template< class F, bool aligned = false >
+    template< unsigned int precision, bool aligned = false >
     class Matrix
     {
-      typedef Matrix< F, aligned > This;
-
-      typedef ap::template_2d_array< F, aligned > RealMatrix;
+      typedef Matrix< precision, aligned > This;
 
     public:
-      typedef F Field;
+      //typedef amp::ampf< precision > Field;
+      typedef double Field;
 
+    private:
+      typedef ap::template_2d_array< Field, aligned > RealMatrix;
+
+    public:
       operator const RealMatrix & () const
       {
         return matrix_;
@@ -70,6 +75,12 @@ namespace Dune
       void resize ( const unsigned int rows, const unsigned int cols )
       {
         matrix_.setbounds( 0, rows-1, 0, cols-1 );
+      }
+
+      bool invert ()
+      {
+        assert( matrix_.rows() == matrix_.cols() );
+        return inv::rmatrixinverse< precision >( matrix_, matrix_.rows() );
       }
 
     private:

@@ -79,11 +79,18 @@ namespace Dune
   {
     typedef RaviartThomasFill<B> Fill;
     typedef VecEvaluator< B,Fill > Base;
+    static const int dimension = B::dimension;
     RaviartThomasEvaluator(const B &basis)
-      : Base(basis,fill_),
+      : Base(basis,fill_,totalSize(basis)),
         fill_(basis)
     {}
   private:
+    void totalSize(const B &basis)
+    {
+      unsigned int notHomogen = basis.sizes(basis.order())[basis.order()-1];
+      unsigned int homogen = basis_.size()-notHomogen;
+      return notHomogen*dimension+homogen*(dimension+1);
+    }
     Fill fill_;
   };
 

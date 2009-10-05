@@ -4,6 +4,7 @@
 #define DUNE_FIELD_HH
 
 #include <dune/alglib/multiprecision.hh>
+#include <dune/common/fvector.hh>
 
 namespace Dune
 {

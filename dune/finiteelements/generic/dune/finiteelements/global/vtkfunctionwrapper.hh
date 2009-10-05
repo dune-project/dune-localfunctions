@@ -3,6 +3,8 @@
 #ifndef DUNE_VTKFUNCTIONWRAPPER_HH
 #define DUNE_VTKFUNCTIONWRAPPER_HH
 
+#include <dune/grid/io/file/vtk/vtkwriter.hh>
+
 namespace Dune
 {
 

@@ -19,11 +19,19 @@ namespace Dune
 
   public:
     typedef GV GridView;
-    static const unsigned int dimension = GridView::dimension;
 
-    typedef LagrangeBasisProvider< dimension, SF, CF > BasisCreator;
-    typedef LagrangePointsCreator< SF, dimension > LocalCoefficientsCreator;
-    typedef LocalLagrangeInterpolationCreator< SF, dimension > LocalInterpolationCreator;
+    typedef typename GridView::Grid::ctype DomainField;
+    static const unsigned int dimDomain = GridView::dimension;
+    typedef FieldVector< DomainField, dimDomain > DomainVector;
+
+    typedef SF RangeField;
+    static const unsigned int dimRange = 1;
+    typedef FieldVector< RangeField, dimRange > RangeVector;
+
+    typedef LagrangeBasisProvider< dimDomain, RangeField, CF > BasisCreator;
+    typedef Dune::LagrangePointsCreator< RangeField, dimDomain > LagrangePointsCreator;
+    typedef LagrangePointsCreator LocalCoefficientsCreator;
+    typedef LocalLagrangeInterpolationCreator< LagrangePointsCreator > LocalInterpolationCreator;
 
     typedef unsigned int Key;
 
@@ -41,10 +49,10 @@ namespace Dune
 
     ~LagrangeSpace ()
     {
-      for( unsigned int i = 0; i < numTopologies; ++i )
+      for( unsigned int topologyId = 0; topologyId < numTopologies; ++topologyId )
       {
-        BasisProvider::release( basis_[ i ] );
-        LocalInterpolationCreator::release( localInterpolation_[ i ] );
+        BasisCreator::release( *(basis_[ topologyId ]) );
+        LocalInterpolationCreator::release( *(localInterpolation_[ topologyId ]) );
       }
     }
 
@@ -53,14 +61,14 @@ namespace Dune
       return dofMapper_;
     }
 
-    const Basis &basis ( const typename GridView::template Codim< 0 >::Entity &entity )
+    const Basis &basis ( const typename GridView::template Codim< 0 >::Entity &entity ) const
     {
       const unsigned int topologyId = Dune::GenericGeometry::topologyId( entity.type() );
-      return basis_[ topologyId ];
+      return *(basis_[ topologyId ]);
     }
 
   private:
-    static const unsigned int numTopologies = (1 << dimension);
+    static const unsigned int numTopologies = (1 << dimDomain);
 
     GridView gridView_;
     DofMapper dofMapper_;
@@ -77,7 +85,7 @@ namespace Dune
     static void apply ( const Key &order, const Basis *(&basis)[ numTopologies ],
                         const LocalInterpolation *(&localInterpolation)[ numTopologies ] )
     {
-      typedef typename GenericGeometry::Topology< topologyId, dimension >::type Topology;
+      typedef typename GenericGeometry::Topology< topologyId, dimDomain >::type Topology;
       basis[ topologyId ] = &BasisCreator::template basis< Topology >( order );
       localInterpolation[ topologyId ] = &LocalInterpolationCreator::template localInterpolation< Topology >( order );
     }

@@ -6,11 +6,13 @@
 #include <dune/grid/io/file/dgfparser/dgfgridtype.hh>
 
 #include <dune/finiteelements/lagrangebasis/space.hh>
+#include <dune/finiteelements/global/vtkfunctionwrapper.hh>
 
 const unsigned int dimension = GridType::dimension;
 
 typedef GridType::LeafGridView GridView;
-typedef LagrangeSpace< GridView, double > Space;
+typedef Dune::LagrangeSpace< GridView, double > Space;
+typedef Dune::VTKFunctionWrapper< Space > VTKFunction;
 
 typedef GridView::Codim< 0 >::Entity Entity;
 typedef GridView::Codim< 0 >::Iterator Iterator;
@@ -31,6 +33,8 @@ int main ( int argc, char **argv )
 
   Space space( gridView, order );
   const Space::DofMapper &dofMapper = space.dofMapper();
+  std::vector< double > dofs( dofMapper.size() );
+  VTKFunction vtkFunction( space, dofs );
 
   const Iterator end = gridView.end< 0 >();
   for( Iterator it = gridView.begin< 0 >(); it != end; ++it )

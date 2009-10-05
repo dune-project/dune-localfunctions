@@ -100,7 +100,7 @@ namespace Dune
   ::map ( const Entity &entity, std::vector< unsigned int > indices ) const
   {
     typedef typename std::vector< SubEntityInfo >::const_iterator Iterator;
-    const MapInfo &mapInfo = mapInfo_[ topologyId( entity.type() ) ];
+    const MapInfo &mapInfo = mapInfo_[ GenericGeometry::topologyId( entity.type() ) ];
 
     indices.resize( mapInfo.numDofs );
     const unsigned int *localDof = &(mapInfo.localDof[ 0 ]);
@@ -108,7 +108,7 @@ namespace Dune
     const Iterator end = mapInfo.subEntityInfo.end();
     for( Iterator it = mapInfo.subEntityInfo.begin(); it != end; ++it )
     {
-      const unsigned int index = indexSet_.index( entity, it->codim, it->subEntity );
+      const unsigned int index = indexSet_.subIndex( entity, it->subEntity, it->codim );
       const unsigned int offset = it->offset + index*it->numDofs;
       for( unsigned int j = 0; j < it->numDofs; ++j )
         indices[ *(localDof++) ] = offset + j;

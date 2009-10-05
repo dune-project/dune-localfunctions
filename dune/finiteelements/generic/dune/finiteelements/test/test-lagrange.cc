@@ -7,9 +7,9 @@
 #include <dune/alglib/multiprecision.hh>
 #include <dune/alglib/matrix.hh>
 
-#include <dune/finiteelements/lagrangepoints.hh>
+#include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
+#include <dune/finiteelements/lagrangebasis/interpolation.hh>
 #include <dune/finiteelements/monomialbasis.hh>
-#include <dune/finiteelements/lagrangeinterpolation.hh>
 
 #ifndef TOPOLOGY
 #error "TOPOLOGY not defined."

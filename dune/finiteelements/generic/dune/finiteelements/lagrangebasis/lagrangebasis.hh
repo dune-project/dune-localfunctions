@@ -2,19 +2,23 @@
 // vi: set et ts=4 sw=2 sts=2:
 #ifndef DUNE_LAGRANGEBASIS_HH
 #define DUNE_LAGRANGEBASIS_HH
+
 #include <fstream>
 #include <dune/alglib/multiprecision.hh>
 #include <dune/alglib/matrix.hh>
 
-#include <dune/finiteelements/lagrangepoints.hh>
-#include <dune/finiteelements/lagrangeinterpolation.hh>
+#include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
+#include <dune/finiteelements/lagrangebasis/interpolation.hh>
 #include <dune/finiteelements/basisprovider.hh>
 #include <dune/finiteelements/basisprint.hh>
 #include <dune/finiteelements/polynomialbasis.hh>
+
 namespace Dune
 {
+
   template <class Topology,class scalar_t>
-  struct LagrangeMatrix {
+  struct LagrangeMatrix
+  {
     enum {dim = Topology::dimension};
     typedef Dune::AlgLib::Matrix< scalar_t > mat_t;
     LagrangeMatrix(int order)
@@ -90,9 +94,12 @@ namespace Dune
     }
   };
 
+
+
   template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
   struct LagrangeBasisProvider
     : public BasisProvider<LagrangeBasisCreator<dim,SF,CF> >
   {};
+
 }
 #endif // DUNE_ORTHONORMALBASIS_HH

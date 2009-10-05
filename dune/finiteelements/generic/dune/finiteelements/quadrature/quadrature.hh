@@ -30,18 +30,18 @@ namespace Dune
       typedef FieldVector< Field, dimension > Vector;
 
     private:
-      Vector position_;
+      Vector point_;
       Field weight_;
 
     public:
-      QuadraturePoint ( const Vector &position, const Field &weight )
-        : position_( position ),
+      QuadraturePoint ( const Vector &point, const Field &weight )
+        : point_( point ),
           weight_( weight )
       {}
 
-      const Vector &position () const
+      const Vector &point () const
       {
-        return position_;
+        return point_;
       }
 
       const Field &weight () const
@@ -52,13 +52,13 @@ namespace Dune
 
 
 
-    // QuadratureRule
-    // --------------
+    // Quadrature
+    // ----------
 
     template< unsigned int dim, class F >
-    class QuadratureRule
+    class Quadrature
     {
-      typedef QuadratureRule< dim, F > This;
+      typedef Quadrature< dim, F > This;
 
     public:
       typedef F Field;
@@ -68,34 +68,33 @@ namespace Dune
       typedef typename QuadraturePoint::Vector Vector;
 
     private:
-      typedef std::vector< QuadraturePoint > QuadraturePointContainer;
-
-    public:
-      typedef typename QuadraturePointContainer::const_iterator iterator;
-
-    private:
       std::vector< QuadraturePoint > points_;
-      GeometryType type_;
+      unsigned int topologyId_;
 
     protected:
-      explicit QuadratureRule ( const GeometryType &type )
-        : type_( type )
+      explicit Quadrature ( const unsigned int topologyId )
+        : topologyId_( topologyId )
       {}
 
     public:
-      iterator begin () const
+      const QuadraturePoint &operator[] ( const unsigned int i ) const
       {
-        return points_.begin();
+        return points_[ i ];
       }
 
-      iterator end () const
+      const Vector &point ( const unsigned int i ) const
       {
-        return points_.end();
+        return (*this)[ i ].point();
       }
 
-      GeometryType type () const
+      const Field &weight ( const unsigned int i ) const
       {
-        return type_;
+        return (*this)[ i ].weight();
+      }
+
+      unsigned int topologyId () const
+      {
+        return topologyId_;
       }
 
       size_t size () const

@@ -58,16 +58,15 @@ int main ( int argc, char **argv )
   for( unsigned int i = 0; i < size; ++i )
     yquad[ i ] = 0;
 
-  typedef GenericQuadratureRule< Topology > Quadrature;
-  Quadrature quadrature( 2*p+1 );
-  const Quadrature::iterator qend = quadrature.end();
-  for( Quadrature::iterator qit = quadrature.begin(); qit != qend; ++qit )
+  GenericQuadrature< Topology > quadrature( 2*p+1 );
+  const unsigned int quadratureSize = quadrature.size();
+  for( unsigned int qi = 0; qi < quadratureSize; ++qi )
   {
-    basis.evaluate( p, qit->position(), y );
-    std::cout << "x = " << qit->position() << ":" << std::endl;
+    basis.evaluate( p, quadrature.point( qi ), y );
+    std::cout << "x = " << quadrature.point( qi ) << ":" << std::endl;
     for( unsigned int i = 0; i < size; ++i )
     {
-      yquad[ i ] += qit->weight() * y[ i ];
+      yquad[ i ] += quadrature.weight( qi ) * y[ i ];
       std::cout << "    y[ " << i << " ] = " << y[ i ] << std::endl;
     }
   }

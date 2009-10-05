@@ -21,26 +21,24 @@ namespace Dune
     {
       typedef double Field;
 
-      static const GeometryType::BasicType linetype = GeometryType::simplex;
-
-      typedef GaussQuadratureRule< Field > OneDQuadrature;
+      typedef GaussQuadrature< Field > OneDQuadrature;
     };
 
 
 
-    // GenericQuadratureRule
-    // ---------------------
+    // GenericQuadrature
+    // -----------------
 
     template< class Topology, class Traits = DefaultQuadratureTraits >
-    class GenericQuadratureRule;
+    class GenericQuadrature;
 
 
     template< class Traits >
-    class GenericQuadratureRule< Point, Traits >
-      : public QuadratureRule< 0, typename Traits::Field >
+    class GenericQuadrature< Point, Traits >
+      : public Quadrature< 0, typename Traits::Field >
     {
-      typedef GenericQuadratureRule< Point, Traits > This;
-      typedef QuadratureRule< 0, typename Traits::Field > Base;
+      typedef GenericQuadrature< Point, Traits > This;
+      typedef Quadrature< 0, typename Traits::Field > Base;
 
     public:
       typedef Point Topology;
@@ -50,8 +48,8 @@ namespace Dune
 
       typedef typename Base::Vector Vector;
 
-      explicit GenericQuadratureRule ( unsigned int order )
-        : Base( DuneGeometryType< Topology, Traits::linetype >::type() )
+      explicit GenericQuadrature ( unsigned int order )
+        : Base( Topology::id )
       {
         Base::insert( Vector( Field( 0 ) ), 1 );
       }
@@ -59,11 +57,11 @@ namespace Dune
 
 
     template< class BaseTopology, class Traits >
-    class GenericQuadratureRule< Prism< BaseTopology >, Traits >
-      : public QuadratureRule< Prism< BaseTopology >::dimension, typename Traits::Field >
+    class GenericQuadrature< Prism< BaseTopology >, Traits >
+      : public Quadrature< Prism< BaseTopology >::dimension, typename Traits::Field >
     {
-      typedef GenericQuadratureRule< Prism< BaseTopology >, Traits > This;
-      typedef QuadratureRule< Prism< BaseTopology >::dimension, typename Traits::Field > Base;
+      typedef GenericQuadrature< Prism< BaseTopology >, Traits > This;
+      typedef Quadrature< Prism< BaseTopology >::dimension, typename Traits::Field > Base;
 
     public:
       typedef Prism< BaseTopology > Topology;
@@ -75,33 +73,33 @@ namespace Dune
 
     private:
       typedef typename Traits::OneDQuadrature OneDQuadrature;
-      typedef GenericQuadratureRule< BaseTopology, Traits > BaseQuadrature;
+      typedef GenericQuadrature< BaseTopology, Traits > BaseQuadrature;
 
     public:
-      explicit GenericQuadratureRule ( unsigned int order )
-        : Base( DuneGeometryType< Topology, Traits::linetype >::type() )
+      explicit GenericQuadrature ( unsigned int order )
+        : Base( Topology::id )
       {
-        typedef typename OneDQuadrature::iterator OneDQuadIterator;
-        typedef typename BaseQuadrature::iterator BaseQuadIterator;
-
         OneDQuadrature onedQuad( order );
         BaseQuadrature baseQuad( order );
 
-        const BaseQuadIterator bend = baseQuad.end();
-        for( BaseQuadIterator bit = baseQuad.begin(); bit != bend; ++bit )
+        const unsigned int baseQuadSize = baseQuad.size();
+        for( unsigned int bqi = 0; bqi < baseQuadSize; ++bqi )
         {
-          const typename BaseQuadrature::Vector &basePoint = bit->position();
-          const Field &baseWeight = bit->weight();
+          const typename BaseQuadrature::Vector &basePoint = baseQuad.point( bqi );
+          const Field &baseWeight = baseQuad.weight( bqi );
 
           Vector point;
           for( unsigned int i = 0; i < dimension-1; ++i )
             point[ i ] = basePoint[ i ];
 
-          const OneDQuadIterator oend = onedQuad.end();
-          for( OneDQuadIterator oit = onedQuad.begin(); oit != oend; ++oit )
+          const unsigned int onedQuadSize = onedQuad.size();
+          for( unsigned int oqi = 0; oqi < onedQuadSize; ++oqi )
           {
-            point[ dimension-1 ] = oit->position()[ 0 ];
-            Base::insert( point, baseWeight * oit->weight() );
+            const typename OneDQuadrature::Vector onedPoint = onedQuad.point( oqi );
+            const Field &onedWeight = onedQuad.weight( oqi );
+
+            point[ dimension-1 ] = onedPoint[ 0 ];
+            Base::insert( point, baseWeight * onedWeight );
           }
         }
       }
@@ -124,11 +122,11 @@ namespace Dune
      *            really need a higher quadrature order?
      */
     template< class BaseTopology, class Traits >
-    class GenericQuadratureRule< Pyramid< BaseTopology >, Traits >
-      : public QuadratureRule< Pyramid< BaseTopology >::dimension, typename Traits::Field >
+    class GenericQuadrature< Pyramid< BaseTopology >, Traits >
+      : public Quadrature< Pyramid< BaseTopology >::dimension, typename Traits::Field >
     {
-      typedef GenericQuadratureRule< Pyramid< BaseTopology >, Traits > This;
-      typedef QuadratureRule< Pyramid< BaseTopology >::dimension, typename Traits::Field > Base;
+      typedef GenericQuadrature< Pyramid< BaseTopology >, Traits > This;
+      typedef Quadrature< Pyramid< BaseTopology >::dimension, typename Traits::Field > Base;
 
     public:
       typedef Pyramid< BaseTopology > Topology;
@@ -140,34 +138,34 @@ namespace Dune
 
     private:
       typedef typename Traits::OneDQuadrature OneDQuadrature;
-      typedef GenericQuadratureRule< BaseTopology, Traits > BaseQuadrature;
+      typedef GenericQuadrature< BaseTopology, Traits > BaseQuadrature;
 
     public:
-      explicit GenericQuadratureRule ( unsigned int order )
-        : Base( DuneGeometryType< Topology, Traits::linetype >::type() )
+      explicit GenericQuadrature ( unsigned int order )
+        : Base( Topology::id )
       {
-        typedef typename OneDQuadrature::iterator OneDQuadIterator;
-        typedef typename BaseQuadrature::iterator BaseQuadIterator;
-
         OneDQuadrature onedQuad( order + dimension-1 );
         BaseQuadrature baseQuad( order );
 
-        const BaseQuadIterator bend = baseQuad.end();
-        for( BaseQuadIterator bit = baseQuad.begin(); bit != bend; ++bit )
+        const unsigned int baseQuadSize = baseQuad.size();
+        for( unsigned int bqi = 0; bqi < baseQuadSize; ++bqi )
         {
-          const typename BaseQuadrature::Vector &basePoint = bit->position();
-          const Field &baseWeight = bit->weight();
+          const typename BaseQuadrature::Vector &basePoint = baseQuad.point( bqi );
+          const Field &baseWeight = baseQuad.weight( bqi );
 
-          const OneDQuadIterator oend = onedQuad.end();
-          for( OneDQuadIterator oit = onedQuad.begin(); oit != oend; ++oit )
+          const unsigned int onedQuadSize = onedQuad.size();
+          for( unsigned int oqi = 0; oqi < onedQuadSize; ++oqi )
           {
+            const typename OneDQuadrature::Vector onedPoint = onedQuad.point( oqi );
+            const Field &onedWeight = onedQuad.weight( oqi );
+
             Vector point;
-            point[ dimension-1 ] = oit->position()[ 0 ];
-            const Field scale = Field( 1 ) - point[ dimension-1 ];
+            point[ dimension-1 ] = onedPoint[ 0 ];
+            const Field scale = Field( 1 ) - onedPoint[ 0 ];
             for( unsigned int i = 0; i < dimension-1; ++i )
               point[ i ] = scale * basePoint[ i ];
 
-            const Field weight = baseWeight * oit->weight() * pow( scale, dimension-1 );
+            const Field weight = baseWeight * onedWeight * pow( scale, dimension-1 );
             Base::insert( point, weight );
           }
         }

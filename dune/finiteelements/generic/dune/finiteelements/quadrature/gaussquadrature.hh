@@ -83,25 +83,25 @@ namespace Dune
 
 
 
-    // GaussQuadratureRule
-    // -------------------
+    // GaussQuadrature
+    // ---------------
 
     template< class F >
-    class GaussQuadratureRule;
+    class GaussQuadrature;
 
     template< unsigned int precision >
-    class GaussQuadratureRule< AlgLib::MultiPrecision< precision > >
-      : public QuadratureRule< 1, AlgLib::MultiPrecision< precision > >
+    class GaussQuadrature< AlgLib::MultiPrecision< precision > >
+      : public Quadrature< 1, AlgLib::MultiPrecision< precision > >
     {
-      typedef GaussQuadratureRule< AlgLib::MultiPrecision< precision > > This;
-      typedef QuadratureRule< 1, AlgLib::MultiPrecision< precision > > Base;
+      typedef GaussQuadrature< AlgLib::MultiPrecision< precision > > This;
+      typedef Quadrature< 1, AlgLib::MultiPrecision< precision > > Base;
 
     public:
       typedef typename Base::Field Field;
       static const unsigned int dimension = Base::dimension;
 
-      explicit GaussQuadratureRule ( unsigned int order )
-        : Base( GeometryType( GeometryType::cube, 1 ) )
+      explicit GaussQuadrature ( unsigned int order )
+        : Base( 0 )
       {
         GaussPoints< Field > gaussPoints( (order+1) / 2 );
         for( unsigned int i = 0; i < gaussPoints.size(); ++i )
@@ -110,18 +110,18 @@ namespace Dune
     };
 
     template<>
-    class GaussQuadratureRule< double >
-      : public QuadratureRule< 1, double >
+    class GaussQuadrature< double >
+      : public Quadrature< 1, double >
     {
-      typedef GaussQuadratureRule< double > This;
-      typedef QuadratureRule< 1, double > Base;
+      typedef GaussQuadrature< double > This;
+      typedef Quadrature< 1, double > Base;
 
     public:
       typedef Base::Field Field;
       static const unsigned int dimension = Base::dimension;
 
-      explicit GaussQuadratureRule ( unsigned int order )
-        : Base( GeometryType( GeometryType::cube, 1 ) )
+      explicit GaussQuadrature ( unsigned int order )
+        : Base( 0 )
       {
         GaussPoints< AlgLib::MultiPrecision< 128 > > gaussPoints( (order+2) / 2 );
         for( unsigned int i = 0; i < gaussPoints.size(); ++i )

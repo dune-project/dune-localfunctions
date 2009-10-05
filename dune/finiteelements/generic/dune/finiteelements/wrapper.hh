@@ -16,15 +16,14 @@
  *
  **/
 struct SimplexWrapper {
-  SimplexWrapper(double* storage,int p)
+  SimplexWrapper(double* storage,int p,
+                 int *N)
     : storage_(storage),
-      N_(0),
+      N_(N),
       row_(new double*[p+1]),
       incr_(new int[p+1]), // Arc = row[p]+incr[c]
       p_(p)
-  {}
-  void set(int *N) {
-    N_=N;
+  {
     incr_[0]=0;
     row_[0]=storage_;
     for (int r=0; r<p_; ++r) {
@@ -78,12 +77,15 @@ private:
   double **row_;  // starting point for Ai0
   int p_;
 };
-
+// ********************************************
 template <int dim>
 struct Simplex {
   static void eval(int p,double *x,double* ret) {
-    SimplexWrapper myMat(ret,p);
-    Simplex<dim>::eval(x,myMat);
+    int N[mat.p()];
+    // compute sizes N[k] = |Phi_k|
+    SimplexWrapper myMat(ret,p,N);
+    Simplex<dim-1>::eval(x,myMat);
+    myMat.fill(x[dim]);
   }
   static void eval(double *x,SimplexWrapper& mat) {
     int N[mat.p()];

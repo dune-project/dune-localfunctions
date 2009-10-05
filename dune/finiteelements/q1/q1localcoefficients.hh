@@ -1,7 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_Q12DLOCALCOEFFICIENTS_HH
-#define DUNE_Q12DLOCALCOEFFICIENTS_HH
+#ifndef DUNE_Q1_LOCALCOEFFICIENTS_HH
+#define DUNE_Q1_LOCALCOEFFICIENTS_HH
 
 #include <cstddef>
 #include <iostream>
@@ -17,25 +17,26 @@ namespace Dune
 
          \nosubgrouping
    */
-  class Q12DLocalCoefficients
+  template <int dim>
+  class Q1LocalCoefficients
 #if DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalCoefficientsInterface
 #else
-    : public LocalCoefficientsInterface<Q12DLocalCoefficients>
+    : public LocalCoefficientsInterface<Q1LocalCoefficients<dim> >
 #endif
   {
   public:
     //! \brief Standard constructor
-    Q12DLocalCoefficients () : li(4)
+    Q1LocalCoefficients () : li(1<<dim)
     {
-      for (std::size_t i=0; i<4; i++)
-        li[i] = LocalKey(i,2,0);
+      for (std::size_t i=0; i<(1<<dim); i++)
+        li[i] = LocalKey(i,dim,0);
     }
 
     //! number of coefficients
     std::size_t size () const
     {
-      return 4;
+      return 1<<dim;
     }
 
     //! get i'th index

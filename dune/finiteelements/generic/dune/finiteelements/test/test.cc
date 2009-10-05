@@ -82,6 +82,8 @@ void quadratureTest(unsigned int p)
 
   typedef MonomialBasis< Topology, Field > Basis;
   Basis basis(p);
+  typedef MonomialBasis< Topology, Field > Basis;
+  Basis basis(p);
 
   unsigned int size = basis.size();
   std::cout << "Number of base functions:  " << size << std::endl;
@@ -107,10 +109,9 @@ void quadratureTest(unsigned int p)
   }
 
   std::vector< double > yint( size );
-  basis.integral( yint );
+  basis.integrate( yint );
   for( unsigned int i = 0; i < size; ++i )
   {
-    std::cout << i << " : " << yint[i] << std::endl;
     if( fabs( yquad[ i ] - yint[ i ] ) < 1e-10 )
       continue;
     std::cerr << "Quadrature and Integral differ for basis function " << i << "." << std::endl;

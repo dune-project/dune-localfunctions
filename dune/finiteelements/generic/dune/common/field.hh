@@ -142,17 +142,15 @@ inline void field_cast ( const Dune::FieldVector< F1, dim > &f1, Dune::FieldVect
   for( int d = 0; d < dim; ++d )
     field_cast( f1[ d ], f2[ d ] );
 }
-
 template< class F2, class F1 >
 inline void field_cast ( const Dune::FieldVector< F1, 1 > &f1, F2 &f2 )
 {
   field_cast( f1[ 0 ], f2 );
 }
-
 template< class F2, class F1 >
-inline void field_cast ( const Dune::FieldVector< F1, 1 > &f1, Dune::FieldVector<F2, 1> &f2 )
+inline void field_cast ( const F1 &f1, Dune::FieldVector< F2, 1 > &f2 )
 {
-  field_cast( f1[ 0 ], f2[ 0 ] );
+  field_cast( f1, f2[ 0 ] );
 }
 
 template< class F2, class F1, int rdim, int cdim >
@@ -161,6 +159,38 @@ inline void field_cast ( const Dune::FieldMatrix< F1, rdim, cdim > &f1, Dune::Fi
   for( int r = 0; r < rdim; ++r )
     field_cast( f1[ r ], f2[ r ] );
 }
+template< class F2, class F1 >
+inline void field_cast ( const Dune::FieldMatrix<F1,1,1> &f1, Dune::FieldMatrix< F2, 1,1 > &f2 )
+{
+  field_cast( f1[ 0 ][ 0 ], f2[ 0 ][ 0 ] );
+}
+template< class F2, class F1 >
+inline void field_cast ( const Dune::FieldMatrix< F1, 1,1 > &f1, F2 &f2 )
+{
+  field_cast( f1[ 0 ][ 0 ], f2 );
+}
+template< class F2, class F1 >
+inline void field_cast ( const F1 &f1, Dune::FieldMatrix< F2, 1,1 > &f2 )
+{
+  field_cast( f1, f2[ 0 ][ 0 ] );
+}
+template< class F2, class F1 >
+inline void field_cast ( const Dune::FieldVector<F1,1> &f1, Dune::FieldMatrix< F2, 1,1 > &f2 )
+{
+  field_cast( f1[ 0 ], f2[ 0 ][ 0 ] );
+}
+template< class F2, class F1 >
+inline void field_cast ( const Dune::FieldMatrix<F1,1,1> &f1, Dune::FieldVector< F2, 1 > &f2 )
+{
+  field_cast( f1[ 0 ][ 0 ], f2[ 0 ] );
+}
+
+template< class F2, class F1 >
+inline void field_cast ( const Dune::FieldVector< F1, 1 > &f1, Dune::FieldVector<F2, 1> &f2 )
+{
+  field_cast( f1[ 0 ], f2[ 0 ] );
+}
+
 
 template< class F2,class F1 >
 inline F2 field_cast ( const F1 &f1 )

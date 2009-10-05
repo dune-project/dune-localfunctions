@@ -315,10 +315,12 @@ namespace ONB {
     int rowSize() const {
       return calc.res.gethighbound(1);
     }
-    const Dune::FieldVector<scalar_t,1> &operator()(int r,int c) const
+
+    const Dune::FieldVector< scalar_t, 1 > operator() ( int r, int c ) const
     {
       return calc.res(c+1,r+1);
     }
+
     void print(std::ostream& out) {
       int N = rowSize();
       for (int i=0; i<N; ++i) {

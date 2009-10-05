@@ -8,7 +8,7 @@
 #include <dune/finiteelements/monomialbasis.hh>
 #include <dune/finiteelements/multiindex.hh>
 
-#include <dune/grid/quadrature/genericquadrature.hh>
+#include <dune/finiteelements/quadrature/genericquadrature.hh>
 
 #ifndef TOPOLOGY
 #error "TOPOLOGY not defined."

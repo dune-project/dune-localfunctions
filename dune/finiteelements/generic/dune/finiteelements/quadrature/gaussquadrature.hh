@@ -8,7 +8,7 @@
 #include <dune/alglib/multiprecision.hh>
 #include <dune/alglib/vector.hh>
 
-#include <dune/grid/quadrature/quadrature.hh>
+#include <dune/finiteelements/quadrature/quadrature.hh>
 
 namespace Dune
 {

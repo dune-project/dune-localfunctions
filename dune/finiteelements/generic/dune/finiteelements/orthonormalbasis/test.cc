@@ -2,7 +2,7 @@
 // vi: set et ts=4 sw=2 sts=2:
 #include <dune/finiteelements/orthonormalbasis.hh>
 
-#include <dune/grid/quadrature/genericquadrature.hh>
+#include <dune/finiteelements/quadrature/genericquadrature.hh>
 
 using namespace Dune;
 using namespace GenericGeometry;

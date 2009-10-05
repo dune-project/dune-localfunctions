@@ -5,8 +5,8 @@
 
 #include <dune/grid/genericgeometry/conversion.hh>
 
-#include <dune/grid/quadrature/quadrature.hh>
-#include <dune/grid/quadrature/gaussquadrature.hh>
+#include <dune/finiteelements/quadrature/quadrature.hh>
+#include <dune/finiteelements/quadrature/gaussquadrature.hh>
 
 namespace Dune
 {

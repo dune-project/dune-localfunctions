@@ -153,7 +153,7 @@ int main ( int argc, char **argv )
   }
   int p = atoi( argv[ 1 ] );
 
-  const unsigned int dimR = 1;
+  const unsigned int dimR = 3;
   vecTest<Topology,1,value,dimR,value>(1,p);
   vecTest<Topology,1,derivative,dimR,derivative>(2,p);
   vecTest<Topology,dimR,value,dimR,value>(3,p);

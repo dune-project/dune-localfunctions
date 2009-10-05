@@ -41,10 +41,10 @@ namespace Dune
     {
       unsigned int offset;
       unsigned int size;
-      unsigned int codim;
-      unsigned int topologyId;
+      bool required;
+      bool supported;
 
-      IndexInfo () : size( 0 ) {}
+      IndexInfo () : supported( false ) {}
     };
 
     template< int topologyId >
@@ -81,6 +81,14 @@ namespace Dune
     unsigned int size () const
     {
       return size_;
+    }
+
+    bool topologyRequired ( const unsigned int topologyId ) const
+    {
+      const std::vector< IndexInfo > &indexInfo = indexInfo_[ 0 ];
+      const unsigned int index = topologyId >> 1;
+      assert( index < indexInfo.size() );
+      return indexInfo[ index ].required;
     }
 
     void update ();
@@ -124,18 +132,25 @@ namespace Dune
     size_ = 0;
     for( unsigned int codim = 0; codim <= dimension; ++codim )
     {
-      typedef typename std::vector< IndexInfo >::iterator Iterator;
-      const Iterator end = indexInfo_[ codim ].end();
-      for( Iterator it = indexInfo_[ codim ].begin(); it != end; ++it )
+      const unsigned int indexInfoSize = indexInfo_[ codim ].size();
+      for( unsigned int i = 0; i < indexInfoSize; ++i )
       {
-        const unsigned int topologyId = it->topologyId;
-        const unsigned int dim = dimension - (it->codim);
-        it->offset = size_;
-        if( (it->size > 0) && GenericGeometry::hasGeometryType( topologyId, dim ) )
+        IndexInfo &info = indexInfo_[ codim ][ i ];
+        const unsigned int topologyId = i << 1;
+        const unsigned int dim = dimension - codim;
+
+        unsigned int idxSize = 0;
+        if( GenericGeometry::hasGeometryType( topologyId, dim ) )
         {
           const GeometryType type = GenericGeometry::geometryType( topologyId, dim );
-          size_ += indexSet_.size( type ) * it->size;
+          idxSize = indexSet_.size( type );
         }
+
+        info.required = (idxSize > 0);
+        assert( info.supported || !(info.required) );
+
+        info.offset = size_;
+        size_ += idxSize * info.size;
       }
     }
 
@@ -185,10 +200,17 @@ namespace Dune
       {
         const unsigned int topologyId = refTopology.topologyId( codim, subEntity );
         IndexInfo &indexInfo = indexInfo_[ codim ][ topologyId >> 1 ];
-        indexInfo.codim = codim;
-        indexInfo.topologyId = topologyId;
 
         const unsigned int count = counts[ mapper( codim, subEntity ) ];
+        if( indexInfo.supported )
+        {
+          if( indexInfo.size != count )
+            DUNE_THROW( InvalidStateException, "Inconsistent LocalCoefficients." );
+        }
+        else
+          indexInfo.size = count;
+        indexInfo.supported = true;
+
         if( count == 0 )
           continue;
 
@@ -198,14 +220,6 @@ namespace Dune
         subEntityInfo.topologyId = topologyId;
         subEntityInfo.numDofs = count;
         mapInfo.subEntityInfo.push_back( subEntityInfo );
-
-        if( indexInfo.size > 0 )
-        {
-          if( indexInfo.size != count )
-            DUNE_THROW( InvalidStateException, "Inconsistent LocalCoefficients." );
-        }
-        else
-          indexInfo.size = count;
       }
     }
 
@@ -249,10 +263,12 @@ namespace Dune
   template< int topologyId >
   struct DofMapper< IndexSet, Creator >::Build
   {
+    typedef typename GenericGeometry::Topology< topologyId, dimension >::type Topology;
+
     static void apply ( This &dofMapper, const Key &key )
     {
-      typedef typename GenericGeometry::Topology< topologyId, dimension >::type Topology;
-      dofMapper.template build< Topology >( key );
+      if( Creator::template supports< Topology >( key ) )
+        dofMapper.template build< Topology >( key );
     }
   };
 

@@ -313,6 +313,14 @@ namespace Dune {
     {
       delete &lagrangePoints;
     }
+
+    template< class Topology >
+    static bool supports ( const Key &order )
+    {
+      const bool isSimplex = GenericGeometry::IsSimplex< Topology >::value;
+      const bool isGeneralizedPrism = GenericGeometry::IsGeneralizedPrism< Topology >::value;
+      return ( isSimplex || isGeneralizedPrism);
+    }
   };
 
   //

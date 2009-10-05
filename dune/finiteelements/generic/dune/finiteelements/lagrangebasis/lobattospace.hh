@@ -49,15 +49,17 @@ namespace Dune
       : gridView_( gridView ),
         dofMapper_( gridView_.indexSet(), order )
     {
-      GenericGeometry::ForLoop< Build, 0, numTopologies-1 >::apply( order, basis_, interpolation_ );
+      GenericGeometry::ForLoop< Build, 0, numTopologies-1 >::apply( order, dofMapper_, basis_, interpolation_ );
     }
 
     ~LobattoLagrangeSpace ()
     {
       for( unsigned int topologyId = 0; topologyId < numTopologies; ++topologyId )
       {
-        BasisCreator::release( *(basis_[ topologyId ]) );
-        LocalInterpolationCreator::release( *(interpolation_[ topologyId ]) );
+        if( basis_[ topologyId ] != 0 )
+          BasisCreator::release( *(basis_[ topologyId ]) );
+        if( interpolation_[ topologyId ] != 0 )
+          LocalInterpolationCreator::release( *(interpolation_[ topologyId ]) );
       }
     }
 
@@ -74,13 +76,17 @@ namespace Dune
     Basis basis ( const typename GridView::template Codim< 0 >::Entity &entity ) const
     {
       const unsigned int topologyId = Dune::GenericGeometry::topologyId( entity.type() );
-      return Basis( *(basis_[ topologyId ]), entity.geometry() );
+      const LocalBasis *basis = basis_[ topologyId ];
+      assert( basis != 0 );
+      return Basis( *basis, entity.geometry() );
     }
 
     const LocalInterpolation &interpolation ( const typename GridView::template Codim< 0 >::Entity &entity ) const
     {
       const unsigned int topologyId = Dune::GenericGeometry::topologyId( entity.type() );
-      return *(interpolation_[ topologyId ]);
+      const LocalInterpolation *interpolation = interpolation_[ topologyId ];
+      assert( interpolation != 0 );
+      return *interpolation;
     }
 
   private:
@@ -98,12 +104,20 @@ namespace Dune
   template< int topologyId >
   struct LobattoLagrangeSpace< GV, SF, CF >::Build
   {
-    static void apply ( const Key &order, const LocalBasis *(&basis)[ numTopologies ],
+    static void apply ( const Key &order,
+                        const DofMapper &dofMapper,
+                        const LocalBasis *(&basis)[ numTopologies ],
                         const LocalInterpolation *(&interpolation)[ numTopologies ] )
     {
       typedef typename GenericGeometry::Topology< topologyId, dimDomain >::type Topology;
-      basis[ topologyId ] = &BasisCreator::template basis< Topology >( order );
-      interpolation[ topologyId ] = &LocalInterpolationCreator::template localInterpolation< Topology >( order );
+
+      basis[ topologyId ] = 0;
+      interpolation[ topologyId ] = 0;
+      if( dofMapper.topologyRequired( topologyId ) )
+      {
+        basis[ topologyId ] = &BasisCreator::template basis< Topology >( order );
+        interpolation[ topologyId ] = &LocalInterpolationCreator::template localInterpolation< Topology >( order );
+      }
     }
   };
 

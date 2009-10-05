@@ -68,6 +68,12 @@ namespace Dune
     {
       delete &localCoefficients;
     }
+
+    template< class Topology >
+    static bool supports ( const Key &key )
+    {
+      return true;
+    }
   };
 
 }

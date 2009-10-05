@@ -357,6 +357,12 @@ namespace Dune
     {
       delete &lagrangePoints;
     }
+
+    template< class Topology >
+    static bool supports ( const Key &order )
+    {
+      return true;
+    }
   };
 
 
@@ -395,6 +401,8 @@ namespace Dune
     GenericGeometry::ForLoop< Topology< T >::template Init, 0, dimension >::apply( order, p );
     return *lagrangePoints;
   }
+
+
 
   // LagrangeBasisProvider
   // ---------------------

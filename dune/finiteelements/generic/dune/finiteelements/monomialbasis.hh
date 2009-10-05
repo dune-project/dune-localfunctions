@@ -344,7 +344,8 @@ namespace Dune
     friend class MonomialBasisImpl< GenericGeometry::Pyramid< Topology >, Field >;
 
     typedef MonomialBasisHelper< dimDomain, Field > Helper;
-    typedef MonomialBasisSize< BaseTopology > Size;
+    typedef MonomialBasisSize< BaseTopology > BaseSize;
+    typedef MonomialBasisSize< Topology > Size;
 
     MonomialBasisImpl< BaseTopology, Field > baseBasis_;
 
@@ -357,7 +358,7 @@ namespace Dune
                     const unsigned int *const offsets,
                     Field *const values ) const
     {
-      const Size &size = Size::instance();
+      const BaseSize &size = BaseSize::instance();
 
       const Field &z = x[ dimDomain-1 ];
 
@@ -379,32 +380,32 @@ namespace Dune
                     const unsigned int *const offsets,
                     Field *const values ) const
     {
-      /*
-         // fill first column
-         baseBasis_.integral( order, offsets, values );
-         const unsigned int *const baseSizes = baseBasis_.sizes_;
+      const BaseSize &size = BaseSize::instance();
+      const Size &mySize = Size::instance();
+      // fill first column
+      baseBasis_.integral( order, offsets, values );
+      const unsigned int *const baseSizes = size.sizes_;
 
-         Field *row0 = values;
-         for( unsigned int k = 1; k <= order; ++k )
-         {
-         Field *const row1begin = values + offsets[ k-1 ];
-         Field *const row1End = row1begin + sizes_[ k ];
-         assert( (unsigned int)(row1End - values) <= offsets[ k ] );
+      Field *row0 = values;
+      for( unsigned int k = 1; k <= order; ++k )
+      {
+        Field *const row1begin = values + offsets[ k-1 ];
+        Field *const row1End = row1begin + mySize.sizes_[ k ];
+        assert( (unsigned int)(row1End - values) <= offsets[ k ] );
 
-         Field *row1 = row1begin;
-         Field *it = row1begin + baseSizes[ k ];
-         for( unsigned int j = 1; j <= k; ++j )
-         {
+        Field *row1 = row1begin;
+        Field *it = row1begin + baseSizes[ k ];
+        for( unsigned int j = 1; j <= k; ++j )
+        {
           Field *const end = it + baseSizes[ k ];
           assert( (unsigned int)(end - values) <= offsets[ k ] );
           for( ; it != end; ++row1, ++it )
-         *it = (Field( j ) / Field( j+1 )) * (*row1);
-         }
-         for( ; it != row1End; ++row0, ++it )
-         *it = (Field( k ) / Field( k+1 )) * (*row0);
-         row0 = row1;
-         }
-       */
+            *it = (Field( j ) / Field( j+1 )) * (*row1);
+        }
+        for( ; it != row1End; ++row0, ++it )
+          *it = (Field( k ) / Field( k+1 )) * (*row0);
+        row0 = row1;
+      }
     }
   };
 
@@ -427,7 +428,8 @@ namespace Dune
     friend class MonomialBasisImpl< GenericGeometry::Pyramid< Topology >, Field >;
 
     typedef MonomialBasisHelper< dimDomain, Field > Helper;
-    typedef MonomialBasisSize< BaseTopology > Size;
+    typedef MonomialBasisSize< BaseTopology > BaseSize;
+    typedef MonomialBasisSize< Topology > Size;
 
     MonomialBasisImpl< BaseTopology, Field > baseBasis_;
 
@@ -438,7 +440,8 @@ namespace Dune
     void evaluateSimplexBase ( const unsigned int deriv, const unsigned int order,
                                const FieldVector< Field, dimD > &x,
                                const unsigned int *const offsets,
-                               Field *const values ) const
+                               Field *const values,
+                               const BaseSize &size ) const
     {
       baseBasis_.evaluate( deriv, order, x, offsets, values );
     }
@@ -447,9 +450,9 @@ namespace Dune
     void evaluatePyramidBase ( const unsigned int deriv, const unsigned int order,
                                const FieldVector< Field, dimD > &x,
                                const unsigned int *const offsets,
-                               Field *const values ) const
+                               Field *const values,
+                               const BaseSize &size ) const
     {
-      const Size &size = Size::instance();
 
       Field omz = Unity< Field >() - x[ dimDomain-1 ];
 
@@ -493,12 +496,12 @@ namespace Dune
                     const unsigned int *const offsets,
                     Field *const values ) const
     {
-      const Size &size = Size::instance();
+      const BaseSize &size = BaseSize::instance();
 
       if( GenericGeometry::IsSimplex< Topology >::value )
-        evaluateSimplexBase( deriv, order, x, offsets, values );
+        evaluateSimplexBase( deriv, order, x, offsets, values, size );
       else
-        evaluatePyramidBase( deriv, order, x, offsets, values );
+        evaluatePyramidBase( deriv, order, x, offsets, values, size );
 
       Field *row0 = values;
       for( unsigned int k = 1; k <= order; ++k )
@@ -514,36 +517,36 @@ namespace Dune
                     const unsigned int *const offsets,
                     Field *const values ) const
     {
-      /*
-         // fill first column
-         baseBasis_.integral( order, offsets, values );
+      const BaseSize &size = BaseSize::instance();
 
-         const unsigned int *const baseSizes = baseBasis_.sizes_;
+      // fill first column
+      baseBasis_.integral( order, offsets, values );
 
-         Field *const col0End = values + baseSizes[ 0 ];
-         for( Field *it = values; it != col0End; ++it )
-         *it *= Field( 1 ) /  Field( double(dimDomain) );  // ??? double cast due to error in Linker
-         Field *row0 = values;
+      const unsigned int *const baseSizes = size.sizes_;
 
-         for( unsigned int k = 1; k <= order; ++k )
-         {
-          const Field factor = (Field( 1 ) / Field( k + dimDomain ));
+      Field *const col0End = values + baseSizes[ 0 ];
+      for( Field *it = values; it != col0End; ++it )
+        *it *= Field( 1 ) /  Field( double(dimDomain) );  // ??? double cast due to error in Linker
+      Field *row0 = values;
 
-          Field *const row1 = values+offsets[ k-1 ];
-          Field *const col0End = row1 + baseSizes[ k ];
-          Field *it = row1;
-          for( ; it != col0End; ++it )
-         *it *= factor;
-          for( unsigned int i = 1; i <= k; ++i )
-          {
-            Field *const end = it + baseSizes[ k-i ];
-            assert( (unsigned int)(end - values) <= offsets[ k ] );
-            for( ; it != end; ++row0, ++it )
-         *it = (*row0) * (Field( i ) * factor);
-          }
-          row0 = row1;
-         }
-       */
+      for( unsigned int k = 1; k <= order; ++k )
+      {
+        const Field factor = (Field( 1 ) / Field( k + dimDomain ));
+
+        Field *const row1 = values+offsets[ k-1 ];
+        Field *const col0End = row1 + baseSizes[ k ];
+        Field *it = row1;
+        for( ; it != col0End; ++it )
+          *it *= factor;
+        for( unsigned int i = 1; i <= k; ++i )
+        {
+          Field *const end = it + baseSizes[ k-i ];
+          assert( (unsigned int)(end - values) <= offsets[ k ] );
+          for( ; it != end; ++row0, ++it )
+            *it = (*row0) * (Field( i ) * factor);
+        }
+        row0 = row1;
+      }
     }
   };
 
@@ -580,6 +583,10 @@ namespace Dune
     const unsigned int size ( ) const
     {
       return sizes( order_ )[ order_ ];
+    }
+    const unsigned int order ( ) const
+    {
+      return order_ ;
     }
 
     void evaluate ( unsigned int deriv, const DomainVector &x,

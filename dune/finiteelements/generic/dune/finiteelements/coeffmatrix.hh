@@ -10,27 +10,25 @@
 
 namespace Dune
 {
-  template <class MatrixEntry,class BasisEntry>
-  struct Mult;
-
-  template <class Field,int dimRange>
-  struct Mult< Field,FieldVector<Field,dimRange> >
+  template <class Field, class Field2>
+  struct Mult
   {
-    typedef FieldVector<Field,dimRange> BasisEntry;
-    static void add(const Field &vec1, const BasisEntry &vec2,
-                    BasisEntry &res)
-    {
-      res.axpy(vec1,vec2);
-    }
-  };
-  template <class Field>
-  struct Mult< Field,Field >
-  {
-    typedef Field BasisEntry;
+    typedef Field2 BasisEntry;
     static void add(const Field &vec1, const BasisEntry &vec2,
                     BasisEntry &res)
     {
       res += vec1*vec2;
+    }
+  };
+
+  template <class Field,class Field2, int dimRange>
+  struct Mult< Field,FieldVector<Field2,dimRange> >
+  {
+    typedef FieldVector<Field2,dimRange> BasisEntry;
+    static void add(const Field &vec1, const BasisEntry &vec2,
+                    BasisEntry &res)
+    {
+      res.axpy(vec1,vec2);
     }
   };
 

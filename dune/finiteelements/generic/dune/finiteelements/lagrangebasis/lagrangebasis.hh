@@ -55,12 +55,12 @@ namespace Dune
   struct LagrangeBasisCreator
   {
     typedef SF StorageField;
-    typedef VirtualMonomialBasis<dim,StorageField> MBasis;
-    typedef StandardEvaluator<MBasis> Evaluator;
 
-    // typedef Dune::MultiIndex< dim > MIF;
-    // typedef VirtualMonomialBasis<dim,MIF> MBasis;
-    // typedef MultiIndexEvaluator<MBasis,StorageField> Evaluator;
+    typedef StorageField BasisField;
+    // typedef Dune::MultiIndex< dim > BasisField;
+
+    typedef VirtualMonomialBasis<dim,BasisField> MBasis;
+    typedef StandardEvaluator<MBasis> Evaluator;
 
     typedef AlgLib::MultiPrecision< Precision<CF>::value > ComputeField;
     static const int dimension = dim;
@@ -72,8 +72,7 @@ namespace Dune
     {
       static void apply(unsigned int order,Basis* &basis)
       {
-        const MBasis &virtBasis = MonomialBasisProvider<dimension,StorageField>::template basis<Topology>(order);
-        // const MBasis &virtBasis = MonomialBasisProvider<dimension,MIF>::template basis<Topology>(order);
+        const MBasis &virtBasis = MonomialBasisProvider<dimension,BasisField>::template basis<Topology>(order);
 
         basis = new Basis(virtBasis);
         LagrangeMatrix<Topology,ComputeField> matrix(order);

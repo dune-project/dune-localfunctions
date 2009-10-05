@@ -3,48 +3,41 @@
 #include <config.h>
 
 #include <iostream>
+#include <vector>
 
+#include <dune/alglib/multiprecision.hh>
+#include <dune/finiteelements/quadrature/genericquadrature.hh>
 #include <dune/finiteelements/lagrangepoints.hh>
 #include <dune/finiteelements/monomialbasis.hh>
 #include <dune/finiteelements/multiindex.hh>
-#include <dune/alglib/multiprecision.hh>
-
-#include <dune/finiteelements/quadrature/genericquadrature.hh>
 
 #ifndef TOPOLOGY
 #error "TOPOLOGY not defined."
 #endif
 
-using namespace Dune::GenericGeometry;
+using namespace Dune;
+using namespace GenericGeometry;
 
-int main ( int argc, char **argv )
+template <class Topology>
+void lagrangePointTest(unsigned int p)
 {
-  if( argc < 2 )
-  {
-    std::cerr << "Usage: " << argv[ 0 ] << " <p>" << std::endl;
-    return 1;
-  }
+  typedef double Field;
 
-  int p = atoi( argv[ 1 ] );
+  typedef MonomialBasis< Topology, Field > Basis;
+  Basis basis(p);
 
-  typedef TOPOLOGY Topology;
-  typedef Dune::AlgLib::MultiPrecision<640> Field;
-  //const int dimension = Topology::dimension;
+  unsigned int size = basis.size();
+  std::cout << "Number of base functions:  " << size << std::endl;
 
-  Dune::MonomialBasis< Topology, Field > basis;
-  const unsigned int size = basis.size( p );
+  typedef LagrangePoints< Topology, Field > LagrangePoints;
+  LagrangePoints points( p );
+  std::cout << "Number of Lagrange points: " << points.size() << std::endl;
   std::vector< Field > y( size );
 
-  typedef Dune::LagrangePoints< Topology, Field > LagrangePoints;
-  LagrangePoints points( p );
-
-  std::cout << "Number of base functions:  " << size << std::endl;
-  std::cout << "Number of Lagrange points: " << points.size() << std::endl;
-
-  const LagrangePoints::iterator end = points.end();
-  for( LagrangePoints::iterator it = points.begin(); it != end; ++it )
+  const typename LagrangePoints::iterator end = points.end();
+  for( typename LagrangePoints::iterator it = points.begin(); it != end; ++it )
   {
-    basis.evaluate( p, it->point(), &(y[0]) );
+    basis.evaluate( it->point(), &(y[0]) );
     std::cout << "x = " << field_cast<double>(it->point())
               << " (codim = " << it->localKey().codim() << ", "
               << "subentity = " << it->localKey().subEntity() << ", "
@@ -52,20 +45,30 @@ int main ( int argc, char **argv )
     for( unsigned int i = 0; i < size; ++i )
       std::cout << "    y[ " << i << " ] = " << field_cast<double>(y[ i ]) << std::endl;
   }
+}
+template <class Topology>
+void quadratureTest(unsigned int p)
+{
+  typedef double Field;
 
-#if 0
+  typedef MonomialBasis< Topology, Field > Basis;
+  Basis basis(p);
+
+  unsigned int size = basis.size();
+  std::cout << "Number of base functions:  " << size << std::endl;
   std::cout << std::endl;
   std::cout << ">>> Testing quadrature of order " << (2*p+1) << "..." << std::endl;
 
-  std::vector< Dune::FieldVector< Field, 1 > > yquad( size );
+  std::vector< FieldVector< Field, 1 > > yquad( size );
   for( unsigned int i = 0; i < size; ++i )
     yquad[ i ] = 0;
 
-  GenericQuadrature< Topology > quadrature( 2*p+1 );
+  std::vector< Field > y( size );
+  GenericQuadrature< Topology,Field > quadrature( 2*p+1 );
   const unsigned int quadratureSize = quadrature.size();
   for( unsigned int qi = 0; qi < quadratureSize; ++qi )
   {
-    basis.evaluate( p, quadrature.point( qi ), y );
+    basis.evaluate( quadrature.point( qi ), y );
     std::cout << "x = " << quadrature.point( qi ) << ":" << std::endl;
     for( unsigned int i = 0; i < size; ++i )
     {
@@ -74,8 +77,8 @@ int main ( int argc, char **argv )
     }
   }
 
-  std::vector< Dune::FieldVector< double, 1 > > yint( size );
-  basis.integral( p, yint );
+  std::vector< double > yint( size );
+  basis.integral( yint );
   for( unsigned int i = 0; i < size; ++i )
   {
     if( fabs( yquad[ i ] - yint[ i ] ) < 1e-10 )
@@ -84,42 +87,44 @@ int main ( int argc, char **argv )
     std::cout << "    quadrature: " << yquad[ i ] << std::endl;
     std::cout << "    integral:   " << yint[ i ] << std::endl;
   }
+}
+template <class Topology>
+void multiIndexTest(unsigned int p)
+{
+  const int dimension = Topology::dimension;
+  typedef MultiIndex< dimension > Field;
 
+  typedef MonomialBasis< Topology, Field > Basis;
+  Basis basis(p);
 
-  if( false )
+  unsigned int size = basis.size();
+  std::cout << "Number of base functions:  " << size << std::endl;
+
+  std::cout << ">>> Polynomial representation of the basis functions:" << std::endl;
+  FieldVector< Field, dimension > x;
+  for( int i = 0; i < dimension; ++i )
+    x[ i ].set( i, 1 );
+  std::vector< Field > val( size );
+  basis.evaluate( x, val );
+  std::cout << val << std::endl;
+
+  std::cout << ">>> integral of basis functions:" << std::endl;
+  std::vector< Field > integral( size );
+  basis.integral( integral );
+  std::cout << integral << std::endl;
+}
+
+int main ( int argc, char **argv )
+{
+  typedef TOPOLOGY Topology;
+  if( argc < 2 )
   {
-    typedef Dune::StandardBiMonomialBasis< 3,double > Basis;
-    Basis basis;
-    const unsigned int size = basis.size( p );
-    std::vector< Dune::FieldVector< double, 1 > > y( size );
-
-    typedef Dune::LagrangePoints< Basis::Topology, double > LagrangePoints;
-    LagrangePoints points( p );
-
-    const LagrangePoints::iterator end = points.end();
-    for( LagrangePoints::iterator it = points.begin(); it != end; ++it )
-    {
-      basis.evaluate( p, it->point(), y );
-      std::cout << "x = " << it->point() << ":" << std::endl;
-      for( unsigned int i = 0; i < size; ++i )
-        std::cout << "    y[ " << i << " ] = " << y[ i ] << std::endl;
-    }
+    std::cerr << "Usage: " << argv[ 0 ] << " <p>" << std::endl;
+    return 1;
   }
+  int p = atoi( argv[ 1 ] );
 
-  if( true )
-  {
-    std::cout << std::endl;
-    std::cout << ">>> Polynomial representation of the basis functions:" << std::endl;
-    typedef Dune::MultiIndex< dimension > MultiIndex;
-    Dune::MonomialBasis< Topology, MultiIndex  > basis;
-    const unsigned int size = basis.size( p );
-    std::vector< Dune::FieldVector< MultiIndex, 1 > > y( size );
-    Dune::FieldVector< MultiIndex, dimension > x;
-    for( int i = 0; i < dimension; ++i )
-      x[ i ].set( i, 1 );
-    basis.evaluate( p, x, y );
-    for( size_t i = 0; i < y.size(); ++i )
-      std::cout << y[ i ] << std::endl;
-  }
-#endif
+  lagrangePointTest<Topology>(p);
+  quadratureTest<Topology>(p);
+  multiIndexTest<Topology>(p);
 }

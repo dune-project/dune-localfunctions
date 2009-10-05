@@ -23,6 +23,7 @@
 
 namespace Dune
 {
+
   // LocalCoefficientsContainer
   // -------------------
 
@@ -53,6 +54,52 @@ namespace Dune
   private:
     std::vector< LocalKey > localKey_;
   };
+  // AllBasisCreator
+  // ---------------
+  template <unsigned int dimension,class Field>
+  struct ScalarBasisProvider
+  {
+    enum Type {orthonormal,lagrange,lobatto};
+    typedef OrthonormalBasisProvider<dimension,Field> ONBProvider;
+    typedef LagrangeBasisProvider<dimension,Field> LagrangeProvider;
+    typedef LobattoBasisProvider<dimension,Field> LobattoProvider;
+
+    typedef MonomialBasisProvider<dimension,Field> MBasisProvider;
+    typedef SparseCoeffMatrix< Field, 1 > CoefficientMatrix;
+    typedef StandardEvaluator< typename MBasisProvider::Basis > Evaluator;
+    typedef PolynomialBasis< Evaluator, CoefficientMatrix > Basis;
+    template <class Topology>
+    static const Basis& basis(Type type,unsigned int order)
+    {
+      switch (type)
+      {
+      case orthonormal :
+        return ONBProvider::template basis<Topology>(order);
+      case lagrange :
+        return LagrangeProvider::template basis<Topology>(order);
+      case lobatto :
+        return LobattoProvider::template basis<Topology>(order);
+      }
+    }
+    static void release(Type type,const Basis& basis)
+    {
+      switch (type)
+      {
+      case orthonormal :
+        ONBProvider::release( static_cast<const typename ONBProvider::Basis&>(basis) );
+        break;
+      case lagrange :
+        LagrangeProvider::release( static_cast<const typename LagrangeProvider::Basis&>(basis) );
+        break;
+      case lobatto :
+        LobattoProvider::release( static_cast<const typename LobattoProvider::Basis&>(basis) );
+        break;
+      }
+    }
+  };
+
+
+
   // A small helper class to avoid having to
   // write the interpolation twice (once for function
   // and once for a basis)
@@ -297,7 +344,7 @@ namespace Dune
 
   // A L2 based interpolation for Raviart Thomas
   // --------------------------------------------------
-  template< class F, unsigned int dimension >
+  template< class F, unsigned int dimension>
   class RaviartThomasL2Interpolation
     : public RaviartThomasInterpolation<F,dimension>
   {
@@ -316,6 +363,16 @@ namespace Dune
     // typedef LagrangeBasisProvider<dimension-1,Field> TestFaceBasisProvider;
     // typedef LobattoBasisProvider<dimension,Field> TestBasisProvider;
     // typedef LobattoBasisProvider<dimension-1,Field> TestFaceBasisProvider;
+    // typedef ScalarBasisProvider<dimension,Field> TestBasisProvider;
+    // typedef ScalarBasisProvider<dimension-1,Field> TestFaceBasisProvider;
+
+    typedef MonomialBasisProvider<dimension,Field> TestMBasisProvider;
+    typedef MonomialBasisProvider<dimension-1,Field> TestFaceMBasisProvider;
+    typedef SparseCoeffMatrix< Field, 1 > CoefficientMatrix;
+    typedef StandardEvaluator< typename TestMBasisProvider::Basis > Evaluator;
+    typedef PolynomialBasis< Evaluator, CoefficientMatrix > TestBasis;
+    typedef StandardEvaluator< typename TestFaceMBasisProvider::Basis > FaceEvaluator;
+    typedef PolynomialBasis< FaceEvaluator, CoefficientMatrix > TestFaceBasis;
 
     RaviartThomasL2Interpolation
       ( const unsigned int order,
@@ -324,6 +381,8 @@ namespace Dune
         normal_(normal),
         mBasis_( TestBasisProvider::template basis<Topology>(order_-1) ),
         mFaceBasis_( TestFaceBasisProvider::template basis<FaceTopology>(order_) ),
+        // mBasis_( TestBasisProvider::template basis<Topology>(TestBasisProvider::orthonormal,order_-1) ),
+        // mFaceBasis_( TestFaceBasisProvider::template basis<FaceTopology>(TestFaceBasisProvider::orthonormal,order_) ),
         size_( (dimension+1)*mFaceBasis_.size()+dimension*mBasis_.size() )
     {}
 
@@ -355,10 +414,10 @@ namespace Dune
     {
       keys.resize(size());
       unsigned int row = 0;
-      for (int f=0; f<dimension+1; ++f)
-        for (int i=0; i<mFaceBasis_.size(); ++i,++row)
+      for (unsigned int f=0; f<dimension+1; ++f)
+        for (unsigned int i=0; i<mFaceBasis_.size(); ++i,++row)
           keys[row] = LocalKey(f,1,i);
-      for (int i=0; i<mBasis_.size()*dimension; ++i,++row)
+      for (unsigned int i=0; i<mBasis_.size()*dimension; ++i,++row)
         keys[row] = LocalKey(0,0,i);
       assert( row == size() );
     }
@@ -477,8 +536,8 @@ namespace Dune
 
     unsigned int order_;
     FieldMatrix<Field,dimension+1,dimension> normal_;
-    const typename TestBasisProvider::Basis &mBasis_;
-    const typename TestFaceBasisProvider::Basis &mFaceBasis_;
+    const TestBasis &mBasis_;
+    const TestFaceBasis &mFaceBasis_;
     unsigned int size_;
   };
 

@@ -12,6 +12,7 @@
 #include <alglib/ap.h>
 #include <alglib/inv.h>
 #include <alglib/rcond.h>
+#include <alglib/sevd.h>
 
 namespace Dune
 {
@@ -106,6 +107,16 @@ namespace Dune
       Field conditionOne () const
       {
         return Field( 1 ) / rcond::rmatrixrcond1( matrix_, rows() );
+      }
+
+      Field conditionTwo () const
+      {
+        const unsigned int n = rows();
+        Vector d( n );
+        This z;
+        if( !sevd::smatrixevd< precision >( (*this), n, 0, false, d, z ) )
+          DUNE_THROW( MathError, "Eigenvalue computation failed." );
+        return (d[ n-1 ] / d[ 0 ]);
       }
 
       Field conditionInfty () const

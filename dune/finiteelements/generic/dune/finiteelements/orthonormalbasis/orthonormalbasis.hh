@@ -28,7 +28,7 @@ namespace Dune
     typedef unsigned int Key;
 
     typedef AlgLib::MultiPrecision< Precision< CF >::value > ComputeField;
-    typedef SparseCoeffMatrix< StorageField > CoefficientMatrix;
+    typedef SparseCoeffMatrix< StorageField, 1 > CoefficientMatrix;
     typedef StandardEvaluator< MonomialBasis > Evaluator;
     typedef PolynomialBasis< Evaluator, CoefficientMatrix > Basis;
 

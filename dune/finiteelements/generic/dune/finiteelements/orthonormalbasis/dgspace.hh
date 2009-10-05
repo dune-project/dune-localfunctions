@@ -7,6 +7,7 @@
 #include <dune/finiteelements/orthonormalbasis/orthonormalbasis.hh>
 #include <dune/finiteelements/orthonormalbasis/l2interpolation.hh>
 #include <dune/finiteelements/global/dofmapper.hh>
+#include <dune/finiteelements/global/basisproxy.hh>
 
 namespace Dune
 {
@@ -36,8 +37,10 @@ namespace Dune
 
     typedef unsigned int Key;
 
-    typedef typename BasisCreator::Basis Basis;
+    typedef typename BasisCreator::Basis LocalBasis;
     typedef typename LocalInterpolationCreator::LocalInterpolation LocalInterpolation;
+
+    typedef BasisProxy< LocalBasis, typename GridView::template Codim< 0 >::Geometry > Basis;
 
     typedef Dune::DofMapper< typename GridView::IndexSet, LocalCoefficientsCreator > DofMapper;
 
@@ -67,10 +70,10 @@ namespace Dune
       return dofMapper_;
     }
 
-    const Basis &basis ( const typename GridView::template Codim< 0 >::Entity &entity ) const
+    Basis basis ( const typename GridView::template Codim< 0 >::Entity &entity ) const
     {
       const unsigned int topologyId = Dune::GenericGeometry::topologyId( entity.type() );
-      return *(basis_[ topologyId ]);
+      return Basis( *(basis_[ topologyId ]), entity.geometry() );
     }
 
     const LocalInterpolation &interpolation ( const typename GridView::template Codim< 0 >::Entity &entity ) const
@@ -84,7 +87,7 @@ namespace Dune
 
     GridView gridView_;
     DofMapper dofMapper_;
-    const Basis *basis_[ numTopologies ];
+    const LocalBasis *basis_[ numTopologies ];
     const LocalInterpolation *interpolation_[ numTopologies ];
   };
 
@@ -94,7 +97,7 @@ namespace Dune
   template< int topologyId >
   struct OrthonormalDGSpace< GV, SF, CF >::Build
   {
-    static void apply ( const Key &order, const Basis *(&basis)[ numTopologies ],
+    static void apply ( const Key &order, const LocalBasis *(&basis)[ numTopologies ],
                         const LocalInterpolation *(&interpolation)[ numTopologies ] )
     {
       typedef typename GenericGeometry::Topology< topologyId, dimDomain >::type Topology;

@@ -173,33 +173,15 @@ namespace Dune
 
       // fill first column
       baseBasis_.evaluate( order, x, offsets, values );
-      const unsigned int *const baseSizes = baseBasis_.sizes_;
 
       Field *row0 = values;
       for( unsigned int k = 1; k <= order; ++k )
       {
-#if 0
-        Field *const row1begin = values + offsets[ k-1 ];
-        Field *const colkEnd = row1begin + (k+1)*baseSizes[ k ];
-        assert( (unsigned int)(colkEnd - values) <= offsets[ k ] );
-        Field *const row1End = row1begin + sizes_[ k ];
-        assert( (unsigned int)(row1End - values) <= offsets[ k ] );
-
-        Field *row1 = row1begin;
-        Field *it;
-        for( it = row1begin + baseSizes[ k ]; it != colkEnd; ++row1, ++it )
-          *it = z * (*row1);
-        for( ; it != row1End; ++row0, ++it )
-          *it = z * (*row0);
-        row0 = row1;
-#else
-
         Field *row1 = values + offsets[ k-1 ];
         Field *wit = row1 + baseBasis_.sizes_[ k ];
         Helper::copy( wit, row1, k*baseBasis_.sizes_[ k ], z );
         Helper::copy( wit, row0, baseBasis_.numBaseFunctions_[ k-1 ], z );
         row0 = row1;
-#endif
       }
     }
 
@@ -301,50 +283,25 @@ namespace Dune
     }
 
     template< int dimD >
-    void evaluateSimplex ( const unsigned int order,
-                           const FieldVector< Field, dimD > &x,
-                           const unsigned int *const offsets,
-                           Field *const values ) const
+    void evaluateSimplexBase ( const unsigned int order,
+                               const FieldVector< Field, dimD > &x,
+                               const unsigned int *const offsets,
+                               Field *const values ) const
     {
-      const Field &z = x[ dimDomain-1 ];
-
-      // fill first column
       baseBasis_.evaluate( order, x, offsets, values );
-
-      const unsigned int *const baseSizes = baseBasis_.sizes_;
-      Field *row0 = values;
-      for( unsigned int k = 1; k <= order; ++k )
-      {
-#if 0
-        Field *const row1 = values+offsets[ k-1 ];
-        Field *const row1End = row1+sizes_[ k ];
-        assert( (unsigned int)(row1End - values) <= offsets[ k ] );
-        for( Field *it = row1 + baseSizes[ k ]; it != row1End; ++row0, ++it )
-          *it = z * (*row0);
-        row0 = row1;
-
-#else
-
-        Field *row1 = values + offsets[ k-1 ];
-        Field *wit = row1 + baseBasis_.sizes_[ k ];
-        Helper::copy( wit, row0, baseBasis_.numBaseFunctions_[ k-1 ], z );
-        row0 = row1;
-#endif
-      }
     }
 
     template< int dimD >
-    void evaluatePyramid ( const unsigned int order,
-                           const FieldVector< Field, dimD > &x,
-                           const unsigned int *const offsets,
-                           Field *const values ) const
+    void evaluatePyramidBase ( const unsigned int order,
+                               const FieldVector< Field, dimD > &x,
+                               const unsigned int *const offsets,
+                               Field *const values ) const
     {
-      const Field &z = x[ dimDomain-1 ];
-      Field omz = Unity< Field >() - z;
+      Field omz = Unity< Field >() - x[ dimDomain-1 ];
 
-      if( Zero<Field>() < omz )
+      if( Zero< Field >() < omz )
       {
-        const Field invomz = Unity<Field>() / omz;
+        const Field invomz = Unity< Field >() / omz;
         FieldVector< Field, dimDomain-1 > y;
         for( unsigned int i = 0; i < dimDomain-1; ++i )
           y[ i ] = x[ i ] * invomz;
@@ -352,36 +309,27 @@ namespace Dune
         // fill first column
         baseBasis_.evaluate( order, y, offsets, values );
 
-        const unsigned int *const baseSizes = baseBasis_.sizes_;
-        Field *row0 = values;
         Field omzk = omz;
         for( unsigned int k = 1; k <= order; ++k )
         {
-          Field *const row1 = values + offsets[ k-1 ];
-          Field *const row1End = row1 + sizes_[ k ];
-          assert( (unsigned int)(row1End - values) <= offsets[ k ] );
-          Field *const col0End = row1 + baseSizes[ k ];
-          Field *it = row1;
-          for( ; it != col0End; ++it )
-            *it = (*it) * omzk;
-          for( ; it != row1End; ++row0, ++it )
-            *it = z * (*row0);
-          row0 = row1;
+          Field *it = values + offsets[ k-1 ];
+          Field *const end = it + baseBasis_.sizes_[ k ];
+          for( ; it != end; ++it )
+            *it *= omzk;
           omzk *= omz;
         }
       }
-      else {
-        Field *it = values;
-        for( unsigned int k = 0; k <= order; ++k )
+      else
+      {
+        *values = Unity< Field >();
+        for( unsigned int k = 1; k <= order; ++k )
         {
-          Field *const rowEnd = it + (sizes_[ k ] - 1);
-          for( ; it != rowEnd; ++it )
-            *it = Zero<Field>();
-          *it = Unity<Field>();
-          ++it;
+          Field *it = values + offsets[ k-1 ];
+          Field *const end = it + baseBasis_.sizes_[ k ];
+          for( ; it != end; ++it )
+            *it = Zero< Field >();
         }
       }
-
     }
 
     template< int dimD >
@@ -391,9 +339,18 @@ namespace Dune
                     Field *const values ) const
     {
       if( GenericGeometry::IsSimplex< Topology >::value )
-        evaluateSimplex( order, x, offsets, values );
+        evaluateSimplexBase( order, x, offsets, values );
       else
-        evaluatePyramid( order, x, offsets, values );
+        evaluatePyramidBase( order, x, offsets, values );
+
+      Field *row0 = values;
+      for( unsigned int k = 1; k <= order; ++k )
+      {
+        Field *row1 = values + offsets[ k-1 ];
+        Field *wit = row1 + baseBasis_.sizes_[ k ];
+        Helper::copy( wit, row0, baseBasis_.numBaseFunctions_[ k-1 ], x[ dimDomain-1 ] );
+        row0 = row1;
+      }
     }
 
     void integral ( const unsigned int order,

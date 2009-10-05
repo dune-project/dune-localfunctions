@@ -58,7 +58,8 @@ namespace Dune
     typedef SF StorageField;
     typedef AlgLib::MultiPrecision< Precision<CF>::value > ComputeField;
     static const int dimension = dim;
-    typedef PolynomialBasisWithMatrix<MBasis,StorageField,1> Basis;
+    typedef StandardEvaluator<MBasis> Evaluator;
+    typedef PolynomialBasisWithMatrix<Evaluator> Basis;
     typedef unsigned int Key;
 
     template <class Topology>

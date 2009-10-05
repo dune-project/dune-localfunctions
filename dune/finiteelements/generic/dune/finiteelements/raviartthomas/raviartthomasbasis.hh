@@ -58,7 +58,8 @@ namespace Dune
       }
       FieldVector<F,d> val_;
       const std::vector<F>& mBasis_;
-      int pos_,dim_;
+      unsigned int pos_;
+      int dim_;
       bool done_;
     };
     typedef Dune::FieldVector<F,d> value_type;
@@ -78,84 +79,47 @@ namespace Dune
     {
       return mBasis_.size()*d;
     }
+    operator F*()
+    {
+      return &(mBasis_[0]);
+    }
     std::vector<F> mBasis_;
   };
-  template <int dim,class SF>
-  struct RaviartThomasMonomialBasis
-  {
-    typedef VirtualMonomialBasis<dim,SF> MBasis;
-    static const int dimension = dim;
-    typedef typename MBasis :: DomainVector DomainVector;
-    RaviartThomasMonomialBasis(const VirtualMonomialBasis<dim,SF>& basis)
-      : basis_(basis) {}
-    int size(int order) const
-    {
-      return basis_.size(order)*dim;
-    }
-    void evaluate(unsigned int order, const DomainVector &x,
-                  RaviartThomasContainer<dim,SF> &val ) const
-    {
-      basis_.evaluate(order,x,val.mBasis_);
-    }
-    const VirtualMonomialBasis<dim,SF>& basis_;
-  };
-
-  template< int dim, class SF >
-  struct RaviartThomasMonomialBasisCreator
-  {
-    typedef RaviartThomasMonomialBasis<dim,SF> Basis;
-    typedef SF StorageField;
-    static const int dimension = dim;
-    typedef unsigned int Key;
-
-    template <class Topology>
-    struct Maker
-    {
-      static void apply(unsigned int order,Basis* &basis)
-      {
-        basis = new Basis(MonomialBasisProvider<dimension,StorageField>::template basis<Topology>(order));
-      }
-    };
-  };
-  template< int dim, class SF>
-  struct RaviartThomasMonomialBasisProvider
-    : public BasisProvider<RaviartThomasMonomialBasisCreator<dim,SF> >
-  {};
-  // &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
   template <class Topology,class scalar_t>
   struct RaviartThomasMatrix {
     enum {dim = Topology::dimension};
     typedef Dune::AlgLib::Matrix< scalar_t > mat_t;
-    RaviartThomasMatrix(int order)
+    typedef StandardMonomialBasis<dim,scalar_t> MBasis;
+    RaviartThomasMatrix(int order) : basis_(), order_(order)
     {}
     int colSize(int row) const {
-      return matrix_.cols()/dim;
+      return (dim+1)*basis_.size(order_)-basis_.sizes(order_)[order_-1];
     }
     int rowSize() const {
-      return matrix_.rows()/dim;
+      return (dim+1)*basis_.size(order_)-basis_.sizes(order_)[order_-1];
     }
     const Dune::FieldMatrix< scalar_t,dim,dim > operator() ( int r, int c ) const
     {
       Dune::FieldMatrix< scalar_t, dim,dim > ret(0);
       for (int i=0; i<dim; ++i)
-        for (int j=0; j<dim; ++j)
-          ret[i][j] = matrix_(c*dim+i,r*dim+j);
+        ret[i][i] = 1.;
       return ret;
     }
     void print(std::ostream& out,int N = rowSize()) const {}
+    MBasis basis_;
+    int order_;
     mat_t matrix_;
   };
-
 
   template< int dim, class SF, class CF >
   struct RaviartThomasBasisCreator
   {
-    typedef RaviartThomasMonomialBasis<dim,SF> RTBasis;
+    typedef StandardMonomialBasis<dim,SF> MBasis;
     typedef SF StorageField;
     typedef AlgLib::MultiPrecision< Precision<CF>::value > ComputeField;
     static const int dimension = dim;
-    typedef PolynomialBasisWithMatrix<RTBasis,StorageField,dimension,RaviartThomasContainer<dimension,StorageField> > Basis;
+    typedef PolynomialBasisWithMatrix<MBasis,StorageField,dimension,RaviartThomasContainer<dimension,StorageField> > Basis;
     typedef unsigned int Key;
 
     template <class Topology>
@@ -163,8 +127,10 @@ namespace Dune
     {
       static void apply(unsigned int order,Basis* &basis)
       {
-        const RTBasis &vBasis = RaviartThomasMonomialBasisProvider<dimension,StorageField>::template basis<Topology>(order);
-        basis = new Basis(vBasis,order);
+        // bool RTBasis_only_for_implemented_for_simplex = GenericGeometry::IsSimplex<Topology>::value ;
+        // assert(RTBasis_only_for_implemented_for_simplex);
+        static MBasis _mBasis;
+        basis = new Basis(_mBasis,order);
         RaviartThomasMatrix<Topology,ComputeField> matrix(order);
         basis->fill(matrix);
         std::stringstream name;

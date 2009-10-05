@@ -34,33 +34,32 @@ namespace Dune
    *           typedef const_iterator
    *           const_iterator begin()
    **/
-  template<  class B, class CM, class Container >
+  template<  class CM, class Eval >
   class PolynomialBasis
   {
-    typedef PolynomialBasis< B, CM, Container > This;
-
-    typedef B Basis;
-    static const int dimension = Basis::dimension;
+    typedef PolynomialBasis< CM, Eval > This;
 
     typedef CM CoefficientMatrix;
+    typedef Eval Evaluator;
+
+    static const int dimension = Evaluator::dimension;
     typedef typename CoefficientMatrix::Field StorageField;
-    static const int dimRange = CoefficientMatrix::dimension;
 
   public:
-    typedef typename Basis::DomainVector DomainVector;
+    typedef typename Evaluator::Basis Basis;
+    typedef typename Evaluator::DomainVector DomainVector;
 
     PolynomialBasis (const Basis &basis,
                      const CoefficientMatrix &coeffMatrix,
-                     int order,
-                     int size = 0)
-      : basis_(&basis),
-        coeffMatrix_(&coeffMatrix),
-        basisEval_(basis.size(order)),
-        order_(order),
+                     int order, unsigned int size)
+      : coeffMatrix_(&coeffMatrix),
+        eval_(basis,order),
         size_(size)
-    { }
+    {
+      assert(size <= coeffMatrix.size());
+    }
 
-    const int size () const
+    const unsigned int size () const
     {
       return size_;
     }
@@ -70,11 +69,8 @@ namespace Dune
                     std::vector< RangeVector > &values ) const
     {
       assert(values.size()>=size());
-      assert(values.size()>=basis_->size(order_));
-      assert(basisEval_.size()>=basis_->size(order_));
-      assert(basisEval_.size()>=coeffMatrix_->baseSize());
-      basis_->evaluate( order_, x, basisEval_ );
-      coeffMatrix_->mult( basisEval_, values );
+      eval_.evaluate( x );
+      coeffMatrix_->mult( eval_, values );
     }
 
     template< class DomainVector, class RangeVector >
@@ -119,10 +115,9 @@ namespace Dune
   protected:
     PolynomialBasis(const PolynomialBasis &);
     PolynomialBasis &operator=(const PolynomialBasis&);
-    const Basis *basis_;
     const CoefficientMatrix* coeffMatrix_;
-    mutable Container basisEval_;
-    unsigned int order_,size_;
+    mutable Evaluator eval_;
+    unsigned int size_;
   };
 
   /**
@@ -131,28 +126,22 @@ namespace Dune
    * value type. This class stores the coefficient matrix with can be
    * constructed via the fill method
    */
-  template< class B, class SF, int dimR, class Container =  std::vector<Dune::FieldVector<SF,dimR> > >
+  template< class Eval >
   class PolynomialBasisWithMatrix
-    : public PolynomialBasis<B,CoeffMatrix<FieldMatrix<SF,dimR,dimR> > , Container>
+    : public PolynomialBasis<CoeffMatrix<typename Eval::Field> , Eval >
   {
-    typedef PolynomialBasisWithMatrix< B, SF, dimR, Container > This;
+    typedef typename Eval::Field StorageField;
+    typedef Eval Evaluator;
+    typedef CoeffMatrix< StorageField > CoefficientMatrix;
 
-    typedef B Basis;
-    enum {dimension = Basis::dimension};
+    typedef PolynomialBasisWithMatrix< Evaluator > This;
+    typedef PolynomialBasis<CoefficientMatrix,Evaluator> Base;
 
-    static const int dimRange = dimR;
-    typedef SF StorageField;
-    typedef FieldMatrix<StorageField,dimRange,dimRange> CoeffRangeVector;
-    typedef CoeffMatrix< CoeffRangeVector > CoefficientMatrix;
-
-    typedef PolynomialBasis<Basis,CoefficientMatrix,Container> Base;
-
+    typedef typename Base::Basis Basis;
   public:
-    typedef typename Basis::DomainVector DomainVector;
-
     PolynomialBasisWithMatrix (const Basis &basis,
                                int order)
-      : Base(basis,coeffMatrix_,order)
+      : Base(basis,coeffMatrix_,order,0)
     {}
 
     template <class FullMatrix>
@@ -161,11 +150,18 @@ namespace Dune
       coeffMatrix_.fill(matrix);
       this->size_ = matrix.rowSize();
     }
+    template <class FullMatrix>
+    void fill(const FullMatrix& matrix,int size)
+    {
+      coeffMatrix_.fill(matrix);
+      assert(size<=coeffMatrix_.size());
+      this->size_ = size;
+    }
 
   private:
     PolynomialBasisWithMatrix(const PolynomialBasisWithMatrix &);
     PolynomialBasisWithMatrix &operator=(const PolynomialBasisWithMatrix &);
-    CoeffMatrix< CoeffRangeVector > coeffMatrix_;
+    CoefficientMatrix coeffMatrix_;
   };
 }
 #endif // DUNE_POLYNOMIALBASIS_HH

@@ -15,9 +15,9 @@ namespace Dune
     typedef SF StorageField;
     typedef AlgLib::MultiPrecision< Precision<CF>::value > ComputeField;
     static const int dimension = dim;
-    typedef FieldMatrix<StorageField,1,1> CoeffRangeVector;
-    typedef CoeffMatrix< CoeffRangeVector > CoefficientMatrix;
-    typedef PolynomialBasis<MBasis,CoefficientMatrix,std::vector<StorageField> > Basis;
+    typedef CoeffMatrix< StorageField > CoefficientMatrix;
+    typedef StandardEvaluator<MBasis> Evaluator;
+    typedef PolynomialBasis<CoefficientMatrix,Evaluator> Basis;
     typedef unsigned int Key;
 
     template <class Topology>

@@ -36,7 +36,9 @@ bool test(unsigned int order) {
       {
         // std::cout << index << " " << i << " : " << y[i] << std::endl;
         unsigned int r = i%dimRange;
-        if( fabs( y[ i ][r] - double( i/dimRange == index ) ) > 1e-10 )
+        Dune::FieldVector< double, dimRange > testy (0);
+        testy[r] = double( i/dimRange == index );
+        if ( (testy-y[i]).two_norm() > 1e-10 )
         {
           if (first) {
             std::cout << "ERROR: "

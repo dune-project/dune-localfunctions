@@ -29,88 +29,101 @@ namespace Dune
     int rowSize() const {
       return matrix_.rows()*dimR;
     }
-    const Dune::FieldMatrix< scalar_t, dimR,dimR > operator() ( int r, int c ) const
+    const scalar_t operator() ( int r, int c ) const
     {
-      Dune::FieldMatrix< scalar_t, dimR,dimR > ret(0);
-      ret[r%dimR][r%dimR] = matrix_(c/dimR,r/dimR);
-      return ret;
+      if (c%dimR == r%dimR)
+        return matrix_(c/dimR,r/dimR);
+      else
+        return Zero<scalar_t>();
     }
     void print(std::ostream& out,int N = rowSize()) const {}
     mat_t matrix_;
   };
 
-  template <int d,class F>
-  struct VecContainer
+  template <class Evaluator,int d>
+  struct VecEvaluator
   {
+    typedef Evaluator Container;
+    typedef typename Evaluator::Basis Basis;
+    typedef typename Evaluator::DomainVector DomainVector;
+    typedef typename Evaluator::Field Field;
+    typedef Dune::FieldVector<typename Evaluator::RangeVector,d> RangeVector;
+    static const int dimension = Evaluator :: dimension;
+
     struct Iterator
     {
-      Iterator(const std::vector<F>& mBasis, bool end)
-        : mBasis_(mBasis),
-          pos_(0), dim_(0),
-          done_(end) {
-        val_[dim_] = mBasis_[pos_];
+      Iterator(const Container& eval, bool end)
+        : eval_(eval),
+          pos_(end ? eval.end() : eval.begin()),
+          dim_(0)
+      {
+        if (!end)
+          val_[dim_] = *pos_;
       }
       Iterator(const Iterator& other)
-        : mBasis_(other.mBasis_),
-          pos_(other.pos_), dim_(other.dim_),
-          done_(other.done_)
+        : val_(other.val_),
+          eval_(other.eval_),
+          pos_(other.pos_),
+          dim_(other.dim_)
       {}
       Iterator &operator=(const Iterator& other)
       {
-        mBasis_ = other.mBasis;
+        val_ = other.val_;
+        eval_ = other.eval_;
         pos_ = other.pos_;
         dim_ = other.dim_;
-        done_ = other.done_;
       }
-      const FieldVector<F,d>& operator*() const
+      const RangeVector& operator*() const
       {
-        assert(!done_);
+        assert(pos_!=eval_.end());
         return val_;
       }
       const Iterator &operator++()
       {
         val_[dim_] = 0;
-        if (dim_ == d-1)
+        ++dim_;
+        if (dim_ == d)
         {
           dim_ = 0;
           ++pos_;
+          if (pos_ == eval_.end())
+            return *this;
         }
-        else
-          ++dim_;
-        if (pos_==mBasis_.size())
-          done_ = true;
-        else
-          val_[dim_] = mBasis_[pos_];
+        val_[dim_] = *pos_;
         return *this;
       }
-      FieldVector<F,d> val_;
-      const std::vector<F>& mBasis_;
-      unsigned int pos_;
+    private:
+      RangeVector val_;
+      const Container& eval_;
+      typename Container::Iterator pos_;
       int dim_;
-      bool done_;
     };
-    typedef Dune::FieldVector<F,d> value_type;
-    typedef Iterator const_iterator;
-    VecContainer(int size)
-      : mBasis_(size) {}
+
+    VecEvaluator(const Basis &basis, unsigned int order)
+      : eval_(basis,order)
+    {}
+    void evaluate(const DomainVector &x)
+    {
+      eval_.evaluate(x);
+    }
     Iterator begin() const
     {
-      return Iterator(mBasis_,false);
+      return Iterator(eval_,false);
     }
     Iterator end() const
     {
-      return Iterator(mBasis_,true);
+      return Iterator(eval_,true);
     }
-    // for debuging
-    int size() const
+    unsigned int order() const
     {
-      return mBasis_.size()*d;
+      return eval_.order();
     }
-    operator F*()
+    unsigned int size() const
     {
-      return &(mBasis_[0]);
+      return eval_.size()*d;
     }
-    std::vector<F> mBasis_;
+  private:
+    Evaluator eval_;
   };
 
   template< int dim, int dimR, class SF, class CF >
@@ -120,7 +133,8 @@ namespace Dune
     typedef SF StorageField;
     typedef AlgLib::MultiPrecision< Precision<CF>::value > ComputeField;
     static const int dimension = dim;
-    typedef PolynomialBasisWithMatrix<MBasis,StorageField,dimR,VecContainer<dimR,StorageField> > Basis;
+    typedef VecEvaluator<StandardEvaluator<MBasis>,dimR> Evaluator;
+    typedef PolynomialBasisWithMatrix<Evaluator> Basis;
     typedef unsigned int Key;
 
     template <class Topology>

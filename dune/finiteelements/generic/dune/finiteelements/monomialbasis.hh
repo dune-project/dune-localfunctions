@@ -599,96 +599,6 @@ namespace Dune
     : public BasisProvider<MonomialBasisCreator<dim,SF> >
   {};
 
-
-#if 0
-  template< int dim, class F >
-  struct MonomialBasisProvider
-  {
-    static const int dimension = dim;
-    typedef F Field;
-    typedef VirtualMonomialBasis<dimension,Field> Basis;
-
-    static const Basis &basis(unsigned int id)
-    {
-      return instance().getBasis(id);
-    }
-    template <class Topology>
-    static const Basis &basis()
-    {
-      return instance().template getBasis<Topology>();
-    }
-
-    template <class Impl>
-    static void callback(unsigned int topologyId)
-    {
-      GenericGeometry::IfTopology<CallBack<Impl>::template Helper,dim>::apply(topologyId);
-    }
-    template <class Impl,class T1>
-    static void callback(unsigned int topologyId, T1 &t1)
-    {
-      GenericGeometry::IfTopology<CallBack<Impl>::template Helper,dim>::apply(topologyId,t1);
-    }
-    template <class Impl,class T1,class T2>
-    static void callback(unsigned int topologyId, T1 &t1, T2 &t2)
-    {
-      GenericGeometry::IfTopology<CallBack<Impl>::template Helper,dim>::apply(topologyId,t1,t2);
-    }
-
-  private:
-    enum { numTopologies = (1 << dimension) };
-    MonomialBasisProvider()
-    {}
-    static MonomialBasisProvider &instance()
-    {
-      static MonomialBasisProvider instance;
-      return instance;
-    }
-    const Basis &getBasis(unsigned int id)
-    {
-      if (basis_[id] == 0)
-        MonomialBasisProvider::callback(*this,id);
-      return basis_[id];
-    }
-    template <class Topology>
-    const Basis &getBasis()
-    {
-      const unsigned int id = Topology::id;
-      if (basis_[id] == 0)
-        basis_[id] = new VirtualMonomialBasisImpl<Topology,Field>;
-      return *(basis_[id]);
-    }
-    template <class Topology>
-    static void apply(const Basis &)
-    {}
-
-    template <class Impl>
-    struct CallBack
-    {
-      template <class Topology>
-      struct Helper
-      {
-        static void apply()
-        {
-          Impl::template apply<Topology>(instance().template getBasis<Topology>());
-        }
-        template <class T1>
-        static void apply(T1 &t1)
-        {
-          Impl::template apply<Topology>(instance().template getBasis<Topology>(),t1);
-        }
-        template <class T1,class T2>
-        static void apply(T1 &t1, T2 &t2)
-        {
-          Impl::template apply<Topology>(instance().template getBasis<Topology>(),t1,t2);
-        }
-      };
-    };
-
-    FieldVector<Basis*,numTopologies> basis_;
-  };
-#endif
-
-
   // StdMonomialTopology
   // -------------------
 
@@ -740,6 +650,47 @@ namespace Dune
     {}
   };
 
+  template <class B>
+  struct StandardEvaluator
+  {
+    typedef B Basis;
+    typedef typename Basis::Field Field;
+    typedef typename Basis::Field RangeVector;
+    typedef typename Basis::DomainVector DomainVector;
+    typedef std::vector<RangeVector> Container;
+    typedef typename Container::const_iterator Iterator;
+    static const int dimension = Basis::dimension;
+    StandardEvaluator(const Basis &basis,unsigned int order)
+      : basis_(basis),
+        order_(order),
+        container_(basis.size(order))
+    {}
+    void evaluate(const DomainVector &x)
+    {
+      basis_.evaluate(order_,x,container_);
+    }
+    Iterator begin() const
+    {
+      return container_.begin();
+    }
+    Iterator end() const
+    {
+      return container_.end();
+    }
+    unsigned int order() const
+    {
+      return order_;
+    }
+    unsigned int size() const
+    {
+      return basis_.size(order);
+    }
+  private:
+    StandardEvaluator(const StandardEvaluator&);
+    const Basis &basis_;
+    unsigned int order_;
+    Container container_;
+  };
 }
 
 #endif

@@ -28,9 +28,10 @@ bool test(unsigned int order) {
     {
       basis.evaluate( points[ index ].point(), y );
       bool first = true;
+      std::cout << "At point points[ " << index << " ] = " << points[ index ].point() << std::endl;
       for( unsigned int i = 0; i < y.size(); ++i)
       {
-        std::cout << index << " " << i << " : " << y[i] << std::endl;
+        std::cout << "  y [ " << i << " ] = " << y[i] << std::endl;
         first = false;
       }
     }
@@ -54,18 +55,12 @@ int main ( int argc, char **argv )
   return (test<TOPOLOGY>(order) ? 0 : 1 );
 #else
   bool tests = true;
-  tests &= test<Prism<Point> > (order);
   tests &= test<Pyramid<Point> > (order);
 
-  tests &= test<Prism<Prism<Point> > > (order);
   tests &= test<Pyramid<Pyramid<Point> > >(order);
 
-  tests &= test<Prism<Prism<Prism<Point> > > >(order);
-  tests &= test<Prism<Pyramid<Pyramid<Point> > > >(order);
-  tests &= test<Pyramid<Prism<Prism<Point> > > >(order);
   tests &= test<Pyramid<Pyramid<Pyramid<Point> > > >(order);
 
-  tests &= test<Prism<Prism<Prism<Prism<Point> > > > >(order);
   tests &= test<Pyramid<Pyramid<Pyramid<Pyramid<Point> > > > >(order);
   return (tests ? 0 : 1);
 #endif // TOPOLOGY

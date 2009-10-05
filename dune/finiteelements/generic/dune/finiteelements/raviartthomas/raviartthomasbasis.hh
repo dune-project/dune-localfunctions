@@ -482,30 +482,6 @@ namespace Dune
   template <class Topology,class Field>
   struct RaviartThomasInitialBasis
   {
-    static const unsigned int dimension=Topology::dimension;
-    typedef OrthonormalBasisProvider<dimension,Field> TestBasisProvider;
-    typedef OrthonormalBasisProvider<dimension-1,Field> TestFaceBasisProvider;
-
-    typedef typename TestBasisProvider::Basis TestBasis;
-    typedef typename TestFaceBasisProvider::Basis TestFaceBasis;
-
-    static const TestBasis &testBasis(unsigned int order)
-    {
-      return TestBasisProvider::template basis<Topology>(order-1);
-    }
-    static const TestFaceBasis &testFaceBasis(unsigned int order)
-    {
-      return TestFaceBasisProvider::template basis<Topology>(order);
-    }
-    static const TestBasis &initialBasis(unsigned int order)
-    {
-      return TestBasisProvider::template basis<Topology>(order);
-    }
-  };
-
-  template <unsigned int dimension,class Field>
-  struct RaviartThomasInitialBasis< typename GenericGeometry::SimplexTopology<dimension>::type,Field >
-  {
     typedef typename GenericGeometry::SimplexTopology<dimension>::type Topology;
     // typedef MonomialBasisProvider<dimension,Field> TestBasisProvider;
     // typedef MonomialBasisProvider<dimension-1,Field> TestFaceBasisProvider;
@@ -531,14 +507,6 @@ namespace Dune
     static const TestFaceBasis &testFaceBasis(unsigned int order)
     {
       return TestFaceBasisProvider::template basis<Topology>(order);
-    }
-    static const RTPreBasis &initialBasis(unsigned int order)
-    {
-      static RTVecMatrix<Topology,Field> _vecMatrix(order);
-      MBasis mBasis( MBasisProvider::template basis<Topology>(order+1) );
-      static RTPreBasis _rtPreBasis(mBasis);
-      _rtPreBasis.fill(_vecMatrix);
-      return _rtPreBasis;
     }
   };
 

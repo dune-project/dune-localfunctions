@@ -43,4 +43,22 @@ int main ( int argc, char **argv )
     for( unsigned int i = 0; i < size; ++i )
       std::cout << "    y[ " << i << " ] = " << y[ i ] << std::endl;
   }
+  {
+    typedef Dune::StandardBiMonomialBasis< 3,double > Basis;
+    Basis basis;
+    const unsigned int size = basis.sizes( p )[ p ];
+    std::vector< Dune::FieldVector< double, 1 > > y( size );
+
+    typedef Dune::LagrangePoints< Basis::Topology, double > LagrangePoints;
+    LagrangePoints points( p );
+
+    const LagrangePoints::iterator end = points.end();
+    for( LagrangePoints::iterator it = points.begin(); it != end; ++it )
+    {
+      basis.evaluate( p, *it, y );
+      std::cout << "x = " << *it << ":" << std::endl;
+      for( unsigned int i = 0; i < size; ++i )
+        std::cout << "    y[ " << i << " ] = " << y[ i ] << std::endl;
+    }
+  }
 }

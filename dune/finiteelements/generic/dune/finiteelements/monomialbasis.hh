@@ -378,6 +378,51 @@ namespace Dune
       evaluate( order, x, &(values[ 0 ]) );
     }
   };
+  template <int dim>
+  struct StdMonomialTopology {
+    typedef StdMonomialTopology<dim-1> BaseType;
+    typedef GenericGeometry::Pyramid<typename BaseType::Type> Type;
+  };
+  template <>
+  struct StdMonomialTopology<0> {
+    typedef GenericGeometry::Point Type;
+  };
+  template <int dim>
+  struct StdBiMonomialTopology {
+    typedef GenericGeometry::Prism<typename StdBiMonomialTopology<dim-1>::Type> Type;
+  };
+  template <>
+  struct StdBiMonomialTopology<0> {
+    typedef GenericGeometry::Point Type;
+  };
+  template< int dim,class F >
+  class StandardMonomialBasis
+    : public MonomialBasis< typename StdMonomialTopology<dim>::Type, F >
+  {
+  public:
+    typedef typename StdMonomialTopology<dim>::Type Topology;
+  private:
+    typedef StandardMonomialBasis< dim, F > This;
+    typedef MonomialBasis< Topology, F > Base;
+  public:
+    StandardMonomialBasis ()
+      : Base()
+    {}
+  };
+  template< int dim, class F >
+  class StandardBiMonomialBasis
+    : public MonomialBasis< typename StdBiMonomialTopology<dim>::Type, F >
+  {
+  public:
+    typedef typename StdBiMonomialTopology<dim>::Type Topology;
+  private:
+    typedef StandardBiMonomialBasis< dim, F > This;
+    typedef MonomialBasis< Topology, F > Base;
+  public:
+    StandardBiMonomialBasis ()
+      : Base()
+    {}
+  };
 
 }
 

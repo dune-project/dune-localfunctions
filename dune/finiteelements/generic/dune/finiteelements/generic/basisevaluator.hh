@@ -77,7 +77,7 @@ namespace Dune
     static const unsigned int dimDomain = Deriv::dimDomain;
     static const unsigned int dimRange = Deriv::dimRange;
 
-    typedef std::vector<Deriv> Container;
+    typedef std::vector<Field> Container;
     typedef typename Container::iterator CIter;
 
     explicit BaseIterator ( Container &container )
@@ -88,21 +88,10 @@ namespace Dune
     const Deriv &operator*() const
     {
       assert(!done());
-      return *pos_;
-    }
-
-    Deriv &operator*()
-    {
-      assert(!done());
-      return *pos_;
+      return reinterpret_cast<const Deriv&>(*pos_);
     }
 
     const Deriv *operator->() const
-    {
-      return &(operator*());
-    }
-
-    Deriv *operator->()
     {
       return &(operator*());
     }
@@ -114,13 +103,13 @@ namespace Dune
 
     BaseIterator &operator++ ()
     {
-      pos_ += 1; // blockSize;
+      pos_ += blockSize;
       return *this;
     }
 
     BaseIterator &operator+= ( unsigned int skip )
     {
-      pos_ += skip; // *blockSize;
+      pos_ += skip*blockSize;
       return *this;
     }
 
@@ -148,23 +137,12 @@ namespace Dune
     StandardEvaluator(const Basis &basis)
       : Base(basis,basis.order(),basis.size())
     {}
-    template <unsigned int deriv>
-    typename Iterator<deriv>::All evaluate(const DomainVector &x)
-    {
-      Base::template resize<deriv>();
-      std::vector<Derivatives<Field,dimension,dimRange,deriv,derivative> >& derivContainer =
-        reinterpret_cast<std::vector<Derivatives<Field,dimension,dimRange,deriv,derivative> >&>(container_);
-      basis_.template evaluate<deriv>(x,derivContainer);
-      return typename Iterator<deriv>::All(derivContainer);
-    }
     template <unsigned int deriv,class DVector>
     typename Iterator<deriv>::All evaluate(const DVector &x)
     {
       Base::template resize<deriv>();
-      std::vector<Derivatives<Field,dimension,dimRange,deriv,derivative> >& derivContainer =
-        reinterpret_cast<std::vector<Derivatives<Field,dimension,dimRange,deriv,derivative> >&>(container_);
-      basis_.template evaluate<deriv>(x,derivContainer);
-      return typename Iterator<deriv>::All(derivContainer);
+      basis_.template evaluate<deriv>(x,&(container_[0]));
+      return typename Iterator<deriv>::All(container_);
     }
 
   protected:

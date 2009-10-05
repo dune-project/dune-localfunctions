@@ -62,10 +62,10 @@ namespace Dune
     int rowSize() const {
       return calc.res.gethighbound(1)-1;
     }
-    void set(int r,int c,double v) const {
+    void set(int r,int c,double &v) const {
       v = calc.res(r+1,c+1).toDouble();
     }
-    void set(int r,int c,std::string v) const {
+    void set(int r,int c,std::string &v) const {
       v = amp::ampf<128>(calc.res(r+1,c+1)).toDec();
     }
     void print(std::ostream& out) {
@@ -74,17 +74,17 @@ namespace Dune
         out << "Polynomial : " << i << std::endl;
         for (int j=0; j<=colSize(i); j++) {
           double v = 0;
-          set(i,j,v);
+          set(j,i,v);
           if (fabs(v)<1e-20)
             out << 0 << "\t\t" << std::flush;
           else {
             std::string v;
-            set(i,j,v);
+            set(j,i,v);
             out << v << "\t\t" << std::flush;
           }
         }
-        for (int j=i+1; j<=N; j++) {
-          assert(fabs(res(j,i).toDouble())<1e-10);
+        for (int j=colSize(i)+1; j<=N; j++) {
+          assert(fabs(calc.res(j+1,i+1).toDouble())<1e-10);
         }
         out << std::endl;
       }

@@ -3,8 +3,8 @@
 #ifndef DUNE_COEFFMATRIX_HH
 #define DUNE_COEFFMATRIX_HH
 #include <cassert>
-#include <dune/alglib/libs/ap.h>
-#include <dune/alglib/libs/amp.h>
+#include <alglib/ap.h>
+#include <alglib/amp.h>
 
 namespace Dune
 {

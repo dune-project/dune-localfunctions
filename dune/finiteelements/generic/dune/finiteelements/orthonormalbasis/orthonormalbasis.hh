@@ -5,7 +5,7 @@
 
 #include <sstream>
 
-#include <dune/finiteelements/polynomialbasis.hh>
+#include <dune/finiteelements/generic/polynomialbasis.hh>
 #include <dune/finiteelements/basisprovider.hh>
 #include <dune/finiteelements/basisprint.hh>
 #include <dune/finiteelements/orthonormalbasis/orthonormalcompute.hh>

@@ -9,7 +9,8 @@
 #include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
 #include <dune/finiteelements/lagrangebasis/interpolation.hh>
 #include <dune/finiteelements/basisprovider.hh>
-#include <dune/finiteelements/polynomialbasis.hh>
+#include <dune/finiteelements/generic/polynomialbasis.hh>
+
 namespace Dune
 {
   template <class Topology,class scalar_t,int dimR>

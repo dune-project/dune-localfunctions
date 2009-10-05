@@ -12,7 +12,7 @@
 #include <dune/finiteelements/generic/monomialbasis.hh>
 #include <dune/finiteelements/basisprovider.hh>
 #include <dune/finiteelements/basisprint.hh>
-#include <dune/finiteelements/polynomialbasis.hh>
+#include <dune/finiteelements/generic/polynomialbasis.hh>
 
 namespace Dune
 {

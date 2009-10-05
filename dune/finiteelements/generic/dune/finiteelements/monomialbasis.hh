@@ -9,7 +9,7 @@
 
 #include <dune/grid/genericgeometry/topologytypes.hh>
 
-#include <dune/finiteelements/field.hh>
+#include <dune/common/field.hh>
 
 namespace Dune
 {

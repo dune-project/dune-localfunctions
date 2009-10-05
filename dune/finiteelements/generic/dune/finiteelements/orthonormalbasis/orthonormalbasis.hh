@@ -9,14 +9,13 @@
 #include "orthonormalcompute.hh"
 namespace Dune
 {
-  template <class Topology,class FieldTraits>
+  template <class Topology,class SF,class CF=ComputeField<SF,512> >
   class OrthonormalBasis
   {
     enum {dimension = Topology::dimension};
-    typedef OrthonormalBasis<Topology,FieldTraits> This;
 
-    typedef typename FieldTraits::StorageField StorageField;
-    typedef typename FieldTraits::ComputationField ComputationField;
+    typedef typename SF StorageField;
+    typedef typename CF ComputationField;
 
     typedef StandardMonomialBasis<dimension,StorageField> Basis;
 

@@ -8,6 +8,8 @@
 #include <dune/finiteelements/monomialbasis.hh>
 #include <dune/finiteelements/multiindex.hh>
 
+#include <dune/grid/quadrature/genericquadrature.hh>
+
 #ifndef TOPOLOGY
 #error "TOPOLOGY not defined."
 #endif
@@ -49,6 +51,20 @@ int main ( int argc, char **argv )
       std::cout << "    y[ " << i << " ] = " << y[ i ] << std::endl;
   }
 
+  std::cout << std::endl;
+  std::cout << ">>> Testing quadrature of order " << (2*p+1) << "..." << std::endl;
+
+  typedef QuadratureRuleImpl< Topology > Quadrature;
+  Quadrature quadrature( 2*p+1 );
+  const Quadrature::iterator qend = quadrature.end();
+  for( Quadrature::iterator qit = quadrature.begin(); qit != qend; ++qit )
+  {
+    basis.evaluate( p, qit->position(), y );
+    std::cout << "x = " << qit->position() << ":" << std::endl;
+    for( unsigned int i = 0; i < size; ++i )
+      std::cout << "    y[ " << i << " ] = " << y[ i ] << std::endl;
+  }
+
   if( false )
   {
     typedef Dune::StandardBiMonomialBasis< 3,double > Basis;
@@ -72,7 +88,7 @@ int main ( int argc, char **argv )
   if( true )
   {
     std::cout << std::endl;
-    std::cout << "polynomial representation of the basis functions:" << std::endl;
+    std::cout << ">>> Polynomial representation of the basis functions:" << std::endl;
     typedef Dune::MultiIndex< dimension > MultiIndex;
     Dune::MonomialBasis< Topology, MultiIndex  > basis;
     const unsigned int size = basis.size( p );

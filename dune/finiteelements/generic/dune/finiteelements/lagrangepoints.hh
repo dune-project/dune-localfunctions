@@ -282,6 +282,11 @@ namespace Dune
       GenericGeometry::ForLoop< Init, 0, dimension >::apply( order, p );
     }
 
+    const LagrangePoint &operator[] ( const unsigned int i ) const
+    {
+      return points_[ i ];
+    }
+
     iterator begin () const
     {
       return points_.begin();

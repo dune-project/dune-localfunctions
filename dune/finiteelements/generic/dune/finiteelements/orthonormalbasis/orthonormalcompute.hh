@@ -120,7 +120,6 @@ namespace ONB {
             Integral<Topology>::compute(y[i-1]*y[j-1],p,q);
             S(i,j) = p;
             S(i,j) /= q;
-            std::cout << std::endl;
           }
         }
         compute();

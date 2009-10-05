@@ -33,11 +33,8 @@ int main ( int argc, char **argv )
   for( Quadrature::iterator it = quadrature.begin(); it != end; ++it )
   {
     basis.evaluate( order, it->position(), y );
-    std::cout << "Point: " << it->position() << ", " << std::endl;
-    std::cout << "weight: " << it->weight() << ":" << std::endl;
     for( unsigned int i = 0; i < size; ++i )
     {
-      std::cout << "-> " << y[ i ] << std::endl;
       for( unsigned int j = 0; j < size; ++j )
         m[ i*size + j ] += it->weight() * y[ i ] * y[ j ];
     }
@@ -47,7 +44,9 @@ int main ( int argc, char **argv )
   {
     for( unsigned int j = 0; j < size; ++j )
     {
-      std::cout << "i = " << i << ", j = " << j << ": " << m[ i*size + j ] << std::endl;
+      const double value = m[ i*size + j ];
+      if( fabs( value - double( i == j ) ) > 1e-10 )
+        std::cout << "i = " << i << ", j = " << j << ": " << value << std::endl;
     }
   }
 }

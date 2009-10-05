@@ -45,8 +45,6 @@ namespace Dune
     {
       basisEval_.resize( size( order ) );
       basis_.evaluate(order,x,basisEval_);
-      for( unsigned int i = 0; i < size( order ); ++i )
-        std::cout << ">>>>>> " << basisEval_[ i ] << std::endl;
       mult(basisEval_,values);
     }
 

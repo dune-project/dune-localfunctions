@@ -32,7 +32,13 @@ namespace Dune
 
     VTKFunctionWrapper ( const DiscreteFunctionSpace &dfSpace, const std::vector< RangeField > &dofs )
       : dfSpace_( dfSpace ),
-        dofs_( dofs )
+        dofs_( dofs ),
+        name_("VTKFunctionWrapper")
+    {}
+    VTKFunctionWrapper ( const std::string &name, const DiscreteFunctionSpace &dfSpace, const std::vector< RangeField > &dofs )
+      : dfSpace_( dfSpace ),
+        dofs_( dofs ),
+        name_(name)
     {}
 
     virtual int ncomps () const
@@ -58,12 +64,13 @@ namespace Dune
 
     virtual std::string name () const
     {
-      return "VTKFunctionWrapper";
+      return name_;
     }
 
   private:
     const DiscreteFunctionSpace &dfSpace_;
     const std::vector< RangeField > &dofs_;
+    const std::string name_;
   };
 
 }

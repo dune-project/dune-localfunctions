@@ -24,8 +24,9 @@ bool test(unsigned int order) {
     const typename BasisProvider::Basis &basis = BasisProvider::basis(Topology::id,o);
     std::cout << "Basis size " << basis.size() << std::endl;
 
-    typedef Dune::LagrangePoints< Topology, StorageField > LagrangePoints;
-    LagrangePoints points( o );
+    typedef Dune::LagrangePoints< StorageField, Topology::dimension > LagrangePoints;
+    typedef Dune::LagrangePointsCreator< StorageField, Topology::dimension > LagrangePointsCreator;
+    const LagrangePoints &points = LagrangePointsCreator::template lagrangePoints< Topology >( o );
 
     std::vector< Dune::FieldVector< double, dimRange > > y( basis.size() );
     for( unsigned int index = 0; index < points.size(); ++index )

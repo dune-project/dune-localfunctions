@@ -2,7 +2,7 @@
 // vi: set et ts=4 sw=2 sts=2:
 #include <dune/finiteelements/lagrangebasis.hh>
 #include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
-#include <dune/finiteelements/lagrangebasis/labattopoints.hh>
+#include <dune/finiteelements/lagrangebasis/lobattopoints.hh>
 #include <dune/finiteelements/quadrature/genericquadrature.hh>
 #include <dune/finiteelements/p13d/p13dlocalbasis.hh>
 #include <dune/finiteelements/p23d/p23dlocalbasis.hh>

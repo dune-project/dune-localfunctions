@@ -28,7 +28,7 @@ namespace Dune
     typedef typename Basis::DomainVector DomainVector;
     static const int dimension = Basis::dimension;
     static const int dimRange = Basis::dimRange;
-    // typedef std::vector<Dune::FieldVector<Field,1> > Container;
+
     typedef std::vector<Field> Container;
 
     template< class Deriv >
@@ -40,25 +40,20 @@ namespace Dune
       typedef BaseIterator<Derivatives<Field,dimension,dimRange,deriv,derivative> > All;
     };
 
-    MonomialEvaluator(const Basis &basis)
-      : basis_(basis),
-        order_(basis.order()),
-        size_(basis.size()),
-        container_(0)
-    {
-      resize<2>();
-    }
+    /*
+       MonomialEvaluator(const Basis &basis)
+       : basis_(basis),
+       order_(basis.order()),
+       size_(basis.size()),
+       container_(0)
+       {
+       resize<2>();
+       }
+     */
 
     unsigned int size() const
     {
       return size_;
-    }
-    template <unsigned int deriv>
-    typename Iterator<deriv>::All evaluate(const DomainVector &x)
-    {
-      resize<deriv>();
-      basis_.template evaluate<deriv>(x,container_);
-      return typename Iterator<deriv>::All(container_);
     }
 
   protected:

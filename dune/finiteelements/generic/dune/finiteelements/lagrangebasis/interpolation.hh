@@ -64,7 +64,7 @@ namespace Dune
       unsigned int index = 0;
       const Iterator end = lagrangePoints().end();
       for( Iterator it = lagrangePoints().begin(); it != end; ++it )
-        basis.evaluate( it->point(), coefficients.rowPtr( index++ ) );
+        basis.template evaluate<0>( it->point(), coefficients.rowPtr( index++ ) );
     }
 
     template< class Matrix, class Basis >
@@ -77,7 +77,7 @@ namespace Dune
       unsigned int index = 0;
       const Iterator end = lagrangePoints_.end();
       for( Iterator it = lagrangePoints_.begin(); it != end; ++it )
-        basis.evaluate( it->point(), coefficients.rowPtr( index++ ) );
+        basis.template evaluate<0>( it->point(), coefficients.rowPtr( index++ ) );
     }
 
     const LagrangePoints &lagrangePoints () const

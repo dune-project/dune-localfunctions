@@ -15,6 +15,7 @@
 
 #include <dune/finiteelements/basisprovider.hh>
 #include <dune/finiteelements/multiindex.hh>
+#include <dune/finiteelements/tensor.hh>
 
 namespace Dune
 {
@@ -650,24 +651,25 @@ namespace Dune
       evaluate( deriv, x, values );
     }
 
-    template <unsigned int deriv, class F1 >
-    void evaluate ( const DomainVector &x,
-                    F1 *const values ) const
-    {
-      evaluate<deriv>( x, reinterpret_cast< Field * >( values ) );
-    }
     template<unsigned int deriv, class Vector >
     void evaluate ( const DomainVector &x,
                     Vector &values ) const
     {
       evaluate<deriv>(x,&(values[0]));
     }
-    template <class F1>
+    template<unsigned int deriv, DerivativeLayout layout >
     void evaluate ( const DomainVector &x,
-                    F1 *const values ) const
+                    Derivatives<Field,dimension,1,deriv,layout> *values ) const
     {
-      evaluate<0>( x, reinterpret_cast< Field * >( values ) );
+      evaluate(deriv,x,reinterpret_cast<Field*>(values));
     }
+    template< unsigned int deriv >
+    void evaluate ( const DomainVector &x,
+                    FieldVector<Field,1> *values ) const
+    {
+      evaluate(0,x,reinterpret_cast<Field*>(values));
+    }
+
     template<class Vector >
     void evaluate ( const DomainVector &x,
                     Vector &values ) const
@@ -776,11 +778,17 @@ namespace Dune
     {
       evaluate( deriv, x, reinterpret_cast< Field * >( values ) );
     }
+    template<unsigned int deriv, DerivativeLayout layout >
+    void evaluate ( const DomainVector &x,
+                    Derivatives<Field,dimension,1,deriv,layout> *values ) const
+    {
+      evaluate(deriv, x,reinterpret_cast<Field*>(&(values[0])));
+    }
     template <unsigned int deriv, class Vector>
     void evaluate ( const DomainVector &x,
                     Vector &values ) const
     {
-      evaluate( deriv, x, &(values[ 0 ]) );
+      evaluate<deriv>( x, &(values[ 0 ]) );
     }
     template< class Vector >
     void evaluate ( const DomainVector &x,

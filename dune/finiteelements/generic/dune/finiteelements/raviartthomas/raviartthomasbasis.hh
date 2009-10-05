@@ -263,7 +263,7 @@ namespace Dune
                                               vecMatrix_(order)
     {
       MBasis basis(order+1);
-      typedef MonomialEvaluator<MBasis> EvalMBasis;
+      typedef StandardEvaluator<MBasis> EvalMBasis;
       typedef PolynomialBasisWithMatrix<EvalMBasis,SparseCoeffMatrix<scalar_t,dim> > TMBasis;
       TMBasis tmBasis(basis);
       tmBasis.fill(vecMatrix_);
@@ -300,7 +300,7 @@ namespace Dune
     typedef SF StorageField;
     typedef AlgLib::MultiPrecision< Precision<CF>::value > ComputeField;
     static const int dimension = dim;
-    typedef PolynomialBasisWithMatrix<MonomialEvaluator<MBasis>,SparseCoeffMatrix<StorageField,dim> > Basis;
+    typedef PolynomialBasisWithMatrix<StandardEvaluator<MBasis>,SparseCoeffMatrix<StorageField,dim> > Basis;
     typedef unsigned int Key;
     typedef typename GenericGeometry::SimplexTopology< dim >::type SimplexTopology;
 
@@ -314,7 +314,7 @@ namespace Dune
       {
         typedef MultiIndex< dimension > MIField;
         typedef VirtualMonomialBasis<dim,MIField> MBasisMI;
-        typedef PolynomialBasisWithMatrix<MonomialEvaluator<MBasisMI>,SparseCoeffMatrix<StorageField,dimension> > BasisMI;
+        typedef PolynomialBasisWithMatrix<StandardEvaluator<MBasisMI>,SparseCoeffMatrix<StorageField,dimension> > BasisMI;
         const MBasisMI &_mBasisMI = MonomialBasisProvider<dimension,MIField>::template basis<SimplexTopology>(order+1);
         BasisMI basisMI(_mBasisMI);
         basisMI.fill(matrix);

@@ -155,6 +155,13 @@ inline void field_cast ( const Dune::FieldVector< F1, 1 > &f1, Dune::FieldVector
   field_cast( f1[ 0 ], f2[ 0 ] );
 }
 
+template< class F2, class F1, int rdim, int cdim >
+inline void field_cast ( const Dune::FieldMatrix< F1, rdim, cdim > &f1, Dune::FieldMatrix< F2, rdim, cdim > &f2 )
+{
+  for( int r = 0; r < rdim; ++r )
+    field_cast( f1[ r ], f2[ r ] );
+}
+
 template< class F2,class F1 >
 inline F2 field_cast ( const F1 &f1 )
 {
@@ -171,5 +178,7 @@ inline Dune::FieldVector<F2,dim> field_cast ( const Dune::FieldVector<F1,dim> &f
   return f2;
 }
 
+template <class Basis>
+struct FieldCast;
 
 #endif // #ifndef DUNE_FIELD_HH

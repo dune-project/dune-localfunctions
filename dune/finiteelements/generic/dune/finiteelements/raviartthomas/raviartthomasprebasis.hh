@@ -1,5 +1,28 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
+#ifndef DUNE_RAVIARTTHOMASPREBASIS_HH
+#define DUNE_RAVIARTTHOMASPREBASIS_HH
+#include <fstream>
+#include <utility>
+
+#include <dune/common/forloop.hh>
+
+#include <dune/alglib/multiprecision.hh>
+#include <dune/alglib/matrix.hh>
+#include <dune/grid/genericgeometry/referenceelements.hh>
+
+#include <dune/finiteelements/common/localcoefficients.hh>
+#include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
+#include <dune/finiteelements/lagrangebasis/lobattopoints.hh>
+#include <dune/finiteelements/lagrangebasis/interpolation.hh>
+#include <dune/finiteelements/generic/basisprovider.hh>
+#include <dune/finiteelements/basisprint.hh>
+#include <dune/finiteelements/generic/polynomialbasis.hh>
+#include <dune/finiteelements/quadrature/genericquadrature.hh>
+#include <dune/finiteelements/quadrature/subquadrature.hh>
+#include <dune/finiteelements/orthonormalbasis/orthonormalbasis.hh>
+#include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
+#include <dune/finiteelements/lagrangebasis/lobattopoints.hh>
 namespace Dune
 {
   template <class Topology, class Field>
@@ -174,3 +197,4 @@ namespace Dune
     };
   };
 }
+#endif // DUNE_RAVIARTTHOMASPREBASIS_HH

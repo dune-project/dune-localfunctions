@@ -2,6 +2,23 @@
 // vi: set et ts=4 sw=2 sts=2:
 #ifndef DUNE_RAVIARTTHOMASCOMPUTE_HH
 #define DUNE_RAVIARTTHOMASCOMPUTE_HH
+#include <vector>
+
+#include <dune/common/fvector.hh>
+#include <dune/common/fmatrix.hh>
+#include <dune/finiteelements/common/localcoefficients.hh>
+#include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
+#include <dune/finiteelements/lagrangebasis/lobattopoints.hh>
+#include <dune/finiteelements/lagrangebasis/interpolation.hh>
+#include <dune/finiteelements/generic/basisprovider.hh>
+#include <dune/finiteelements/basisprint.hh>
+#include <dune/finiteelements/generic/polynomialbasis.hh>
+#include <dune/finiteelements/quadrature/genericquadrature.hh>
+#include <dune/finiteelements/quadrature/subquadrature.hh>
+#include <dune/finiteelements/orthonormalbasis/orthonormalbasis.hh>
+#include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
+#include <dune/finiteelements/lagrangebasis/lobattopoints.hh>
+#include <dune/finiteelements/raviartthomas/raviartthomasprebasis.hh>
 namespace Dune
 {
   // A lagrange based interpolation for Raviart Thomas

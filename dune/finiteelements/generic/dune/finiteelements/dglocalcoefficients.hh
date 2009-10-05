@@ -4,6 +4,7 @@
 #define DUNE_DGLOCALCOEFFICIENTS_HH
 
 #include <cassert>
+#include <vector>
 
 #include <dune/finiteelements/common/localcoefficients.hh>
 

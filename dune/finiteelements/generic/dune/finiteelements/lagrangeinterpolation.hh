@@ -61,7 +61,20 @@ namespace Dune
       unsigned int index = 0;
       const Iterator end = lagrangePoints_.end();
       for( Iterator it = lagrangePoints_.begin(); it != end; ++it )
-        basis.evaluate( order, it->point(), coefficients.rowPtr( index++ ) );
+        basis.evaluate( 0, order, it->point(), coefficients.rowPtr( index++ ) );
+    }
+    template< class Matrix,class Basis >
+    void interpolate ( const Basis &basis, Matrix &coefficients )
+    {
+      typedef typename LagrangePoints< Topology, F >::iterator Iterator;
+
+      const unsigned int order = lagrangePoints_.order();
+      coefficients.resize( lagrangePoints_.size(), basis.size( order ) );
+
+      unsigned int index = 0;
+      const Iterator end = lagrangePoints_.end();
+      for( Iterator it = lagrangePoints_.begin(); it != end; ++it )
+        basis.template evaluate<0>( order, it->point(), coefficients.rowPtr( index++ ) );
     }
   };
 

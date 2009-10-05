@@ -19,27 +19,266 @@
 namespace Dune
 {
 
+  // Simplex
+  template <int dim>
+  struct StdMonomialTopology {
+    typedef StdMonomialTopology<dim-1> BaseType;
+    typedef GenericGeometry::Pyramid<typename BaseType::Type> Type;
+  };
+  template <>
+  struct StdMonomialTopology<0> {
+    typedef GenericGeometry::Point Type;
+  };
+  // Cube
+  template <int dim>
+  struct StdBiMonomialTopology {
+    typedef GenericGeometry::Prism<typename StdBiMonomialTopology<dim-1>::Type> Type;
+  };
+  template <>
+  struct StdBiMonomialTopology<0> {
+    typedef GenericGeometry::Point Type;
+  };
+
+  // Internal Forward Declarations
+  // -----------------------------
+
+  template< class Topology >
+  class MonomialBasisSize;
+
+  template< >
+  class MonomialBasisSize< GenericGeometry::Point >
+  {
+  public:
+    typedef MonomialBasisSize< GenericGeometry::Point > This;
+    static This &instance() {
+      static This _instance;
+      return _instance;
+    }
+
+    typedef GenericGeometry::Point Topology;
+    static const unsigned int dimDomain = Topology::dimension;
+
+    friend class MonomialBasisSize< GenericGeometry::Prism< Topology > >;
+    friend class MonomialBasisSize< GenericGeometry::Pyramid< Topology > >;
+
+    mutable unsigned int maxOrder_;
+    // sizes_[ k ]: number of basis functions of exactly order k
+    mutable unsigned int *sizes_;
+    // numBaseFunctions_[ k ] = sizes_[ 0 ] + ... + sizes_[ k ]
+    mutable unsigned int *numBaseFunctions_;
+
+    MonomialBasisSize ()
+      : maxOrder_( 0 ),
+        sizes_( 0 ),
+        numBaseFunctions_( 0 )
+    {
+      computeSizes( 2 );
+    }
+
+    ~MonomialBasisSize ()
+    {
+      delete[] sizes_;
+      delete[] numBaseFunctions_;
+    }
+
+    unsigned int maxOrder () const
+    {
+      return maxOrder_;
+    }
+
+    void computeSizes ( unsigned int order ) const
+    {
+      if (order <= maxOrder_)
+        return;
+
+      maxOrder_ = order;
+
+      delete [] sizes_;
+      delete [] numBaseFunctions_;
+      sizes_            = new unsigned int [ order+1 ];
+      numBaseFunctions_ = new unsigned int [ order+1 ];
+
+      sizes_[ 0 ] = 1;
+      numBaseFunctions_[ 0 ] = 1;
+      for( unsigned int k = 1; k <= order; ++k )
+      {
+        sizes_[ k ]            = 0;
+        numBaseFunctions_[ k ] = 1;
+      }
+    }
+  };
+
+  template< class BaseTopology >
+  class MonomialBasisSize< GenericGeometry::Prism< BaseTopology > >
+  {
+
+  public:
+    typedef MonomialBasisSize< GenericGeometry::Prism< BaseTopology > > This;
+    static This &instance() {
+      static This _instance;
+      return _instance;
+    }
+
+    typedef GenericGeometry::Prism< BaseTopology > Topology;
+    static const unsigned int dimDomain = Topology::dimension;
+
+    friend class MonomialBasisSize< GenericGeometry::Prism< Topology > >;
+    friend class MonomialBasisSize< GenericGeometry::Pyramid< Topology > >;
+
+    mutable unsigned int maxOrder_;
+    // sizes_[ k ]: number of basis functions of exactly order k
+    mutable unsigned int *sizes_;
+    // numBaseFunctions_[ k ] = sizes_[ 0 ] + ... + sizes_[ k ]
+    mutable unsigned int *numBaseFunctions_;
+
+    MonomialBasisSize ()
+      : maxOrder_( 0 ),
+        sizes_( 0 ),
+        numBaseFunctions_( 0 )
+    {
+      computeSizes( 2 );
+    }
+
+    ~MonomialBasisSize ()
+    {
+      delete[] sizes_;
+      delete[] numBaseFunctions_;
+    }
+
+    unsigned int maxOrder() const
+    {
+      return maxOrder_;
+    }
+
+    void computeSizes ( unsigned int order ) const
+    {
+      if (order <= maxOrder_)
+        return;
+
+      maxOrder_ = order;
+
+      delete[] sizes_;
+      delete[] numBaseFunctions_;
+      sizes_            = new unsigned int[ order+1 ];
+      numBaseFunctions_ = new unsigned int[ order+1 ];
+
+      MonomialBasisSize<BaseTopology> &baseBasis =
+        MonomialBasisSize<BaseTopology>::instance();
+      baseBasis.computeSizes( order );
+      const unsigned int *const baseSizes = baseBasis.sizes_;
+      const unsigned int *const baseNBF   = baseBasis.numBaseFunctions_;
+
+      sizes_[ 0 ] = 1;
+      numBaseFunctions_[ 0 ] = 1;
+      for( unsigned int k = 1; k <= order; ++k )
+      {
+        sizes_[ k ]            = baseNBF[ k ] + k*baseSizes[ k ];
+        numBaseFunctions_[ k ] = numBaseFunctions_[ k-1 ] + sizes_[ k ];
+      }
+    }
+  };
+
+  template< class BaseTopology >
+  class MonomialBasisSize< GenericGeometry::Pyramid< BaseTopology > >
+  {
+  public:
+    typedef MonomialBasisSize< GenericGeometry::Pyramid< BaseTopology > > This;
+    static This &instance() {
+      static This _instance;
+      return _instance;
+    }
+
+    typedef GenericGeometry::Pyramid< BaseTopology > Topology;
+    static const unsigned int dimDomain = Topology::dimension;
+
+    friend class MonomialBasisSize< GenericGeometry::Prism< Topology > >;
+    friend class MonomialBasisSize< GenericGeometry::Pyramid< Topology > >;
+
+    mutable unsigned int maxOrder_;
+    // sizes_[ k ]: number of basis functions of exactly order k
+    mutable unsigned int *sizes_;
+    // numBaseFunctions_[ k ] = sizes_[ 0 ] + ... + sizes_[ k ]
+    mutable unsigned int *numBaseFunctions_;
+
+    MonomialBasisSize ()
+      : maxOrder_( 0 ),
+        sizes_( 0 ),
+        numBaseFunctions_( 0 )
+    {
+      computeSizes( 2 );
+    }
+
+    ~MonomialBasisSize ()
+    {
+      delete[] sizes_;
+      delete[] numBaseFunctions_;
+    }
+
+    unsigned int maxOrder() const
+    {
+      return maxOrder_;
+    }
+
+    void computeSizes ( unsigned int order ) const
+    {
+      if (order <= maxOrder_)
+        return;
+
+      maxOrder_ = order;
+
+      delete[] sizes_;
+      delete[] numBaseFunctions_;
+      sizes_            = new unsigned int[ order+1 ];
+      numBaseFunctions_ = new unsigned int[ order+1 ];
+
+      MonomialBasisSize<BaseTopology> &baseBasis =
+        MonomialBasisSize<BaseTopology>::instance();
+
+      baseBasis.computeSizes( order );
+
+      const unsigned int *const baseNBF = baseBasis.numBaseFunctions_;
+      sizes_[ 0 ] = 1;
+      numBaseFunctions_[ 0 ] = 1;
+      for( unsigned int k = 1; k <= order; ++k )
+      {
+        sizes_[ k ]            = baseNBF[ k ];
+        numBaseFunctions_[ k ] = numBaseFunctions_[ k-1 ] + sizes_[ k ];
+      }
+    }
+  };
+
   // Internal Forward Declarations
   // -----------------------------
 
   template< class Topology, class F >
   class MonomialBasis;
 
-
-
-  template< class F >
+  template< int dim, class F >
   struct MonomialBasisHelper
   {
+    typedef MonomialBasisSize< typename StdMonomialTopology<dim>::Type > Size;
     static void
-    copy ( F *&wit, F *&rit, const unsigned int size, const F &z )
+    copy ( const unsigned int deriv, F *&wit, F *&rit, const unsigned int numBaseFunc, const F &z )
     {
-      const F *const rend = rit + size;
-      for( ; rit != rend; ++rit, ++wit )
-        *wit = z * *rit;
+      Size &size = Size::instance();
+      const F *const rend = rit + numBaseFunc;
+      for( ; rit != rend; )
+      {
+        for ( unsigned d=0; d<=deriv; ++d )
+        {
+          const unsigned int endS = size.sizes_[d];
+          for ( unsigned s=0; s<endS; ++s,++rit, ++wit )
+            *wit = z * *rit;
+        }
+      }
+    }
+    static void
+    setPoint( const unsigned int deriv, F *&wit)
+    {
+      // Size &size = Size::instance();
+      *wit = Unity<F>();
     }
   };
-
-
 
   // MonomialBasisImpl
   // -----------------
@@ -65,32 +304,16 @@ namespace Dune
     friend class MonomialBasisImpl< GenericGeometry::Prism< Topology >, Field >;
     friend class MonomialBasisImpl< GenericGeometry::Pyramid< Topology >, Field >;
 
-    mutable unsigned int maxOrder_;
-    // sizes_[ k ]: number of basis functions of exactly order k
-    mutable unsigned int *sizes_;
-    // numBaseFunctions_[ k ] = sizes_[ 0 ] + ... + sizes_[ k ]
-    mutable unsigned int *numBaseFunctions_;
-
-    MonomialBasisImpl ()
-      : sizes_( 0 ),
-        numBaseFunctions_( 0 )
-    {
-      computeSizes( 2 );
-    }
-
-    ~MonomialBasisImpl ()
-    {
-      delete[] sizes_;
-      delete[] numBaseFunctions_;
-    }
+    typedef MonomialBasisHelper< dimDomain, Field > Helper;
 
     template< int dimD >
-    void evaluate ( const unsigned int order,
+    void evaluate ( const unsigned int deriv, const unsigned int order,
                     const FieldVector< Field, dimD > &x,
                     const unsigned int *const offsets,
                     Field *const values ) const
     {
-      values[ 0 ] = Unity< Field >();
+      Field *row0 = values;
+      Helper::setPoint(deriv,row0);
     }
 
     void integral ( const unsigned int order,
@@ -100,28 +323,6 @@ namespace Dune
       values[ 0 ] = Unity< Field >();
     }
 
-    unsigned int maxOrder () const
-    {
-      return maxOrder_;
-    }
-
-    void computeSizes ( unsigned int order ) const
-    {
-      maxOrder_ = order;
-
-      delete [] sizes_;
-      delete [] numBaseFunctions_;
-      sizes_            = new unsigned int [ order+1 ];
-      numBaseFunctions_ = new unsigned int [ order+1 ];
-
-      sizes_[ 0 ] = 1;
-      numBaseFunctions_[ 0 ] = 1;
-      for( unsigned int k = 1; k <= order; ++k )
-      {
-        sizes_[ k ]            = 0;
-        numBaseFunctions_[ k ] = 1;
-      }
-    }
   };
 
   template< class BaseTopology, class F >
@@ -142,45 +343,34 @@ namespace Dune
     friend class MonomialBasisImpl< GenericGeometry::Prism< Topology >, Field >;
     friend class MonomialBasisImpl< GenericGeometry::Pyramid< Topology >, Field >;
 
-    typedef MonomialBasisHelper< Field > Helper;
+    typedef MonomialBasisHelper< dimDomain, Field > Helper;
+    typedef MonomialBasisSize< BaseTopology > Size;
 
     MonomialBasisImpl< BaseTopology, Field > baseBasis_;
-    // sizes_[ k ]: number of basis functions of exactly order k
-    mutable unsigned int *sizes_;
-    // numBaseFunctions_[ k ] = sizes_[ 0 ] + ... + sizes_[ k ]
-    mutable unsigned int *numBaseFunctions_;
 
     MonomialBasisImpl ()
-      : sizes_( 0 ),
-        numBaseFunctions_( 0 )
-    {
-      computeSizes( 2 );
-    }
-
-    ~MonomialBasisImpl ()
-    {
-      delete[] sizes_;
-      delete[] numBaseFunctions_;
-    }
+    {}
 
     template< int dimD >
-    void evaluate ( const unsigned int order,
+    void evaluate ( const unsigned int deriv, const unsigned int order,
                     const FieldVector< Field, dimD > &x,
                     const unsigned int *const offsets,
                     Field *const values ) const
     {
+      const Size &size = Size::instance();
+
       const Field &z = x[ dimDomain-1 ];
 
       // fill first column
-      baseBasis_.evaluate( order, x, offsets, values );
+      baseBasis_.evaluate( deriv , order, x, offsets, values );
 
       Field *row0 = values;
       for( unsigned int k = 1; k <= order; ++k )
       {
         Field *row1 = values + offsets[ k-1 ];
-        Field *wit = row1 + baseBasis_.sizes_[ k ];
-        Helper::copy( wit, row1, k*baseBasis_.sizes_[ k ], z );
-        Helper::copy( wit, row0, baseBasis_.numBaseFunctions_[ k-1 ], z );
+        Field *wit = row1 + size.sizes_[ k ];
+        Helper::copy( deriv, wit, row1, k*size.sizes_[ k ], z );
+        Helper::copy( deriv, wit, row0, size.numBaseFunctions_[ k-1 ], z );
         row0 = row1;
       }
     }
@@ -216,31 +406,6 @@ namespace Dune
          }
        */
     }
-
-    unsigned int maxOrder() const
-    {
-      return baseBasis_.maxOrder();
-    }
-
-    void computeSizes ( unsigned int order ) const
-    {
-      delete[] sizes_;
-      delete[] numBaseFunctions_;
-      sizes_            = new unsigned int[ order+1 ];
-      numBaseFunctions_ = new unsigned int[ order+1 ];
-
-      baseBasis_.computeSizes( order );
-      const unsigned int *const baseSizes = baseBasis_.sizes_;
-      const unsigned int *const baseNBF   = baseBasis_.numBaseFunctions_;
-
-      sizes_[ 0 ] = 1;
-      numBaseFunctions_[ 0 ] = 1;
-      for( unsigned int k = 1; k <= order; ++k )
-      {
-        sizes_[ k ]            = baseNBF[ k ] + k*baseSizes[ k ];
-        numBaseFunctions_[ k ] = numBaseFunctions_[ k-1 ] + sizes_[ k ];
-      }
-    }
   };
 
   template< class BaseTopology, class F >
@@ -261,59 +426,48 @@ namespace Dune
     friend class MonomialBasisImpl< GenericGeometry::Prism< Topology >, Field >;
     friend class MonomialBasisImpl< GenericGeometry::Pyramid< Topology >, Field >;
 
-    typedef MonomialBasisHelper< Field > Helper;
+    typedef MonomialBasisHelper< dimDomain, Field > Helper;
+    typedef MonomialBasisSize< BaseTopology > Size;
 
     MonomialBasisImpl< BaseTopology, Field > baseBasis_;
-    // sizes_[ k ]: number of basis functions of exactly order k
-    mutable unsigned int *sizes_;
-    // numBaseFunctions_[ k ] = sizes_[ 0 ] + ... + sizes_[ k ]
-    mutable unsigned int *numBaseFunctions_;
 
     MonomialBasisImpl ()
-      : sizes_( 0 ),
-        numBaseFunctions_( 0 )
-    {
-      computeSizes( 2 );
-    }
-
-    ~MonomialBasisImpl ()
-    {
-      delete[] sizes_;
-      delete[] numBaseFunctions_;
-    }
+    {}
 
     template< int dimD >
-    void evaluateSimplexBase ( const unsigned int order,
+    void evaluateSimplexBase ( const unsigned int deriv, const unsigned int order,
                                const FieldVector< Field, dimD > &x,
                                const unsigned int *const offsets,
                                Field *const values ) const
     {
-      baseBasis_.evaluate( order, x, offsets, values );
+      baseBasis_.evaluate( deriv, order, x, offsets, values );
     }
 
     template< int dimD >
-    void evaluatePyramidBase ( const unsigned int order,
+    void evaluatePyramidBase ( const unsigned int deriv, const unsigned int order,
                                const FieldVector< Field, dimD > &x,
                                const unsigned int *const offsets,
                                Field *const values ) const
     {
+      const Size &size = Size::instance();
+
       Field omz = Unity< Field >() - x[ dimDomain-1 ];
 
       if( Zero< Field >() < omz )
       {
         const Field invomz = Unity< Field >() / omz;
-        FieldVector< Field, dimDomain-1 > y;
+        FieldVector< Field, dimD > y;
         for( unsigned int i = 0; i < dimDomain-1; ++i )
           y[ i ] = x[ i ] * invomz;
 
         // fill first column
-        baseBasis_.evaluate( order, y, offsets, values );
+        baseBasis_.evaluate( deriv, order, y, offsets, values );
 
         Field omzk = omz;
         for( unsigned int k = 1; k <= order; ++k )
         {
           Field *it = values + offsets[ k-1 ];
-          Field *const end = it + baseBasis_.sizes_[ k ];
+          Field *const end = it + size.sizes_[ k ];
           for( ; it != end; ++it )
             *it *= omzk;
           omzk *= omz;
@@ -321,11 +475,12 @@ namespace Dune
       }
       else
       {
+        assert( deriv==0 );
         *values = Unity< Field >();
         for( unsigned int k = 1; k <= order; ++k )
         {
           Field *it = values + offsets[ k-1 ];
-          Field *const end = it + baseBasis_.sizes_[ k ];
+          Field *const end = it + size.sizes_[ k ];
           for( ; it != end; ++it )
             *it = Zero< Field >();
         }
@@ -333,22 +488,24 @@ namespace Dune
     }
 
     template< int dimD >
-    void evaluate ( const unsigned int order,
+    void evaluate ( const unsigned int deriv, const unsigned int order,
                     const FieldVector< Field, dimD > &x,
                     const unsigned int *const offsets,
                     Field *const values ) const
     {
+      const Size &size = Size::instance();
+
       if( GenericGeometry::IsSimplex< Topology >::value )
-        evaluateSimplexBase( order, x, offsets, values );
+        evaluateSimplexBase( deriv, order, x, offsets, values );
       else
-        evaluatePyramidBase( order, x, offsets, values );
+        evaluatePyramidBase( deriv, order, x, offsets, values );
 
       Field *row0 = values;
       for( unsigned int k = 1; k <= order; ++k )
       {
         Field *row1 = values + offsets[ k-1 ];
-        Field *wit = row1 + baseBasis_.sizes_[ k ];
-        Helper::copy( wit, row0, baseBasis_.numBaseFunctions_[ k-1 ], x[ dimDomain-1 ] );
+        Field *wit = row1 + size.sizes_[ k ];
+        Helper::copy( deriv, wit, row0, size.numBaseFunctions_[ k-1 ], x[ dimDomain-1 ] );
         row0 = row1;
       }
     }
@@ -388,30 +545,6 @@ namespace Dune
          }
        */
     }
-
-    unsigned int maxOrder() const
-    {
-      return baseBasis_.maxOrder();
-    }
-
-    void computeSizes ( unsigned int order ) const
-    {
-      delete[] sizes_;
-      delete[] numBaseFunctions_;
-      sizes_            = new unsigned int[ order+1 ];
-      numBaseFunctions_ = new unsigned int[ order+1 ];
-
-      baseBasis_.computeSizes( order );
-
-      const unsigned int *const baseNBF = baseBasis_.numBaseFunctions_;
-      sizes_[ 0 ] = 1;
-      numBaseFunctions_[ 0 ] = 1;
-      for( unsigned int k = 1; k <= order; ++k )
-      {
-        sizes_[ k ]            = baseNBF[ k ];
-        numBaseFunctions_[ k ] = numBaseFunctions_[ k-1 ] + sizes_[ k ];
-      }
-    }
   };
 
   // MonomialBasis
@@ -431,15 +564,17 @@ namespace Dune
 
     typedef typename Base::DomainVector DomainVector;
 
+    typedef MonomialBasisSize<Topology> Size;
+
     MonomialBasis ()
-      : Base()
+      : Base(),
+        size_(Size::instance())
     {}
 
     const unsigned int *sizes ( unsigned int order ) const
     {
-      if( order > Base::maxOrder() )
-        Base::computeSizes( order );
-      return Base::numBaseFunctions_;
+      size_.computeSizes( order );
+      return size_.numBaseFunctions_;
     }
 
     const unsigned int size ( unsigned int order ) const
@@ -447,26 +582,25 @@ namespace Dune
       return sizes( order )[ order ];
     }
 
-    void evaluate ( const unsigned int order,
+    void evaluate ( const unsigned int deriv, const unsigned int order,
                     const DomainVector &x,
                     Field *const values ) const
     {
-      Base::evaluate( order, x, sizes( order ), values );
+      MonomialBasisSize< typename StdMonomialTopology<dimension>::Type >::instance().computeSizes(deriv);
+      Base::evaluate( deriv, order, x, sizes( order ), values );
     }
-
-    void evaluate ( const unsigned int order,
-                    const DomainVector &x,
-                    FieldVector<Field,1> *const values ) const
+    template < class Field,int size >
+    void evaluate ( const unsigned int deriv, const unsigned int order, const DomainVector &x,
+                    Dune::FieldVector<Field,size> *const values ) const
     {
-      evaluate( order, x, reinterpret_cast< Field * >( values ) );
+      evaluate( deriv, order, x, reinterpret_cast< Field * >( values ) );
     }
-
     template <class RangeVector>
-    void evaluate ( const unsigned int order,
+    void evaluate ( const unsigned int deriv, const unsigned int order,
                     const DomainVector &x,
                     std::vector< RangeVector > &values ) const
     {
-      evaluate( order, x, &(values[ 0 ]) );
+      evaluate( deriv, order, x, &(values[ 0 ]) );
     }
 
     void integral ( const unsigned int order,
@@ -474,13 +608,6 @@ namespace Dune
     {
       Base::integral( order, sizes( order ), values );
     }
-
-    void integral ( const unsigned int order,
-                    FieldVector<Field,1> *const values ) const
-    {
-      integral( order, reinterpret_cast< Field * >( values ) );
-    }
-
     template <class RangeVector>
     void integral ( const unsigned int order,
                     std::vector< RangeVector > &values ) const
@@ -490,21 +617,12 @@ namespace Dune
   private:
     MonomialBasis(const This&);
     This& operator=(const This&);
+    Size &size_;
   };
 
   // StdMonomialTopology
   // -------------------
 
-  // Simplex
-  template <int dim>
-  struct StdMonomialTopology {
-    typedef StdMonomialTopology<dim-1> BaseType;
-    typedef GenericGeometry::Pyramid<typename BaseType::Type> Type;
-  };
-  template <>
-  struct StdMonomialTopology<0> {
-    typedef GenericGeometry::Point Type;
-  };
   template< int dim,class F >
   class StandardMonomialBasis
     : public MonomialBasis< typename StdMonomialTopology<dim>::Type, F >
@@ -521,15 +639,6 @@ namespace Dune
     {}
   };
 
-  // Cube
-  template <int dim>
-  struct StdBiMonomialTopology {
-    typedef GenericGeometry::Prism<typename StdBiMonomialTopology<dim-1>::Type> Type;
-  };
-  template <>
-  struct StdBiMonomialTopology<0> {
-    typedef GenericGeometry::Point Type;
-  };
   template< int dim, class F >
   class StandardBiMonomialBasis
     : public MonomialBasis< typename StdBiMonomialTopology<dim>::Type, F >
@@ -546,11 +655,13 @@ namespace Dune
     {}
   };
 
+  // -----------------------------------------------------------
+  // -----------------------------------------------------------
   // VirtualMonomialBasis
   // -------------------
 
   template< int dim, class F >
-  class VirtualMonomialBasis
+  class VirtualMonomialBasis // : public BasisInterface<dim,F>
   {
     typedef VirtualMonomialBasis< dim, F > This;
 
@@ -577,25 +688,22 @@ namespace Dune
       return order_;
     }
 
-    virtual void evaluate ( const DomainVector &x,
+    virtual void evaluate ( const unsigned int deriv, const DomainVector &x,
                             Field *const values ) const = 0;
+    template < unsigned int deriv, class Field,int size >
     void evaluate ( const DomainVector &x,
-                    FieldVector<Field,1> *const values ) const
+                    Dune::FieldVector<Field,size> *const values ) const
     {
-      evaluate( x, reinterpret_cast< Field * >( values ) );
+      evaluate( deriv, x, reinterpret_cast< Field * >( values ) );
     }
-    template <class RangeVector>
+    template <unsigned int deriv, class RangeVector>
     void evaluate ( const DomainVector &x,
                     std::vector< RangeVector > &values ) const
     {
-      evaluate( x, &(values[ 0 ]) );
+      evaluate( deriv, x, &(values[ 0 ]) );
     }
 
     virtual void integral ( Field *const values ) const = 0;
-    void integral ( FieldVector<Field,1> *const values ) const
-    {
-      integral( reinterpret_cast< Field * >( values ) );
-    }
     template <class RangeVector>
     void integral ( std::vector< RangeVector > &values ) const
     {
@@ -624,10 +732,10 @@ namespace Dune
       return basis_.sizes(order_);
     }
 
-    void evaluate ( const DomainVector &x,
+    void evaluate ( const unsigned int deriv, const DomainVector &x,
                     Field *const values ) const
     {
-      basis_.evaluate(order_,x,values);
+      basis_.evaluate(deriv,order_,x,values);
     }
 
     void integral ( Field *const values ) const

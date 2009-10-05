@@ -79,7 +79,7 @@ namespace Dune
        coeffMatrix_->mult( eval_.evaluateAll<deriv>( x ), values );
        }
      */
-    template< class RangeVector, unsigned int deriv >
+    template< unsigned int deriv, class RangeVector >
     void evaluate ( const DomainVector &x,
                     std::vector< RangeVector > &values ) const
     {

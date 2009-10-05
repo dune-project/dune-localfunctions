@@ -38,9 +38,9 @@ namespace Dune
       typedef FieldVector<FieldMatrix<F,dimD,dimD>,dimR> Hessian;
       typedef FieldMatrix<F,dimR,dimD> Jacobian;
       typedef FieldVector<F,dimR> Value;
-      Hessian hessian;
-      Jacobian jacobian;
       Value value;
+      Jacobian jacobian;
+      Hessian hessian;
     };
     typedef Tensor<F,dimD,dimR,1,useAll> Base;
     static const int single = Base::single*dimD;
@@ -59,8 +59,8 @@ namespace Dune
     {
       typedef FieldMatrix<F,dimR,dimD> Jacobian;
       typedef FieldVector<F,dimR> Value;
-      Jacobian jacobian;
       Value value;
+      Jacobian jacobian;
     };
     typedef Tensor<F,dimD,dimR,0,useAll> Base;
     static const int single = Base::single*dimD;
@@ -172,14 +172,14 @@ namespace Dune
     typename Iterator<deriv>::Single evaluate(const DomainVector &x)
     {
       resize<deriv,false>();
-      basis_.evaluate(order_,x,container_);
+      basis_.template evaluate<deriv>(order_,x,container_);
       return typename Iterator<deriv>::Single(container_);
     }
     template <unsigned int deriv>
     typename Iterator<deriv>::All evaluateAll(const DomainVector &x)
     {
       resize<deriv,true>();
-      basis_.evaluate(order_,x,container_);
+      basis_.template evaluate<deriv>(order_,x,container_);
       return typename Iterator<deriv>::All(container_);
     }
 
@@ -249,14 +249,14 @@ namespace Dune
     typename Iterator<deriv>::Single evaluate(const DomainVector &x)
     {
       Base::template resize<deriv,false>();
-      basis_.evaluate(x,container_);
+      basis_.template evaluate<deriv>(x,container_);
       return typename Iterator<deriv>::Single(container_);
     }
     template <unsigned int deriv>
     typename Iterator<deriv>::All evaluateAll(const DomainVector &x)
     {
       this->template resize<deriv,true>();
-      basis_.evaluate(x,container_);
+      basis_.template evaluate<deriv>(x,container_);
       return typename Iterator<deriv>::All(container_);
     }
 

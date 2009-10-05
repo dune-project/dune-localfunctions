@@ -112,7 +112,7 @@ namespace ONB {
         for (int i=0; i<dim; ++i) {
           x[i].set(i);
         }
-        basis.evaluate( ord , x, y );
+        basis.evaluate( 0,ord , x, y );
         // set bounds of data
         res.setbounds(0,size-1,0,size-1);
         S.setbounds(0,size-1,0,size-1);

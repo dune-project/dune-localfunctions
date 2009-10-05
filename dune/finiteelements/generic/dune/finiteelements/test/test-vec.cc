@@ -124,12 +124,13 @@ int main ( int argc, char **argv )
   }
   int p = atoi( argv[ 1 ] );
 
-  // problem: vecTest<Topology,1,value,2,value>(1,p);
-  vecTest<Topology,1,derivative,2,derivative>(2,p);
-  vecTest<Topology,2,value,2,value>(3,p);
-  vecTest<Topology,2,derivative,2,derivative>(4,p);
-  // problem: vecTest<Topology,1,derivative,2,value>(5,p);
-  vecTest<Topology,1,value,2,derivative>(6,p);
-  // missing: vecTest<Topology,2,value,2,derivative>(7,p);
-  vecTest<Topology,2,derivative,2,value>(8,p);
+  const unsigned int dimR = 2;
+  // problem: vecTest<Topology,1,value,dimR,value>(1,p);
+  vecTest<Topology,1,derivative,dimR,derivative>(2,p);
+  vecTest<Topology,dimR,value,dimR,value>(3,p);
+  vecTest<Topology,dimR,derivative,dimR,derivative>(4,p);
+  // problem: vecTest<Topology,1,derivative,dimR,value>(5,p);
+  vecTest<Topology,1,value,dimR,derivative>(6,p);
+  // missing: vecTest<Topology,dimR,value,dimR,derivative>(7,p);
+  vecTest<Topology,dimR,derivative,dimR,value>(8,p);
 }

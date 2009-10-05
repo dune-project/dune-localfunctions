@@ -3,6 +3,8 @@
 #include "orthonormalbasis.hh"
 using namespace Dune;
 using namespace GenericGeometry;
-int main() {
-  OrthonormalBasis<TOPOLOGY,double> onb(ORDER);
+int main ( int argc, char **argv )
+{
+  int order = atoi(argv[1]);
+  OrthonormalBasis<TOPOLOGY,double> onb(order);
 }

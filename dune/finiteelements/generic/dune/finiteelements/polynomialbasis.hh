@@ -1,65 +1,91 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_MONOMIALBASIS_HH
-#define DUNE_MONOMIALBASIS_HH
-#include <vector>
+#ifndef DUNE_POLYNOMIALBASIS_HH
+#define DUNE_POLYNOMIALBASIS_HH
+#include <fstream>
+#include <dune/finiteelements/coeffmatrix.hh>
+#include <dune/finiteelements/monomialbasis.hh>
+#include <dune/finiteelements/multiindex.hh>
 namespace Dune
 {
-  template <class B,class M>
+  template< int dimRange, class B,
+      class SF, class CF >
   class PolynomialBasis
   {
     typedef B Basis;
-    typedef M Matrix;
-    typedef PolynomialBasis<Basis,Matrix> This;
+    typedef typename Basis::Topology Topology;
+    enum {dimension = Topology::dimension};
 
-    Basis basis_;
-    const Matrix& matrix_;
-    std::vector<double> basisEval_;
+    typedef SF StorageField;
+    typedef CF ComputationField;
 
   public:
-    typedef typename Basis::Field Field;
-
     typedef typename Basis::DomainVector DomainVector;
-    typedef typename Basis::RangeVector RangeVector;
+    typedef FieldVector<StorageField,dimRange> CoeffRangeVector;
 
-    PolynomialBasis (const Matrix& matrix)
-      : basis_(), matrix_(matrix), basisEval_(0)
+    PolynomialBasis (int order)
+      : basis_(), basisEval_(basis_.size(order)), order_(order)
     {}
 
-    const unsigned int *sizes ( unsigned int order ) const
+    const int size () const
     {
-      return basis_.sizes();
+      return basis_.size(order_);
     }
 
-    void evaluate ( const unsigned int order,
-                    const DomainVector &x,
-                    RangeVector *const values ) const
-    {
-      int size = basis_.sizes(order)[order];
-      if (basisEval_.size() < size)
-        basisEval_.resize(size);
-      basis_.evaluate(order,x,&(basisEval_[0]));
-      int posVec = 0;
-      typename Matrix::Iterator rowEnd = matrix_.end();
-      for ( typename Matrix::Iterator rowIt = matrix_.begin();
-            rowIt != rowEnd; ++rowIt, ++posVec ) {
-        values[ posVec ] = 0;
-        int posMat = 0;
-        typename Matrix::Row row = *rowIt;
-        typename Matrix::Row::Iterator colEnd = row.end();
-        for ( typename Matrix::Row::Iterator colIt = row.begin();
-              colIt != colEnd; ++colIt, ++posMat ) {
-          values[ posVec ] += (*colIt)*basisEval_[posMat];
-        }
-      }
-    }
-
-    void evaluate ( const unsigned int order,
-                    const DomainVector &x,
+    template <class RangeVector>
+    void evaluate ( const DomainVector &x,
                     std::vector< RangeVector > &values ) const
     {
-      evaluate( order, x, &(values[ 0 ]) );
+      basis_.evaluate(order_,x,basisEval_);
+      coeffMatrix_.mult(basisEval_,values);
     }
+
+    template <class DomainVector,class RangeVector>
+    void evaluate ( const DomainVector &x,
+                    std::vector< RangeVector > &values ) const
+    {
+      DomainVector bx;
+      for (int d=0; d<dimension; ++d)
+        field_cast(x[d], bx[ d ]);
+      evaluate(bx,values);
+    }
+
+    void print(std::ofstream &out) const {
+      typedef Dune::MultiIndex<dimension> MI;
+      typedef Dune::StandardMonomialBasis< dimension, MI > Basis;
+      Basis basis;
+      const unsigned int size = basis.size( order_ );
+      std::vector< MI > y( size );
+      Dune::FieldVector< MI, dimension > x;
+      for (int d=0; d<dimension; ++d)
+        x[d].set(d);
+      basis.evaluate( order_, x, &(y[0]) );
+      coeffMatrix_.print(out,y);
+    }
+
+  protected:
+    template <class FullMatrix>
+    void fill(const FullMatrix& matrix)
+    {
+      coeffMatrix_.fill(matrix);
+      {
+        std::ofstream out("coeffs.out");
+        out.precision(15);
+        out.setf(std::ios::scientific,std::ios::floatfield);
+        matrix.print(out);
+      }
+      {
+        std::ofstream out("coeffs.gnu");
+        out.precision(15);
+        out.setf(std::ios::scientific,std::ios::floatfield);
+        print(out);
+      }
+    }
+  private:
+    const Basis basis_;
+    mutable std::vector<StorageField> basisEval_;
+    CoeffMatrix< CoeffRangeVector > coeffMatrix_;
+    unsigned int order_;
   };
 }
-#endif // DUNE_MONOMIALBASIS_HH
+#endif // DUNE_POLYNOMIALBASIS_HH

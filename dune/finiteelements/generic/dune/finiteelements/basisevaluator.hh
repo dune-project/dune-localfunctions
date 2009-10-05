@@ -65,6 +65,7 @@ namespace Dune
   template< class Deriv >
   struct MonomialEvaluator< B >::BaseIterator
   {
+    typedef Deriv Derivatives;
     static const unsigned int blockSize = Deriv::size;
     typedef Dune::FieldVector<Field,blockSize> Block;
 
@@ -96,19 +97,6 @@ namespace Dune
     {
       return &(operator*());
     }
-
-    /*
-       Block &block()
-       {
-       assert(!done());
-       return reinterpret_cast<Block&>(*pos_);
-       }
-       const Block &block() const
-       {
-       assert(!done());
-       return reinterpret_cast<const Block&>(*pos_);
-       }
-     */
 
     bool done () const
     {
@@ -196,7 +184,7 @@ namespace Dune
     template <unsigned int deriv>
     struct Iterator
     {
-      typedef typename Base::template BaseIterator<Derivatives<Field,dimension,dimRange,deriv,derivative> > All;
+      typedef typename Base::template BaseIterator<Derivatives<Field,dimension,dimRange,deriv,Fill::layout> > All;
     };
 
     VecEvaluator ( const Basis &basis, const Fill &fill )
@@ -255,6 +243,7 @@ namespace Dune
   template <int dimR>
   struct DiagonalFill<dimR,derivative>
   {
+    static const DerivativeLayout layout = derivative;
     static const int dimRange = dimR;
     template <int deriv, class Domain, class Iter,class Field>
     void apply(const Domain &x,
@@ -300,6 +289,7 @@ namespace Dune
   template <int dimR>
   struct DiagonalFill<dimR,value>
   {
+    static const DerivativeLayout layout = value;
     static const int dimRange = dimR;
     template <int deriv, class Domain, class Iter,class Field>
     void apply(const Domain &x,
@@ -352,11 +342,11 @@ namespace Dune
     }
   };
 
-  template <class B,int dimR>
+  template <class B,int dimR,DerivativeLayout layout>
   struct VectorialEvaluator
-    : public VecEvaluator<B,DiagonalFill<dimR,derivative> >
+    : public VecEvaluator<B,DiagonalFill<dimR,layout> >
   {
-    typedef DiagonalFill<dimR,derivative> Fill;
+    typedef DiagonalFill<dimR,layout> Fill;
     typedef VecEvaluator< B,Fill > Base;
     VectorialEvaluator(const B &basis)
       : Base(basis,fill_,basis.size()*dimR)

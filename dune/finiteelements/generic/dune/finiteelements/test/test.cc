@@ -30,15 +30,16 @@ struct TestMatrix
   template <class Basis>
   TestMatrix(const Basis &basis)
     : size_(basis.size()) {}
-  int colSize(int row) const {
+  unsigned int colSize(int row) const {
     return size_*dimR;
   }
-  int rowSize() const {
+  unsigned int rowSize() const {
     return size_*dimR;
   }
   const double operator() ( int r, int c ) const
   {
     // return (r==c)?1:0; // (r+1)*(c+1);
+    std::cout << r <<  " " << c << " " << (r+1)*(c+1) << std::endl;
     return (r+1)*(c+1);
     return pow(-1,c/2+r)*double(r)*double(c)*double(colSize(r)-c-1);
   }

@@ -160,27 +160,33 @@ namespace Dune
       return numCols_;
     }
 
-    template< class BasisVector, class Vector >
-    void mult ( const BasisVector &x,
-                Vector  &y ) const
+    template< class BasisIterator, class Vector >
+    void mult ( const BasisIterator &x,
+                Vector &y ) const
     {
-      typedef typename BasisVector::Block DomainVector;
-      typedef Mult<Field,DomainVector> Multiply;
+      typedef typename BasisIterator::Derivatives XDerivatives;
+      typedef typename Vector::value_type YDerivatives;
+      const unsigned int R = (XDerivatives::dimRange==YDerivatives::dimRange) ?
+                             1 : YDerivatives::dimRange;
       size_t numLsg = y.size();
-      assert( numLsg <= (size_t)numRows_ );
-      Field *row = rows_[ 0 ];
+      assert( numLsg*R <= (size_t)numRows_ );
+      unsigned int row = 0;
+      Field *pos = rows_[ 0 ];
       unsigned int *skipIt = skip_;
-      for( size_t r = 0; r < numLsg; ++r )
+      XDerivatives val;
+      for( size_t i = 0; i < numLsg; ++i)
       {
-        DomainVector val(0.);
-        // typename BasisVector::Iterator itx = x.begin();
-        BasisVector itx = x;
-        for( ; row != rows_[ r+1 ]; ++row, ++skipIt )
+        for ( int r = 0; r<R; ++r,++row)
         {
-          itx += *skipIt;
-          Multiply::add(*row,itx->block(),val);
+          val = 0;
+          BasisIterator itx = x;
+          for( ; pos != rows_[ row+1 ]; ++pos, ++skipIt )
+          {
+            itx += *skipIt;
+            val.axpy(*pos,*itx);
+          }
+          y[i].assign(r,val);
         }
-        field_cast(val,y[r]);
       }
     }
 

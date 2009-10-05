@@ -64,10 +64,11 @@ namespace Dune
   struct RaviartThomasInterpolation<F,d>::Helper<Func,Vector,true>
   // Func is of Function type
   {
-    typedef Dune::FieldVector<F,d> Result;
+    typedef std::vector<Dune::FieldVector<F,d> > Result;
     Helper(const Func & func, Vector &vec)
       : func_(func),
-        vec_(vec)
+        vec_(vec),
+        tmp_(1)
     {}
     template <class Fy>
     void set(unsigned int row,unsigned int col,
@@ -78,7 +79,7 @@ namespace Dune
     template <class DomainVector>
     const Result &evaluate(const DomainVector &x) const
     {
-      field_cast(func_( x ), tmp_ );
+      field_cast(func_( x ), tmp_[0] );
       return tmp_;
     }
     unsigned int size() const
@@ -235,7 +236,7 @@ namespace Dune
                   Result &res) const
     {
       typename Val::const_iterator iter = val.begin();
-      for ( unsigned int col = 0; col < size() ; ++iter,++col)
+      for ( unsigned int col = 0; col < val.size() ; ++iter,++col)
         res.set(row,col, (*iter)*normal );
       ++row;
     }
@@ -245,7 +246,7 @@ namespace Dune
                        Result &res) const
     {
       typename Val::const_iterator iter = val.begin();
-      for ( unsigned int col = 0; col < size() ; ++iter,++col)
+      for ( unsigned int col = 0; col < val.size() ; ++iter,++col)
         for (unsigned int d=0; d<dimension; ++d)
           res.set(row+d,col, (*iter)[d] );
       row+=dimension;
@@ -387,7 +388,7 @@ namespace Dune
     {
       const unsigned int endRow = startRow+mVal.size();
       typename RTVal::const_iterator rtiter = rtVal.begin();
-      for ( unsigned int col = 0; col < size() ; ++rtiter,++col)
+      for ( unsigned int col = 0; col < rtVal.size() ; ++rtiter,++col)
       {
         Field cFactor = (*rtiter)*normal;
         typename MVal::const_iterator miter = mVal.begin();
@@ -405,7 +406,7 @@ namespace Dune
     {
       const unsigned int endRow = startRow+mVal.size()*dimension;
       typename RTVal::const_iterator rtiter = rtVal.begin();
-      for ( unsigned int col = 0; col < size() ; ++rtiter,++col)
+      for ( unsigned int col = 0; col < rtVal.size() ; ++rtiter,++col)
       {
         typename MVal::const_iterator miter = mVal.begin();
         for (unsigned int row = startRow;
@@ -564,27 +565,37 @@ namespace Dune
     typedef unsigned int Key;
     typedef typename GenericGeometry::SimplexTopology< dim >::type SimplexTopology;
 
-    #define RTLAGRANGE 0
+    #define RTLAGRANGE 1
+#if RTLAGRANGE
+    typedef LagrangePointsCreator< ComputeField, dimension > PointsSetCreator;
+    // typedef LobattoPointsCreator< ComputeField, dimension > PointsSetCreator;
+    typedef RaviartThomasLagrangeInterpolation< ComputeField, PointsSetCreator > LocalInterpolation;
+#else
+    typedef RaviartThomasL2Interpolation< ComputeField, dimension > LocalInterpolation;
+#endif
 
+    template< class Topology >
+    static const LocalInterpolation &localInterpolation ( const Key &order )
+    {
+      FieldMatrix<ComputeField,dimension+1,dimension> normal;
+      for (int f=0; f<dimension+1; ++f)
+        normal[f] = GenericGeometry::ReferenceElement<Topology,ComputeField>::integrationOuterNormal(f);
+#if RTLAGRANGE
+      const typename PointsSetCreator::LagrangePoints &points = PointsSetCreator::template lagrangePoints< Topology >( order+dimension );
+      LocalInterpolation *interpolation = new LocalInterpolation(order,points,normal);
+#else
+      LocalInterpolation *interpolation = new LocalInterpolation(order,normal);
+#endif
+      return *interpolation;
+    }
     template <class Topology>
     static Basis &basis(unsigned int order)
     {
       const MBasis &_mBasis = MonomialBasisProvider<dimension,StorageField>::template basis<SimplexTopology>(order+1);
       Basis *basis = new Basis(_mBasis);
-      FieldMatrix<ComputeField,dimension+1,dimension> normal;
-      for (int f=0; f<dimension+1; ++f)
-        normal[f] = GenericGeometry::ReferenceElement<Topology,ComputeField>::integrationOuterNormal(f);
-#if RTLAGRANGE
-      typedef LagrangePointsCreator< ComputeField, dimension > PointsSetCreator;
-      // typedef LobattoPointsCreator< ComputeField, dimension > PointsSetCreator;
-      typedef RaviartThomasLagrangeInterpolation< ComputeField, PointsSetCreator > Interpolation;
-      const typename PointsSetCreator::LagrangePoints &points = PointsSetCreator::template lagrangePoints< Topology >( order+dimension );
-      Interpolation interpolation(order,points,normal);
-#else
-      typedef RaviartThomasL2Interpolation< ComputeField, dimension > Interpolation;
-      Interpolation interpolation(order,normal);
-#endif
-      RaviartThomasMatrix<Topology,Interpolation> matrix(interpolation);
+      const LocalInterpolation &interpolation = localInterpolation<Topology>(order);
+      RaviartThomasMatrix<Topology,LocalInterpolation> matrix(interpolation);
+      release(interpolation);
       basis->fill(matrix);
       {
         typedef MultiIndex< dimension > MIField;
@@ -612,20 +623,16 @@ namespace Dune
       FieldMatrix<ComputeField,dimension+1,dimension> normal;
       for (int f=0; f<dimension+1; ++f)
         normal[f] = GenericGeometry::ReferenceElement<Topology,ComputeField>::integrationOuterNormal(f);
-#if RTLAGRANGE
-      typedef LagrangePointsCreator< ComputeField, dimension > PointsSetCreator;
-      // typedef LobattoPointsCreator< ComputeField, dimension > PointsSetCreator;
-      typedef RaviartThomasLagrangeInterpolation< ComputeField, PointsSetCreator > Interpolation;
-      const typename PointsSetCreator::LagrangePoints &points = PointsSetCreator::template lagrangePoints< Topology >( order+dimension );
-      Interpolation interpolation(order,points,normal);
-#else
-      typedef RaviartThomasL2Interpolation< ComputeField, dimension > Interpolation;
-      Interpolation interpolation(order,normal);
-#endif
+      const LocalInterpolation &interpolation = localInterpolation<Topology>(order);
       LocalCoefficientsContainer *localKeys = new LocalCoefficientsContainer(interpolation);
+      release(interpolation);
       return *localKeys;
     }
 
+    static void release ( const LocalInterpolation &localInterpolation )
+    {
+      delete &localInterpolation;
+    }
     static void release ( const Basis &basis )
     {
       delete &basis;

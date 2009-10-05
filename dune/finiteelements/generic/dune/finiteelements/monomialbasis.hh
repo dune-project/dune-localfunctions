@@ -233,14 +233,20 @@ namespace Dune
     {
       const Field &z = x[ dimDomain-1 ];
       const Field &omz = Field( 1 ) - z;
-      const Field &invomz = Field( 1 ) / omz;
-      const FieldVector< Field, dimDomain-1 > y;
-      for( unsigned int i = 0; i < dimDomain-1; ++i )
-        y[ i ] = x[ i ] * invomz;
 
-      // fill first column
-      baseBasis_.evaluate( order, y, offsets, values );
-      const unsigned int *const baseSizes = baseBasis_.sizes_;
+      if( omz > 1e-12 ) // this number must depend on Field
+      {
+        const Field &invomz = Field( 1 ) / omz;
+        const FieldVector< Field, dimDomain-1 > y;
+        for( unsigned int i = 0; i < dimDomain-1; ++i )
+          y[ i ] = x[ i ] * invomz;
+
+        // fill first column
+        baseBasis_.evaluate( order, y, offsets, values );
+        const unsigned int *const baseSizes = baseBasis_.sizes_;
+      }
+      else
+        omz = Field( 0 );
 
       RangeVector *row0 = values;
       const Field &omzk = omz;
@@ -251,7 +257,7 @@ namespace Dune
         RangeVector *const col0End = row1 + baseSizes[ k ];
         RangeVector *it = row1;
         for( ; it!=col0End; ++it )
-          *it = *it * omzk;
+          *it = (*it) * omzk;
         for( ; it!=row1End; ++row0,++it )
           *it = z * (*row0);
         row0 = row1;

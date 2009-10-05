@@ -79,6 +79,18 @@ namespace Dune
   };
 
   template< class Field >
+  inline bool operator == ( const Zero< Field > &, const Field &f )
+  {
+    return ( f < Zero<Field>::epsilon() && f > -Zero<Field>::epsilon() );
+  }
+
+  template< class Field >
+  inline bool operator == ( const Field &f, const Zero< Field > &z)
+  {
+    return ( z == f );
+  }
+
+  template< class Field >
   inline bool operator< ( const Zero< Field > &, const Field &f )
   {
     return f > Zero<Field>::epsilon();

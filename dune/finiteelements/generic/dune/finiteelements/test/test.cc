@@ -28,7 +28,7 @@ int main ( int argc, char **argv )
   const int dimension = Topology::dimension;
 
   Dune::MonomialBasis< Topology, double > basis;
-  const unsigned int size = basis.sizes( p )[ p ];
+  const unsigned int size = basis.size( p );
   std::vector< Dune::FieldVector< double, 1 > > y( size );
 
   typedef Dune::LagrangePoints< Topology, double > LagrangePoints;
@@ -53,7 +53,7 @@ int main ( int argc, char **argv )
   {
     typedef Dune::StandardBiMonomialBasis< 3,double > Basis;
     Basis basis;
-    const unsigned int size = basis.sizes( p )[ p ];
+    const unsigned int size = basis.size( p );
     std::vector< Dune::FieldVector< double, 1 > > y( size );
 
     typedef Dune::LagrangePoints< Basis::Topology, double > LagrangePoints;
@@ -75,7 +75,7 @@ int main ( int argc, char **argv )
     std::cout << "polynomial representation of the basis functions:" << std::endl;
     typedef Dune::MultiIndex< dimension > MultiIndex;
     Dune::MonomialBasis< Topology, MultiIndex  > basis;
-    const unsigned int size = basis.sizes( p )[ p ];
+    const unsigned int size = basis.size( p );
     std::vector< Dune::FieldVector< MultiIndex, 1 > > y( size );
     Dune::FieldVector< MultiIndex, dimension > x;
     for( int i = 0; i < dimension; ++i )

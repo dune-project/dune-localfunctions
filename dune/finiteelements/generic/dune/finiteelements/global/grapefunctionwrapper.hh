@@ -5,10 +5,23 @@
 
 #include <dune/common/field.hh>
 
+#if HAVE_GRAPE
 #include <dune/grid/io/visual/grapedatadisplay.hh>
+#endif // #if HAVE_GRAPE
 
 namespace Dune
 {
+
+#if not HAVE_GRAPE
+  template< class GV, int dimR, int polOrd >
+  struct GrapeFunction
+  {};
+#endif
+
+
+
+  // GrapeFunctionWrapper
+  // -------------------.
 
   template< class DFS >
   class GrapeFunctionWrapper
@@ -72,4 +85,4 @@ namespace Dune
 
 }
 
-#endif // #ifndef DUNE_VTKFUNCTIONWRAPPER_HH
+#endif // #ifndef DUNE_GRAPEFUNCTIONWRAPPER_HH

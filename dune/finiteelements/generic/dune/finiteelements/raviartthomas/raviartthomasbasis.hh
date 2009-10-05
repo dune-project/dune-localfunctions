@@ -681,10 +681,10 @@ namespace Dune
     typedef unsigned int Key;
     typedef typename GenericGeometry::SimplexTopology< dim >::type SimplexTopology;
 
-    #define RTLAGRANGE 0
+    #define RTLAGRANGE 1
 #if RTLAGRANGE
-    // typedef LagrangePointsCreator< ComputeField, dimension > PointsSetCreator;
-    typedef LobattoPointsCreator< ComputeField, dimension > PointsSetCreator;
+    typedef LagrangePointsCreator< ComputeField, dimension > PointsSetCreator;
+    // typedef LobattoPointsCreator< ComputeField, dimension > PointsSetCreator;
     typedef RaviartThomasLagrangeInterpolation< ComputeField, PointsSetCreator > LocalInterpolation;
 #else
     typedef RaviartThomasL2Interpolation< ComputeField, dimension > LocalInterpolation;

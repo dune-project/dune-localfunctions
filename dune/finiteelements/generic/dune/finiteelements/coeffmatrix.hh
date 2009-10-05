@@ -136,11 +136,11 @@ namespace Dune
   };
 #endif
 
-  template< class F >
+  template< class F , unsigned int blockSize >
   class SparseCoeffMatrix
   {
   public:
-    typedef SparseCoeffMatrix<F> This;
+    typedef SparseCoeffMatrix<F,blockSize> This;
     typedef F Field;
 
     SparseCoeffMatrix()
@@ -160,7 +160,7 @@ namespace Dune
 
     const unsigned int size () const
     {
-      return numRows_;
+      return numRows_/blockSize;
     }
     const unsigned int baseSize () const
     {
@@ -191,6 +191,7 @@ namespace Dune
       typedef typename BasisIterator::Derivatives XDerivatives;
       const unsigned int R = (XDerivatives::dimRange==YDerivatives::dimRange) ?
                              1 : YDerivatives::dimRange;
+      assert(R==blockSize);
       size_t numLsg = y.size();
       assert( numLsg*R <= (size_t)numRows_ );
       unsigned int row = 0;

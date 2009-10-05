@@ -7,8 +7,6 @@
 
 #include <dune/alglib/multiprecision.hh>
 #include <dune/finiteelements/tensor.hh>
-const Dune::DerivativeLayout basisLayout = Dune::value;
-const Dune::DerivativeLayout solutionLayout = Dune::value;
 
 #include <dune/finiteelements/monomialbasis.hh>
 #include <dune/finiteelements/multiindex.hh>
@@ -64,49 +62,56 @@ struct TestMatrix<dimR,1>
 using namespace Dune;
 using namespace GenericGeometry;
 
-template <class Topology>
-void vecTest(unsigned int p)
+template <class Topology,
+    int dimBasis,
+    DerivativeLayout basisLayout,
+    int dimR,
+    DerivativeLayout solutionLayout>
+void vecTest(int testNr,unsigned int p)
 {
-  const int dimR = 2;
-  const int dimBasis = 1;
+  std::cout << "Starting on test : " << testNr << std::endl;
+  std::stringstream name;
+  name << "vectest-" << testNr << ".out";
+  std::ofstream out(name.str().c_str());
   const int dimension = Topology::dimension;
   typedef MultiIndex< dimension > Field;
 
   typedef MonomialBasis< Topology, Field > Basis;
   Basis mbasis(p);
   typedef VectorialEvaluator<Basis,dimBasis,basisLayout> Evaluator;
-  PolynomialBasisWithMatrix<Evaluator,SparseCoeffMatrix<double> > basis(mbasis);
+  const unsigned int blockSize = (dimBasis==dimR) ? 1 : dimR;
+  PolynomialBasisWithMatrix<Evaluator,SparseCoeffMatrix<double,blockSize> > basis(mbasis);
   TestMatrix<dimR,dimBasis> matrix(mbasis);
   basis.fill(matrix);
 
-  unsigned int size = basis.size()/2;
-  std::cout << "Number of base functions:  " << size << std::endl;
+  unsigned int size = basis.size();
+  out << "Number of base functions:  " << size << std::endl;
 
-  std::cout << ">>> Polynomial representation of the basis functions:" << std::endl;
+  out << ">>> Polynomial representation of the basis functions:" << std::endl;
   FieldVector< Field, dimension > x;
   for( int i = 0; i < dimension; ++i )
     x[ i ].set( i, 1 );
 
-  std::cout << "Values: " << std::endl;
+  out << "Values: " << std::endl;
   std::vector< Derivatives<Field,dimension,dimR,0,solutionLayout> > val( size );
   for( unsigned int i = 0; i < val.size(); ++i )
     val[ i ] = -42.3456789;
   basis.template evaluate( x, val );
-  std::cout << val << std::endl;
+  out << val << std::endl;
 
-  std::cout << "Values+Jacobian: " << std::endl;
+  out << "Values+Jacobian: " << std::endl;
   std::vector< Derivatives<Field,dimension,dimR,1,solutionLayout> > deriv( size );
   for( unsigned int i = 0; i < deriv.size(); ++i )
     deriv[ i ] = -42.3456789;
   basis.template evaluate<1>( x, deriv );
-  std::cout << deriv << std::endl;
+  out << deriv << std::endl;
 
-  std::cout << "Values+Jacobian+Hessian: " << std::endl;
+  out << "Values+Jacobian+Hessian: " << std::endl;
   std::vector< Derivatives<Field,dimension,dimR,2,solutionLayout> > hess( size );
   for( unsigned int i = 0; i < hess.size(); ++i )
     hess[ i ] = -42.3456789;
   basis.template evaluate<2>( x, hess );
-  std::cout << hess  << std::endl;
+  out << hess  << std::endl;
 }
 
 int main ( int argc, char **argv )
@@ -119,5 +124,12 @@ int main ( int argc, char **argv )
   }
   int p = atoi( argv[ 1 ] );
 
-  vecTest<Topology>(p);
+  // problem: vecTest<Topology,1,value,2,value>(1,p);
+  vecTest<Topology,1,derivative,2,derivative>(2,p);
+  vecTest<Topology,2,value,2,value>(3,p);
+  vecTest<Topology,2,derivative,2,derivative>(4,p);
+  // problem: vecTest<Topology,1,derivative,2,value>(5,p);
+  vecTest<Topology,1,value,2,derivative>(6,p);
+  // missing: vecTest<Topology,2,value,2,derivative>(7,p);
+  vecTest<Topology,2,derivative,2,value>(8,p);
 }

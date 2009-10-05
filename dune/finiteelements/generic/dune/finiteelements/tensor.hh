@@ -141,6 +141,7 @@ namespace Dune
     {
       block().axpy(a,y.block());
     }
+
     // assign with same layout (only diffrent Field)
     template <class Fy>
     void assign(unsigned int r,const Derivatives<Fy,dimD,dimR,deriv,value> &y)
@@ -156,12 +157,19 @@ namespace Dune
         tensor_[rr] = y[rr].template tensor<deriv>()[0];
     }
     // assign with scalar functions to component r
-    template <class Fy,DerivativeLayout layouty>
-    void assign(unsigned int r,const Derivatives<Fy,dimD,1,deriv,layouty> &y)
-    {
-      Base::assign(r,static_cast<const Derivatives<Fy,dimD,1,deriv-1,layouty>&>(y));
-      tensor_[r].assign(y[0]);
-    }
+    /*
+       template <class Fy>
+       void assign(unsigned int r,const Derivatives<Fy,dimD,1,deriv,value> &y)
+       {
+       Base::assign(r,static_cast<const Derivatives<Fy,dimD,1,deriv-1,value>&>(y));
+       tensor_[r].assign(y[0]);
+       }
+       template <class Fy>
+       void assign(unsigned int r,const Derivatives<Fy,dimD,1,deriv,derivative> &y)
+       {
+       assign(r,y[0]);
+       }
+     */
 
     Block &block()
     {

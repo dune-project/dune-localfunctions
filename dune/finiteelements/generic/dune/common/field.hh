@@ -84,55 +84,75 @@ namespace Dune
     return z < f;
   }
 
-  template <unsigned int precision>
-  inline void field_cast(const AlgLib::MultiPrecision<precision> &f1, double &f2)
-  {
-    f2 = f1.toDouble();
-  }
-  template <class F2,class F1>
-  inline void field_cast(const F1 &f1, F2 &f2)
+
+
+  // field_cast
+  // ----------
+
+  template< class F2, class F1 >
+  inline void field_cast ( const F1 &f1, F2 &f2 )
   {
     f2 = f1;
   }
 
-  template <class F2,class F1,int dim>
-  inline void field_cast(const FieldVector<F1,dim> &f1, FieldVector<F2,dim> &f2)
+  template< unsigned int precision >
+  inline void field_cast ( const AlgLib::MultiPrecision< precision > &f1, double &f2 )
   {
-    for (int d=0; d<dim; ++d)
-      field_cast(f1[d],f2[d]);
+    f2 = f1.toDouble();
   }
 
-  template <class F2,class F1>
-  inline F2 field_cast(const F1 &f1)
+  template< class F2, class F1, int dim >
+  inline void field_cast ( const FieldVector< F1, dim > &f1, FieldVector< F2, dim > &f2 )
+  {
+    for( int d = 0; d < dim; ++d )
+      field_cast( f1[ d ], f2[ d ] );
+  }
+
+  template< class F2,class F1 >
+  inline F2 field_cast ( const F1 &f1 )
   {
     F2 f2;
-    field_cast(f1,f2);
+    field_cast( f1, f2 );
     return f2;
   }
 
+
+
+  // Precision
+  // ---------
+
   template <class Field>
   struct Precision;
-  template <>
-  struct Precision<double>
+
+  template<>
+  struct Precision< double >
   {
     static const unsigned int value = 64;
   };
-  template <>
-  struct Precision<float>
+
+  template<>
+  struct Precision< float >
   {
     static const unsigned int value = 32;
   };
-  template <unsigned int precision>
-  struct Precision<AlgLib::MultiPrecision<precision> >
+
+  template< unsigned int precision >
+  struct Precision< AlgLib::MultiPrecision< precision > >
   {
     static const unsigned int value = precision;
   };
+
+
+
+  // ComputeField
+  // ------------
 
   template <class Field,unsigned int sum>
   struct ComputeField
   {
     typedef AlgLib::MultiPrecision<Precision<Field>::value+sum> Type;
   };
+
 }
 
 #endif // #ifndef DUNE_FIELD_HH

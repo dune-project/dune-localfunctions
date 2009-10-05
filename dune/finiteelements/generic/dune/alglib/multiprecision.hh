@@ -83,4 +83,18 @@ namespace Dune
 
 }
 
+
+
+namespace std
+{
+
+  template< unsigned int precision >
+  inline Dune::AlgLib::MultiPrecision< precision >
+  sqrt ( const Dune::AlgLib::MultiPrecision< precision > &a )
+  {
+    return amp::sqrt( a );
+  }
+
+}
+
 #endif // #ifndef DUNE_MULTIPRECISION_HH

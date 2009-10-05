@@ -127,7 +127,7 @@ namespace Dune
       return BaseImpl::size( order ) * (order+1);
     }
 
-  private:
+    // private:
     template< unsigned int codim, unsigned int dim >
     static unsigned int setup ( const unsigned int order,
                                 unsigned int *count,
@@ -200,7 +200,7 @@ namespace Dune
       return size;
     }
 
-  private:
+    // private:
     template< unsigned int codim, unsigned int dim >
     static unsigned int setup ( const unsigned int order,
                                 unsigned int *count,

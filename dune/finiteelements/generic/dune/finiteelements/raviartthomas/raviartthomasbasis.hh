@@ -161,6 +161,56 @@ namespace Dune
     mutable Result tmp_;
   };
 
+  // -----------------------------------------
+  // Basis
+  // -----------------------------------------
+  template <class Field,unsigned int dim>
+  struct RaviartThomasInitialBasis
+  {
+    static const unsigned int dimension = dim;
+    // typedef MonomialBasisProvider<dimension,Field> TestBasisProvider;
+    // typedef MonomialBasisProvider<dimension-1,Field> TestFaceBasisProvider;
+    typedef OrthonormalBasisProvider<dimension,Field> TestBasisProvider;
+    typedef OrthonormalBasisProvider<dimension-1,Field> TestFaceBasisProvider;
+    // typedef LagrangeBasisProvider<dimension,Field> TestBasisProvider;
+    // typedef LagrangeBasisProvider<dimension-1,Field> TestFaceBasisProvider;
+    // typedef LobattoBasisProvider<dimension,Field> TestBasisProvider;
+    // typedef LobattoBasisProvider<dimension-1,Field> TestFaceBasisProvider;
+
+    typedef typename TestBasisProvider::Basis TestBasis;
+    typedef typename TestFaceBasisProvider::Basis TestFaceBasis;
+
+    struct FaceStructure
+    {
+      template < class Topology >
+      struct Get
+      {
+        static const TestBasis &testBasis(unsigned int order)
+        {
+          return TestBasisProvider::template basis<Topology>(order-1);
+        }
+        template < int face >
+        struct GetCodim
+        {
+          typedef typename GenericGeometry::SubTopology<Topology,1,face>::type FaceTopology;
+          static void apply( const unsigned int order,
+                             std::vector<FaceStructure*> &faceStructure )
+          {
+            faceStructure.push_back( new FaceStructure (
+                                       TestFaceBasisProvider::template basis<FaceTopology>(order),
+                                       GenericGeometry::ReferenceElement<Topology,Field>::integrationOuterNormal(face) ) );
+          }
+        };
+      };
+      FaceStructure( const TestFaceBasis &tfb, const Dune::FieldVector<Field,dimension> &n )
+        : basis(tfb), normal(n)
+      {}
+      const TestFaceBasis &basis;
+      const Dune::FieldVector<Field,dimension> &normal;
+    };
+
+  };
+
   // A L2 based interpolation for Raviart Thomas
   // --------------------------------------------------
   template< class F, unsigned int dimension>
@@ -179,20 +229,22 @@ namespace Dune
     typedef PolynomialBasis< Evaluator, CoefficientMatrix > TestBasis;
     typedef StandardEvaluator< typename TestFaceMBasisProvider::Basis > FaceEvaluator;
     typedef PolynomialBasis< FaceEvaluator, CoefficientMatrix > TestFaceBasis;
-
+    typedef typename RaviartThomasInitialBasis<Field,dimension> :: FaceStructure FaceStructure;
     RaviartThomasL2Interpolation
       ( const unsigned int topologyId,
       const unsigned int order,
-      const std::vector< FieldVector<Field,dimension> > &normal,
       const TestBasis &mBasis,
-      const TestFaceBasis &mFaceBasis)
+      const std::vector< FaceStructure* > &faceStructure )
       : order_(order),
-        normal_(normal),
+        faceStructure_(faceStructure),
         topologyId_(topologyId),
         mBasis_(mBasis),
-        mFaceBasis_(mFaceBasis),
-        size_( normal_.size()*mFaceBasis_.size()+dimension*mBasis_.size() )
-    {}
+        size_( 0 )
+    {
+      size_ = dimension*mBasis_.size();
+      for ( unsigned int f=0; f<faceStructure_.size(); ++f )
+        size_ += faceStructure_[f]->basis.size();
+    }
 
     unsigned int order() const
     {
@@ -223,7 +275,7 @@ namespace Dune
       keys.resize(size());
       unsigned int row = 0;
       for (unsigned int f=0; f<dimension+1; ++f)
-        for (unsigned int i=0; i<mFaceBasis_.size(); ++i,++row)
+        for (unsigned int i=0; i<faceStructure_[f]->basis.size(); ++i,++row)
           keys[row] = LocalKey(f,1,i);
       for (unsigned int i=0; i<mBasis_.size()*dimension; ++i,++row)
         keys[row] = LocalKey(0,0,i);
@@ -247,27 +299,26 @@ namespace Dune
       typedef Dune::GenericGeometry::GenericQuadratureProvider< dimension-1, Field > FaceQuadratureProvider;
       typedef Dune::GenericGeometry::SubQuadratureProvider< dimension, FaceQuadratureProvider> SubQuadratureProvider;
 
-      testBasisVal.resize(mFaceBasis_.size());
-      testBasisInt.resize(mFaceBasis_.size());
-
-      // mFaceBasis_.integral(testBasisInt);
-      for (unsigned int f=0; f<dimension+1; ++f)
+      for (unsigned int f=0; f<faceStructure_.size(); ++f)
       {
+        testBasisVal.resize(faceStructure_[f]->basis.size());
+        // testBasisInt.resize(mFaceBasis_.size());
+        // mFaceBasis_.integral(testBasisInt);
         const typename SubQuadratureProvider::Quadrature &faceQuad = SubQuadratureProvider::quadrature( topologyId_, std::make_pair(f,2*order_+2) );
         const typename SubQuadratureProvider::SubQuadrature &faceSubQuad = SubQuadratureProvider::subQuadrature( topologyId_, std::make_pair(f,2*order_+2) );
 
         const unsigned int quadratureSize = faceQuad.size();
         for( unsigned int qi = 0; qi < quadratureSize; ++qi )
         {
-          mFaceBasis_.template evaluate<0>(faceSubQuad.point(qi),testBasisVal);
+          faceStructure_[f]->basis.template evaluate<0>(faceSubQuad.point(qi),testBasisVal);
           // for (int i=0;i<testBasisVal.size();++i)
           //  testBasisVal[i] /= testBasisInt[i];
           fillBnd( row, testBasisVal,
                    func.evaluate(faceQuad.point(qi)),
-                   normal_[f], faceQuad.weight(qi),
+                   faceStructure_[f]->normal, faceQuad.weight(qi),
                    func);
         }
-        row += mFaceBasis_.size();
+        row += faceStructure_[f]->basis.size();
       }
       // element dofs
       if (row<size())
@@ -343,10 +394,9 @@ namespace Dune
     }
 
     unsigned int order_;
-    std::vector< FieldVector<Field,dimension> > normal_;
+    const std::vector< FaceStructure* > faceStructure_;
     const unsigned int topologyId_;
     const TestBasis &mBasis_;
-    const TestFaceBasis &mFaceBasis_;
     unsigned int size_;
   };
 
@@ -479,37 +529,6 @@ namespace Dune
     mat_t matrix_;
   };
 
-  template <class Topology,class Field>
-  struct RaviartThomasInitialBasis
-  {
-    static const unsigned int dimension = Topology::dimension;
-    // typedef MonomialBasisProvider<dimension,Field> TestBasisProvider;
-    // typedef MonomialBasisProvider<dimension-1,Field> TestFaceBasisProvider;
-    typedef OrthonormalBasisProvider<dimension,Field> TestBasisProvider;
-    typedef OrthonormalBasisProvider<dimension-1,Field> TestFaceBasisProvider;
-    // typedef LagrangeBasisProvider<dimension,Field> TestBasisProvider;
-    // typedef LagrangeBasisProvider<dimension-1,Field> TestFaceBasisProvider;
-    // typedef LobattoBasisProvider<dimension,Field> TestBasisProvider;
-    // typedef LobattoBasisProvider<dimension-1,Field> TestFaceBasisProvider;
-
-    typedef typename TestBasisProvider::Basis TestBasis;
-    typedef typename TestFaceBasisProvider::Basis TestFaceBasis;
-
-    typedef MonomialBasisProvider<dimension,Field> MBasisProvider;
-    typedef typename MBasisProvider::Basis MBasis;
-    typedef StandardEvaluator<MBasis> EvalMBasis;
-    typedef PolynomialBasisWithMatrix<EvalMBasis,SparseCoeffMatrix<Field,dimension> > RTPreBasis;
-
-    static const TestBasis &testBasis(unsigned int order)
-    {
-      return TestBasisProvider::template basis<Topology>(order-1);
-    }
-    static const TestFaceBasis &testFaceBasis(unsigned int order)
-    {
-      return TestFaceBasisProvider::template basis<Topology>(order);
-    }
-  };
-
 
   template< int dim, class SF, class CF >
   struct RaviartThomasBasisCreator
@@ -529,15 +548,14 @@ namespace Dune
     template< class Topology >
     static const LocalInterpolation &localInterpolation ( const Key &order )
     {
+      typedef RaviartThomasInitialBasis<ComputeField,dimension> InitialBasis;
+      typedef typename InitialBasis::FaceStructure::template Get<Topology> BasisGet;
       const unsigned int size = GenericGeometry::Size<Topology,1>::value;
-      std::vector< FieldVector< ComputeField, dimension > > normal(size);
-      for (unsigned int f=0; f<size; ++f)
-        normal[f] = GenericGeometry::ReferenceElement<Topology,ComputeField>::integrationOuterNormal(f);
-      typedef RaviartThomasInitialBasis<Topology,ComputeField> InitialBasis;
+      std::vector< typename InitialBasis::FaceStructure* > faceStructure;
+      GenericGeometry::ForLoop< BasisGet::template GetCodim,0,size-1>::apply(order, faceStructure );
 
-      const typename InitialBasis::TestBasis &testBasis( InitialBasis::testBasis(order) );
-      const typename InitialBasis::TestFaceBasis &testFaceBasis( InitialBasis::testFaceBasis(order) );
-      LocalInterpolation *interpolation = new LocalInterpolation(Topology::id,order,normal,testBasis,testFaceBasis);
+      const typename InitialBasis::TestBasis &testBasis( BasisGet::testBasis(order) );
+      LocalInterpolation *interpolation = new LocalInterpolation( Topology::id,order,testBasis,faceStructure );
       return *interpolation;
     }
     template <class Topology>

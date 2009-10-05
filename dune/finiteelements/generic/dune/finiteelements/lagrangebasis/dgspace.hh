@@ -34,7 +34,8 @@ namespace Dune
 
     typedef LagrangeBasisProvider< dimDomain, RangeField, CF > BasisCreator;
     typedef DGLocalCoefficientsCreator< BasisCreator > LocalCoefficientsCreator;
-    typedef LocalL2InterpolationCreator< BasisCreator > LocalInterpolationCreator;
+    typedef Dune::LagrangePointsCreator< RangeField, dimDomain > LagrangePointsCreator;
+    typedef LocalLagrangeInterpolationCreator< LagrangePointsCreator > LocalInterpolationCreator;
 
     typedef unsigned int Key;
 

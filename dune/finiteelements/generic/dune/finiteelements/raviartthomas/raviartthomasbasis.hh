@@ -445,8 +445,8 @@ namespace Dune
       // mFaceBasis_.integral(testBasisInt);
       for (unsigned int f=0; f<dimension+1; ++f)
       {
-        const typename SubQuadratureProvider::Quadrature &faceQuad = SubQuadratureProvider::template quadrature<Topology>( std::make_pair(f,2*order_+1) );
-        const typename SubQuadratureProvider::SubQuadrature &faceSubQuad = SubQuadratureProvider::template subQuadrature<Topology>( std::make_pair(f,2*order_+1) );
+        const typename SubQuadratureProvider::Quadrature &faceQuad = SubQuadratureProvider::template quadrature<Topology>( std::make_pair(f,2*order_+2) );
+        const typename SubQuadratureProvider::SubQuadrature &faceSubQuad = SubQuadratureProvider::template subQuadrature<Topology>( std::make_pair(f,2*order_+2) );
 
         const unsigned int quadratureSize = faceQuad.size();
         for( unsigned int qi = 0; qi < quadratureSize; ++qi )
@@ -468,7 +468,7 @@ namespace Dune
         testBasisInt.resize(mBasis_.size());
 
         typedef Dune::GenericGeometry::GenericQuadratureProvider< dimension, Field > QuadratureProvider;
-        const typename QuadratureProvider::Quadrature &elemQuad = QuadratureProvider::template quadrature<Topology>(2*order_);
+        const typename QuadratureProvider::Quadrature &elemQuad = QuadratureProvider::template quadrature<Topology>(2*order_+1);
         const unsigned int quadratureSize = elemQuad.size();
         // mBasis_.integral(testBasisInt);
         for( unsigned int qi = 0; qi < quadratureSize; ++qi )

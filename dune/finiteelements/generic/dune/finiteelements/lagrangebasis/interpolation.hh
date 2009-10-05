@@ -42,8 +42,8 @@ namespace Dune
     {}
 
   public:
-    template< class Function >
-    void interpolate ( const Function &function, std::vector< Field > &coefficients ) const
+    template< class Function, class Fy >
+    void interpolate ( const Function &function, std::vector< Fy > &coefficients ) const
     {
       typedef typename LagrangePoints::iterator Iterator;
 
@@ -52,7 +52,7 @@ namespace Dune
       unsigned int index = 0;
       const Iterator end = lagrangePoints_.end();
       for( Iterator it = lagrangePoints_.begin(); it != end; ++it )
-        coefficients[ index++ ] = function( it->point() );
+        field_cast(function( it->point() ), coefficients[ index++ ] );
     }
 
     template< class Topology, class Matrix >

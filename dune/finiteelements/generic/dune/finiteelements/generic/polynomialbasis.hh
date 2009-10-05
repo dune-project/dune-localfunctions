@@ -46,14 +46,15 @@ namespace Dune
 
     typedef CM CoefficientMatrix;
     typedef Eval Evaluator;
-    typedef typename CoefficientMatrix::Field StorageField;
 
   public:
+
+    typedef typename CoefficientMatrix::Field StorageField;
+
     static const int dimension = Evaluator::dimension;
     static const int dimRange = Evaluator::dimRange*CoefficientMatrix::blockSize;
     typedef typename Evaluator::Basis Basis;
     typedef typename Evaluator::DomainVector DomainVector;
-    typedef typename CoefficientMatrix::Field Field;
 
     PolynomialBasis (const Basis &basis,
                      const CoefficientMatrix &coeffMatrix,
@@ -147,7 +148,6 @@ namespace Dune
   class PolynomialBasisWithMatrix
     : public PolynomialBasis< Eval, CM >
   {
-    typedef typename Eval::Field StorageField;
     typedef Eval Evaluator;
     typedef CM CoefficientMatrix;
 
@@ -156,6 +156,7 @@ namespace Dune
 
     typedef typename Base::Basis Basis;
   public:
+
     PolynomialBasisWithMatrix (const Basis &basis)
       : Base(basis,coeffMatrix_,0)
     {}

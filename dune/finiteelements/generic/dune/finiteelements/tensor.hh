@@ -11,31 +11,42 @@ namespace Dune
 {
   // Structure for scalar tensor of order deriv
   template <class F,int dimD,unsigned int deriv>
-  struct Tensor
+  class Tensor
   {
     typedef Tensor<F,dimD,deriv> This;
     typedef Tensor<F,dimD-1,deriv> BaseDim;
     typedef Tensor<F,dimD,deriv-1> BaseDeriv;
+
+  public:
+    typedef F field_type;
     static const unsigned int size = BaseDim::size+BaseDeriv::size;
     typedef Dune::FieldVector<F,size> Block;
-    template <class FF>
-    This &operator=(const FF& f)
+
+    template< class FF >
+    This &operator= ( const FF &f )
     {
-      block() = field_cast<F>(f);
+      block() = field_cast< F >( f );
       return *this;
     }
-    This &operator=(const Block& b)
+
+    This &operator= ( const Block &b )
     {
       block() = b;
       return *this;
     }
 
-    const F &operator[] ( const unsigned int i ) const
+    This &operator*= ( const field_type &f )
+    {
+      block() *= f;
+      return *this;
+    }
+
+    const field_type &operator[] ( const unsigned int i ) const
     {
       return block()[ i ];
     }
 
-    F &operator[] ( const unsigned int i )
+    field_type &operator[] ( const unsigned int i )
     {
       return block()[ i ];
     }
@@ -59,32 +70,46 @@ namespace Dune
     }
     Block block_;
   };
+
   // ******************************************
   template <class F,unsigned int deriv>
   struct Tensor<F,0,deriv>
   {
     static const int size = 0;
   };
+
   template <class F>
   struct Tensor<F,0,0>
   {
     static const int size = 1;
   };
+
   template <class F,int dimD>
-  struct Tensor<F,dimD,0>
+  class Tensor<F,dimD,0>
   {
     typedef Tensor<F,dimD,0> This;
+
+  public:
+    typedef F field_type;
     static const int size = 1;
     typedef Dune::FieldVector<F,size> Block;
-    template <class FF>
-    This &operator=(const FF& f)
+
+    template< class FF >
+    This &operator= ( const FF &f )
     {
-      block() = field_cast<F>(f);
+      block() = field_cast< F >( f );
       return *this;
     }
-    This &operator=(const Block& b)
+
+    This &operator= ( const Block &b )
     {
       block() = b;
+      return *this;
+    }
+
+    This &operator*= ( const field_type &f )
+    {
+      block() *= f;
       return *this;
     }
 
@@ -134,7 +159,10 @@ namespace Dune
     typedef Derivatives<F,dimD,dimR,deriv,value> This;
     typedef Derivatives<F,dimD,dimR,deriv-1,value> Base;
     typedef Tensor<F,dimD,deriv> ThisTensor;
+
     typedef F Field;
+    typedef F field_type;
+
     static const DerivativeLayout layout = value;
     static const unsigned int dimDomain = dimD;
     static const unsigned int dimRange = dimR;
@@ -160,6 +188,12 @@ namespace Dune
     This &operator=(const Block &t)
     {
       block() = t;
+      return *this;
+    }
+
+    This &operator*= ( const field_type &f )
+    {
+      block() *= f;
       return *this;
     }
 
@@ -280,12 +314,16 @@ namespace Dune
     }
     Dune::FieldVector<ThisTensor,dimR> tensor_;
   };
+
   template <class F,int dimD,int dimR>
   struct Derivatives<F,dimD,dimR,0,value>
   {
     typedef Derivatives<F,dimD,dimR,0,value> This;
     typedef Tensor<F,dimD,0> ThisTensor;
+
     typedef F Field;
+    typedef F field_type;
+
     static const DerivativeLayout layout = value;
     static const unsigned int dimDomain = dimD;
     static const unsigned int dimRange = dimR;
@@ -310,6 +348,13 @@ namespace Dune
       block() = t;
       return *this;
     }
+
+    This &operator*= ( const field_type &f )
+    {
+      block() *= f;
+      return *this;
+    }
+
     void axpy(const F &a, const This &y)
     {
       block().axpy(a,y.block());
@@ -405,13 +450,17 @@ namespace Dune
     }
     Dune::FieldVector<ThisTensor,dimR> tensor_;
   };
+
   // Implemnetation for derivative based layout
   template <class F,int dimD,int dimR,unsigned int deriv>
   struct Derivatives<F,dimD,dimR,deriv,derivative>
   {
     typedef Derivatives<F,dimD,dimR,deriv,derivative> This;
     typedef Derivatives<F,dimD,1,deriv,value> ScalarDeriv;
+
     typedef F Field;
+    typedef F field_type;
+
     static const DerivativeLayout layout = value;
     static const unsigned int dimDomain = dimD;
     static const unsigned int dimRange = dimR;
@@ -427,6 +476,12 @@ namespace Dune
     This &operator=(const Block &t)
     {
       block() = t;
+      return *this;
+    }
+
+    This &operator*= ( const field_type &f )
+    {
+      block() *= f;
       return *this;
     }
 

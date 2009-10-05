@@ -8,6 +8,17 @@
 namespace Dune
 {
 
+  // External Forward Declarations
+  // -----------------------------
+
+  template< class Topology, class F >
+  class MonomialBasis;
+
+
+
+  // LocalLagrangeInterpolation
+  // --------------------------
+
   template< class Topology, class F >
   class LocalLagrangeInterpolation
   {
@@ -36,7 +47,21 @@ namespace Dune
       unsigned int index = 0;
       const Iterator end = lagrangePoints_.end();
       for( Iterator it = lagrangePoints_.begin(); it != end; ++it )
-        coefficients_[ index++ ] = function( *it );
+        coefficients[ index++ ] = function( *it );
+    }
+
+    template< class Matrix >
+    void interpolate ( const MonomialBasis< Topology, F > &basis, Matrix &coefficients )
+    {
+      typedef typename LagrangePoints< Topology, F >::iterator Iterator;
+
+      const unsigned int order = lagrangePoints_.order();
+      coefficients.resize( lagrangePoints_.size, basis.size( order ) );
+
+      unsigned int index = 0;
+      const Iterator end = lagrangePoints_.end();
+      for( Iterator it = lagrangePoints_.begin(); it != end; ++it )
+        basis.evaluate( order, *it, coefficients.rowPtr( index++ ) );
     }
   };
 

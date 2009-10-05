@@ -7,6 +7,7 @@
 
 #include <dune/common/fvector.hh>
 #include <dune/common/field.hh>
+#include <dune/common/forloop.hh>
 
 #include <dune/grid/genericgeometry/topologytypes.hh>
 #include <dune/grid/genericgeometry/subtopologies.hh>
@@ -398,7 +399,7 @@ namespace Dune
 
     LagrangePoints *lagrangePoints = new LagrangePoints( order, Impl::size( order ) );
     LagrangePoint *p = &(lagrangePoints->points_[ 0 ]);
-    GenericGeometry::ForLoop< Topology< T >::template Init, 0, dimension >::apply( order, p );
+    ForLoop< Topology< T >::template Init, 0, dimension >::apply( order, p );
     return *lagrangePoints;
   }
 

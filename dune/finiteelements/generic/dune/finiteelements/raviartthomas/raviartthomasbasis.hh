@@ -4,6 +4,9 @@
 #define DUNE_RAVIARTTHOMASBASIS_HH
 #include <fstream>
 #include <utility>
+
+#include <dune/common/forloop.hh>
+
 #include <dune/alglib/multiprecision.hh>
 #include <dune/alglib/matrix.hh>
 #include <dune/grid/genericgeometry/referenceelements.hh>
@@ -415,7 +418,7 @@ namespace Dune
       typedef typename InitialBasis::FaceStructure::template Creator<Topology> FaceBasisGet;
       const unsigned int size = GenericGeometry::Size<Topology,1>::value;
       std::vector< typename InitialBasis::FaceStructure* > faceStructure;
-      GenericGeometry::ForLoop< FaceBasisGet::template GetCodim,0,size-1>::apply(order, faceStructure );
+      ForLoop< FaceBasisGet::template GetCodim,0,size-1>::apply(order, faceStructure );
 
       const typename InitialBasis::TestBasis &testBasis( BasisGet::testBasis(order) );
       LocalInterpolation *interpolation = new LocalInterpolation( Topology::id,order,testBasis,faceStructure );

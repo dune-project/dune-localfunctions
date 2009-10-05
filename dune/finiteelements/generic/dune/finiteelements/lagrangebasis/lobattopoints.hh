@@ -7,6 +7,7 @@
 #include <dune/alglib/multiprecision.hh>
 #include <dune/alglib/matrix.hh>
 #include <dune/common/field.hh>
+#include <dune/common/forloop.hh>
 
 #include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
 #include <dune/finiteelements/lagrangebasis/interpolation.hh>
@@ -238,7 +239,7 @@ namespace Dune {
                           LagrangePoints &points)
         {
           const unsigned int size = GenericGeometry::Size<Topology,codim>::value;
-          GenericGeometry::ForLoop<InitSub,0,size-1>::apply(order,points1D,points);
+          ForLoop<InitSub,0,size-1>::apply(order,points1D,points);
         }
         template <int i>
         struct InitSub
@@ -310,7 +311,7 @@ namespace Dune {
     {
       LagrangePoints *lagrangePoints = new LagrangePoints( order, 0 );
       LobattoPoints<Field> points1D(order);
-      GenericGeometry::ForLoop<Setup<Topology>::template InitCodim,0,dimension>::apply(order,points1D.points_,*lagrangePoints);
+      ForLoop<Setup<Topology>::template InitCodim,0,dimension>::apply(order,points1D.points_,*lagrangePoints);
       return *lagrangePoints;
     }
 

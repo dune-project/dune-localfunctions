@@ -3,8 +3,9 @@
 #ifndef DUNE_ALGLIB_MATRIX_HH
 #define DUNE_ALGLIB_MATRIX_HH
 
+#include <dune/alglib/multiprecision.hh>
+
 #include <alglib/ap.h>
-#include <alglib/amp.h>
 #include <alglib/inv.h>
 
 namespace Dune
@@ -13,17 +14,20 @@ namespace Dune
   namespace AlgLib
   {
 
-    template< unsigned int precision, bool aligned = false >
-    class Matrix
+    template< class F, bool aligned = false >
+    class Matrix;
+
+
+    template< unsigned int precision, bool aligned >
+    class Matrix< MultiPrecision< precision >, aligned >
     {
-      typedef Matrix< precision, aligned > This;
+      typedef Matrix< MultiPrecision< precision >, aligned > This;
 
     public:
-      //typedef amp::ampf< precision > Field;
-      typedef double Field;
+      typedef MultiPrecision< precision > Field;
 
     private:
-      typedef ap::template_2d_array< Field, aligned > RealMatrix;
+      typedef ap::template_2d_array< amp::ampf< precision >, aligned > RealMatrix;
 
     public:
       operator const RealMatrix & () const
@@ -38,12 +42,12 @@ namespace Dune
 
       const Field &operator() ( const unsigned int row, const unsigned int col ) const
       {
-        return matrix_( row, col );
+        return static_cast< const Field & >( matrix_( row, col ) );
       }
 
       Field &operator() ( const unsigned int row, const unsigned int col )
       {
-        return matrix_( row, col );
+        return static_cast< Field & >( matrix_( row, col ) );
       }
 
       unsigned int rows () const
@@ -61,7 +65,7 @@ namespace Dune
         const int lastCol = matrix_.gethighbound( 2 );
         ap::const_raw_vector< Field > rowVector = matrix_.getrow( row, 0, lastCol );
         assert( (rowVector.GetStep() == 1) && (rowVector.GetLength() == cols()) );
-        return rowVector.GetData();
+        return static_cast< const Field * >( rowVector.GetData() );
       }
 
       Field *rowPtr ( const unsigned int row )
@@ -69,7 +73,7 @@ namespace Dune
         const int lastCol = matrix_.gethighbound( 2 );
         ap::raw_vector< Field > rowVector = matrix_.getrow( row, 0, lastCol );
         assert( (rowVector.GetStep() == 1) && (rowVector.GetLength() == cols()) );
-        return rowVector.GetData();
+        return static_cast< Field * >( rowVector.GetData() );
       }
 
       void resize ( const unsigned int rows, const unsigned int cols )

@@ -8,9 +8,15 @@
 #include <dune/finiteelements/multiindex.hh>
 namespace Dune
 {
-  template< int dimRange, class B, class SF>
+
+  // PolynomialBasis
+  // ---------------
+
+  template< int dimRange, class B, class SF >
   class PolynomialBasis
   {
+    typedef PolynomialBasis< dimRange, B, SF > This;
+
     typedef B Basis;
     enum {dimension = Basis::dimension};
 
@@ -30,22 +36,22 @@ namespace Dune
       return basis_->size(order_);
     }
 
-    template <class RangeVector>
+    template< class RangeVector >
     void evaluate ( const DomainVector &x,
                     std::vector< RangeVector > &values ) const
     {
-      basis_->evaluate(order_,x,basisEval_);
-      coeffMatrix_.mult(basisEval_,values);
+      basis_->evaluate( order_, x, basisEval_ );
+      coeffMatrix_.mult( basisEval_, values );
     }
 
-    template <class DomainVector,class RangeVector>
+    template< class DomainVector, class RangeVector >
     void evaluate ( const DomainVector &x,
                     std::vector< RangeVector > &values ) const
     {
-      DomainVector bx;
-      for (int d=0; d<dimension; ++d)
-        field_cast(x[d], bx[ d ]);
-      evaluate(bx,values);
+      typename This::DomainVector bx;
+      for( int d = 0; d < dimension; ++d )
+        field_cast( x[ d ], bx[ d ] );
+      evaluate( bx, values );
     }
 
     void print(std::ofstream &out) const {
@@ -89,6 +95,8 @@ namespace Dune
     CoeffMatrix< CoeffRangeVector > coeffMatrix_;
     unsigned int order_;
   };
+
+
 
   template< int dim, class SF,
       class Creator, class MBasis = VirtualMonomialBasis<dim,SF> >

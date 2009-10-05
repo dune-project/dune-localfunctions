@@ -432,6 +432,11 @@ namespace Dune
       return Base::numBaseFunctions_;
     }
 
+    const unsigned int size ( unsigned int order ) const
+    {
+      return sizes( order )[ order ];
+    }
+
     void evaluate ( const unsigned int order,
                     const DomainVector &x,
                     RangeVector *const values ) const
@@ -446,6 +451,12 @@ namespace Dune
       evaluate( order, x, &(values[ 0 ]) );
     }
   };
+
+
+
+  // StdMonomialTopology
+  // -------------------
+
   template <int dim>
   struct StdMonomialTopology {
     typedef StdMonomialTopology<dim-1> BaseType;

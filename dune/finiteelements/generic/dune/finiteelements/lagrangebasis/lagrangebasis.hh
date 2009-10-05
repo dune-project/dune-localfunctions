@@ -51,58 +51,22 @@ namespace Dune
     mat_t matrix_;
   };
 
-  template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
+  template< class CF >
   struct LagrangeBasisCreator
   {
-    typedef VirtualMonomialBasis<dim,SF> VirtualBasis;
-    typedef PolynomialBasis<1,VirtualBasis,SF> Basis;
-    template <class Topology>
+    typedef AlgLib::MultiPrecision<Dune::Precision<CF>::value+512 > ComputeField;
+    template <class Topology,class VirtualBasis,class Basis>
     static void apply(const VirtualBasis &virtBasis,unsigned int order,Basis* &basis)
     {
-      const unsigned int id = Topology::id;
       basis = new Basis(virtBasis,order);
-      LagrangeMatrix<Topology,CF> matrix(order);
+      LagrangeMatrix<Topology,ComputeField> matrix(order);
       basis->fill(matrix);
     }
   };
 
-  template< int dim, class SF, class Creator >
-  struct PolynomialBasisProvider
-  {
-    static const int dimension = dim;
-    typedef SF Field;
-    typedef VirtualMonomialBasis<dimension,SF> VirtualBasis;
-    typedef PolynomialBasis<1,VirtualBasis,SF> Basis;
-    static const Basis &basis(unsigned int id,unsigned int order)
-    {
-      return instance().getBasis(id,order);
-    }
-  private:
-    friend struct MonomialBasisProvider<dimension,SF>;
-    enum { numTopologies = (1 << dimension) };
-    PolynomialBasisProvider()
-    {}
-    static PolynomialBasisProvider &instance()
-    {
-      static PolynomialBasisProvider instance;
-      return instance;
-    }
-    const Basis &getBasis(unsigned int id,unsigned int order)
-    {
-      if (order>=basis_.size())
-      {
-        basis_.resize(order+1,FieldVector<Basis*,numTopologies>(0));
-        MonomialBasisProvider<dimension,SF>::template callback<Creator>(id,order,basis_[order][id]);
-      }
-      else if (basis_[order][id] == 0)
-        MonomialBasisProvider<dimension,SF>::template callback<Creator>(id,order,basis_[order][id]);
-      return *(basis_[order][id]);
-    }
-    std::vector<FieldVector<Basis*,numTopologies> > basis_;
-  };
   template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
   struct LagrangeBasisProvider
-    : public PolynomialBasisProvider<dim,SF,LagrangeBasisCreator<dim,SF,CF> >
+    : public PolynomialBasisProvider<dim,SF,LagrangeBasisCreator<CF> >
   {};
 }
 #endif // DUNE_ORTHONORMALBASIS_HH

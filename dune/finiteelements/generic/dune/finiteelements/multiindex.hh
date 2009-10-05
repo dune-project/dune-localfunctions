@@ -40,10 +40,11 @@ namespace Dune
         factor_( 1. ),
         next_( 0 )
     {}
-    MultiIndex (double f)
+    template <class Field>
+    explicit MultiIndex (Field f)
       : vecZ_( 0 ),
         vecOMZ_( 0 ),
-        factor_( f ),
+        factor_( field_cast<double>(f) ),
         next_( 0 )
     {}
 
@@ -102,12 +103,29 @@ namespace Dune
         next_ = new MultiIndex(*(other.next_));
       return *this;
     }
-    This &operator= ( const double f )
+    This &operator= ( const Zero<This> &f )
     {
       remove();
       vecZ_ = 0;
       vecOMZ_ = 0;
-      factor_ = f;
+      factor_ = 0.;
+      return *this;
+    }
+    This &operator= ( const Unity<This> &f )
+    {
+      remove();
+      vecZ_ = 0;
+      vecOMZ_ = 0;
+      factor_ = 1.;
+      return *this;
+    }
+    template <class F>
+    This &operator= ( const F &f )
+    {
+      remove();
+      vecZ_ = 0;
+      vecOMZ_ = 0;
+      factor_ = field_cast<double>(f);
       return *this;
     }
 

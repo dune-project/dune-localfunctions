@@ -17,9 +17,10 @@ namespace Dune
     typedef Tensor<F,dimD,deriv-1> BaseDeriv;
     static const unsigned int size = BaseDim::size+BaseDeriv::size;
     typedef Dune::FieldVector<F,size> Block;
-    This &operator=(const F& f)
+    template <class FF>
+    This &operator=(const FF& f)
     {
-      block() = f;
+      block() = field_cast<F>(f);
       return *this;
     }
     This &operator=(const Block& b)
@@ -63,9 +64,10 @@ namespace Dune
     typedef Tensor<F,dimD,0> This;
     static const int size = 1;
     typedef Dune::FieldVector<F,size> Block;
-    This &operator=(const F& f)
+    template <class FF>
+    This &operator=(const FF& f)
     {
-      block() = f;
+      block() = field_cast<F>(f);
       return *this;
     }
     This &operator=(const Block& b)
@@ -267,10 +269,11 @@ namespace Dune
     static const unsigned int size = ThisTensor::size*dimR;
     typedef Dune::FieldVector<F,size> Block;
 
-    This &operator=(const F& f)
+    template <class FF>
+    This &operator=(const FF& f)
     {
       for (int r=0; r<dimR; ++r)
-        tensor_[r] = f;
+        tensor_[r] = field_cast<F>(f);
       return *this;
     }
     This &operator=(const Dune::FieldVector<ThisTensor,dimR> &t)
@@ -392,9 +395,10 @@ namespace Dune
     static const unsigned int size = ScalarDeriv::size*dimR;
     typedef Dune::FieldVector<F,size> Block;
 
-    This &operator=(const F& f)
+    template <class FF>
+    This &operator=(const FF& f)
     {
-      block() = f;
+      block() = field_cast<F>(f);
       return *this;
     }
     This &operator=(const Block &t)
@@ -403,9 +407,10 @@ namespace Dune
       return *this;
     }
 
-    void axpy(const F &a, const This &y)
+    template <class FF>
+    void axpy(const FF &a, const This &y)
     {
-      block().axpy(a,y.block());
+      block().axpy(field_cast<F>(a),y.block());
     }
     // assign with same layout (only diffrent Field)
     template <class Fy>

@@ -40,17 +40,6 @@ namespace Dune
       typedef BaseIterator<Derivatives<Field,dimension,dimRange,deriv,derivative> > All;
     };
 
-    /*
-       MonomialEvaluator(const Basis &basis)
-       : basis_(basis),
-       order_(basis.order()),
-       size_(basis.size()),
-       container_(0)
-       {
-       resize<2>();
-       }
-     */
-
     unsigned int size() const
     {
       return size_;
@@ -62,9 +51,7 @@ namespace Dune
         order_(order),
         size_(size),
         container_(0)
-    {
-      resize<2>();
-    }
+    {}
     template <int deriv>
     void resize()
     {
@@ -213,9 +200,7 @@ namespace Dune
       : Base( basis, basis.size() ),
         fill_( fill ),
         size_( basis.size()*dimRange )
-    {
-      resize<2>();
-    }
+    {}
     template <unsigned int deriv>
     typename Iterator<deriv>::All evaluate(const DomainVector &x)
     {

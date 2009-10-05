@@ -79,7 +79,7 @@ void vecTest(unsigned int p)
   TestMatrix<dimR,dimBasis> matrix(mbasis);
   basis.fill(matrix);
 
-  unsigned int size = basis.size();
+  unsigned int size = basis.size()/2;
   std::cout << "Number of base functions:  " << size << std::endl;
 
   std::cout << ">>> Polynomial representation of the basis functions:" << std::endl;

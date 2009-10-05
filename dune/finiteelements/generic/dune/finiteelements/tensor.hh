@@ -109,6 +109,8 @@ namespace Dune
     typedef Derivatives<F,dimD,dimR,deriv,value> This;
     typedef Derivatives<F,dimD,dimR,deriv-1,value> Base;
     typedef Tensor<F,dimD,deriv> ThisTensor;
+    static const DerivativeLayout layout = value;
+    static const unsigned int dimDomain = dimD;
     static const unsigned int dimRange = dimR;
     static const unsigned int size = Base::size+ThisTensor::size*dimR;
     typedef Dune::FieldVector<F,size> Block;
@@ -173,7 +175,8 @@ namespace Dune
     template <unsigned int dorder>
     const Dune::FieldVector<Tensor<F,dimD,dorder>,dimR> &tensor() const
     {
-      return tensor(Int2Type<dorder>());
+      const Int2Type<dorder> a = Int2Type<dorder>();
+      return tensor(a);
     }
     template <unsigned int dorder>
     Dune::FieldVector<Tensor<F,dimD,dorder>,dimR> &tensor()
@@ -200,7 +203,7 @@ namespace Dune
       Base::assign(r,y);
       tensor_[r].assign(y[r]);
     }
-    template <unsigned int dorder>
+    template <int dorder>
     const Dune::FieldVector<Tensor<F,dimD,dorder>,dimR> &tensor(const Int2Type<dorder> &dorderVar) const
     {
       return Base::tensor(dorderVar);
@@ -209,7 +212,7 @@ namespace Dune
     {
       return tensor_;
     }
-    template <unsigned int dorder>
+    template <int dorder>
     Dune::FieldVector<Tensor<F,dimD,dorder>,dimR> &tensor(const Int2Type<dorder> &dorderVar)
     {
       return Base::tensor(dorderVar);
@@ -225,6 +228,8 @@ namespace Dune
   {
     typedef Derivatives<F,dimD,dimR,0,value> This;
     typedef Tensor<F,dimD,0> ThisTensor;
+    static const DerivativeLayout layout = value;
+    static const unsigned int dimDomain = dimD;
     static const unsigned int dimRange = dimR;
     static const unsigned int size = ThisTensor::size*dimR;
     typedef Dune::FieldVector<F,size> Block;
@@ -282,7 +287,7 @@ namespace Dune
     const ThisTensor &operator[](int r) const {
       return tensor_[r];
     }
-    template <unsigned int dorder>
+    template <int dorder>
     const Dune::FieldVector<Tensor<F,dimD,0>,dimR> &tensor() const
     {
       return tensor_;
@@ -292,12 +297,10 @@ namespace Dune
       return tensor_;
     }
   protected:
-    template <int dorder>
     const Dune::FieldVector<Tensor<F,dimD,0>,dimR> &tensor(const Int2Type<0> &dorderVar) const
     {
       return tensor_;
     }
-    template <int dorder>
     Dune::FieldVector<Tensor<F,dimD,0>,dimR> &tensor(const Int2Type<0> &dorderVar)
     {
       return tensor_;
@@ -321,6 +324,8 @@ namespace Dune
   {
     typedef Derivatives<F,dimD,dimR,deriv,derivative> This;
     typedef Derivatives<F,dimD,1,deriv,value> ScalarDeriv;
+    static const DerivativeLayout layout = value;
+    static const unsigned int dimDomain = dimD;
     static const unsigned int dimRange = dimR;
     static const unsigned int size = ScalarDeriv::size*dimR;
     typedef Dune::FieldVector<F,size> Block;

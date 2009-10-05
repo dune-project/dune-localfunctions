@@ -5,6 +5,7 @@
 #include <dune/grid/genericgeometry/topologytypes.hh>
 #include <dune/grid/io/file/dgfparser/dgfgridtype.hh>
 #include <dune/grid/io/file/vtk/vtkwriter.hh>
+#include <dune/grid/io/file/vtk/subsamplingvtkwriter.hh>
 
 #include <dune/finiteelements/lagrangebasis/space.hh>
 #include <dune/finiteelements/global/interpolation.hh>
@@ -54,7 +55,13 @@ int main ( int argc, char **argv )
   Interpolation interpolation( space );
   interpolation( Function(), dofs );
 
+  for (unsigned int i=0; i<dofs.size(); ++i)
+  {
+    std::cout << dofs[i] << std::endl;
+  }
+
   Dune::VTKWriter< GridView > vtkWriter( gridView );
-  vtkWriter.addCellData( new VTKFunction( space, dofs ) );
+  // Dune::SubsamplingVTKWriter< GridView > vtkWriter( gridView,3 );
+  vtkWriter.addVertexData( new VTKFunction( space, dofs ) );
   vtkWriter.write( "lagrange" );
 }

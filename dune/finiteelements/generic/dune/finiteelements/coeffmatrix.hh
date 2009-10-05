@@ -7,6 +7,7 @@
 #include <vector>
 #include <dune/common/fvector.hh>
 #include <dune/common/field.hh>
+#include <dune/finiteelements/tensor.hh>
 
 namespace Dune
 {
@@ -32,6 +33,7 @@ namespace Dune
     }
   };
 
+#if 0
   template< class F >
   class CoeffMatrix
   {
@@ -62,6 +64,10 @@ namespace Dune
     }
 
     template< class BasisVector, class RangeVector >
+    void mult ( const BasisVector &x,
+                std::vector< RangeVector > &y ) const
+    {}
+    template< class BasisVector, class F, int dimD, int dimR, DerivativeLayout layout >
     void mult ( const BasisVector &x,
                 std::vector< RangeVector > &y ) const
     {
@@ -128,6 +134,7 @@ namespace Dune
     Field **rows_;
     int numRows_,numCols_;
   };
+#endif
 
   template< class F >
   class SparseCoeffMatrix
@@ -162,10 +169,18 @@ namespace Dune
 
     template< class BasisIterator, class Vector >
     void mult ( const BasisIterator &x,
-                Vector &y ) const
+                std::vector<Vector> &y ) const
     {
+      typedef Derivatives<typename Vector::field_type,BasisIterator::dimDomain,
+          Vector::size,0,BasisIterator::layout> Deriv;
+      mult(x,reinterpret_cast<std::vector<Deriv>&>(y));
+    }
+    template< class BasisIterator, class Fy, int dimD, int dimR, unsigned int deriv,DerivativeLayout layout >
+    void mult ( const BasisIterator &x,
+                std::vector<Dune::Derivatives<Fy,dimD,dimR,deriv,layout> > &y ) const
+    {
+      typedef Dune::Derivatives<Fy,dimD,dimR,deriv,layout> YDerivatives;
       typedef typename BasisIterator::Derivatives XDerivatives;
-      typedef typename Vector::value_type YDerivatives;
       const unsigned int R = (XDerivatives::dimRange==YDerivatives::dimRange) ?
                              1 : YDerivatives::dimRange;
       size_t numLsg = y.size();

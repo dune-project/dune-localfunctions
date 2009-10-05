@@ -68,6 +68,8 @@ namespace Dune
     typedef Deriv Derivatives;
     static const unsigned int blockSize = Deriv::size;
     typedef Dune::FieldVector<Field,blockSize> Block;
+    static const DerivativeLayout layout = Deriv::layout;
+    static const unsigned int dimDomain = Deriv::dimDomain;
 
     typedef typename Container::iterator CIter;
 

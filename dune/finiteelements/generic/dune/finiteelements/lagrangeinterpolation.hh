@@ -72,7 +72,7 @@ namespace Dune
       unsigned int index = 0;
       const Iterator end = lagrangePoints_.end();
       for( Iterator it = lagrangePoints_.begin(); it != end; ++it )
-        basis.template evaluate( it->point(), coefficients.rowPtr( index++ ) );
+        basis.evaluate( it->point(), coefficients.rowPtr( index++ ) );
     }
   };
 

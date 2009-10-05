@@ -227,6 +227,10 @@ namespace Dune
     {
       return evaluate<0>(x);
     }
+  protected:
+    StandardEvaluator(const Basis &basis,unsigned int size)
+      : Base(basis,basis.order(),size)
+    {}
   private:
     StandardEvaluator(const StandardEvaluator&);
     using Base::basis_;
@@ -253,19 +257,22 @@ namespace Dune
 
     VecEvaluator(const Basis &basis,
                  const Fill &fill)
-      : fill_(fill)
+      : Base(basis,basis.size()), fill_(fill),
+        size_(basis.size()*dimRange)
     {
       resize<2,true>();
     }
     template <unsigned int deriv>
     typename Iterator<deriv>::Single evaluate(const DomainVector &x)
     {
+      resize<deriv,false>();
       fill_( x,Base::template evaluate<deriv>(x), vecContainer_ );
       return typename Iterator<deriv>::Single(vecContainer_);
     }
     template <unsigned int deriv>
     typename Iterator<deriv>::All evaluateAll(const DomainVector &x)
     {
+      resize<deriv,true>();
       fill_( x,Base::template evaluateAll<deriv>(x), vecContainer_ );
       return typename Iterator<deriv>::All(vecContainer_);
     }
@@ -287,9 +294,16 @@ namespace Dune
     }
     unsigned int size() const
     {
-      return size_*dimRange;
+      return size_;
     }
   protected:
+    VecEvaluator(const Basis &basis,
+                 const Fill &fill,unsigned int size)
+      : Base(basis,basis.size()), fill_(fill),
+        size_(size)
+    {
+      resize<2,true>();
+    }
     template <int deriv,bool useAll>
     void resize()
     {
@@ -298,7 +312,7 @@ namespace Dune
     }
     VecEvaluator(const VecEvaluator&);
     Container vecContainer_;
-    using Base::size_;
+    unsigned int size_;
     const Fill &fill_;
   };
 
@@ -312,6 +326,7 @@ namespace Dune
     {
       typedef std::vector<Field> Container;
       typename Container::iterator vecIter = vecContainer.begin();
+      std::cout << vecContainer.size() << std::endl;
       for ( ; !iter.done(); ++iter)
       {
         const typename Iter::Block &block = iter.block();
@@ -321,6 +336,7 @@ namespace Dune
           {
             for (int r2=0; r2<dimR; ++r2)
             {
+              assert(vecIter != vecContainer.end());
               *vecIter = (r1==r2 ? block[b] : Field(0));
               ++vecIter;
             }
@@ -336,9 +352,8 @@ namespace Dune
   {
     typedef DiagonalFill<dimR> Fill;
     typedef VecEvaluator< B,Fill > Base;
-    VectorialEvaluator(const B &basis,
-                       unsigned int order)
-      : Base(basis,order,fill_)
+    VectorialEvaluator(const B &basis)
+      : Base(basis,fill_,basis.size()*dimR)
     {}
   private:
     Fill fill_;

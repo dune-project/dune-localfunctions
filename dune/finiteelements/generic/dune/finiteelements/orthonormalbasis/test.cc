@@ -7,12 +7,17 @@
 using namespace Dune;
 using namespace GenericGeometry;
 
+struct Example {
+  typedef AlgLib::MultiPrecision<128> StorageField;
+  typedef AlgLib::MultiPrecision<1024> ComputationField;
+};
+
 template <class Topology>
-bool test(int order) {
+bool test(unsigned int order) {
   std::cout << "Testing " << Topology::name() << " in dimension " << Topology::dimension << std::endl;
 
   bool ret = true;
-  OrthonormalBasis< Topology, double > basis( order );
+  OrthonormalBasis< Topology, Example > basis( order );
 
   const unsigned int size = basis.size( order );
   std::vector< FieldVector< double, 1 > > y( size );

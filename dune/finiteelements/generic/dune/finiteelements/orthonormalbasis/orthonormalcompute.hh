@@ -12,6 +12,7 @@
 #include <alglib/sevd.h>
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
+#include <dune/alglib/multiprecision.hh>
 
 namespace ONB {
   template <class scalar_t>
@@ -314,24 +315,20 @@ namespace ONB {
     int rowSize() const {
       return calc.res.gethighbound(1);
     }
-    void set(int r,int c,double &v) const {
-      v = calc.res(c+1,r+1).toDouble();
-    }
-    void set(int r,int c,std::string &v) const {
-      v = amp::ampf<128>(calc.res(c+1,r+1)).toDec();
+    const Dune::FieldVector<scalar_t,1> &operator()(int r,int c) const
+    {
+      return calc.res(c+1,r+1);
     }
     void print(std::ostream& out) {
       int N = rowSize();
       for (int i=0; i<N; ++i) {
         out << "Polynomial : " << i << std::endl;
         for (int j=0; j<colSize(i); j++) {
-          double v = 0;
-          set(i,j,v);
+          double v = calc.res(j+1,i+1).toDouble();
           if (fabs(v)<1e-20)
             out << 0 << "\t\t" << std::flush;
           else {
-            std::string v;
-            set(i,j,v);
+            Dune::AlgLib::MultiPrecision<128> v = calc.res(j+1,i+1);
             out << v << "\t\t" << std::flush;
           }
         }

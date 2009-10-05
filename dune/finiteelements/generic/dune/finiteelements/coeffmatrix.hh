@@ -4,15 +4,17 @@
 #define DUNE_COEFFMATRIX_HH
 #include <cassert>
 #include <iostream>
-#include <alglib/ap.h>
-#include <alglib/amp.h>
+#include <vector>
+#include <dune/common/fvector.hh>
+#include <dune/finiteelements/field.hh>
 
 namespace Dune
 {
-  template< class F >
+  template< class V >
   class CoeffMatrix
   {
-    typedef F Field;
+    typedef V Vector;
+    typedef typename Vector::field_type Field;
 
   public:
     CoeffMatrix()
@@ -35,43 +37,45 @@ namespace Dune
     template <class RangeVector>
     void print(std::ostream& out,
                std::vector< RangeVector > &x) const {
-      size_t numLsg = numRows_;
-      Field *row = rows_[0];
-      for( unsigned int r=0; r<numLsg; ++r )
-      {
-        out << "f_" << r << "(" << char('a');
-        for (int i=1; i<RangeVector::field_type::dimension; ++i)
+      /*
+         size_t numLsg = numRows_;
+         Field *row = rows_[0];
+         for( unsigned int r=0;r<numLsg;++r )
+         {
+         out << "f_" << r << "(" << char('a');
+         for (int i=1;i<RangeVector::field_type::dimension;++i)
           out << "," << char('a'+i);
-        out << ")=";
-        RangeVector *itx = (&x[0]);
-        bool first = true;
-        for (; row != rows_[r+1]; ++row, ++itx) {
+         out << ")=";
+         RangeVector *itx = (&x[0]);
+         bool first = true;
+         for (; row != rows_[r+1]; ++row, ++itx) {
           if (*row > 1e-15) {
-            out << ((!first) ? " + " : "") << (*row) << "*" << (*itx);
+            out << ((!first)?" + ":"") << (*row) << "*" << (*itx);
             first = false;
           }
           else if (*row < -1e-15) {
             out << " - " << -(*row) << "*" << (*itx);
             first = false;
           }
-        }
-        out << std::endl;
-      }
+         }
+         out << std::endl;
+         }
+       */
     }
 
-    template< class RangeVector >
-    void mult ( const std::vector< RangeVector > &x, std::vector< RangeVector > &y ) const
+    template< class DomainVector, class RangeVector >
+    void mult ( const std::vector< DomainVector > &x, std::vector< RangeVector > &y ) const
     {
       size_t numLsg = y.size();
       assert( numLsg <= (size_t)numRows_ );
-      Field *row = rows_[ 0 ];
+      Vector *row = rows_[ 0 ];
       for( size_t r = 0; r < numLsg; ++r )
       {
-        Field val = 0;
-        for( const RangeVector *itx = &(x[ 0 ]); row != rows_[ r+1 ]; ++row, ++itx)
-          val += (*row) * (*itx);
-        //y[r] = val.toDouble();
-        y[ r ] = val;
+        Vector val = Zero<Vector>();
+        const DomainVector *itx = &(x[ 0 ]);
+        for( ; row != rows_[ r+1 ]; ++row, ++itx)
+          val += (*row) * (*itx) ;
+        field_cast(val,y[r]);
       }
     }
 
@@ -83,21 +87,21 @@ namespace Dune
       for( int r = 0; r < numRows_; ++r )
         size += mat.colSize( r );
 
-      coeff_ = new Field[ size ];
-      rows_ = new Field*[ numRows_+1 ];
+      coeff_ = new Vector[ size ];
+      rows_ = new Vector*[ numRows_+1 ];
       rows_[ 0 ] = coeff_;
       for( int r = 0; r < numRows_; ++r )
       {
         rows_[ r+1 ] = rows_[ r ] + mat.colSize( r );
         int c = 0;
-        for( Field *it = rows_[ r ]; it != rows_[ r+1 ]; ++it, ++c )
-          mat.set( r, c, *it );
+        for( Vector *it = rows_[ r ]; it != rows_[ r+1 ]; ++it, ++c )
+          field_cast(mat(r,c),*it);
       }
     }
 
   private:
-    Field *coeff_;
-    Field **rows_;
+    Vector *coeff_;
+    Vector **rows_;
     int numRows_;
   };
 }

@@ -417,10 +417,7 @@ namespace Dune
   public:
     typedef typename Base::Field Field;
 
-    static const unsigned int dimRange = 1;
-
     typedef typename Base::DomainVector DomainVector;
-    typedef FieldVector< Field, dimRange > RangeVector;
 
     MonomialBasis ()
       : Base()
@@ -447,11 +444,12 @@ namespace Dune
 
     void evaluate ( const unsigned int order,
                     const DomainVector &x,
-                    RangeVector *const values ) const
+                    FieldVector<Field,1> *const values ) const
     {
       evaluate( order, x, reinterpret_cast< Field * >( values ) );
     }
 
+    template <class RangeVector>
     void evaluate ( const unsigned int order,
                     const DomainVector &x,
                     std::vector< RangeVector > &values ) const
@@ -466,11 +464,12 @@ namespace Dune
     }
 
     void integral ( const unsigned int order,
-                    RangeVector *const values ) const
+                    FieldVector<Field,1> *const values ) const
     {
       integral( order, reinterpret_cast< Field * >( values ) );
     }
 
+    template <class RangeVector>
     void integral ( const unsigned int order,
                     std::vector< RangeVector > &values ) const
     {

@@ -9,24 +9,24 @@
 #include "orthonormalcompute.hh"
 namespace Dune
 {
-  template <class Topology,class F>
+  template <class Topology,class FieldTraits>
   class OrthonormalBasis
   {
-    enum {dim = Topology::dimension};
-    typedef OrthonormalBasis<Topology,F> This;
-    typedef StandardMonomialBasis<dim,F> Basis;
-    static const unsigned int Precision = 1024;
+    enum {dimension = Topology::dimension};
+    typedef OrthonormalBasis<Topology,FieldTraits> This;
+
+    typedef typename FieldTraits::StorageField StorageField;
+    typedef typename FieldTraits::ComputationField ComputationField;
+
+    typedef StandardMonomialBasis<dimension,StorageField> Basis;
 
   public:
-    typedef F Field;
-
     typedef typename Basis::DomainVector DomainVector;
-    typedef typename Basis::RangeVector RangeVector;
 
     OrthonormalBasis (int maxOrder)
       : basis_(), basisEval_(0)
     {
-      ONB::ONBMatrix<Topology,amp::ampf<Precision> > onbMatrix(maxOrder);
+      ONB::ONBMatrix<Topology,ComputationField> onbMatrix(maxOrder);
       coeffMatrix_.fill(onbMatrix);
       std::ofstream out("coeffs.out");
       onbMatrix.print(out);
@@ -39,35 +39,43 @@ namespace Dune
       return basis_.size(order);
     }
 
+    template <class RangeVector>
     void evaluate ( unsigned int order,
                     const DomainVector &x,
                     std::vector< RangeVector > &values ) const
     {
       basisEval_.resize( size( order ) );
       basis_.evaluate(order,x,basisEval_);
-      mult(basisEval_,values);
+      coeffMatrix_.mult(basisEval_,values);
+    }
+
+    template <class DomainVector,class RangeVector>
+    void evaluate ( unsigned int order,
+                    const DomainVector &x,
+                    std::vector< RangeVector > &values ) const
+    {
+      DomainVector bx;
+      for (int d=0; d<dimension; ++d)
+        field_cast(x[d], bx[ d ]);
+      evaluate(order,bx,values);
     }
 
     void print(std::ofstream &out,int order) {
-      typedef Dune::MultiIndex<dim> MI;
-      typedef Dune::StandardMonomialBasis< dim, MI > Basis;
+      typedef Dune::MultiIndex<dimension> MI;
+      typedef Dune::StandardMonomialBasis< dimension, MI > Basis;
       Basis basis;
       const unsigned int size = basis.sizes( order )[ order ];
-      std::vector< Dune::FieldVector< MI,1> > y( size );
-      Dune::FieldVector< MI, dim > x;
-      for (int d=0; d<dim; ++d)
+      std::vector< MI > y( size );
+      Dune::FieldVector< MI, dimension > x;
+      for (int d=0; d<dimension; ++d)
         x[d].set(d);
-      basis.evaluate( order, x, y );
+      basis.evaluate( order, x, &(y[0]) );
       coeffMatrix_.print(out,y);
     }
   private:
-    void mult(const std::vector< RangeVector > &x,
-              std::vector< RangeVector > &y) const {
-      coeffMatrix_.mult(x,y);
-    }
     const Basis basis_;
-    mutable std::vector<RangeVector> basisEval_;
-    CoeffMatrix<Field> coeffMatrix_;
+    mutable std::vector<StorageField> basisEval_;
+    CoeffMatrix<FieldVector<StorageField,1> > coeffMatrix_;
   };
 }
 #endif // DUNE_ORTHONORMALBASIS_HH

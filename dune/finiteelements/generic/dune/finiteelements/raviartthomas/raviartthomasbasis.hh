@@ -20,6 +20,7 @@
 #include <dune/finiteelements/orthonormalbasis/orthonormalbasis.hh>
 #include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
 #include <dune/finiteelements/lagrangebasis/lobattopoints.hh>
+#include <dune/finiteelements/raviartthomas/raviartthomasprebasis.hh>
 
 namespace Dune
 {
@@ -159,56 +160,6 @@ namespace Dune
     const Basis &basis_;
     Matrix &matrix_;
     mutable Result tmp_;
-  };
-
-  // -----------------------------------------
-  // Basis
-  // -----------------------------------------
-  template <class Field,unsigned int dim>
-  struct RaviartThomasInitialBasis
-  {
-    static const unsigned int dimension = dim;
-    // typedef MonomialBasisProvider<dimension,Field> TestBasisProvider;
-    // typedef MonomialBasisProvider<dimension-1,Field> TestFaceBasisProvider;
-    typedef OrthonormalBasisProvider<dimension,Field> TestBasisProvider;
-    typedef OrthonormalBasisProvider<dimension-1,Field> TestFaceBasisProvider;
-    // typedef LagrangeBasisProvider<dimension,Field> TestBasisProvider;
-    // typedef LagrangeBasisProvider<dimension-1,Field> TestFaceBasisProvider;
-    // typedef LobattoBasisProvider<dimension,Field> TestBasisProvider;
-    // typedef LobattoBasisProvider<dimension-1,Field> TestFaceBasisProvider;
-
-    typedef typename TestBasisProvider::Basis TestBasis;
-    typedef typename TestFaceBasisProvider::Basis TestFaceBasis;
-
-    struct FaceStructure
-    {
-      template < class Topology >
-      struct Get
-      {
-        static const TestBasis &testBasis(unsigned int order)
-        {
-          return TestBasisProvider::template basis<Topology>(order-1);
-        }
-        template < int face >
-        struct GetCodim
-        {
-          typedef typename GenericGeometry::SubTopology<Topology,1,face>::type FaceTopology;
-          static void apply( const unsigned int order,
-                             std::vector<FaceStructure*> &faceStructure )
-          {
-            faceStructure.push_back( new FaceStructure (
-                                       TestFaceBasisProvider::template basis<FaceTopology>(order),
-                                       GenericGeometry::ReferenceElement<Topology,Field>::integrationOuterNormal(face) ) );
-          }
-        };
-      };
-      FaceStructure( const TestFaceBasis &tfb, const Dune::FieldVector<Field,dimension> &n )
-        : basis(tfb), normal(n)
-      {}
-      const TestFaceBasis &basis;
-      const Dune::FieldVector<Field,dimension> &normal;
-    };
-
   };
 
   // A L2 based interpolation for Raviart Thomas
@@ -400,94 +351,6 @@ namespace Dune
     unsigned int size_;
   };
 
-  template <class Topology, class Field>
-  struct RTVecMatrix
-  {
-    enum {dim = Topology::dimension};
-    typedef MultiIndex<dim> MI;
-    typedef MonomialBasis<Topology,MI> MIBasis;
-    RTVecMatrix(unsigned int order)
-    {
-      MIBasis basis(order+1);
-      FieldVector< MI, dim > x;
-      for( int i = 0; i < dim; ++i )
-        x[ i ].set( i, 1 );
-      std::vector< MI > val( basis.size() );
-      basis.evaluate( x, val );
-
-      col_ = basis.size();
-      unsigned int notHomogen = 0;
-      if (order>0)
-        notHomogen = basis.sizes()[order-1];
-      unsigned int homogen = basis.sizes()[order]-notHomogen;
-      row_ = (notHomogen*dim+homogen*(dim+1))*dim;
-      row1_ = basis.sizes()[order]*dim*dim;
-      mat_ = new Field*[row_];
-      int row = 0;
-      for (unsigned int i=0; i<notHomogen+homogen; ++i)
-      {
-        for (unsigned int r=0; r<dim; ++r)
-        {
-          for (unsigned int rr=0; rr<dim; ++rr)
-          {
-            mat_[row] = new Field[col_];
-            for (unsigned int j=0; j<col_; ++j)
-            {
-              mat_[row][j] = 0.;
-            }
-            if (r==rr)
-              mat_[row][i] = 1.;
-            ++row;
-          }
-        }
-      }
-      for (unsigned int i=0; i<homogen; ++i)
-      {
-        for (unsigned int r=0; r<dim; ++r)
-        {
-          mat_[row] = new Field[col_];
-          for (unsigned int j=0; j<col_; ++j)
-          {
-            mat_[row][j] = 0.;
-          }
-          unsigned int w;
-          MI xval = val[notHomogen+i];
-          xval *= x[r];
-          for (w=homogen+notHomogen; w<val.size(); ++w)
-          {
-            if (val[w] == xval)
-            {
-              mat_[row][w] = 1.;
-              break;
-            }
-          }
-          assert(w<val.size());
-          ++row;
-        }
-      }
-    }
-    ~RTVecMatrix()
-    {
-      for (unsigned int i=0; i<rowSize(); ++i) {
-        delete [] mat_[i];
-      }
-      delete [] mat_;
-    }
-    unsigned int colSize(int row) const {
-      return col_;
-    }
-    unsigned int rowSize() const {
-      return row_;
-    }
-    const Field operator() ( int r, int c ) const
-    {
-      assert(r<(int)row_ && c<(int)col_);
-      return mat_[r][c];
-    }
-    unsigned int row_,col_,row1_;
-    Field **mat_;
-  };
-
   template <class Topology, class RTInterpolation>
   struct RaviartThomasMatrix {
     typedef typename RTInterpolation::Field Field;
@@ -525,7 +388,7 @@ namespace Dune
     }
     int order_;
     const RTInterpolation &interpolation_;
-    RTVecMatrix<Topology,Field> vecMatrix_;
+    typename RTPreBasisCreator<Topology,Field>::RTVecMatrix vecMatrix_;
     mat_t matrix_;
   };
 
@@ -533,15 +396,14 @@ namespace Dune
   template< int dim, class SF, class CF >
   struct RaviartThomasBasisCreator
   {
-    typedef VirtualMonomialBasis<dim,SF> MBasis;
     typedef SF StorageField;
     typedef AlgLib::MultiPrecision< Precision<CF>::value > ComputeField;
     static const int dimension = dim;
+    typedef VirtualMonomialBasis<dim,SF> MBasis;
     typedef PolynomialBasisWithMatrix<StandardEvaluator<MBasis>,SparseCoeffMatrix<StorageField,dim> > Basis;
     typedef LocalCoefficientsContainer LocalCoefficients;
 
     typedef unsigned int Key;
-    typedef typename GenericGeometry::SimplexTopology< dim >::type SimplexTopology;
 
     typedef RaviartThomasL2Interpolation< ComputeField, dimension > LocalInterpolation;
 
@@ -549,10 +411,11 @@ namespace Dune
     static const LocalInterpolation &localInterpolation ( const Key &order )
     {
       typedef RaviartThomasInitialBasis<ComputeField,dimension> InitialBasis;
-      typedef typename InitialBasis::FaceStructure::template Get<Topology> BasisGet;
+      typedef typename InitialBasis::template Creator<Topology> BasisGet;
+      typedef typename InitialBasis::FaceStructure::template Creator<Topology> FaceBasisGet;
       const unsigned int size = GenericGeometry::Size<Topology,1>::value;
       std::vector< typename InitialBasis::FaceStructure* > faceStructure;
-      GenericGeometry::ForLoop< BasisGet::template GetCodim,0,size-1>::apply(order, faceStructure );
+      GenericGeometry::ForLoop< FaceBasisGet::template GetCodim,0,size-1>::apply(order, faceStructure );
 
       const typename InitialBasis::TestBasis &testBasis( BasisGet::testBasis(order) );
       LocalInterpolation *interpolation = new LocalInterpolation( Topology::id,order,testBasis,faceStructure );
@@ -561,8 +424,10 @@ namespace Dune
     template <class Topology>
     static Basis &basis(unsigned int order)
     {
-      const MBasis &_mBasis = MonomialBasisProvider<dimension,StorageField>::template basis<SimplexTopology>(order+1);
-      Basis *basis = new Basis(_mBasis);
+      typedef RaviartThomasInitialBasis<StorageField,dimension> InitialBasis;
+      const typename InitialBasis::MBasis &mBasis( InitialBasis::template Creator<Topology>::mBasis(order) );
+      // const MBasis &_mBasis = MonomialBasisProvider<dimension,StorageField>::template basis<Topology>(order+1);
+      Basis *basis = new Basis(mBasis);
       const LocalInterpolation &interpolation = localInterpolation<Topology>(order);
       RaviartThomasMatrix<Topology,LocalInterpolation> matrix(interpolation);
       release(interpolation);
@@ -571,7 +436,7 @@ namespace Dune
         typedef MultiIndex< dimension > MIField;
         typedef VirtualMonomialBasis<dim,MIField> MBasisMI;
         typedef PolynomialBasisWithMatrix<StandardEvaluator<MBasisMI>,SparseCoeffMatrix<StorageField,dimension> > BasisMI;
-        const MBasisMI &_mBasisMI = MonomialBasisProvider<dimension,MIField>::template basis<SimplexTopology>(order+1);
+        const MBasisMI &_mBasisMI = MonomialBasisProvider<dimension,MIField>::template basis<Topology>(order+1);
         BasisMI basisMI(_mBasisMI);
         basisMI.fill(matrix);
         std::stringstream name;

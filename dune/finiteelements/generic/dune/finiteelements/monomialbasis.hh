@@ -693,6 +693,7 @@ namespace Dune
   {
   public:
     typedef typename StdMonomialTopology<dim>::Type Topology;
+    static const int dimension = dim;
   private:
     typedef StandardMonomialBasis< dim, F > This;
     typedef MonomialBasis< Topology, F > Base;
@@ -707,6 +708,7 @@ namespace Dune
   {
   public:
     typedef typename StdBiMonomialTopology<dim>::Type Topology;
+    static const int dimension = dim;
   private:
     typedef StandardBiMonomialBasis< dim, F > This;
     typedef MonomialBasis< Topology, F > Base;

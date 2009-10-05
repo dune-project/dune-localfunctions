@@ -315,33 +315,43 @@ namespace ONB
     };
   };
 
-  template <class Topology,class scalar_t>
-  struct ONBMatrix {
-    enum {dim = Topology::dimension};
+  template< class Topology, class scalar_t >
+  struct ONBMatrix
+  {
+    static const unsigned int dimension = Topology::dimension;
+
     typedef ONB::Compute< scalar_t > Compute;
     typedef typename Compute::vec_t vec_t;
     typedef typename Compute::mat_t mat_t;
-    ONBMatrix(int maxOrder)
-      : calc(1)
+
+    explicit ONBMatrix( const unsigned int maxOrder )
+      : calc( 1 )
     {
-      calc.compute(maxOrder);
+      calc.compute( maxOrder );
     }
-    int colSize(int row) const {
+
+    unsigned int colSize ( const unsigned int row ) const
+    {
       return row+1;
     }
-    int rowSize() const {
-      return calc.res.gethighbound(1)+1;
-    }
 
-    const scalar_t operator() ( int r, int c ) const
+    unsigned int rowSize () const
     {
-      return calc.res(c,r);
+      return calc.res.gethighbound( 1 )+1;
     }
 
-    void print(std::ostream& out,int N = rowSize()) const {
-      for (int i=0; i<N; ++i) {
+    scalar_t operator() ( const unsigned int r, const unsigned int c ) const
+    {
+      return calc.res( c, r );
+    }
+
+    void print( std::ostream &out, const unsigned int N = rowSize() ) const
+    {
+      for( unsigned int i = 0; i < N; ++i )
+      {
         out << "Polynomial : " << i << std::endl;
-        for (int j=0; j<colSize(i); j++) {
+        for( unsigned int j = 0; j <colSize( i ); ++j )
+        {
           double v = calc.res(j,i).toDouble();
           if (fabs(v)<1e-20)
             out << 0 << "\t\t" << std::flush;
@@ -350,9 +360,8 @@ namespace ONB
             out << v << "\t\t" << std::flush;
           }
         }
-        for (int j=colSize(i); j<N; j++) {
+        for( unsigned int j = colSize( i ); j < N; ++j )
           assert(fabs(calc.res(j,i).toDouble())<1e-10);
-        }
         out << std::endl;
       }
     }

@@ -19,34 +19,30 @@ namespace Dune
   // LocalLagrangeInterpolation
   // --------------------------
 
-  template< class Topology, class F >
+  template< class LP >
   class LocalLagrangeInterpolation
   {
-    typedef LocalLagrangeInterpolation< Topology, F > This;
+    typedef LocalLagrangeInterpolation< LP > This;
+
+    template< class LagrangePointsCreator >
+    friend class LocalLagrangeInterpolationCreator;
 
   public:
-    typedef F Field;
+    typedef LP LagrangePoints;
+    typedef typename LagrangePoints::Field Field;
 
-    static const unsigned int dimDomain = Topology::dimension;
+    static const unsigned int dimension = LagrangePoints::dimension;
 
   private:
-    typedef Dune::LagrangePoints< F, dimDomain > LagrangePoints;
-    typedef Dune::LagrangePointsCreator< F, dimDomain > LagrangePointsCreator;
-
     const LagrangePoints &lagrangePoints_;
 
-  public:
-    LocalLagrangeInterpolation ( const unsigned int order )
-      : lagrangePoints_( LagrangePointsCreator::template lagrangePoints< Topology >( order ) )
+    explicit LocalLagrangeInterpolation ( const LagrangePoints &lagrangePoints )
+      : lagrangePoints_( lagrangePoints )
     {}
 
-    ~LocalLagrangeInterpolation ()
-    {
-      LagrangePointsCreator::release( lagrangePoints_ );
-    }
-
+  public:
     template< class Function >
-    void interpolate ( const Function &function, std::vector< Field > &coefficients )
+    void interpolate ( const Function &function, std::vector< Field > &coefficients ) const
     {
       typedef typename LagrangePoints::iterator Iterator;
 
@@ -58,8 +54,8 @@ namespace Dune
         coefficients[ index++ ] = function( *it );
     }
 
-    template< class Matrix >
-    void interpolate ( const MonomialBasis< Topology, F > &basis, Matrix &coefficients )
+    template< class Topology, class Matrix >
+    void interpolate ( const MonomialBasis< Topology, Field > &basis, Matrix &coefficients ) const
     {
       typedef typename LagrangePoints::iterator Iterator;
 
@@ -72,7 +68,7 @@ namespace Dune
     }
 
     template< class Matrix, class Basis >
-    void interpolate ( const Basis &basis, Matrix &coefficients )
+    void interpolate ( const Basis &basis, Matrix &coefficients ) const
     {
       typedef typename LagrangePoints::iterator Iterator;
 
@@ -82,6 +78,40 @@ namespace Dune
       const Iterator end = lagrangePoints_.end();
       for( Iterator it = lagrangePoints_.begin(); it != end; ++it )
         basis.evaluate( it->point(), coefficients.rowPtr( index++ ) );
+    }
+
+    const LagrangePoints &lagrangePoints () const
+    {
+      return lagrangePoints();
+    }
+  };
+
+
+
+  // LocalLagrangeInterpolationCreator
+  // ---------------------------------
+
+  template< class LagrangePointsCreator >
+  struct LocalLagrangeInterpolationCreator
+  {
+    typedef typename LagrangePointsCreator::Key Key;
+    typedef typename LagrangePointsCreator::LagrangePoints LagrangePoints;
+
+    typedef LocalLagrangeInterpolation< LagrangePoints > LocalInterpolation;
+
+    template< class Topology >
+    static const LocalInterpolation &localInterpolation ( const Key &key )
+    {
+      const LagrangePoints &lagrangePoints
+        = LagrangePointsCreator::template lagrangePoints< Topology >( key );
+      return *(new LocalInterpolation( lagrangePoints ));
+    }
+
+    static void release ( const LocalInterpolation &localInterpolation )
+    {
+      const LagrangePoints &lagrangePoints = localInterpolation.lagrangePoints();
+      delete &localInterpolation;
+      LagrangePointsCreator::release( lagrangePoints );
     }
   };
 

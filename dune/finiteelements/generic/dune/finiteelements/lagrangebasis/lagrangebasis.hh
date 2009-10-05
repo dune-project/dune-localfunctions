@@ -16,45 +16,72 @@
 namespace Dune
 {
 
-  template <class Topology,class scalar_t>
+  // LagrangeMatrix
+  // --------------
+
+  template< class Topology, class scalar_t >
   struct LagrangeMatrix
   {
-    enum {dim = Topology::dimension};
+    static const unsigned int dimension = Topology::dimension;
+
     typedef Dune::AlgLib::Matrix< scalar_t > mat_t;
-    LagrangeMatrix(int order)
+    typedef Dune::LagrangePointsCreator< scalar_t, dimension > LagrangePointsCreator;
+    typedef LocalLagrangeInterpolationCreator< LagrangePointsCreator > LocalInterpolationCreator;
+    typedef typename LocalInterpolationCreator::LocalInterpolation LocalInterpolation;
+
+    explicit LagrangeMatrix( const unsigned int order )
     {
-      Dune::MonomialBasis< Topology, scalar_t > basis(order);
-      Dune::LocalLagrangeInterpolation< Topology, scalar_t  > interpolation( order );
-      interpolation.interpolate( basis, matrix_ );
+      Dune::MonomialBasis< Topology, scalar_t > basis( order );
+      const LocalInterpolation &localInterpolation
+        = LocalInterpolationCreator::template localInterpolation< Topology >( order );
+      localInterpolation.interpolate( basis, matrix_ );
+      LocalInterpolationCreator::release( localInterpolation );
       matrix_.invert();
     }
-    int colSize(int row) const {
+
+    unsigned int colSize( const unsigned int row ) const
+    {
       return matrix_.cols();
     }
-    int rowSize() const {
+
+    unsigned int rowSize () const
+    {
       return matrix_.rows();
     }
-    const Dune::FieldMatrix< scalar_t, 1,1 > operator() ( int r, int c ) const
+
+    Dune::FieldMatrix< scalar_t, 1, 1 > operator() ( int r, int c ) const
     {
-      return matrix_(c,r);
+      return matrix_( c, r );
     }
-    void print(std::ostream& out,int N = rowSize()) const {
-      for (int i=0; i<N; ++i) {
+
+    void print ( std::ostream &out, const unsigned int N = rowSize() ) const
+    {
+      for( unsigned int i = 0; i < N; ++i )
+      {
         out << "Polynomial : " << i << std::endl;
-        for (int j=0; j<colSize(i); j++) {
-          double v = matrix_(j,i).toDouble();
-          if (fabs(v)<1e-20)
+        for( unsigned int j = 0; j <colSize( i ); ++j )
+        {
+          double v = matrix_( j, i ).toDouble();
+          if( fabs( v ) < 1e-20 )
             out << 0 << "\t\t" << std::flush;
-          else {
-            Dune::AlgLib::MultiPrecision<128> v = matrix_(j,i);
+          else
+          {
+            Dune::AlgLib::MultiPrecision< 128 > v = matrix_( j, i );
             out << v << "\t\t" << std::flush;
           }
         }
         out << std::endl;
       }
     }
+
+  private:
     mat_t matrix_;
   };
+
+
+
+  // LagrangeBasisCreator
+  // --------------------
 
   template< int dim, class SF, class CF >
   struct LagrangeBasisCreator
@@ -96,10 +123,14 @@ namespace Dune
 
 
 
+  // LagrangeBasisProvider
+  // ---------------------
+
   template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
   struct LagrangeBasisProvider
-    : public BasisProvider<LagrangeBasisCreator<dim,SF,CF> >
+    : public BasisProvider< LagrangeBasisCreator< dim, SF, CF > >
   {};
 
 }
-#endif // DUNE_ORTHONORMALBASIS_HH
+
+#endif // #ifndef DUNE_ORTHONORMALBASIS_HH

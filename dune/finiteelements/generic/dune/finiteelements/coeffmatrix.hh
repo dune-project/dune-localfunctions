@@ -189,10 +189,10 @@ namespace Dune
     {
       numRows_ = mat.rowSize();
       numCols_ = 0;
-      int size = 0;
-      for( int r = 0; r < numRows_; ++r ) {
+      unsigned int size = 0;
+      for( unsigned int r = 0; r < numRows_; ++r ) {
         size += mat.colSize( r );
-        numCols_ = std::max( numCols_ , mat.colSize( r ) );
+        numCols_ = std::max( numCols_, mat.colSize( r ) );
       }
 
       delete [] coeff_;
@@ -205,10 +205,10 @@ namespace Dune
       rows_[ 0 ] = coeff_;
       Field *cit = coeff_;
       unsigned int *sit = skip_;
-      for( int r = 0; r < numRows_; ++r )
+      for( unsigned int r = 0; r < numRows_; ++r )
       {
         *sit = 0;
-        for( int c = 0; c < mat.colSize( r ); ++c )
+        for( unsigned int c = 0; c < mat.colSize( r ); ++c )
         {
           Field val;
           field_cast(mat(r,c),val);
@@ -235,7 +235,7 @@ namespace Dune
     Field *coeff_;
     Field **rows_;
     unsigned int *skip_;
-    int numRows_,numCols_;
+    unsigned int numRows_,numCols_;
   };
 
 }

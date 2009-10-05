@@ -20,6 +20,32 @@ namespace Dune
 
 
 
+  template< class Field >
+  Field operator+ ( const Unity< Field > &u, const Field &f )
+  {
+    return (Field)u + f;
+  }
+
+  template< class Field >
+  Field operator- ( const Unity< Field > &u, const Field &f )
+  {
+    return (Field)u - f;
+  }
+
+  template< class Field >
+  Field operator* ( const Unity< Field > &u, const Field &f )
+  {
+    return f;
+  }
+
+  template< class Field >
+  Field operator/ ( const Unity< Field > &u, const Field &f )
+  {
+    return (Field)u / f;
+  }
+
+
+
   // Zero
   // ----
 

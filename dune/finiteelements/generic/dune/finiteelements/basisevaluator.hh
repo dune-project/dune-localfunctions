@@ -152,15 +152,16 @@ namespace Dune
       CIter pos_;
       const CIter end_;
     };
-
-    MonomialEvaluator(const Basis &basis,unsigned int order)
-      : basis_(basis),
-        order_(order),
-        size_(basis.size(order)),
-        container_(0)
-    {
-      resize<2,true>();
-    }
+    /*
+       MonomialEvaluator(const Basis &basis,unsigned int order)
+       : basis_(basis),
+       order_(order),
+       size_(basis.size(order)),
+       container_(0)
+       {
+       resize<2,true>();
+       }
+     */
     template <unsigned int deriv>
     struct Iterator
     {

@@ -260,7 +260,7 @@ namespace Dune
 
       coeff_ = new Field[ size ];
       rows_ = new Field*[ numRows_+1 ];
-      skip_ = new unsigned int[ size ];
+      skip_ = new unsigned int[ size+1 ];
       rows_[ 0 ] = coeff_;
       Field *cit = coeff_;
       unsigned int *sit = skip_;

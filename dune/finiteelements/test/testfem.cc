@@ -12,9 +12,6 @@
 
 #include "../p0.hh"
 #include "../p1.hh"
-#include "../p11d.hh"
-#include "../p12d.hh"
-#include "../p13d.hh"
 #include "../pk2d.hh"
 #include "../p23d.hh"
 #include "../pk3d.hh"
@@ -191,16 +188,13 @@ int main(int argc, char** argv) try
   Dune::P0LocalFiniteElement<double,double,2> p0lfem(Dune::GeometryType::simplex);
   success = testFE(p0lfem) and success;
 
-  Dune::P1LocalFiniteElement<double,double,2> p1lfem;
-  success = testFE(p1lfem) and success;
-
-  Dune::P12DLocalFiniteElement<double,double> p11dlfem;
+  Dune::P1LocalFiniteElement<double,double,1> p11dlfem;
   success = testFE(p11dlfem) and success;
 
-  Dune::P12DLocalFiniteElement<double,double> p12dlfem;
+  Dune::P1LocalFiniteElement<double,double,2> p12dlfem;
   success = testFE(p12dlfem) and success;
 
-  Dune::P13DLocalFiniteElement<double,double> p13dlfem;
+  Dune::P1LocalFiniteElement<double,double,3> p13dlfem;
   success = testFE(p13dlfem) and success;
 
   Dune::Q1LocalFiniteElement<double,double,3> q1lfem;
@@ -238,8 +232,8 @@ int main(int argc, char** argv) try
   Dune::RT02DLocalFiniteElement<double,double> rt02dlfem;
   success = testFE(rt02dlfem) and success;
 
-  Dune::HierarchicalP2LocalFiniteElement<double,double,1> hierarchicalp21dlfem;
-  success = testFE(hierarchicalp21dlfem) and success;
+  //     Dune::HierarchicalP2LocalFiniteElement<double,double,1> hierarchicalp21dlfem;
+  //     success = testFE(hierarchicalp21dlfem) and success;
 
   Dune::HierarchicalP2LocalFiniteElement<double,double,2> hierarchicalp22dlfem;
   success = testFE(hierarchicalp22dlfem) and success;

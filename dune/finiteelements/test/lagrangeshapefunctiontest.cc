@@ -6,9 +6,9 @@
 #include <typeinfo>
 #include <fenv.h>
 
-#include <dune/finiteelements/p11d.hh>
-#include <dune/finiteelements/p12d.hh>
-#include <dune/finiteelements/p13d.hh>
+#include <dune/finiteelements/p1.hh>
+#include <dune/finiteelements/p1.hh>
+#include <dune/finiteelements/p1.hh>
 #include <dune/finiteelements/p23d.hh>
 #include <dune/finiteelements/pk2d.hh>
 #include <dune/finiteelements/pk3d.hh>
@@ -139,13 +139,13 @@ int main (int argc, char *argv[]) try
 {
   feenableexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW);
 
-  P11DLocalFiniteElement<double,double> p11d;
+  P1LocalFiniteElement<double,double,1> p11d;
   testPk(p11d);
 
-  P12DLocalFiniteElement<double,double> p12d;
+  P1LocalFiniteElement<double,double,2> p12d;
   testPk(p12d);
 
-  P13DLocalFiniteElement<double,double> p13d;
+  P1LocalFiniteElement<double,double,3> p13d;
   testPk(p13d);
 
   //     P23DLocalFiniteElement does not fulfill above assumption on the

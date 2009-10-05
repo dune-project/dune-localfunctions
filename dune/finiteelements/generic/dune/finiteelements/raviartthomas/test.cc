@@ -40,7 +40,6 @@ bool test(unsigned int order) {
   if (!ret) {
     std::cout << "   FAILED !" << std::endl;
   }
-  std::cout << std::endl;
   return ret;
 }
 int main ( int argc, char **argv )

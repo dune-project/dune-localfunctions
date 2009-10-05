@@ -15,9 +15,9 @@
 namespace Dune
 {
   template< class Topology, class F >
-  class RaviartThomasInterpolation
+  class RaviartThomasLagrangeInterpolation
   {
-    typedef RaviartThomasInterpolation< Topology, F > This;
+    typedef RaviartThomasLagrangeInterpolation< Topology, F > This;
 
   public:
     typedef F Field;
@@ -27,20 +27,17 @@ namespace Dune
   private:
     typedef Dune::LagrangePoints< Field, dimension > LagrangePoints;
     typedef Dune::LagrangePointsCreator< Field, dimension > LagrangePointsCreator;
-    const LagrangePoints &lagrangePoints_;
 
   public:
-    RaviartThomasInterpolation ( const unsigned int order )
-      : lagrangePoints_( LagrangePointsCreator::template lagrangePoints< Topology >( order+dimension ) )
+    RaviartThomasLagrangeInterpolation ( const unsigned int order )
+      : lagrangePoints_ (LagrangePointsCreator::template lagrangePoints< Topology >( order+dimension ))
     {}
 
     template< class Eval, class Matrix >
     void interpolate ( Eval &eval, Matrix &coefficients )
     {
-      typedef typename LagrangePoints::iterator Iterator;
-
       coefficients.resize( eval.size(), eval.size( ) );
-
+      typedef typename LagrangePoints::iterator Iterator;
       unsigned int row = 0;
       const Iterator end = lagrangePoints_.end();
       for( Iterator it = lagrangePoints_.begin(); it != end; ++it )
@@ -48,17 +45,20 @@ namespace Dune
         if (it->localKey().codim()>1)
           continue;
         else if (it->localKey().codim()==1) {
-          fillBnd( row, it->localKey(), eval.template evaluate<0>(it->point()),
-                   coefficients );
+          fillBnd ( row, it->localKey(), eval.template evaluate<0>(it->point()),
+                    coefficients );
         }
         else
-          fillInterior( row, it->localKey(), eval.template evaluate<0>(it->point()),
-                        coefficients );
+          fillInterior ( row, it->localKey(), eval.template evaluate<0>(it->point()),
+                         coefficients );
       }
     }
+
+  private:
+    /** /brief evaluate boundary functionals **/
     template <class LocalKey, class Iterator,class Matrix>
-    void fillBnd(unsigned int &row,
-                 const LocalKey &key, Iterator iter, Matrix &matrix) const
+    void fillBnd (unsigned int &row,
+                  const LocalKey &key, Iterator iter, Matrix &matrix) const
     {
       const Dune::FieldVector<double,dimension> &normal = GenericGeometry::ReferenceElement<Topology,double>::integrationOuterNormal(key.subEntity());
       unsigned int col = 0;
@@ -71,8 +71,8 @@ namespace Dune
       ++row;
     }
     template <class LocalKey, class Iterator,class Matrix>
-    void fillInterior(unsigned int &row,
-                      const LocalKey &key, Iterator iter,Matrix &matrix) const
+    void fillInterior (unsigned int &row,
+                       const LocalKey &key, Iterator iter,Matrix &matrix) const
     {
       unsigned int col = 0;
       for ( ; !iter.done() ; ++iter,++col)
@@ -80,8 +80,123 @@ namespace Dune
           matrix(row+d,col) = iter->block()[d];
       row+=dimension;
     }
+    const LagrangePoints &lagrangePoints_;
   };
 
+#if 0
+  template< class Topology, class F >
+  class RaviartThomasL2Interpolation
+  {
+    typedef RaviartThomasL2Interpolation< Topology, F > This;
+
+  public:
+    typedef F Field;
+    static const unsigned int dimension = Topology::dimension;
+
+    RaviartThomasLagrangeInterpolation ( const unsigned int order )
+    {}
+
+    template< class Eval, class Matrix >
+    void interpolate ( Eval &eval, Matrix &coefficients )
+    {
+      coefficients.resize( eval.size(), eval.size( ) );
+      for (int i=0; i<eval.size(); ++i)
+        for (int j=0; j<eval.size(); ++j)
+          coefficients(i,j) = Zero<Field>();
+      unsigned int row;
+
+      unsigned int nrFaces = GenericGeometry::ReferenceElement<Topology>::template Codim<1>::size;
+
+      // boundary dofs:
+      for (int f=0; f<nrFaces; ++f)
+      {
+        // get subentity info (topology for quadrature and basis)
+        // and the hybrid mapping to the codim<0> entity
+        const Dune::FieldVector<double,dimension> &normal = GenericGeometry::ReferenceElement<Topology,double>::integrationOuterNormal(key.subEntity());
+        GenericQuadrature< dimension-1, Field >
+        quadrature( subId, 2*order_+1 );
+        typedef MonomialBasisProvider<dimension-1,Field> MBasisProvider;
+        const typename MBasisProvider::Basis &mBasis = BasisProvider::basis(subId,order_);
+        StandardEvaluator<typename MBasisProvider::Basis> mEval(mBasis);
+        const unsigned int quadratureSize = quadrature.size();
+        for( unsigned int qi = 0; qi < quadratureSize; ++qi )
+        {
+          const Dune::FieldVector<double,dimension> point =
+            faceMap.global(quadrature.point(qi));
+          fillBnd( row,
+                   mEval.template evaluate<0>(quadrature.point(qi)),
+                   eval.template evaluate<0>(point),
+                   normal,
+                   quadrature.weight(qi),
+                   coefficients);
+        }
+        row += mEval.size();
+      }
+      // element dofs
+      if (row<eval.size())
+      {
+        GenericQuadrature< dimension, Field >
+        quadrature( id, 2*order_+1 );
+        typedef MonomialBasisProvider<dimension,Field> MBasisProvider;
+        const typename MBasisProvider::Basis &mBasis = BasisProvider::basis(id,order_-1);
+        StandardEvaluator<typename MBasisProvider::Basis> mEval(mBasis);
+        const unsigned int quadratureSize = quadrature.size();
+        for( unsigned int qi = 0; qi < quadratureSize; ++qi )
+        {
+          fillInterior( row,
+                        mEval.template evaluate<0>(quadrature.point(qi)),
+                        eval.template evaluate<0>(quadrature.point(qi)),
+                        quadrature.weight(qi),
+                        coefficients );
+        }
+        row += mEval.size()*dimension;
+      }
+      assert(row==eval.size());
+    }
+
+  private:
+    /** /brief evaluate boundary functionals **/
+    template <class MIterator, class RTIterator,class Matrix>
+    void fillBnd (unsigned int startRow,
+                  rowIterator riter,
+                  colIterator citer,
+                  const FieldVector<double,dimension> &normal,
+                  double weight,
+                  Matrix &matrix) const
+    {
+      unsigned int col = 0;
+      for ( ; !citer.done() ; ++citer,++col)
+      {
+        Field cFactor = Zero<Field>();
+        for (unsigned int d=0; d<dimension; ++d) {
+          cFactor += citer->block()[d]*normal[d];
+          for (unsigned int row = startRow ; !riter.done(); ++riter; ++row )
+          {
+            matrix(row,col) += weight*(cFactor*riter->block()[0]);
+          }
+        }
+      }
+      template <class MIterator, class RTIterator,class Matrix>
+      void fillBnd (unsigned int startRow,
+                    rowIterator riter,
+                    colIterator citer,
+                    double weight,
+                    Matrix &matrix) const
+      {
+        unsigned int col = 0;
+        for ( ; !citer.done() ; ++citer,++col)
+        {
+          for (unsigned int row = startRow ; !riter.done(); ++riter; )
+          {
+            for (int i=0; i<dimension; ++i,++row)
+            {
+              matrix(row,col) += weight*(citer->block()[i]*riter->block()[0]);
+            }
+          }
+        }
+      }
+    };
+#endif
 
   template <class Topology,class scalar_t>
   struct RaviartThomasMatrix {
@@ -183,7 +298,7 @@ namespace Dune
       TMBasis tmBasis(basis);
       tmBasis.fill(vecMatrix_);
       StandardEvaluator<TMBasis> tmEval(tmBasis);
-      RaviartThomasInterpolation< Topology, scalar_t  > interpolation(order_);
+      RaviartThomasLagrangeInterpolation< Topology, scalar_t  > interpolation(order_);
       interpolation.interpolate( tmEval , matrix_ );
       matrix_.invert();
     }
@@ -226,18 +341,20 @@ namespace Dune
       Basis *basis = new Basis(_mBasis);
       RaviartThomasMatrix<Topology,ComputeField> matrix(order);
       basis->fill(matrix);
-      {
-        typedef MultiIndex< dimension > MIField;
-        typedef VirtualMonomialBasis<dim,MIField> MBasisMI;
-        typedef PolynomialBasisWithMatrix<StandardEvaluator<MBasisMI>,SparseCoeffMatrix<StorageField,dimension> > BasisMI;
-        const MBasisMI &_mBasisMI = MonomialBasisProvider<dimension,MIField>::template basis<SimplexTopology>(order+1);
-        BasisMI basisMI(_mBasisMI);
-        basisMI.fill(matrix);
-        std::stringstream name;
-        name << "rt_" << Topology::name() << "_p" << order;
-        std::ofstream out(name.str().c_str());
-        basisPrint<0>(out,basisMI);
-      }
+      /*
+         {
+         typedef MultiIndex< dimension > MIField;
+         typedef VirtualMonomialBasis<dim,MIField> MBasisMI;
+         typedef PolynomialBasisWithMatrix<StandardEvaluator<MBasisMI>,SparseCoeffMatrix<StorageField,dimension> > BasisMI;
+         const MBasisMI &_mBasisMI = MonomialBasisProvider<dimension,MIField>::template basis<SimplexTopology>(order+1);
+         BasisMI basisMI(_mBasisMI);
+         basisMI.fill(matrix);
+         std::stringstream name;
+         name << "rt_" << Topology::name() << "_p" << order;
+         std::ofstream out(name.str().c_str());
+         basisPrint<0>(out,basisMI);
+         }
+       */
       return *basis;
     }
     static void release ( const Basis &basis )

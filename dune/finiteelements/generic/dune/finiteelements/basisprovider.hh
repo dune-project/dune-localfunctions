@@ -43,6 +43,21 @@ namespace Dune
     BasisProvider ()
     {}
 
+    ~BasisProvider ()
+    {
+      const typename Storage::iterator end = basis_.end();
+      for( typename Storage::iterator it = basis_.begin(); it != end; ++it )
+      {
+        for( unsigned int topologyId = 0; topologyId < numTopologies; ++topologyId )
+        {
+          const Basis *&basis = it->second[ topologyId ];
+          if( basis != 0 )
+            BasisCreator::release( *basis );
+          basis = 0;
+        }
+      }
+    }
+
     static BasisProvider &instance ()
     {
       static BasisProvider instance;

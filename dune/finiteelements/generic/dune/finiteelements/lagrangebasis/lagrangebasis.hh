@@ -83,7 +83,7 @@ namespace Dune
   // LagrangeBasisCreator
   // --------------------
 
-  template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
+  template< unsigned int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
   struct LagrangeBasisCreator
   {
     static const unsigned int dimension = dim;

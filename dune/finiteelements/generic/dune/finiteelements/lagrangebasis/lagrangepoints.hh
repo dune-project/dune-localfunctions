@@ -13,7 +13,7 @@
 
 #include <dune/finiteelements/common/localcoefficients.hh>
 #include <dune/finiteelements/basisprovider.hh>
-#include <dune/finiteelements/lagrangebasis.hh>
+#include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
 
 namespace Dune
 {

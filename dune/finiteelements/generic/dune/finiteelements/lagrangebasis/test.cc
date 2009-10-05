@@ -2,14 +2,19 @@
 // vi: set et ts=4 sw=2 sts=2:
 #include <dune/finiteelements/lagrangebasis.hh>
 #include <dune/finiteelements/quadrature/genericquadrature.hh>
+#include <dune/finiteelements/p13d/p13dlocalbasis.hh>
 #include <dune/finiteelements/p23d/p23dlocalbasis.hh>
 #include <dune/finiteelements/pk3d/pk3dlocalbasis.hh>
+
+#define USE_GENERIC 1
+const unsigned int iterations = 1000000;
 
 using namespace Dune;
 using namespace GenericGeometry;
 
-// struct SpecialBasis :public Pk3DLocalBasis<double,double,4>
-struct SpecialBasis : public P23DLocalBasis<double,double>
+struct SpecialBasis : public Pk3DLocalBasis<double,double,1>
+                      // struct SpecialBasis :public P23DLocalBasis<double,double>
+                      // struct SpecialBasis :public P13DLocalBasis<double,double>
 {
   void evaluate(const Dune::FieldVector<double,3> &x,
                 std::vector<Dune::FieldVector<double,1> > &ret)
@@ -45,7 +50,6 @@ struct SpecialBasis : public P23DLocalBasis<double,double>
 
 template <class Topology>
 bool test(unsigned int order) {
-  const int iterations = 1; //10000000;
 
   // typedef AlgLib::MultiPrecision<128> StorageField;
   typedef double StorageField;
@@ -63,7 +67,7 @@ bool test(unsigned int order) {
 
     std::vector< Dune::FieldVector< double, 1 > > y( points.size() );
 
-#if 0
+#if USE_GENERIC
     typedef LagrangeBasisProvider<Topology::dimension,StorageField,ComputeField> BasisProvider;
     const typename BasisProvider::Basis &basis = BasisProvider::basis(Topology::id,o);
     for (unsigned int count = 0; count < iterations; ++count)
@@ -73,55 +77,56 @@ bool test(unsigned int order) {
       {
         basis.evaluate( points[ index ].point(), y );
         bool first = true;
-#if 1
-        for( unsigned int i = 0; i < y.size(); ++i )
+        if (iterations==1)
         {
-          if( fabs( y[ i ] - double( i == index ) ) > 1e-10 )
+          for( unsigned int i = 0; i < y.size(); ++i )
           {
-            if (first) {
-              std::cout << "ERROR: "
-                        << index << " -> "
-                        << "x = " << points[ index ].point()
-                        << " (codim = " << points[ index ].localKey().codim() << ", "
-                        << "subentity = " << points[ index ].localKey().subEntity() << ", "
-                        << "index = " << points[ index ].localKey().index() << "):" << std::endl;
-              first = false;
+            if( fabs( y[ i ] - double( i == index ) ) > 1e-10 )
+            {
+              if (first) {
+                std::cout << "ERROR: "
+                          << index << " -> "
+                          << "x = " << points[ index ].point()
+                          << " (codim = " << points[ index ].localKey().codim() << ", "
+                          << "subentity = " << points[ index ].localKey().subEntity() << ", "
+                          << "index = " << points[ index ].localKey().index() << "):" << std::endl;
+                first = false;
+              }
+              std::cout << "         y[ " << i << " ] = " << y[ i ] << std::endl;
+              ret = false;
             }
-            std::cout << "         y[ " << i << " ] = " << y[ i ] << std::endl;
-            ret = false;
           }
         }
-#endif
       }
     }
 #else
     SpecialBasis specialBasis;
     for (unsigned int count = 0; count < iterations; ++count)
     {
-
       for( unsigned int index = 0; index < points.size(); ++index )
       {
         specialBasis.evaluate( points[ index ].point(), y );
         bool first = true;
-#if 1
-        for( unsigned int i = 0; i < y.size(); ++i )
+        if (iterations==1)
         {
-          if( fabs( y[ i ] - double( i == index ) ) > 1e-10 )
+          for( unsigned int i = 0; i < y.size(); ++i )
           {
-            if (first) {
-              std::cout << "ERROR: "
-                        << index << " -> "
-                        << "x = " << points[ index ].point()
-                        << " (codim = " << points[ index ].localKey().codim() << ", "
-                        << "subentity = " << points[ index ].localKey().subEntity() << ", "
-                        << "index = " << points[ index ].localKey().index() << "):" << std::endl;
-              first = false;
+            if( fabs( y[ i ] - double( i == index ) ) > 1e-10 )
+            {
+              if (first) {
+                std::cout << "ERROR: "
+                          << index << " -> "
+                          << "x = " << points[ index ].point()
+                          << " (codim = " << points[ index ].localKey().codim() << ", "
+                          << "subentity = " << points[ index ].localKey().subEntity() << ", "
+                          << "index = " << points[ index ].localKey().index() << "):" << std::endl;
+                first = false;
+              }
+              std::cout << "         y[ " << i << " ] = " << y[ i ] << std::endl;
+              ret = false;
             }
-            std::cout << "         y[ " << i << " ] = " << y[ i ] << std::endl;
-            ret = false;
           }
         }
-#endif
       }
     }
 #endif

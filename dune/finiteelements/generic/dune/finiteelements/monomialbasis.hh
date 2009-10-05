@@ -6,6 +6,7 @@
 #include <vector>
 
 #include <dune/common/fvector.hh>
+#include <dune/common/fmatrix.hh>
 
 #include <dune/grid/genericgeometry/topologytypes.hh>
 #include <dune/grid/genericgeometry/misc.hh>
@@ -13,6 +14,7 @@
 #include <dune/common/field.hh>
 
 #include <dune/finiteelements/basisprovider.hh>
+#include <dune/finiteelements/multiindex.hh>
 
 namespace Dune
 {
@@ -432,6 +434,8 @@ namespace Dune
     typedef MonomialBasisImpl< Topology, F > Base;
 
   public:
+    static const unsigned int dimension = Base::dimDomain;
+
     typedef typename Base::Field Field;
 
     typedef typename Base::DomainVector DomainVector;
@@ -728,6 +732,11 @@ namespace Dune
         assert(!done());
         return reinterpret_cast<const RangeVector&>(*pos_);
       }
+      const RangeVector *operator->() const
+      {
+        assert(!done());
+        return reinterpret_cast<const RangeVector*>(pos_);
+      }
       bool done() const
       {
         return pos_==end_;
@@ -765,25 +774,23 @@ namespace Dune
       basis_.evaluate(order_,x,container_);
       return typename Iterator<0>::Single(container_);
     }
-    typename Iterator<1>::Single jacobian(const DomainVector &x)
-    {
-      basis_.evaluate(order_,x,container_);
-      return typename Iterator<1>::Single(container_);
-    }
     template <unsigned int deriv>
     typename Iterator<deriv>::Single evaluate(const DomainVector &x)
     {
       basis_.evaluate(order_,x,container_);
       return typename Iterator<deriv>::Single(container_);
     }
-    /*
-       template <unsigned int deriv>
-       typename Iterator<deriv>::All evaluateAll(const DomainVector &x)
-       {
-       basis_.evaluateAll<deriv>(order_,x,container_);
-       return typename Iterator<deriv>::All(container_);
-       }
-     */
+    typename Iterator<1>::Single jacobian(const DomainVector &x)
+    {
+      basis_.evaluate(order_,x,container_);
+      return typename Iterator<1>::Single(container_);
+    }
+    template <unsigned int deriv>
+    typename Iterator<deriv>::All evaluateAll(const DomainVector &x)
+    {
+      basis_.evaluateAll<deriv>(order_,x,container_);
+      return typename Iterator<deriv>::All(container_);
+    }
     unsigned int order() const
     {
       return order_;
@@ -807,9 +814,10 @@ namespace Dune
     typedef std::vector<typename Basis::Field> Container;
     static const int dimension = Basis::dimension;
     typedef Dune::FieldVector<Field,dimension> DomainVector;
-    template <class BlockType>
+    template <class BlockType,int deriv>
     struct BaseIterator
     {
+      static const int blockSize = sizeof(BlockType)/sizeof(Field);
       typedef BlockType RangeVector;
       typedef typename Container::const_iterator CIter;
       BaseIterator(const std::vector<DomainVector> &x,
@@ -822,7 +830,12 @@ namespace Dune
       const RangeVector &operator*() const
       {
         assert(!done());
-        return val_;
+        return reinterpret_cast<const RangeVector&>(val_);
+      }
+      const RangeVector * const operator->() const
+      {
+        assert(!done());
+        return reinterpret_cast<const RangeVector* const>(&val_);
       }
       bool done() const
       {
@@ -830,7 +843,14 @@ namespace Dune
       }
       BaseIterator operator++()
       {
-        ++pos_;
+        pos_ += 1;
+        if (!done())
+          set();
+        return *this;
+      }
+      BaseIterator &operator+=(unsigned int skip)
+      {
+        pos_ += skip;
         if (!done())
           set();
         return *this;
@@ -838,18 +858,51 @@ namespace Dune
     private:
       void set()
       {
-        val_[0]=1;
-        for (int d=0; d<dimension; ++d)
+        if (deriv==0)
         {
-          unsigned int o = pos_->z(d);
-          assert(o<x_.size());
-          val_[0]  *= x_[o][d];
+          val_[0]=1;
+          for (int d=0; d<dimension; ++d)
+          {
+            unsigned int o = pos_->z(d);
+            assert( o<x_.size() );
+            val_[0]  *= x_[o][d];
+          }
+        }
+        else if (deriv==1)
+        {
+          for (int i=0; i<dimension; ++i)
+          {
+            unsigned int o = pos_->z(i);
+            if ( o == 0)
+              val_[i] = 0.;
+            else
+            {
+              val_[i] = o;
+              for (int d=0; d<dimension; ++d)
+              {
+                unsigned int o = pos_->z(d);
+                o -= (d==i);
+                assert( o<x_.size() );
+                val_[i]  *= x_[o][d];
+              }
+            }
+          }
+          if (blockSize>dimension || deriv==0)
+          {
+            val_[dimension]=1;
+            for (int d=0; d<dimension; ++d)
+            {
+              unsigned int o = pos_->z(d);
+              assert( o<x_.size() );
+              val_[dimension]  *= x_[o][d];
+            }
+          }
         }
       }
       CIter pos_;
       const CIter end_;
       const std::vector<DomainVector> &x_;
-      RangeVector val_;
+      Field val_[blockSize];
     };
 
     MultiIndexEvaluator(const Basis &basis,unsigned int order)
@@ -866,8 +919,8 @@ namespace Dune
     template <unsigned int deriv>
     struct Iterator
     {
-      typedef BaseIterator<typename Tensor<Field,dimension,1,deriv>::All> All;
-      typedef BaseIterator<typename Tensor<Field,dimension,1,deriv>::Single> Single;
+      typedef BaseIterator<typename Tensor<Field,dimension,1,deriv>::All,deriv> All;
+      typedef BaseIterator<typename Tensor<Field,dimension,1,deriv>::Single,deriv> Single;
     };
     typename Iterator<0>::Single evaluate(const DomainVector &x)
     {
@@ -880,12 +933,23 @@ namespace Dune
       setX(x);
       return typename Iterator<deriv>::Single(x_,container_);
     }
+    template <unsigned int deriv>
+    typename Iterator<deriv>::All evaluateAll(const DomainVector &x)
+    {
+      setX(x);
+      return typename Iterator<deriv>::All(x_,container_);
+    }
+    typename Iterator<1>::Single jacobian(const DomainVector &x)
+    {
+      setX(x);
+      return typename Iterator<1>::Single(x_,container_);
+    }
     void setX(const DomainVector &x)
     {
       for (int d=0; d<dimension; ++d)
       {
         x_[0][d] = 1;
-        for (int i=1; i<=order_; ++i) {
+        for (unsigned int i=1; i<=order_; ++i) {
           x_[i][d]=x_[i-1][d]*x[d];
         }
       }

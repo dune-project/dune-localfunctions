@@ -1,5 +1,6 @@
 testfem
 edges02dshapefunctiontest
+test-edges03dinterpolate
 lagrangeshapefunctiontest
 monomshapefunctiontest
 virtualshapefunctiontest

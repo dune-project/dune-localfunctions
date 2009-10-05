@@ -13,6 +13,9 @@ namespace Dune
   namespace GenericGeometry
   {
 
+    // SubQuadratureCreator
+    // --------------------
+
     template< unsigned int dim, class QuadratureCreator >
     struct SubQuadratureCreator
     {
@@ -69,6 +72,16 @@ namespace Dune
         }
       };
     };
+
+
+
+    // SubQuadratureProvider
+    // ---------------------
+
+    template< unsigned int dim, class QuadratureCreator >
+    struct SubQuadratureProvider
+      : public QuadratureProvider< SubQuadratureCreator< dim, QuadratureCreator > >
+    {};
 
   }
 

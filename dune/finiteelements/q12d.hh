@@ -6,7 +6,7 @@
 #include <dune/common/geometrytype.hh>
 
 #include "common/localfiniteelement.hh"
-#include "q12d/q12dlocalbasis.hh"
+#include "q1/q1localbasis.hh"
 #include "q12d/q12dlocalcoefficients.hh"
 #include "q12d/q12dlocalinterpolation.hh"
 
@@ -17,8 +17,8 @@ namespace Dune
    */
   template<class D, class R>
   class Q12DLocalFiniteElement : public LocalFiniteElementInterface<
-                                     LocalFiniteElementTraits<Q12DLocalBasis<D,R>,Q12DLocalCoefficients,
-                                         Q12DLocalInterpolation<Q12DLocalBasis<D,R> > >
+                                     LocalFiniteElementTraits<Q1LocalBasis<D,R,2>,Q12DLocalCoefficients,
+                                         Q12DLocalInterpolation<Q1LocalBasis<D,R,2> > >
 #ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
                                      ,Q12DLocalFiniteElement<D,R>
 #endif
@@ -27,8 +27,8 @@ namespace Dune
   public:
     /** \todo Please doc me !
      */
-    typedef LocalFiniteElementTraits<Q12DLocalBasis<D,R>,Q12DLocalCoefficients,
-        Q12DLocalInterpolation<Q12DLocalBasis<D,R> > > Traits;
+    typedef LocalFiniteElementTraits<Q1LocalBasis<D,R,2>,Q12DLocalCoefficients,
+        Q12DLocalInterpolation<Q1LocalBasis<D,R,2> > > Traits;
 
     /** \todo Please doc me !
      */
@@ -66,9 +66,9 @@ namespace Dune
     }
 
   private:
-    Q12DLocalBasis<D,R> basis;
+    Q1LocalBasis<D,R,2> basis;
     Q12DLocalCoefficients coefficients;
-    Q12DLocalInterpolation<Q12DLocalBasis<D,R> > interpolation;
+    Q12DLocalInterpolation<Q1LocalBasis<D,R,2> > interpolation;
     GeometryType gt;
   };
 

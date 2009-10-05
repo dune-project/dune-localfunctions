@@ -7,7 +7,7 @@ finiteelements_HEADERS = edger02d.hh edges02d.hh edges03d.hh \
         refinedp1.hh monom.hh p2.hh mimetic.hh rt0q2d.hh rt0q3d.hh rt0q.hh \
 	pk2d.hh q12d.hh q22d.hh q1.hh
 
-SUBDIRS = common test p0 p1 pk2d pk3d q12d q13d q22d rt02d edger02d edges02d \
+SUBDIRS = common test p0 p1 pk2d pk3d q1 q12d q13d q22d rt02d edger02d edges02d \
 	edges03d rannacher_turek2d refinedp1 monom mimetic rt0q2d rt0q3d
 
 include $(top_srcdir)/am/global-rules

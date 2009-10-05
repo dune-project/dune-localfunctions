@@ -8,6 +8,7 @@
 #include <dune/alglib/matrix.hh>
 #include <dune/grid/genericgeometry/referenceelements.hh>
 
+#include <dune/finiteelements/common/localcoefficients.hh>
 #include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
 #include <dune/finiteelements/lagrangebasis/lobattopoints.hh>
 #include <dune/finiteelements/lagrangebasis/interpolation.hh>
@@ -19,6 +20,36 @@
 
 namespace Dune
 {
+  // LocalCoefficientsContainer
+  // -------------------
+
+  class LocalCoefficientsContainer
+    : public LocalCoefficientsInterface< LocalCoefficientsContainer >
+  {
+    typedef LocalCoefficientsContainer This;
+    typedef LocalCoefficientsInterface< This > Base;
+
+  public:
+    template <class Setter>
+    LocalCoefficientsContainer ( const Setter &setter )
+    {
+      setter.setLocalKeys(localKey_);
+    }
+
+    const LocalKey &localKey ( const unsigned int i ) const
+    {
+      assert( i < size() );
+      return localKey_[ i ];
+    }
+
+    unsigned int size () const
+    {
+      return localKey_.size();
+    }
+
+  private:
+    std::vector< LocalKey > localKey_;
+  };
   // A small helper class to avoid having to
   // write the interpolation twice (once for function
   // and once for a basis)
@@ -116,7 +147,6 @@ namespace Dune
         size_(0)
     {
       typedef typename LagrangePoints::iterator Iterator;
-      unsigned int row = 0;
       const Iterator end = lagrangePoints_.end();
       for( Iterator it = lagrangePoints_.begin(); it != end; ++it )
       {
@@ -149,6 +179,29 @@ namespace Dune
       matrix.resize( size(), basis.size() );
       typename Base::template Helper<Basis,Matrix,false> func( basis, matrix );
       interpolate(func);
+    }
+
+    void setLocalKeys(std::vector< LocalKey > &keys) const
+    {
+      keys.resize(size());
+      typedef typename LagrangePoints::iterator Iterator;
+      unsigned int row = 0;
+      unsigned int interior = 0;
+      const Iterator end = lagrangePoints_.end();
+      for( Iterator it = lagrangePoints_.begin(); it != end; ++it )
+      {
+        if (it->localKey().codim()==1)
+        {
+          keys[row] = it->localKey();
+          ++row;
+        }
+        else if (it->localKey().codim()==0)
+        {
+          for (int i=0; i<dimension; ++i,++row,++interior)
+            keys[row] = LocalKey(0,0,interior);
+        }
+      }
+      assert( row == size() );
     }
 
   protected:
@@ -252,6 +305,18 @@ namespace Dune
       matrix.resize( size(), basis.size() );
       typename Base::template Helper<Basis,Matrix,false> func( basis,matrix );
       interpolate(func);
+    }
+
+    void setLocalKeys(std::vector< LocalKey > &keys) const
+    {
+      keys.resize(size());
+      unsigned int row = 0;
+      for (int f=0; f<dimension+1; ++f)
+        for (int i=0; i<mFaceBasis_.size(); ++i,++row)
+          keys[row] = LocalKey(f,1,i);
+      for (int i=0; i<mBasis_.size()*dimension; ++i,++row)
+        keys[row] = LocalKey(0,0,i);
+      assert( row == size() );
     }
 
   protected:
@@ -494,9 +559,12 @@ namespace Dune
     typedef AlgLib::MultiPrecision< Precision<CF>::value > ComputeField;
     static const int dimension = dim;
     typedef PolynomialBasisWithMatrix<StandardEvaluator<MBasis>,SparseCoeffMatrix<StorageField,dim> > Basis;
+    typedef LocalCoefficientsContainer LocalCoefficients;
+
     typedef unsigned int Key;
     typedef typename GenericGeometry::SimplexTopology< dim >::type SimplexTopology;
 
+    #define RTLAGRANGE 0
 
     template <class Topology>
     static Basis &basis(unsigned int order)
@@ -506,7 +574,7 @@ namespace Dune
       FieldMatrix<ComputeField,dimension+1,dimension> normal;
       for (int f=0; f<dimension+1; ++f)
         normal[f] = GenericGeometry::ReferenceElement<Topology,ComputeField>::integrationOuterNormal(f);
-#if 1
+#if RTLAGRANGE
       typedef LagrangePointsCreator< ComputeField, dimension > PointsSetCreator;
       // typedef LobattoPointsCreator< ComputeField, dimension > PointsSetCreator;
       typedef RaviartThomasLagrangeInterpolation< ComputeField, PointsSetCreator > Interpolation;
@@ -529,12 +597,47 @@ namespace Dune
         name << "rt_" << Topology::name() << "_p" << order;
         std::ofstream out(name.str().c_str());
         basisPrint<0>(out,basisMI);
+        const LocalCoefficients &keys = localCoefficients<Topology>(order);
+        for (int index=0; index<keys.size(); ++index)
+          std::cout << index << " -> "
+                    << " (codim = " << keys.localKey(index).codim() << ", "
+                    << "subentity = " << keys.localKey(index).subEntity() << ", "
+                    << "index = " << keys.localKey(index).index() << "):" << std::endl;
       }
       return *basis;
     }
+    template< class Topology >
+    static const LocalCoefficients &localCoefficients ( const Key &order )
+    {
+      FieldMatrix<ComputeField,dimension+1,dimension> normal;
+      for (int f=0; f<dimension+1; ++f)
+        normal[f] = GenericGeometry::ReferenceElement<Topology,ComputeField>::integrationOuterNormal(f);
+#if RTLAGRANGE
+      typedef LagrangePointsCreator< ComputeField, dimension > PointsSetCreator;
+      // typedef LobattoPointsCreator< ComputeField, dimension > PointsSetCreator;
+      typedef RaviartThomasLagrangeInterpolation< ComputeField, PointsSetCreator > Interpolation;
+      const typename PointsSetCreator::LagrangePoints &points = PointsSetCreator::template lagrangePoints< Topology >( order+dimension );
+      Interpolation interpolation(order,points,normal);
+#else
+      typedef RaviartThomasL2Interpolation< ComputeField, dimension > Interpolation;
+      Interpolation interpolation(order,normal);
+#endif
+      LocalCoefficientsContainer *localKeys = new LocalCoefficientsContainer(interpolation);
+      return *localKeys;
+    }
+
     static void release ( const Basis &basis )
     {
       delete &basis;
+    }
+    static void release ( const LocalCoefficients &localCoefficients )
+    {
+      delete &localCoefficients;
+    }
+    template< class Topology >
+    static bool supports ( const Key &key )
+    {
+      return GenericGeometry::IsSimplex<Topology>::value;
     }
   };
 

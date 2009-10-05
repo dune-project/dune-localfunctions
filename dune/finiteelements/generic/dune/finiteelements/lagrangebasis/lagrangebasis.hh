@@ -118,7 +118,7 @@ namespace Dune
       {
         typedef MultiIndex< dimension > MIField;
         typedef VirtualMonomialBasis<dim,MIField> MBasisMI;
-        typedef PolynomialBasisWithMatrix<StandardEvaluator<MBasisMI>,SparseCoeffMatrix<StorageField,dimension> > BasisMI;
+        typedef PolynomialBasisWithMatrix<StandardEvaluator<MBasisMI>,SparseCoeffMatrix<StorageField,1> > BasisMI;
         const MBasisMI &_mBasisMI = Dune::MonomialBasisProvider<dimension,MIField>::template basis<Topology>(order);
         BasisMI basisMI(_mBasisMI);
         basisMI.fill(matrix);

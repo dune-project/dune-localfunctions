@@ -119,6 +119,16 @@ namespace Dune
     static FieldVector< Field, dim > *
     setup ( const unsigned int order, FieldVector< Field, dim > *points )
     {
+      if (order == 0) {
+        FieldVector< Field, dim > *const end
+          = BaseImpl::template setup< dim >( 0 , points );
+        for( ; points != end; ++points )
+        {
+          for( unsigned int j = 0; j < dimension-1; ++j )
+            (*points)[ j ] *= 0.;
+          (*points)[ dimension-1 ] = 0.;
+        }
+      }
       for( unsigned int i = 0; i <= order; ++i )
       {
         FieldVector< Field, dim > *const end

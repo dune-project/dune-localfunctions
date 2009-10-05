@@ -33,6 +33,8 @@ namespace Dune
       typedef AlgLib::MultiPrecision< precision > Field;
       typedef AlgLib::Vector< Field > Vector;
 
+      struct Iterator;
+
       explicit GaussPoints ( unsigned int n )
         : points_( n ),
           weights_( n )
@@ -53,6 +55,16 @@ namespace Dune
           points_[ i ] = (points_[ i ] + Field( 1 )) * half;
           weights_[ i ] *= half;
         }
+      }
+
+      Iterator begin () const
+      {
+        return Iterator( *this, 0 );
+      }
+
+      Iterator end () const
+      {
+        return Iterator( *this, size() );
       }
 
       Field point ( const unsigned int i ) const
@@ -76,6 +88,38 @@ namespace Dune
     private:
       Vector points_;
       Vector weights_;
+    };
+
+
+
+    // GaussPoints::Iterator
+    // ---------------------
+
+    template< unsigned int precision >
+    struct GaussPoints< AlgLib::MultiPrecision< precision > >::Iterator
+    {
+      typedef AlgLib::MultiPrecision< precision > Field;
+      typedef GenericGeometry::QuadraturePoint< Field, 1 > QuadraturePoint;
+
+      Iterator ( const GaussPoints< Field > &points, const unsigned int index )
+        : points_( &points ),
+          index_( index )
+      {}
+
+      Iterator &operator++ ()
+      {
+        ++index_;
+        return *this;
+      }
+
+      QuadraturePoint operator* () const
+      {
+        return QuadraturePoint( points_->point( i ), points_->weight( i ) );
+      }
+
+    private:
+      GaussPoints< Field > *points_;
+      unsigned int index_;
     };
 
 

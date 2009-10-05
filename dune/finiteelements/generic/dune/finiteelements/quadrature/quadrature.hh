@@ -67,6 +67,8 @@ namespace Dune
       typedef GenericGeometry::QuadraturePoint< Field, dimension > QuadraturePoint;
       typedef typename QuadraturePoint::Vector Vector;
 
+      typedef typename std::vector< QuadraturePoint >::const_iterator Iterator;
+
     private:
       std::vector< QuadraturePoint > points_;
       unsigned int topologyId_;
@@ -77,9 +79,29 @@ namespace Dune
       {}
 
     public:
+      template< class Q >
+      Quadrature ( const Q &q )
+        : topologyId_( q.topologyId() )
+      {
+        points_.reserve( q.size() );
+        const typename Q::Iterator end = q.end();
+        for( typename Q::Iterator it = q.begin(); it != end; ++it )
+          points_.push_back( *it );
+      }
+
       const QuadraturePoint &operator[] ( const unsigned int i ) const
       {
         return points_[ i ];
+      }
+
+      Iterator begin () const
+      {
+        return points_.begin();
+      }
+
+      Iterator end () const
+      {
+        return points_.end();
       }
 
       const Vector &point ( const unsigned int i ) const

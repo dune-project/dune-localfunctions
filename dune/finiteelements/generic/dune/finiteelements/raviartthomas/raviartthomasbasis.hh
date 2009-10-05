@@ -54,51 +54,6 @@ namespace Dune
   private:
     std::vector< LocalKey > localKey_;
   };
-  // AllBasisCreator
-  // ---------------
-  template <unsigned int dimension,class Field>
-  struct ScalarBasisProvider
-  {
-    enum Type {orthonormal,lagrange,lobatto};
-    typedef OrthonormalBasisProvider<dimension,Field> ONBProvider;
-    typedef LagrangeBasisProvider<dimension,Field> LagrangeProvider;
-    typedef LobattoBasisProvider<dimension,Field> LobattoProvider;
-
-    typedef MonomialBasisProvider<dimension,Field> MBasisProvider;
-    typedef SparseCoeffMatrix< Field, 1 > CoefficientMatrix;
-    typedef StandardEvaluator< typename MBasisProvider::Basis > Evaluator;
-    typedef PolynomialBasis< Evaluator, CoefficientMatrix > Basis;
-    template <class Topology>
-    static const Basis& basis(Type type,unsigned int order)
-    {
-      switch (type)
-      {
-      case orthonormal :
-        return ONBProvider::template basis<Topology>(order);
-      case lagrange :
-        return LagrangeProvider::template basis<Topology>(order);
-      case lobatto :
-        return LobattoProvider::template basis<Topology>(order);
-      }
-    }
-    static void release(Type type,const Basis& basis)
-    {
-      switch (type)
-      {
-      case orthonormal :
-        ONBProvider::release( static_cast<const typename ONBProvider::Basis&>(basis) );
-        break;
-      case lagrange :
-        LagrangeProvider::release( static_cast<const typename LagrangeProvider::Basis&>(basis) );
-        break;
-      case lobatto :
-        LobattoProvider::release( static_cast<const typename LobattoProvider::Basis&>(basis) );
-        break;
-      }
-    }
-  };
-
-
 
   // A small helper class to avoid having to
   // write the interpolation twice (once for function
@@ -206,142 +161,6 @@ namespace Dune
     mutable Result tmp_;
   };
 
-  // A lagrange based interpolation for Raviart Thomas
-  // --------------------------------------------------
-  template< class F, class PointsSetCreator >
-  class RaviartThomasLagrangeInterpolation
-    : public RaviartThomasInterpolation<F,PointsSetCreator::LagrangePoints::dimension>
-  {
-    typedef typename PointsSetCreator::LagrangePoints LagrangePoints;
-    static const unsigned int dimension = LagrangePoints::dimension;
-
-    typedef RaviartThomasLagrangeInterpolation< F, PointsSetCreator > This;
-    typedef RaviartThomasInterpolation<F,dimension> Base;
-
-  public:
-    typedef F Field;
-
-  public:
-    RaviartThomasLagrangeInterpolation
-      ( const unsigned int order,
-      const LagrangePoints &points,
-      const FieldMatrix<Field,dimension+1,dimension> &normal )
-      : order_(order),
-        lagrangePoints_ ( points ),
-        normal_(normal),
-        size_(0)
-    {
-      typedef typename LagrangePoints::iterator Iterator;
-      const Iterator end = lagrangePoints_.end();
-      for( Iterator it = lagrangePoints_.begin(); it != end; ++it )
-      {
-        if (it->localKey().codim()==1)
-          size_ += 1;
-        else if (it->localKey().codim()==0)
-          size_ += dimension;
-      }
-    }
-
-    unsigned int order() const
-    {
-      return order_;
-    }
-    unsigned int size() const
-    {
-      return size_;
-    }
-
-    template< class Function, class Fy >
-    void interpolate ( const Function &function, std::vector< Fy > &coefficients ) const
-    {
-      coefficients.resize(size());
-      typename Base::template Helper<Function,std::vector<Fy>,true> func( function, coefficients );
-      interpolate(func);
-    }
-    template< class Basis, class Matrix >
-    void interpolate ( const Basis &basis, Matrix &matrix ) const
-    {
-      matrix.resize( size(), basis.size() );
-      typename Base::template Helper<Basis,Matrix,false> func( basis, matrix );
-      interpolate(func);
-    }
-
-    void setLocalKeys(std::vector< LocalKey > &keys) const
-    {
-      keys.resize(size());
-      typedef typename LagrangePoints::iterator Iterator;
-      unsigned int row = 0;
-      unsigned int interior = 0;
-      const Iterator end = lagrangePoints_.end();
-      for( Iterator it = lagrangePoints_.begin(); it != end; ++it )
-      {
-        if (it->localKey().codim()==1)
-        {
-          keys[row] = it->localKey();
-          ++row;
-        }
-        else if (it->localKey().codim()==0)
-        {
-          for (int i=0; i<dimension; ++i,++row,++interior)
-            keys[row] = LocalKey(0,0,interior);
-        }
-      }
-      assert( row == size() );
-    }
-
-  protected:
-    template< class Func, class Container, bool type >
-    void interpolate ( typename Base::template Helper<Func,Container,type> &func ) const
-    {
-      typedef typename LagrangePoints::iterator Iterator;
-      unsigned int row = 0;
-      const Iterator end = lagrangePoints_.end();
-      for( Iterator it = lagrangePoints_.begin(); it != end; ++it )
-      {
-        if (it->localKey().codim()>1)
-          continue;
-        if (it->localKey().codim()==1)
-          fillBnd ( row, normal_[it->localKey().subEntity()],
-                    func.evaluate( it->point() ),
-                    func );
-        else
-          fillInterior ( row,
-                         func.evaluate( it->point() ),
-                         func );
-      }
-    }
-
-  private:
-    /** /brief evaluate boundary functionals **/
-    template <class Val,class Result>
-    void fillBnd (unsigned int &row,
-                  const FieldVector<Field,dimension> &normal,
-                  const Val &val,
-                  Result &res) const
-    {
-      typename Val::const_iterator iter = val.begin();
-      for ( unsigned int col = 0; col < val.size() ; ++iter,++col)
-        res.set(row,col, (*iter)*normal );
-      ++row;
-    }
-    template <class Val,class Result>
-    void fillInterior (unsigned int &row,
-                       const Val &val,
-                       Result &res) const
-    {
-      typename Val::const_iterator iter = val.begin();
-      for ( unsigned int col = 0; col < val.size() ; ++iter,++col)
-        for (unsigned int d=0; d<dimension; ++d)
-          res.set(row+d,col, (*iter)[d] );
-      row+=dimension;
-    }
-
-    unsigned int order_;
-    FieldMatrix<Field,dimension+1,dimension> normal_;
-    const LagrangePoints &lagrangePoints_;
-    unsigned int size_;
-  };
-
   // A L2 based interpolation for Raviart Thomas
   // --------------------------------------------------
   template< class F, unsigned int dimension>
@@ -353,19 +172,6 @@ namespace Dune
 
   public:
     typedef F Field;
-    typedef typename GenericGeometry::SimplexTopology<dimension>::type Topology;
-    typedef typename GenericGeometry::SimplexTopology<dimension-1>::type FaceTopology;
-    // typedef MonomialBasisProvider<dimension,Field> TestBasisProvider;
-    // typedef MonomialBasisProvider<dimension-1,Field> TestFaceBasisProvider;
-    typedef OrthonormalBasisProvider<dimension,Field> TestBasisProvider;
-    typedef OrthonormalBasisProvider<dimension-1,Field> TestFaceBasisProvider;
-    // typedef LagrangeBasisProvider<dimension,Field> TestBasisProvider;
-    // typedef LagrangeBasisProvider<dimension-1,Field> TestFaceBasisProvider;
-    // typedef LobattoBasisProvider<dimension,Field> TestBasisProvider;
-    // typedef LobattoBasisProvider<dimension-1,Field> TestFaceBasisProvider;
-    // typedef ScalarBasisProvider<dimension,Field> TestBasisProvider;
-    // typedef ScalarBasisProvider<dimension-1,Field> TestFaceBasisProvider;
-
     typedef MonomialBasisProvider<dimension,Field> TestMBasisProvider;
     typedef MonomialBasisProvider<dimension-1,Field> TestFaceMBasisProvider;
     typedef SparseCoeffMatrix< Field, 1 > CoefficientMatrix;
@@ -375,15 +181,17 @@ namespace Dune
     typedef PolynomialBasis< FaceEvaluator, CoefficientMatrix > TestFaceBasis;
 
     RaviartThomasL2Interpolation
-      ( const unsigned int order,
-      const FieldMatrix<Field,dimension+1,dimension> &normal )
+      ( const unsigned int topologyId,
+      const unsigned int order,
+      const std::vector< FieldVector<Field,dimension> > &normal,
+      const TestBasis &mBasis,
+      const TestFaceBasis &mFaceBasis)
       : order_(order),
         normal_(normal),
-        mBasis_( TestBasisProvider::template basis<Topology>(order_-1) ),
-        mFaceBasis_( TestFaceBasisProvider::template basis<FaceTopology>(order_) ),
-        // mBasis_( TestBasisProvider::template basis<Topology>(TestBasisProvider::orthonormal,order_-1) ),
-        // mFaceBasis_( TestFaceBasisProvider::template basis<FaceTopology>(TestFaceBasisProvider::orthonormal,order_) ),
-        size_( (dimension+1)*mFaceBasis_.size()+dimension*mBasis_.size() )
+        topologyId_(topologyId),
+        mBasis_(mBasis),
+        mFaceBasis_(mFaceBasis),
+        size_( normal_.size()*mFaceBasis_.size()+dimension*mBasis_.size() )
     {}
 
     unsigned int order() const
@@ -445,8 +253,8 @@ namespace Dune
       // mFaceBasis_.integral(testBasisInt);
       for (unsigned int f=0; f<dimension+1; ++f)
       {
-        const typename SubQuadratureProvider::Quadrature &faceQuad = SubQuadratureProvider::template quadrature<Topology>( std::make_pair(f,2*order_+2) );
-        const typename SubQuadratureProvider::SubQuadrature &faceSubQuad = SubQuadratureProvider::template subQuadrature<Topology>( std::make_pair(f,2*order_+2) );
+        const typename SubQuadratureProvider::Quadrature &faceQuad = SubQuadratureProvider::quadrature( topologyId_, std::make_pair(f,2*order_+2) );
+        const typename SubQuadratureProvider::SubQuadrature &faceSubQuad = SubQuadratureProvider::subQuadrature( topologyId_, std::make_pair(f,2*order_+2) );
 
         const unsigned int quadratureSize = faceQuad.size();
         for( unsigned int qi = 0; qi < quadratureSize; ++qi )
@@ -468,7 +276,7 @@ namespace Dune
         testBasisInt.resize(mBasis_.size());
 
         typedef Dune::GenericGeometry::GenericQuadratureProvider< dimension, Field > QuadratureProvider;
-        const typename QuadratureProvider::Quadrature &elemQuad = QuadratureProvider::template quadrature<Topology>(2*order_+1);
+        const typename QuadratureProvider::Quadrature &elemQuad = QuadratureProvider::template quadrature(topologyId_,2*order_+1);
         const unsigned int quadratureSize = elemQuad.size();
         // mBasis_.integral(testBasisInt);
         for( unsigned int qi = 0; qi < quadratureSize; ++qi )
@@ -535,7 +343,8 @@ namespace Dune
     }
 
     unsigned int order_;
-    FieldMatrix<Field,dimension+1,dimension> normal_;
+    std::vector< FieldVector<Field,dimension> > normal_;
+    const unsigned int topologyId_;
     const TestBasis &mBasis_;
     const TestFaceBasis &mFaceBasis_;
     unsigned int size_;
@@ -643,7 +452,6 @@ namespace Dune
       TMBasis tmBasis(basis);
       tmBasis.fill(vecMatrix_);
       interpolation_.interpolate( tmBasis , matrix_ );
-      // std::cout << matrix_ << std::endl;
       matrix_.invert();
     }
     unsigned int colSize(int row) const {
@@ -681,27 +489,27 @@ namespace Dune
     typedef unsigned int Key;
     typedef typename GenericGeometry::SimplexTopology< dim >::type SimplexTopology;
 
-    #define RTLAGRANGE 0
-#if RTLAGRANGE
-    typedef LagrangePointsCreator< ComputeField, dimension > PointsSetCreator;
-    // typedef LobattoPointsCreator< ComputeField, dimension > PointsSetCreator;
-    typedef RaviartThomasLagrangeInterpolation< ComputeField, PointsSetCreator > LocalInterpolation;
-#else
     typedef RaviartThomasL2Interpolation< ComputeField, dimension > LocalInterpolation;
-#endif
+
+    // typedef MonomialBasisProvider<dimension,ComputeField> TestBasisProvider;
+    // typedef MonomialBasisProvider<dimension-1,ComputeField> TestFaceBasisProvider;
+    typedef OrthonormalBasisProvider<dimension,ComputeField> TestBasisProvider;
+    typedef OrthonormalBasisProvider<dimension-1,ComputeField> TestFaceBasisProvider;
+    // typedef LagrangeBasisProvider<dimension,ComputeField> TestBasisProvider;
+    // typedef LagrangeBasisProvider<dimension-1,ComputeField> TestFaceBasisProvider;
+    // typedef LobattoBasisProvider<dimension,ComputeField> TestBasisProvider;
+    // typedef LobattoBasisProvider<dimension-1,ComputeField> TestFaceBasisProvider;
 
     template< class Topology >
     static const LocalInterpolation &localInterpolation ( const Key &order )
     {
-      FieldMatrix<ComputeField,dimension+1,dimension> normal;
-      for (int f=0; f<dimension+1; ++f)
+      const unsigned int size = GenericGeometry::Size<Topology,1>::value;
+      std::vector< FieldVector< ComputeField, dimension > > normal(size);
+      for (int f=0; f<size; ++f)
         normal[f] = GenericGeometry::ReferenceElement<Topology,ComputeField>::integrationOuterNormal(f);
-#if RTLAGRANGE
-      const typename PointsSetCreator::LagrangePoints &points = PointsSetCreator::template lagrangePoints< Topology >( order+dimension );
-      LocalInterpolation *interpolation = new LocalInterpolation(order,points,normal);
-#else
-      LocalInterpolation *interpolation = new LocalInterpolation(order,normal);
-#endif
+      const typename TestBasisProvider::Basis &testBasis( TestBasisProvider::template basis<Topology>(order-1) );
+      const typename TestFaceBasisProvider::Basis &testFaceBasis( TestFaceBasisProvider::template basis<Topology>(order) );
+      LocalInterpolation *interpolation = new LocalInterpolation(Topology::id,order,normal,testBasis,testFaceBasis);
       return *interpolation;
     }
     template <class Topology>
@@ -724,23 +532,12 @@ namespace Dune
         name << "rt_" << Topology::name() << "_p" << order;
         std::ofstream out(name.str().c_str());
         basisPrint<0>(out,basisMI);
-        /*
-           const LocalCoefficients &keys = localCoefficients<Topology>(order);
-           for (int index=0;index<keys.size();++index)
-           std::cout << index << " -> "
-                    << " (codim = " << keys.localKey(index).codim() << ", "
-                    << "subentity = " << keys.localKey(index).subEntity() << ", "
-                    << "index = " << keys.localKey(index).index() << "):" << std::endl;
-         */
       }
       return *basis;
     }
     template< class Topology >
     static const LocalCoefficients &localCoefficients ( const Key &order )
     {
-      FieldMatrix<ComputeField,dimension+1,dimension> normal;
-      for (int f=0; f<dimension+1; ++f)
-        normal[f] = GenericGeometry::ReferenceElement<Topology,ComputeField>::integrationOuterNormal(f);
       const LocalInterpolation &interpolation = localInterpolation<Topology>(order);
       LocalCoefficientsContainer *localKeys = new LocalCoefficientsContainer(interpolation);
       release(interpolation);

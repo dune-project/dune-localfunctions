@@ -78,7 +78,7 @@ namespace Dune
           GenericGeometry::IfTopology< Maker, dimension >::apply( topologyId, key, quadrature );
           it = storage.insert( std::make_pair( key, quadrature ) ).first;
         }
-        return it->second;
+        return *(it->second);
       }
 
       template< class Topology >
@@ -91,7 +91,7 @@ namespace Dune
           const Quadrature *quadrature = &QuadratureCreator::template Quadrature< Topology >( key );
           it = storage.insert( std::make_pair( key, quadrature ) ).first;
         }
-        return it->second;
+        return *(it->second);
       }
 
       template< class Topology >

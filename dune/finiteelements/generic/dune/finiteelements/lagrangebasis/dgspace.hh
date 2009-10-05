@@ -8,6 +8,7 @@
 #include <dune/finiteelements/orthonormalbasis/l2interpolation.hh>
 #include <dune/finiteelements/global/dofmapper.hh>
 #include <dune/finiteelements/global/basisproxy.hh>
+#include <dune/finiteelements/lagrangebasis.hh>
 
 namespace Dune
 {

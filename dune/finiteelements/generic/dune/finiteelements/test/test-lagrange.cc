@@ -5,19 +5,12 @@
 #include <dune/grid/genericgeometry/topologytypes.hh>
 #include <dune/grid/io/file/dgfparser/dgfgridtype.hh>
 
-#include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
-#include <dune/finiteelements/global/dofmapper.hh>
-#include <dune/finiteelements/global/interpolation.hh>
+#include <dune/finiteelements/lagrangebasis/space.hh>
 
 const unsigned int dimension = GridType::dimension;
 
-typedef double StorageField;
-typedef Dune::AlgLib::MultiPrecision< 512 > ComputeField;
-typedef Dune::LagrangeBasisProvider< dimension, StorageField, ComputeField > BasisProvider;
-
 typedef GridType::LeafGridView GridView;
-typedef Dune::DofMapper< GridView::IndexSet, BasisProvider > DofMapper;
-typedef Dune::Interpolation< GridView, DofMapper, BasisProvider > Interpolation;
+typedef LagrangeSpace< GridView, double > Space;
 
 typedef GridView::Codim< 0 >::Entity Entity;
 typedef GridView::Codim< 0 >::Iterator Iterator;
@@ -36,14 +29,15 @@ int main ( int argc, char **argv )
 
   const unsigned int order = atoi( argv[ 2 ] );
 
-  DofMapper dofMapper( gridView.indexSet(), order );
+  Space space( gridView, order );
+  const Space::DofMapper &dofMapper = space.dofMapper();
 
   const Iterator end = gridView.end< 0 >();
   for( Iterator it = gridView.begin< 0 >(); it != end; ++it )
   {
     const Entity &entity = *it;
-    const unsigned int topologyId = Dune::GenericGeometry::topologyId( entity.type() );
 
-    const BasisProvider::Basis &basis = BasisProvider::basis( topologyId, order );
+    const Space::Basis &basis = space.basis( entity );
+
   }
 }

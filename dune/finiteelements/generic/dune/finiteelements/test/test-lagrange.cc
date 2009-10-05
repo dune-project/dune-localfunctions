@@ -5,7 +5,6 @@
 #include <dune/grid/genericgeometry/topologytypes.hh>
 #include <dune/grid/io/file/dgfparser/dgfpsggridtype.hh>
 #include <dune/grid/io/file/dgfparser/dgfgridtype.hh>
-#include <dune/grid/io/file/vtk/vtkwriter.hh>
 #include <dune/grid/io/file/vtk/subsamplingvtkwriter.hh>
 
 #include <dune/finiteelements/lagrangebasis/space.hh>
@@ -37,9 +36,9 @@ struct Function
 
 int main ( int argc, char **argv )
 {
-  if( argc < 3 )
+  if( argc < 4 )
   {
-    std::cerr << "Usage: " << argv[ 0 ] << " <dgf-file> <order>" << std::endl;
+    std::cerr << "Usage: " << argv[ 0 ] << " <dgf-file> <order> <level>" << std::endl;
     return 2;
   }
 
@@ -48,6 +47,7 @@ int main ( int argc, char **argv )
   GridView gridView = gridPtr->leafView();
 
   const unsigned int order = atoi( argv[ 2 ] );
+  const unsigned int level = atoi( argv[ 3 ] );
 
   Space space( gridView, order );
   const Space::DofMapper &dofMapper = space.dofMapper();
@@ -56,13 +56,7 @@ int main ( int argc, char **argv )
   Interpolation interpolation( space );
   interpolation( Function(), dofs );
 
-  for (unsigned int i=0; i<dofs.size(); ++i)
-  {
-    std::cout << dofs[i] << std::endl;
-  }
-
-  //Dune::VTKWriter< GridView > vtkWriter( gridView );
-  Dune::SubsamplingVTKWriter< GridView > vtkWriter( gridView,3 );
+  Dune::SubsamplingVTKWriter< GridView > vtkWriter( gridView, level );
   vtkWriter.addVertexData( new VTKFunction( space, dofs ) );
   vtkWriter.write( "lagrange" );
 }

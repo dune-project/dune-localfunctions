@@ -9,6 +9,7 @@
 #include "orthonormalcompute.hh"
 namespace Dune
 {
+
   template< int dim, class SF, class CF >
   struct ONBasisCreator
   {

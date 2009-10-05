@@ -283,6 +283,7 @@ namespace Dune
   public:
     const LagrangePoint &operator[] ( const unsigned int i ) const
     {
+      assert( i < size() );
       return points_[ i ];
     }
 
@@ -306,7 +307,7 @@ namespace Dune
       return order_;
     }
 
-    size_t size () const
+    unsigned int size () const
     {
       return points_.size();
     }

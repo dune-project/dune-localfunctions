@@ -6,7 +6,7 @@
 #include <dune/grid/common/indexidset.hh>
 
 #include <dune/grid/genericgeometry/conversion.hh>
-#include <dune/grid/genericgeometry/referencetopology.hh>
+#include <dune/grid/genericgeometry/referencetopologies.hh>
 
 namespace Dune
 {
@@ -55,7 +55,7 @@ namespace Dune
     DofMapper ( const IndexSet &indexSet, const Key &key )
       : indexSet_( indexSet )
     {
-      ForLoop< Build, 0, numTopologies-1 >::apply( *this, key );
+      GenericGeometry::ForLoop< Build, 0, numTopologies-1 >::apply( *this, key );
       update();
     }
 
@@ -83,7 +83,7 @@ namespace Dune
 
   private:
     template< class Topology >
-    void build ();
+    void build ( const Key &key );
 
     void setupSize ( const unsigned int codim, const unsigned int topologyId, const unsigned int size );
 
@@ -151,15 +151,15 @@ namespace Dune
     MapInfo &mapInfo = mapInfo_[ Topology::id ];
 
     const LocalCoefficients &localCoefficients
-      = Creator::typename localCoefficients< Topology >( key );
+      = Creator::template localCoefficients< Topology >( key );
     mapInfo.numDofs = localCoefficients.size();
-    mapInfo.localDof = new unsigned int[ mapinfo.numDofs ];
+    mapInfo.localDof.resize( mapInfo.numDofs );
 
     const GenericGeometry::ReferenceTopology< dimension > &refTopology
       = GenericGeometry::ReferenceTopologies< dimension >::get( Topology::id );
 
-    SubTopologyMapper< Topology > mapper;
-    std::vector< unsigned int > counts( mapper.size(), unsigned int( 0 ) );
+    GenericGeometry::SubTopologyMapper< Topology > mapper;
+    std::vector< unsigned int > counts( mapper.size(), (unsigned int)0 );
 
     for( unsigned int i = 0; i < mapInfo.numDofs; ++i )
     {
@@ -169,9 +169,9 @@ namespace Dune
 
     for( unsigned int codim = 0; codim <= dimension; ++codim )
     {
-      const unsigned int codimSize = refTopology::size( codim );
+      const unsigned int codimSize = refTopology.size( codim );
 
-      IndexInfo &indexInfo = indexInfo_[ codim ];
+      std::vector< IndexInfo > &indexInfo = indexInfo_[ codim ];
       indexInfo.resize( codimSize );
 
       for( unsigned int subEntity = 0; subEntity < codimSize; ++subEntity )

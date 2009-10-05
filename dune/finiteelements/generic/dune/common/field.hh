@@ -84,40 +84,6 @@ namespace Dune
     return z < f;
   }
 
-
-
-  // field_cast
-  // ----------
-
-  template< class F2, class F1 >
-  inline void field_cast ( const F1 &f1, F2 &f2 )
-  {
-    f2 = f1;
-  }
-
-  template< unsigned int precision >
-  inline void field_cast ( const AlgLib::MultiPrecision< precision > &f1, double &f2 )
-  {
-    f2 = f1.toDouble();
-  }
-
-  template< class F2, class F1, int dim >
-  inline void field_cast ( const FieldVector< F1, dim > &f1, FieldVector< F2, dim > &f2 )
-  {
-    for( int d = 0; d < dim; ++d )
-      field_cast( f1[ d ], f2[ d ] );
-  }
-
-  template< class F2,class F1 >
-  inline F2 field_cast ( const F1 &f1 )
-  {
-    F2 f2;
-    field_cast( f1, f2 );
-    return f2;
-  }
-
-
-
   // Precision
   // ---------
 
@@ -154,5 +120,50 @@ namespace Dune
   };
 
 }
+
+// field_cast
+// ----------
+
+template< class F2, class F1 >
+inline void field_cast ( const F1 &f1, F2 &f2 )
+{
+  f2 = f1;
+}
+
+template< unsigned int precision >
+inline void field_cast ( const Dune::AlgLib::MultiPrecision< precision > &f1, double &f2 )
+{
+  f2 = f1.toDouble();
+}
+
+template< class F2, class F1, int dim >
+inline void field_cast ( const Dune::FieldVector< F1, dim > &f1, Dune::FieldVector< F2, dim > &f2 )
+{
+  for( int d = 0; d < dim; ++d )
+    field_cast( f1[ d ], f2[ d ] );
+}
+
+template< class F2, class F1 >
+inline void field_cast ( const Dune::FieldVector< F1, 1 > &f1, F2 &f2 )
+{
+  field_cast( f1[ 0 ], f2 );
+}
+
+template< class F2,class F1 >
+inline F2 field_cast ( const F1 &f1 )
+{
+  F2 f2;
+  field_cast( f1, f2 );
+  return f2;
+}
+
+template< class F2,class F1,int dim >
+inline Dune::FieldVector<F2,dim> field_cast ( const Dune::FieldVector<F1,dim> &f1 )
+{
+  Dune::FieldVector<F2,dim> f2;
+  field_cast( f1, f2 );
+  return f2;
+}
+
 
 #endif // #ifndef DUNE_FIELD_HH

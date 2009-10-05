@@ -8,6 +8,7 @@
 #include <dune/common/fvector.hh>
 
 #include <dune/grid/genericgeometry/topologytypes.hh>
+#include <dune/grid/genericgeometry/misc.hh>
 
 #include <dune/common/field.hh>
 
@@ -364,7 +365,7 @@ namespace Dune
 
       Field *const col0End = values + baseSizes[ 0 ];
       for( Field *it = values; it != col0End; ++it )
-        *it *= Field( 1 ) / Field( dimDomain );
+        *it *= Field( 1 ) /  Field( double(dimDomain) );  // ??? double cast due to error in Linker
       Field *row0 = values;
 
       for( unsigned int k = 1; k <= order; ++k )
@@ -485,7 +486,9 @@ namespace Dune
     {
       integral( order, &(values[ 0 ]) );
     }
-
+  private:
+    MonomialBasis(const This&);
+    This& operator=(const This&);
   };
   template< int dim, class F >
   class VirtualMonomialBasis
@@ -498,16 +501,18 @@ namespace Dune
 
     typedef FieldVector<Field,dimension> DomainVector;
 
-    const unsigned int *sizes ( unsigned int order ) const = 0;
+    virtual ~VirtualMonomialBasis() {}
+
+    virtual const unsigned int *sizes ( unsigned int order ) const = 0;
 
     const unsigned int size ( unsigned int order ) const
     {
       return sizes( order )[ order ];
     }
 
-    void evaluate ( const unsigned int order,
-                    const DomainVector &x,
-                    Field *const values ) const = 0;
+    virtual void evaluate ( const unsigned int order,
+                            const DomainVector &x,
+                            Field *const values ) const = 0;
     void evaluate ( const unsigned int order,
                     const DomainVector &x,
                     FieldVector<Field,1> *const values ) const
@@ -522,8 +527,8 @@ namespace Dune
       evaluate( order, x, &(values[ 0 ]) );
     }
 
-    void integral ( const unsigned int order,
-                    Field *const values ) const = 0;
+    virtual void integral ( const unsigned int order,
+                            Field *const values ) const = 0;
     void integral ( const unsigned int order,
                     FieldVector<Field,1> *const values ) const
     {
@@ -569,6 +574,80 @@ namespace Dune
     MonomialBasis<Topology,Field> basis_;
   };
 
+  template< int dim, class F >
+  struct MonomialBasisProvider
+  {
+    static const int dimension = dim;
+    typedef F Field;
+    typedef VirtualMonomialBasis<dimension,Field> Basis;
+
+    static const Basis &basis(unsigned int id)
+    {
+      return instance().getBasis(id);
+    }
+
+    template <class Impl>
+    static void callback(Impl &impl, unsigned int topologyId)
+    {
+      GenericGeometry::ForLoop<GetBasisHelper,0,numTopologies-1>::apply(impl,topologyId);
+    }
+    template <class Impl,class T1>
+    static void callback(Impl &impl, unsigned int topologyId, T1 &t1)
+    {
+      GenericGeometry::ForLoop<GetBasisHelper,0,numTopologies-1>::apply(impl,topologyId,t1);
+    }
+
+  private:
+    enum { numTopologies = (1 << dimension) };
+    MonomialBasisProvider()
+    {}
+    static MonomialBasisProvider &instance()
+    {
+      static MonomialBasisProvider instance;
+      return instance;
+    }
+    const Basis &getBasis(unsigned int id)
+    {
+      if (basis_[id] == 0)
+        MonomialBasisProvider::callback(*this,id);
+      return basis_[id];
+    }
+    template <class Topology>
+    const Basis &getBasis()
+    {
+      const unsigned int id = Topology::id;
+      if (basis_[id] == 0)
+        basis_[id] = new VirtualMonomialBasisImpl<Topology,Field>;
+      return *(basis_[id]);
+    }
+    template <class Topology>
+    void apply(const Basis &)
+    {}
+
+    template <int tid>
+    struct GetBasisHelper
+    {
+      typedef typename GenericGeometry::Topology<tid,dimension>::type Topology;
+      template <class Impl>
+      static void apply(Impl &impl, unsigned int topologyId)
+      {
+        if ((unsigned int)tid == topologyId)
+        {
+          impl.template apply<Topology>(instance().template getBasis<Topology>());
+        }
+      }
+      template <class Impl,class T1>
+      static void apply(Impl &impl, unsigned int topologyId, T1 &t1)
+      {
+        if ((unsigned int)tid == topologyId)
+        {
+          impl.template apply<Topology>(instance().template getBasis<Topology>(),t1);
+        }
+      }
+    };
+
+    FieldVector<Basis*,numTopologies> basis_;
+  };
 
 
 

@@ -12,8 +12,7 @@ namespace Dune
   class PolynomialBasis
   {
     typedef B Basis;
-    typedef typename Basis::Topology Topology;
-    enum {dimension = Topology::dimension};
+    enum {dimension = Basis::dimension};
 
     typedef SF StorageField;
 
@@ -21,20 +20,21 @@ namespace Dune
     typedef typename Basis::DomainVector DomainVector;
     typedef FieldVector<StorageField,dimRange> CoeffRangeVector;
 
-    PolynomialBasis (int order)
-      : basis_(), basisEval_(basis_.size(order)), order_(order)
+    PolynomialBasis (const Basis &basis, int order)
+      : basis_(&basis),
+        basisEval_(basis.size(order)), order_(order)
     {}
 
     const int size () const
     {
-      return basis_.size(order_);
+      return basis_->size(order_);
     }
 
     template <class RangeVector>
     void evaluate ( const DomainVector &x,
                     std::vector< RangeVector > &values ) const
     {
-      basis_.evaluate(order_,x,basisEval_);
+      basis_->evaluate(order_,x,basisEval_);
       coeffMatrix_.mult(basisEval_,values);
     }
 
@@ -49,19 +49,21 @@ namespace Dune
     }
 
     void print(std::ofstream &out) const {
-      typedef Dune::MultiIndex<dimension> MI;
-      typedef Dune::MonomialBasis< Topology, MI > Basis;
-      Basis basis;
-      const unsigned int size = basis.size( order_ );
-      std::vector< MI > y( size );
-      Dune::FieldVector< MI, dimension > x;
-      for (int d=0; d<dimension; ++d)
-        x[d].set(d);
-      basis.evaluate( order_, x, &(y[0]) );
-      coeffMatrix_.print(out,y);
+      /*
+         typedef typename Basis::Topology Topology;
+         typedef Dune::MultiIndex<dimension> MI;
+         typedef Dune::MonomialBasis< Topology, MI > Basis;
+         Basis basis;
+         const unsigned int size = basis.size( order_ );
+         std::vector< MI > y( size );
+         Dune::FieldVector< MI, dimension > x;
+         for (int d=0;d<dimension;++d)
+          x[d].set(d);
+         basis.evaluate( order_, x, &(y[0]) );
+         coeffMatrix_.print(out,y);
+       */
     }
 
-  protected:
     template <class FullMatrix>
     void fill(const FullMatrix& matrix)
     {
@@ -80,7 +82,9 @@ namespace Dune
       }
     }
   private:
-    const Basis basis_;
+    PolynomialBasis(const PolynomialBasis &);
+    PolynomialBasis &operator=(const PolynomialBasis&);
+    const Basis *basis_;
     mutable std::vector<StorageField> basisEval_;
     CoeffMatrix< CoeffRangeVector > coeffMatrix_;
     unsigned int order_;

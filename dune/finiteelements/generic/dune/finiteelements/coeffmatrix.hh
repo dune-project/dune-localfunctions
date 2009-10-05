@@ -10,22 +10,9 @@
 
 namespace Dune
 {
-  template <class Vector1,class Vector2>
+  template <class MatrixEntry,class BasisEntry>
   struct Mult;
-  template <class Field,int dimRange,int dimDomain>
-  struct Mult<FieldVector<Field,dimRange>,FieldVector<Field,dimDomain> >
-  {
-    typedef FieldVector<Field,dimRange> Vector1;
-    typedef FieldVector<Field,dimDomain> Vector2;
-    typedef FieldMatrix<Field,dimRange,dimRange> Result;
-    static void add(const Vector1 &vec1, const Vector2 &vec2,
-                    Result &res)
-    {
-      for (int r=0; r<dimRange; ++r)
-        for (int d=0; d<dimDomain; ++d)
-          res[r][d] += vec1[r]*vec2[d];
-    }
-  };
+
   template <class Field,int dimRange>
   struct Mult<FieldVector<Field,dimRange>,Field>
   {
@@ -39,15 +26,61 @@ namespace Dune
         res[r] += vec1[r]*vec2;
     }
   };
+  template <class Field,int dimRange,int dimDomain>
+  struct Mult<FieldVector<Field,dimRange>,FieldVector<Field,dimDomain> >
+  {
+    typedef FieldVector<Field,dimRange> Vector1;
+    typedef FieldVector<Field,dimDomain> Vector2;
+    typedef FieldMatrix<Field,dimRange,dimDomain> Result;
+    static void add(const Vector1 &vec1, const Vector2 &vec2,
+                    Result &res)
+    {
+      for (int r=0; r<dimRange; ++r)
+        for (int d=0; d<dimDomain; ++d)
+          res[r][d] += vec1[r]*vec2[d];
+    }
+  };
+
+  template <class Field,int dimRange>
+  struct Mult<FieldMatrix<Field,dimRange,dimRange>,FieldVector<Field,dimRange> >
+  {
+    typedef FieldMatrix<Field,dimRange,dimRange> Vector1;
+    typedef FieldVector<Field,dimRange> Vector2;
+    typedef FieldVector<Field,dimRange> Result;
+    static void add(const Vector1 &vec1, const Vector2 &vec2,
+                    Result &res)
+    {
+      for (int r=0; r<dimRange; ++r)
+        for (int i=0; i<dimRange; ++i)
+          res[r] += vec1[r][i]*vec2[i];
+    }
+  };
+  template <class Field,int dimRange,int dimDomain>
+  struct Mult<FieldMatrix<Field,dimRange,dimRange>,FieldMatrix<Field,dimRange,dimDomain> >
+  {
+    typedef FieldMatrix<Field,dimRange,dimRange> Vector1;
+    typedef FieldMatrix<Field,dimRange,dimDomain> Vector2;
+    typedef FieldMatrix<Field,dimRange,dimDomain> Result;
+    static void add(const Vector1 &vec1, const Vector2 &vec2,
+                    Result &res)
+    {
+      for (int r=0; r<dimRange; ++r)
+        for (int d=0; d<dimDomain; ++d)
+          for (int i=0; i<dimRange; ++i)
+            res[r][d] += vec1[r][i]*vec2[i][d];
+    }
+  };
 
 
   template< class V >
   class CoeffMatrix
   {
+  public:
+    typedef CoeffMatrix<V> This;
     typedef V Vector;
+    static const int dimension = V::dimension;
     typedef typename Vector::field_type Field;
 
-  public:
     CoeffMatrix()
       : coeff_(0),
         rows_(0),
@@ -60,15 +93,15 @@ namespace Dune
       delete [] rows_;
     }
 
-    const int size () const
+    const unsigned int size () const
     {
       return numRows_;
     }
 
     template <class RangeVector>
     void print(std::ostream& out,
-               std::vector< RangeVector > &x) const {
-      size_t numLsg = numRows_;
+               std::vector< RangeVector > &x,
+               unsigned int numLsg = size()) const {
       Vector *row = rows_[0];
       for( unsigned int r=0; r<numLsg; ++r )
       {
@@ -135,10 +168,13 @@ namespace Dune
     }
 
   private:
+    CoeffMatrix(const CoeffMatrix&);
+    CoeffMatrix &operator= (const CoeffMatrix&);
     Vector *coeff_;
     Vector **rows_;
     int numRows_;
   };
+
 }
 
 #endif // DUNE_COEFFMATRIX_HH

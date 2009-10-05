@@ -12,36 +12,44 @@ namespace Dune
   // PolynomialBasis
   // ---------------
 
-  template< int dimRange, class B, class SF >
+  template<  class B, class CM >
   class PolynomialBasis
   {
-    typedef PolynomialBasis< dimRange, B, SF > This;
+    typedef PolynomialBasis< B, CM > This;
 
     typedef B Basis;
     enum {dimension = Basis::dimension};
 
-    typedef SF StorageField;
+    typedef CM CoefficientMatrix;
+    typedef typename CoefficientMatrix::Field StorageField;
+    static const int dimRange = CoefficientMatrix::dimension;
 
   public:
     typedef typename Basis::DomainVector DomainVector;
-    typedef FieldVector<StorageField,dimRange> CoeffRangeVector;
 
-    PolynomialBasis (const Basis &basis, int order)
+    PolynomialBasis (const Basis &basis,
+                     const CoefficientMatrix &coeffMatrix,
+                     int order,
+                     int size = 0)
       : basis_(&basis),
-        basisEval_(basis.size(order)), order_(order)
-    {}
+        coeffMatrix_(&coeffMatrix),
+        basisEval_(basis.size(order)),
+        order_(order),
+        size_(size)
+    { }
 
     const int size () const
     {
-      return basis_->size(order_);
+      return size_;
     }
 
     template< class RangeVector >
     void evaluate ( const DomainVector &x,
                     std::vector< RangeVector > &values ) const
     {
+      assert(values.size()>=size());
       basis_->evaluate( order_, x, basisEval_ );
-      coeffMatrix_.mult( basisEval_, values );
+      coeffMatrix_->mult( basisEval_, values );
     }
 
     template< class DomainVector, class RangeVector >
@@ -54,63 +62,93 @@ namespace Dune
       evaluate( bx, values );
     }
 
-    void print(std::ofstream &out) const {
-      /*
-         typedef typename Basis::Topology Topology;
-         typedef Dune::MultiIndex<dimension> MI;
-         typedef Dune::MonomialBasis< Topology, MI > Basis;
-         Basis basis;
-         const unsigned int size = basis.size( order_ );
-         std::vector< MI > y( size );
-         Dune::FieldVector< MI, dimension > x;
-         for (int d=0;d<dimension;++d)
+    template <class Topology,class FullMatrix>
+    void printBasis(const std::string &name,
+                    const FullMatrix &matrix)
+    {
+      {
+        std::ofstream out((name+".out").c_str());
+        out.precision(15);
+        out.setf(std::ios::scientific,std::ios::floatfield);
+        matrix.print(out,size_);
+      }
+      {
+        std::ofstream out((name+".gnu").c_str());
+        out.precision(15);
+        out.setf(std::ios::scientific,std::ios::floatfield);
+
+        typedef Dune::MultiIndex<dimension> MI;
+        typedef Dune::MonomialBasis< Topology, MI > Basis;
+        Basis basis;
+        const unsigned int size = basis.size( order_ );
+        std::vector< MI > y( size );
+        Dune::FieldVector< MI, dimension > x;
+        for (int d=0; d<dimension; ++d)
           x[d].set(d);
-         basis.evaluate( order_, x, &(y[0]) );
-         coeffMatrix_.print(out,y);
-       */
+        basis.evaluate( order_, x, &(y[0]) );
+        coeffMatrix_->print(out,y,size_);
+      }
     }
+  protected:
+    PolynomialBasis(const PolynomialBasis &);
+    PolynomialBasis &operator=(const PolynomialBasis&);
+    const Basis *basis_;
+    const CoefficientMatrix* coeffMatrix_;
+    mutable std::vector<StorageField> basisEval_;
+    unsigned int order_,size_;
+  };
+
+  template< class B, class SF, int dimR >
+  class PolynomialBasisWithMatrix
+    : public PolynomialBasis<B,CoeffMatrix<FieldVector<SF,dimR> > >
+  {
+    typedef PolynomialBasisWithMatrix< B, SF, dimR > This;
+
+    typedef B Basis;
+    enum {dimension = Basis::dimension};
+
+    static const int dimRange = dimR;
+    typedef SF StorageField;
+    typedef FieldVector<StorageField,dimRange> CoeffRangeVector;
+    typedef CoeffMatrix< CoeffRangeVector > CoefficientMatrix;
+
+    typedef PolynomialBasis<B,CoefficientMatrix> Base;
+
+  public:
+    typedef typename Basis::DomainVector DomainVector;
+
+    PolynomialBasisWithMatrix (const Basis &basis,
+                               int order)
+      : Base(basis,coeffMatrix_,order)
+    {}
 
     template <class FullMatrix>
     void fill(const FullMatrix& matrix)
     {
       coeffMatrix_.fill(matrix);
-      {
-        std::ofstream out("coeffs.out");
-        out.precision(15);
-        out.setf(std::ios::scientific,std::ios::floatfield);
-        matrix.print(out);
-      }
-      {
-        std::ofstream out("coeffs.gnu");
-        out.precision(15);
-        out.setf(std::ios::scientific,std::ios::floatfield);
-        print(out);
-      }
+      this->size_ = matrix.rowSize();
     }
+
   private:
-    PolynomialBasis(const PolynomialBasis &);
-    PolynomialBasis &operator=(const PolynomialBasis&);
-    const Basis *basis_;
-    mutable std::vector<StorageField> basisEval_;
+    PolynomialBasisWithMatrix(const PolynomialBasisWithMatrix &);
+    PolynomialBasisWithMatrix &operator=(const PolynomialBasisWithMatrix &);
     CoeffMatrix< CoeffRangeVector > coeffMatrix_;
-    unsigned int order_;
   };
 
 
-
-  template< int dim, class SF,
-      class Creator, class MBasis = VirtualMonomialBasis<dim,SF> >
+  template< class Creator >
   struct PolynomialBasisProvider
   {
-    static const int dimension = dim;
-    typedef SF Field;
-    typedef PolynomialBasis<1,MBasis,SF> Basis;
+    typedef typename Creator :: StorageField StorageField;
+    static const int dimension = Creator :: dimension;
+    typedef typename Creator :: Basis Basis;
+
     static const Basis &basis(unsigned int id,unsigned int order)
     {
       return instance().getBasis(id,order);
     }
   private:
-    friend struct MonomialBasisProvider<dimension,SF>;
+    friend struct MonomialBasisProvider<dimension,StorageField>;
     enum { numTopologies = (1 << dimension) };
     PolynomialBasisProvider()
     {}
@@ -124,10 +162,10 @@ namespace Dune
       if (order>=basis_.size())
       {
         basis_.resize(order+1,FieldVector<Basis*,numTopologies>(0));
-        MonomialBasisProvider<dimension,SF>::template callback<Creator>(id,order,basis_[order][id]);
+        MonomialBasisProvider<dimension,StorageField>::template callback<Creator>(id,order,basis_[order][id]);
       }
       else if (basis_[order][id] == 0)
-        MonomialBasisProvider<dimension,SF>::template callback<Creator>(id,order,basis_[order][id]);
+        MonomialBasisProvider<dimension,StorageField>::template callback<Creator>(id,order,basis_[order][id]);
       return *(basis_[order][id]);
     }
     std::vector<FieldVector<Basis*,numTopologies> > basis_;

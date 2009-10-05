@@ -32,8 +32,7 @@ namespace Dune
     {
       return matrix_(c,r);
     }
-    void print(std::ostream& out) const {
-      int N = rowSize();
+    void print(std::ostream& out,int N = rowSize()) const {
       for (int i=0; i<N; ++i) {
         out << "Polynomial : " << i << std::endl;
         for (int j=0; j<colSize(i); j++) {
@@ -51,22 +50,30 @@ namespace Dune
     mat_t matrix_;
   };
 
-  template< class CF >
+  template< int dim, class SF, class CF >
   struct LagrangeBasisCreator
   {
-    typedef AlgLib::MultiPrecision<Dune::Precision<CF>::value+512 > ComputeField;
+    typedef VirtualMonomialBasis<dim,SF> MBasis;
+    typedef SF StorageField;
+    typedef AlgLib::MultiPrecision< Precision<CF>::value > ComputeField;
+    static const int dimension = dim;
+    typedef PolynomialBasisWithMatrix<MBasis,StorageField,1> Basis;
+
     template <class Topology,class VirtualBasis,class Basis>
     static void apply(const VirtualBasis &virtBasis,unsigned int order,Basis* &basis)
     {
       basis = new Basis(virtBasis,order);
       LagrangeMatrix<Topology,ComputeField> matrix(order);
       basis->fill(matrix);
+      std::stringstream name;
+      name << "lagrange_" << Topology::name() << "_p" << order;
+      basis->template printBasis<Topology>(name.str(),matrix);
     }
   };
 
   template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
   struct LagrangeBasisProvider
-    : public PolynomialBasisProvider<dim,SF,LagrangeBasisCreator<CF> >
+    : public PolynomialBasisProvider<LagrangeBasisCreator<dim,SF,CF> >
   {};
 }
 #endif // DUNE_ORTHONORMALBASIS_HH

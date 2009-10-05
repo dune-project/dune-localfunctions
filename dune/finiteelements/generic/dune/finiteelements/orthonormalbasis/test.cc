@@ -9,15 +9,21 @@ using namespace GenericGeometry;
 template <class Topology>
 bool test(unsigned int order) {
   typedef AlgLib::MultiPrecision<128> StorageField;
+  // typedef double StorageField;
+  typedef AlgLib::MultiPrecision<512> ComputeField;
+  // typedef double ComputeField;
 
   bool ret = true;
-  for (unsigned int o=1; o<=order; ++o)
+  for (unsigned int o=order; o<=order; --o)
   {
     std::cout << "Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
-    typedef OrthonormalBasisProvider<Topology::dimension,StorageField> BasisProvider;
+    typedef OrthonormalBasisProvider<Topology::dimension,StorageField,ComputeField> BasisProvider;
     const typename BasisProvider::Basis &basis = BasisProvider::basis(Topology::id,o);
 
     const unsigned int size = basis.size( );
+
+    std::cout << "Basis size: " << size << std::endl;
+
     std::vector< FieldVector< double, 1 > > y( size );
 
     std::vector< FieldVector< double, 1 > > m( size * size );

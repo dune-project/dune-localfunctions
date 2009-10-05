@@ -9,6 +9,10 @@ using namespace GenericGeometry;
 template <class Topology>
 bool test(unsigned int order) {
   typedef AlgLib::MultiPrecision<128> StorageField;
+  // typedef double StorageField;
+  typedef AlgLib::MultiPrecision<512> ComputeField;
+  // typedef double ComputeField;
+
   bool ret = true;
 
   for (unsigned int o=1; o<=order; ++o)
@@ -60,7 +64,7 @@ int main ( int argc, char **argv )
 
   const unsigned int order = atoi( argv[ 1 ] );
 #ifdef TOPOLOGY
-  return (test<TOPOLOGY>(order) ? 0 : 1 );
+  return (test<TOPOLOGY>(order,fixed) ? 0 : 1 );
 #else
   bool tests = true;
   tests &= test<Prism<Point> > (order);

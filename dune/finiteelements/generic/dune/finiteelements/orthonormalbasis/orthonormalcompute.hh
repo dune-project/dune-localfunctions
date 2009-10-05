@@ -13,6 +13,8 @@
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
 #include <dune/alglib/multiprecision.hh>
+#include <dune/alglib/vector.hh>
+#include <dune/alglib/matrix.hh>
 
 namespace ONB {
   template <class scalar_t>
@@ -62,10 +64,12 @@ namespace ONB {
     }
   };
   template <class scalar_t>
-  class Compute
+  struct Compute
   {
     typedef ap::template_1d_array< scalar_t > vec_t;
     typedef ap::template_2d_array< scalar_t > mat_t;
+    // typedef Dune::AlgLib::Vector< scalar_t > vec_t;
+    // typedef Dune::AlgLib::Matrix< scalar_t > mat_t;
 
 
     /**************************************************/
@@ -77,23 +81,24 @@ namespace ONB {
       mat_t& res;
       CalcCoeffsBase(mat_t& pres) : res(pres) {}
       virtual ~CalcCoeffsBase() {}
-      void test() {
-        int N = this->res.gethighbound(1);
+      bool test() {
+        bool ret = true;
+        int N = this->res.gethighbound(1)+1; // rows();
         // Nun schauen wir noch, ob wirklich C^T S C = E gilt
         scalar_t prod;
-        for (int i=1; i<=N; ++i) {
-          for (int j=1; j<=N; j++) {
+        for (int i=0; i<N; ++i) {
+          for (int j=0; j<N; j++) {
             prod = 0;
-            for (int k=1; k<=N; k++) {
-              for (int l=1; l<=N; l++) {
+            for (int k=0; k<N; k++) {
+              for (int l=0; l<N; l++) {
                 prod += res(l,i)*S(l,k)*res(k,j);
               }
             }
-            assert((i==j) ? 1 : // fabs(prod.toDouble()-1)<1e-10 :
+            assert((i==j) ? 1 :
                    fabs(prod.toDouble())<1e-10);
-            // std::cout << "(" << i << "," << j << ")" << prod.toDouble() << std::endl;
           }
         }
+        return ret;
       }
       virtual void compute() = 0;
       void compute(int ord) {
@@ -101,7 +106,7 @@ namespace ONB {
         typedef Dune::MultiIndex<dim> MI;
         typedef Dune::StandardMonomialBasis< dim, MI  > Basis;
         Basis basis;
-        const unsigned int size = basis.sizes( ord )[ ord ];
+        const unsigned int size = basis.size( ord );
         std::vector< Dune::FieldVector< MI,1> > y( size );
         Dune::FieldVector< MI, dim > x;
         for (int i=0; i<dim; ++i) {
@@ -109,23 +114,26 @@ namespace ONB {
         }
         basis.evaluate( ord , x, y );
         // set bounds of data
-        res.setbounds(1,size,1,size);
-        S.setbounds(1,size,1,size);
-        d.setbounds(1,size);
+        res.setbounds(0,size-1,0,size-1);
+        S.setbounds(0,size-1,0,size-1);
+        d.setbounds(0,size-1);
+        // res.resize(size,size);
+        // S.resize(size,size);
+        // d.resize(size);
         // Aufstellen der Matrix fuer die Bilinearform xSy
         // S_ij = int_A x^(i+j)
         scalar_t p,q;
-        for( unsigned int i=1; i<=size; ++i )
+        for( unsigned int i=0; i<size; ++i )
         {
-          for( unsigned int j=1; j<=size; j++ )
+          for( unsigned int j=0; j<size; j++ )
           {
-            Integral<Topology>::compute(y[i-1]*y[j-1],p,q);
+            Integral<Topology>::compute(y[i]*y[j],p,q);
             S(i,j) = p;
             S(i,j) /= q;
           }
         }
         compute();
-        test();
+        assert(test());
         return;
       }
     };
@@ -134,35 +142,32 @@ namespace ONB {
       CalcCoeffsGM(mat_t& pres)
         : CalcCoeffsBase<Topology>(pres) {}
       virtual ~CalcCoeffsGM() {}
-      void sprod(int col1,int col2,
-                 scalar_t& ret) {
+      void sprod(int col1,int col2, scalar_t& ret) {
         ret = 0;
-        for (int k=1; k<=col1; k++) {
-          for (int l=1; l<=col2; l++) {
+        for (int k=0; k<=col1; k++) {
+          for (int l=0; l<=col2; l++) {
             ret += this->res(l,col2)*this->S(l,k)*this->res(k,col1);
           }
         }
       }
       virtual void compute() {
-        int N = this->res.gethighbound(1);
+        int N = this->res.gethighbound(1)+1; // rows();
         scalar_t s;
-        for (int i=1; i<=N; ++i)
-          for (int j=1; j<=N; ++j)
+        for (int i=0; i<N; ++i)
+          for (int j=0; j<N; ++j)
             this->res(i,j) = (i==j) ? 1 : 0;
-        sprod(1,1,s);
-        // s = 1./amp::sqrt<Precision>(s);
+        sprod(0,0,s);
         s = 1./amp::sqrt(s);
-        vmul(this->res.getcolumn(1,1,1),s);
-        for (int i=1; i<N; i++) {
-          for (int k=1; k<=i; ++k) {
+        vmul(this->res.getcolumn(0,0,0),s);
+        for (int i=0; i<N-1; i++) {
+          for (int k=0; k<=i; ++k) {
             sprod(i+1,k,s);
-            vsub(this->res.getcolumn(i+1,1,i+1),
-                 this->res.getcolumn(k,  1,i+1),s);
+            vsub(this->res.getcolumn(i+1,0,i+1),
+                 this->res.getcolumn(k,  0,i+1),s);
           }
           sprod(i+1,i+1,s);
-          // s = 1./amp::sqrt<Precision>(s);
           s = 1./amp::sqrt(s);
-          vmul(this->res.getcolumn(i+1,1,i+1),s);
+          vmul(this->res.getcolumn(i+1,0,i+1),s);
         }
       }
     };
@@ -299,11 +304,13 @@ namespace ONB {
       }
     };
   };
+
   template <class Topology,class scalar_t>
   struct ONBMatrix {
     enum {dim = Topology::dimension};
-    typedef ap::template_1d_array< scalar_t > vec_t;
-    typedef ap::template_2d_array< scalar_t > mat_t;
+    typedef Compute<scalar_t> Compute;
+    typedef typename Compute::vec_t vec_t;
+    typedef typename Compute::mat_t mat_t;
     ONBMatrix(int maxOrder)
       : calc(1)
     {
@@ -313,34 +320,33 @@ namespace ONB {
       return row+1;
     }
     int rowSize() const {
-      return calc.res.gethighbound(1);
+      return calc.res.gethighbound(1)+1;
     }
 
     const Dune::FieldVector< scalar_t, 1 > operator() ( int r, int c ) const
     {
-      return calc.res(c+1,r+1);
+      return calc.res(c,r);
     }
 
-    void print(std::ostream& out) const {
-      int N = rowSize();
+    void print(std::ostream& out,int N = rowSize()) const {
       for (int i=0; i<N; ++i) {
         out << "Polynomial : " << i << std::endl;
         for (int j=0; j<colSize(i); j++) {
-          double v = calc.res(j+1,i+1).toDouble();
+          double v = calc.res(j,i).toDouble();
           if (fabs(v)<1e-20)
             out << 0 << "\t\t" << std::flush;
           else {
-            Dune::AlgLib::MultiPrecision<128> v = calc.res(j+1,i+1);
+            Dune::AlgLib::MultiPrecision<128> v = calc.res(j,i);
             out << v << "\t\t" << std::flush;
           }
         }
         for (int j=colSize(i); j<N; j++) {
-          assert(fabs(calc.res(j+1,i+1).toDouble())<1e-10);
+          assert(fabs(calc.res(j,i).toDouble())<1e-10);
         }
         out << std::endl;
       }
     }
-    typename Compute<scalar_t>::template CalcCoeffs<Topology> calc;
+    typename Compute::template CalcCoeffs<Topology> calc;
   };
 }
 #endif

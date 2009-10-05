@@ -59,6 +59,12 @@ namespace Dune
       computeSizes( 2 );
     }
 
+    ~MonomialBasisImpl ()
+    {
+      delete[] sizes_;
+      delete[] numBaseFunctions_;
+    }
+
     template< int dimD >
     void evaluate ( const unsigned int order,
                     const FieldVector< Field, dimD > &x,
@@ -112,17 +118,23 @@ namespace Dune
     friend class MonomialBasisImpl< GenericGeometry::Prism< Topology >, Field >;
     friend class MonomialBasisImpl< GenericGeometry::Pyramid< Topology >, Field >;
 
-    MonomialBasis< BaseTopology, Field > baseBasis_;
+    MonomialBasisImpl< BaseTopology, Field > baseBasis_;
     // sizes_[ k ]: number of basis functions of exactly order k
-    mutable int *sizes_;
+    mutable unsigned int *sizes_;
     // numBaseFunctions_[ k ] = sizes_[ 0 ] + ... + sizes_[ k ]
-    mutable int *numBaseFunctions_;
+    mutable unsigned int *numBaseFunctions_;
 
     MonomialBasisImpl ()
       : sizes_( 0 ),
         numBaseFunctions_( 0 )
     {
       computeSizes( 2 );
+    }
+
+    ~MonomialBasisImpl ()
+    {
+      delete[] sizes_;
+      delete[] numBaseFunctions_;
     }
 
     template< int dimD >
@@ -209,6 +221,12 @@ namespace Dune
         numBaseFunctions_( 0 )
     {
       computeSizes( 2 );
+    }
+
+    ~MonomialBasisImpl ()
+    {
+      delete[] sizes_;
+      delete[] numBaseFunctions_;
     }
 
     template< int dimD >

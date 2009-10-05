@@ -4,8 +4,7 @@
 
 #include <iostream>
 
-#include <dune/grid/genericgeometry/referenceelements.hh>
-
+#include <dune/finiteelements/lagrangepoints.hh>
 #include <dune/finiteelements/monomialbasis.hh>
 
 #ifndef TOPOLOGY
@@ -30,12 +29,14 @@ int main ( int argc, char **argv )
   const unsigned int size = basis.sizes( p )[ p ];
   std::vector< Dune::FieldVector< double, 1 > > y( size );
 
-  typedef ReferenceElement< Topology, double > RefElement;
+  typedef Dune::LagrangePoints< Topology, double > LagrangePoints;
+  LagrangePoints points( p );
 
-  for( unsigned int i = 0; i < RefElement::numCorners; ++i )
+  const LagrangePoints::iterator end = points.end();
+  for( LagrangePoints::iterator it = points.begin(); it != end; ++it )
   {
-    basis.evaluate( p, RefElement::corner( i ), y );
-    std::cout << "x = " << RefElement::corner( i ) << ":" << std::endl;
+    basis.evaluate( p, *it, y );
+    std::cout << "x = " << *it << ":" << std::endl;
     for( unsigned int i = 0; i < size; ++i )
       std::cout << "    y[ " << i << " ] = " << y[ i ] << std::endl;
   }

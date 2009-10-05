@@ -133,7 +133,6 @@ namespace Dune
         if (it->localKey().codim()>1)
           continue;
         else if (it->localKey().codim()==1) {
-          std::cout << it->point() << " : " << std::endl;
           fillBnd( row, it->localKey(), eval.template evaluate<0>(it->point()),
                    coefficients );
         }
@@ -148,16 +147,12 @@ namespace Dune
     {
       const Dune::FieldVector<double,dimension> &normal = GenericGeometry::ReferenceElement<Topology,double>::integrationOuterNormal(key.subEntity());
       unsigned int col = 0;
-      std::cout << "fillBnd: " << row << " = ";
       for ( ; !iter.done() ; ++iter,++col) {
         matrix(row,col) = 0.;
         for (unsigned int d=0; d<dimension; ++d) {
           matrix(row,col) += iter->block()[d]*normal[d];
-          std::cout << iter->block()[d].toDouble() << " , ";
         }
-        std::cout << matrix(row,col).toDouble() << "; ";
       }
-      std::cout << std::endl;
       ++row;
     }
     template <class LocalKey, class Iterator,class Matrix>
@@ -198,14 +193,14 @@ namespace Dune
         row1_ = basis.sizes()[order]*dim*dim;
         mat_ = new double*[row_];
         int row = 0;
-        for (int i=0; i<notHomogen+homogen; ++i)
+        for (unsigned int i=0; i<notHomogen+homogen; ++i)
         {
-          for (int r=0; r<dim; ++r)
+          for (unsigned int r=0; r<dim; ++r)
           {
-            for (int rr=0; rr<dim; ++rr)
+            for (unsigned int rr=0; rr<dim; ++rr)
             {
               mat_[row] = new double[col_];
-              for (int j=0; j<col_; ++j)
+              for (unsigned int j=0; j<col_; ++j)
               {
                 mat_[row][j] = 0.;
               }
@@ -215,19 +210,19 @@ namespace Dune
             }
           }
         }
-        for (int i=0; i<homogen; ++i)
+        for (unsigned int i=0; i<homogen; ++i)
         {
-          for (int r=0; r<dim; ++r)
+          for (unsigned int r=0; r<dim; ++r)
           {
             mat_[row] = new double[col_];
-            for (int j=0; j<col_; ++j)
+            for (unsigned int j=0; j<col_; ++j)
             {
               mat_[row][j] = 0.;
             }
             unsigned int q = -1;
             MI xval = val[notHomogen+i];
             xval *= x[r];
-            for (int w=homogen+notHomogen; w<val.size(); ++w)
+            for (unsigned int w=homogen+notHomogen; w<val.size(); ++w)
             {
               if (val[w] == xval)
               {
@@ -243,12 +238,7 @@ namespace Dune
       }
       ~VecMatrix()
       {
-        for (int i=0; i<rowSize(); ++i) {
-          std::cout << "mat(" << i << ") = ";
-          for (int j=0; j<colSize(i); ++j) {
-            std::cout << mat_[i][j] << " ";
-          }
-          std::cout << std::endl;
+        for (unsigned int i=0; i<rowSize(); ++i) {
           delete [] mat_[i];
         }
         delete [] mat_;
@@ -261,7 +251,7 @@ namespace Dune
       }
       const scalar_t operator() ( int r, int c ) const
       {
-        assert(r<row_ && c<col_);
+        assert(r<(int)row_ && c<(int)col_);
         return mat_[r][c];
       }
       unsigned int row_,col_,row1_;
@@ -293,7 +283,7 @@ namespace Dune
       int rmod = r%dim;
       int rdiv = r/dim;
       scalar_t ret = 0;
-      for (int k=0; k<matrix_.cols(); ++k) {
+      for (unsigned int k=0; k<matrix_.cols(); ++k) {
         ret += matrix_(k,rdiv)*vecMatrix_(k*dim+rmod,c);
       }
       return ret;
@@ -321,7 +311,6 @@ namespace Dune
       Basis *basis = new Basis(_mBasis);
       RaviartThomasMatrix<Topology,ComputeField> matrix(order);
       basis->fill(matrix);
-      std::cout << "BASIS SIZE: " << basis->size() << std::endl;
       {
         typedef MultiIndex< dimension > MIField;
         typedef VirtualMonomialBasis<dim,MIField> MBasisMI;

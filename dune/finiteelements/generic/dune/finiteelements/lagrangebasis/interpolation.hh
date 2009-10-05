@@ -25,8 +25,8 @@ namespace Dune
   {
     typedef LocalLagrangeInterpolation< LP > This;
 
-    // template< class LagrangePointsCreator >
-    template< class LabattoPointsCreator >
+    template< class LagrangePointsCreator >
+    // template< class LabattoPointsCreator >
     friend class LocalLagrangeInterpolationCreator;
 
   public:
@@ -93,14 +93,14 @@ namespace Dune
   // LocalLagrangeInterpolationCreator
   // ---------------------------------
 
-  // template< class LagrangePointsCreator >
-  template< class LabattoPointsCreator >
+  template< class LagrangePointsCreator >
+  // template< class LabattoPointsCreator >
   struct LocalLagrangeInterpolationCreator
   {
-    // typedef typename LagrangePointsCreator::Key Key;
-    // typedef typename LagrangePointsCreator::LagrangePoints LagrangePoints;
-    typedef typename LabattoPointsCreator::Key Key;
-    typedef typename LabattoPointsCreator::LagrangePoints LagrangePoints;
+    typedef typename LagrangePointsCreator::Key Key;
+    typedef typename LagrangePointsCreator::LagrangePoints LagrangePoints;
+    // typedef typename LabattoPointsCreator::Key Key;
+    // typedef typename LabattoPointsCreator::LagrangePoints LagrangePoints;
 
     typedef LocalLagrangeInterpolation< LagrangePoints > LocalInterpolation;
 
@@ -108,8 +108,8 @@ namespace Dune
     static const LocalInterpolation &localInterpolation ( const Key &key )
     {
       const LagrangePoints &lagrangePoints
-      // = LagrangePointsCreator::template lagrangePoints< Topology >( key );
-        = LabattoPointsCreator::template lagrangePoints< Topology >( key );
+        = LagrangePointsCreator::template lagrangePoints< Topology >( key );
+      // = LabattoPointsCreator::template lagrangePoints< Topology >( key );
       return *(new LocalInterpolation( lagrangePoints ));
     }
 
@@ -117,8 +117,8 @@ namespace Dune
     {
       const LagrangePoints &lagrangePoints = localInterpolation.lagrangePoints();
       delete &localInterpolation;
-      // LagrangePointsCreator::release( lagrangePoints );
-      LabattoPointsCreator::release( lagrangePoints );
+      LagrangePointsCreator::release( lagrangePoints );
+      // LabattoPointsCreator::release( lagrangePoints );
     }
   };
 

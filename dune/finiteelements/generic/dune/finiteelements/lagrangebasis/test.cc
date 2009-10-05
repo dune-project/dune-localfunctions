@@ -63,8 +63,8 @@ bool test(unsigned int order) {
     std::cout << "# Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
 
     typedef Dune::LagrangePoints< StorageField, Topology::dimension > LagrangePoints;
-    // typedef Dune::LagrangePointsCreator< StorageField, Topology::dimension > LagrangePointsCreator;
-    typedef Dune::LabattoPointsCreator< StorageField, Topology::dimension > LagrangePointsCreator;
+    typedef Dune::LagrangePointsCreator< StorageField, Topology::dimension > LagrangePointsCreator;
+    // typedef Dune::LabattoPointsCreator< StorageField, Topology::dimension > LagrangePointsCreator;
     const LagrangePoints &points = LagrangePointsCreator::template lagrangePoints< Topology >( o );
 
 #if USE_GENERIC
@@ -75,12 +75,12 @@ bool test(unsigned int order) {
     {
       for( unsigned int index = 0; index < points.size(); ++index )
       {
-        std::cout << index << "   " << points[ index ].point() << " "
-                  << points[ index ].localKey()
-                  << std::endl;
+        // std::cout << index << "   " << points[ index ].point() << " "
+        //                             << points[ index ].localKey()
+        //           << std::endl;
         basis.evaluate( points[ index ].point(), y );
         bool first = true;
-        if (0 && iterations==1)
+        if (iterations==1)
         {
           for( unsigned int i = 0; i < y.size(); ++i )
           {

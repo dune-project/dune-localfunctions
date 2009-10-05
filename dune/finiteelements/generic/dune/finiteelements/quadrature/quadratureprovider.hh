@@ -88,7 +88,7 @@ namespace Dune
         typename Storage::iterator it = storage.find( key );
         if( it == storage.end() )
         {
-          const Quadrature *quadrature = &QuadratureCreator::template Quadrature< Topology >( key );
+          const Quadrature *quadrature = &(QuadratureCreator::template quadrature< Topology >( key ));
           it = storage.insert( std::make_pair( key, quadrature ) ).first;
         }
         return *(it->second);

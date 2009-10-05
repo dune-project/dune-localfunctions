@@ -23,7 +23,8 @@ namespace Dune
 
       typedef std::pair< unsigned int, typename QuadratureCreator::Key > Key;
 
-      const Quadrature &quadrature ( const unsigned int topologyyId, const Key &key )
+      static const Quadrature &
+      quadrature ( const unsigned int topologyId, const Key &key )
       {
         typedef ReferenceMappings< Field, dimension > RefMappings;
         typedef typename RefMappings::Container RefMappingsContainer;
@@ -40,14 +41,14 @@ namespace Dune
 
         const unsigned int numQuadraturePoints = quadrature->size();
         for( unsigned int qp = 0; qp < numQuadraturePoints; ++qp )
-          subQuadrature->insert( mapping.global( quadrature->point() ), quadrature->weight() );
+          subQuadrature->insert( mapping.global( quadrature->point( qp ) ), quadrature->weight( qp ) );
         QuadratureCreator::release( *quadrature );
 
         return *subQuadrature;
       }
 
       template< class Topology >
-      const Quadrature &quadrature ( const Key &key )
+      static const Quadrature &quadrature ( const Key &key )
       {
         return quadrature( Topology::id, key );
       }
@@ -62,9 +63,9 @@ namespace Dune
       struct QuadratureMaker
       {
         static void apply ( const typename QuadratureCreator::Key &key,
-                            typename QuadratureCreator::Quadrature *&quadrature )
+                            const typename QuadratureCreator::Quadrature *&quadrature )
         {
-          quadrature = QuadratureCreator::template quadrature< Topology >( key );
+          quadrature = &(QuadratureCreator::template quadrature< Topology >( key ));
         }
       };
     };

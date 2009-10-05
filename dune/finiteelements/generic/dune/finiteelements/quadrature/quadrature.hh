@@ -69,16 +69,11 @@ namespace Dune
 
       typedef typename std::vector< QuadraturePoint >::const_iterator Iterator;
 
-    private:
-      std::vector< QuadraturePoint > points_;
-      unsigned int topologyId_;
-
-    protected:
+    public:
       explicit Quadrature ( const unsigned int topologyId )
         : topologyId_( topologyId )
       {}
 
-    public:
       template< class Q >
       Quadrature ( const Q &q )
         : topologyId_( q.topologyId() )
@@ -124,7 +119,6 @@ namespace Dune
         return points_.size();
       }
 
-    protected:
       void insert ( const QuadraturePoint &point )
       {
         points_.push_back( point );
@@ -134,6 +128,11 @@ namespace Dune
       {
         insert( QuadraturePoint( position, weight ) );
       }
+
+    private:
+      std::vector< QuadraturePoint > points_;
+      unsigned int topologyId_;
+
     };
 
   }

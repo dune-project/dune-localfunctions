@@ -23,8 +23,9 @@ namespace Dune
     {
       unsigned int codim;
       unsigned int subEntity;
-      unsigned int offset;
+      unsigned int topologyId;
       unsigned int numDofs;
+      unsigned int offset;
     };
 
     struct MapInfo
@@ -124,10 +125,13 @@ namespace Dune
       const Iterator end = indexInfo_[ codim ].end();
       for( Iterator it = indexInfo_[ codim ].begin(); it != end; ++it )
       {
+        std::cout << "type = " << it->type << ", size = " << it->size
+                  << ", offset = " << size_ << std::endl;
         it->offset = size_;
         size_ += (it->size > 0 ? indexSet_.size( it->type ) * it->size : 0);
       }
     }
+    std::cout << "size = " << size_ << std::endl;
 
     for( unsigned int topologyId = 0; topologyId < numTopologies; ++topologyId )
     {
@@ -135,7 +139,7 @@ namespace Dune
       MapInfo &mapInfo = mapInfo_[ topologyId ];
       const Iterator end = mapInfo.subEntityInfo.end();
       for( Iterator it = mapInfo.subEntityInfo.begin(); it != end; ++it )
-        it->offset = indexInfo_[ it->codim ][ it->subEntity ].offset;
+        it->offset = indexInfo_[ it->codim ][ it->topologyId >> 1 ].offset;
     }
   }
 
@@ -167,13 +171,14 @@ namespace Dune
 
     for( unsigned int codim = 0; codim <= dimension; ++codim )
     {
-      indexInfo_[ codim ].resize( 1 << (dimension-codim) );
+      const unsigned int subdimension = dimension-codim;
+      indexInfo_[ codim ].resize( subdimension > 0 ? 1 << (subdimension-1) : 1 );
 
       const unsigned int codimSize = refTopology.size( codim );
       for( unsigned int subEntity = 0; subEntity < codimSize; ++subEntity )
       {
         const unsigned int topologyId = refTopology.topologyId( codim, subEntity );
-        IndexInfo &indexInfo = indexInfo_[ codim ][ topologyId ];
+        IndexInfo &indexInfo = indexInfo_[ codim ][ topologyId >> 1 ];
         indexInfo.type = refTopology.type( codim, subEntity );
 
         const unsigned int count = counts[ mapper( codim, subEntity ) ];
@@ -183,6 +188,7 @@ namespace Dune
         SubEntityInfo subEntityInfo;
         subEntityInfo.codim = codim;
         subEntityInfo.subEntity = subEntity;
+        subEntityInfo.topologyId = topologyId;
         subEntityInfo.numDofs = count;
         mapInfo.subEntityInfo.push_back( subEntityInfo );
 

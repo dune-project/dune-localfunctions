@@ -1,7 +1,7 @@
 TOPOLOGY = Pyramid< Pyramid< Point > >
 # TOPOLOGY = Prism< Prism< Point > >
 
-check_PROGRAMS = test test-lagrange test-jacobian test-onb test-vec test-dglagrange test-lobatto
+check_PROGRAMS = test test-lagrange test-jacobian test-monoms test-onb test-vec test-dglagrange test-lobatto test-quadrature
 
 SETTINGS = -DTOPOLOGY="$(TOPOLOGY)"
 
@@ -14,8 +14,14 @@ test_CPPFLAGS = $(AM_CPPFLAGS) $(SETTINGS)
 test_vec_SOURCES = test-vec.cc
 test_vec_CPPFLAGS = $(AM_CPPFLAGS) $(SETTINGS)
 
+test_quadrature_SOURCES = test-quadrature.cc
+test_quadrature_CPPFLAGS = $(AM_CPPFLAGS) $(SETTINGS)
+
 test_jacobian_SOURCES = test-jacobian.cc
 test_jacobian_CPPFLAGS = $(AM_CPPFLAGS) $(SETTINGS)
+
+test_monoms_SOURCES = test-monoms.cc
+test_monoms_CPPFLAGS = $(AM_CPPFLAGS) $(SETTINGS)
 
 test_lagrange_SOURCES = test-space.cc
 test_lagrange_CPPFLAGS = -DLAGRANGE $(AM_CPPFLAGS) $(ALL_PKG_CPPFLAGS)

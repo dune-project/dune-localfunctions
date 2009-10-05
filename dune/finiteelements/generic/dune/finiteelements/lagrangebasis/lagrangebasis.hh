@@ -54,7 +54,7 @@ namespace Dune
 
     Dune::FieldMatrix< scalar_t, 1, 1 > operator() ( int r, int c ) const
     {
-      return matrix_( c, r );
+      return Dune::FieldMatrix< scalar_t, 1, 1 >( matrix_( c, r ) );
     }
 
     void print ( std::ostream &out, const unsigned int N = rowSize() ) const

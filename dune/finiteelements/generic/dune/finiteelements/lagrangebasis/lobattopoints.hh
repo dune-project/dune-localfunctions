@@ -271,11 +271,11 @@ namespace Dune {
             return;
           points.resize(oldSize+size);
           std::vector< LagrangePoint<Field,dimension-codimension> > subPoints(size);
-          /*
-             std::cout << Topology::name() << " " << SubTopology::name() << " : "
+
+          std::cout << Topology::name() << " " << SubTopology::name() << " : "
                     << " ( " << codimension <<  " , " << subEntity << " ) "
                     << oldSize << " " << size << std::endl;
-           */
+
           InnerPoints::template setup<dimension-codimension>( points1D,&(subPoints[0]) );
 
           const RefMappingsContainer &refMappings = RefMappings::container( Topology::id );
@@ -284,12 +284,12 @@ namespace Dune {
           LagrangePoint<Field,dimension> *p = &(points.points_[oldSize]);
           for ( unsigned int nr = 0; nr<size; ++nr, ++p)
           {
-            /*
-               std::cout << "   " << nr << " : "
+
+            std::cout << "   " << nr << " : "
                       << subPoints[nr].point_ << " -> "
                       << mapping.global( subPoints[nr].point_ )
                       << std::endl;
-             */
+
             p->point_ = mapping.global( subPoints[nr].point_ );
             p->localKey_ = LocalKey( subEntity, codimension, nr );
             #ifndef NDEBUG

@@ -3,6 +3,8 @@
 #ifndef DUNE_MONOMIALBASIS_HH
 #define DUNE_MONOMIALBASIS_HH
 
+#include <vector>
+
 #include <dune/common/fvector.hh>
 
 #include <dune/grid/genericgeometry/topologytypes.hh>
@@ -50,6 +52,13 @@ namespace Dune
     // numBaseFunctions_[ k ] = sizes_[ 0 ] + ... + sizes_[ k ]
     mutable unsigned int *numBaseFunctions_;
 
+    MonomialBasisImpl ()
+      : sizes_( 0 ),
+        numBaseFunctions_( 0 )
+    {
+      computeSizes( 2 );
+    }
+
     template< int dimD >
     void evaluate ( const unsigned int order,
                     const FieldVector< Field, dimD > &x,
@@ -75,7 +84,7 @@ namespace Dune
 
       sizes_[ 0 ] = 1;
       numBaseFunctions_[ 0 ] = 1;
-      for( int k = 1; k <= order; ++k )
+      for( unsigned int k = 1; k <= order; ++k )
       {
         sizes_[ k ]            = 0;
         numBaseFunctions_[ k ] = 1;
@@ -122,7 +131,7 @@ namespace Dune
                     const unsigned int *const offsets,
                     RangeVector *const values ) const
     {
-      const Field& z = x[ dimDomain-1 ];
+      const Field &z = x[ dimDomain-1 ];
 
       // fill first column
       baseBasis_.evaluate( order, x, offsets, values );
@@ -232,12 +241,12 @@ namespace Dune
                            RangeVector *const values ) const
     {
       const Field &z = x[ dimDomain-1 ];
-      const Field &omz = Field( 1 ) - z;
+      Field omz = Field( 1 ) - z;
 
       if( omz > 1e-12 ) // this number must depend on Field
       {
-        const Field &invomz = Field( 1 ) / omz;
-        const FieldVector< Field, dimDomain-1 > y;
+        const Field invomz = Field( 1 ) / omz;
+        FieldVector< Field, dimDomain-1 > y;
         for( unsigned int i = 0; i < dimDomain-1; ++i )
           y[ i ] = x[ i ] * invomz;
 
@@ -249,7 +258,7 @@ namespace Dune
 
       const unsigned int *const baseSizes = baseBasis_.sizes_;
       RangeVector *row0 = values;
-      const Field &omzk = omz;
+      Field omzk = omz;
       for( unsigned int k = 1; k <= order; ++k )
       {
         RangeVector *const row1 = values + offsets[ k-1 ];
@@ -336,6 +345,13 @@ namespace Dune
                     RangeVector *const values ) const
     {
       Base::evaluate( order, x, sizes( order ), values );
+    }
+
+    void evaluate ( const unsigned int order,
+                    const DomainVector &x,
+                    std::vector< RangeVector > &values ) const
+    {
+      evaluate( order, x, &(values[ 0 ]) );
     }
   };
 

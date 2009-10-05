@@ -31,7 +31,8 @@ namespace Dune
       typedef MultiPrecision< precision > Field;
       typedef AlgLib::Vector< Field > Vector;
 
-    private:
+      // private:
+    public:
       typedef amp::ampf< precision > RealField;
       typedef ap::template_2d_array< RealField, aligned > RealMatrix;
 
@@ -42,6 +43,11 @@ namespace Dune
       }
 
       operator RealMatrix & ()
+      {
+        return matrix_;
+      }
+
+      const RealMatrix &amp () const
       {
         return matrix_;
       }

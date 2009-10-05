@@ -186,7 +186,7 @@ namespace Dune
       for( unsigned int k = 1; k <= order; ++k )
       {
         sizes_[ k ]            = baseNBF[ k ] + k*baseSizes[ k ];
-        numBaseFunctions_[ k ] = numBaseFunctions_[ k-1 ] + baseNBF[ k ];
+        numBaseFunctions_[ k ] = numBaseFunctions_[ k-1 ] + sizes_[ k ];
       }
     }
   };
@@ -327,7 +327,7 @@ namespace Dune
       for( unsigned int k = 1; k <= order; ++k )
       {
         sizes_[ k ]            = baseNBF[ k ];
-        numBaseFunctions_[ k ] = numBaseFunctions_[ k-1 ] + baseNBF[ k ];
+        numBaseFunctions_[ k ] = numBaseFunctions_[ k-1 ] + sizes_[ k ];
       }
     }
   };

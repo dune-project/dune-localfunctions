@@ -32,8 +32,8 @@ int main ( int argc, char **argv )
   typedef Dune::LagrangePoints< Topology, double > LagrangePoints;
   LagrangePoints points( p );
 
-  if( points.size() != size )
-    std::cerr << "Error: Number of Lagrange Points does not coincide with number of base functions." << std::endl;
+  std::cout << "Number of base functions:  " << size << std::endl;
+  std::cout << "Number of Lagrange points: " << points.size() << std::endl;
 
   const LagrangePoints::iterator end = points.end();
   for( LagrangePoints::iterator it = points.begin(); it != end; ++it )

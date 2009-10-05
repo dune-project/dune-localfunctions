@@ -129,17 +129,17 @@ void vecTest(int testNr,unsigned int p)
   basis.jacobian( x, jacobianFV );
   out << jacobianFV  << std::endl;
 
-  /*
-     out << "Hessian (compressed) (FieldVector): " << std::endl;
-     std::vector< FieldVector<Tensor<Field,dimension,2>,dimR> > hessFV( size );
-     for( unsigned int k = 0; k < hessFV.size(); ++k )
-     for( unsigned int i = 0; i < dimR; ++i )
+  out << "Hessian (compressed) (FieldVector): " << std::endl;
+  std::vector< FieldVector<Tensor<Field,dimension,2>,dimR> > hessFV( size );
+  // std::vector< FieldVector<FieldVector<Field,Tensor<Field,dimension,2>::size>,dimR> > hessFV( size );
+  // std::vector< FieldVector<Field,Tensor<Field,dimension,2>::size*dimR> > hessFV( size );
+  for( unsigned int k = 0; k < hessFV.size(); ++k )
+    for( unsigned int i = 0; i < dimR; ++i )
       hessFV[ k ][ i ] = Field(-42.3456789);
-     basis.template evaluateSingle<2>( x, hessFV );
-     for( unsigned int k = 0; k < hessFV.size(); ++k )
-     for( unsigned int i = 0; i < dimR; ++i )
+  basis.template evaluateSingle<2>( x, hessFV );
+  for( unsigned int k = 0; k < hessFV.size(); ++k )
+    for( unsigned int i = 0; i < dimR; ++i )
       out << hessFV[k][i]  << std::endl;
-   */
   std::cout << "Ending test : " << testNr << std::endl;
 }
 
@@ -153,7 +153,7 @@ int main ( int argc, char **argv )
   }
   int p = atoi( argv[ 1 ] );
 
-  const unsigned int dimR = 3;
+  const unsigned int dimR = 1;
   vecTest<Topology,1,value,dimR,value>(1,p);
   vecTest<Topology,1,derivative,dimR,derivative>(2,p);
   vecTest<Topology,dimR,value,dimR,value>(3,p);

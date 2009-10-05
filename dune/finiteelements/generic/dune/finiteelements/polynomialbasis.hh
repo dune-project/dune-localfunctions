@@ -88,6 +88,21 @@ namespace Dune
       assert(values.size()>=size());
       coeffMatrix_->template mult<deriv>( eval_.template evaluate<deriv>( x ), values );
     }
+    // std::vector< FieldVector<Tensor<Field,dimension,2>,dimR> > hessFV( size );
+    // std::vector< FieldVector<FieldVector<Field,Tensor<Field,dimension,2>::size>,dimR> > hessFV( size );
+    // std::vector< FieldVector<Field,Tensor<Field,dimension,2>::size*dimR> > hessFV( size );
+    template< unsigned int deriv, class Fy >
+    void evaluateSingle ( const DomainVector &x,
+                          std::vector< FieldVector<FieldVector<Fy,Tensor<Fy,dimension,deriv>::size>,dimRange> > &values) const
+    {
+      evaluateSingle<deriv>(x,reinterpret_cast<std::vector< FieldVector<Fy,Tensor<Fy,dimension,deriv>::size*dimRange> >&>(values));
+    }
+    template< unsigned int deriv, class Fy >
+    void evaluateSingle ( const DomainVector &x,
+                          std::vector< FieldVector<Tensor<Fy,dimension,deriv>,dimRange> > &values) const
+    {
+      evaluateSingle<deriv>(x,reinterpret_cast<std::vector< FieldVector<Fy,Tensor<Fy,dimension,deriv>::size*dimRange> >&>(values));
+    }
     template <class Fy>
     void jacobian ( const DomainVector &x, std::vector<FieldMatrix<Fy,dimRange,dimension> > &values ) const
     {

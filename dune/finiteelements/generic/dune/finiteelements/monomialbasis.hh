@@ -19,38 +19,27 @@
 namespace Dune
 {
 
-  // Simplex
-  template <int dim>
-  struct StdMonomialTopology {
-    typedef StdMonomialTopology<dim-1> BaseType;
-    typedef GenericGeometry::Pyramid<typename BaseType::Type> Type;
-  };
-  template <>
-  struct StdMonomialTopology<0> {
-    typedef GenericGeometry::Point Type;
-  };
-  // Cube
-  template <int dim>
-  struct StdBiMonomialTopology {
-    typedef GenericGeometry::Prism<typename StdBiMonomialTopology<dim-1>::Type> Type;
-  };
-  template <>
-  struct StdBiMonomialTopology<0> {
-    typedef GenericGeometry::Point Type;
-  };
-
   // Internal Forward Declarations
   // -----------------------------
 
   template< class Topology >
   class MonomialBasisSize;
 
-  template< >
+  template< class Topology, class F >
+  class MonomialBasis;
+
+
+
+  // MonomialBasisSize
+  // -----------------
+
+  template<>
   class MonomialBasisSize< GenericGeometry::Point >
   {
   public:
     typedef MonomialBasisSize< GenericGeometry::Point > This;
-    static This &instance() {
+    static This &instance()
+    {
       static This _instance;
       return _instance;
     }
@@ -250,13 +239,12 @@ namespace Dune
   // Internal Forward Declarations
   // -----------------------------
 
-  template< class Topology, class F >
-  class MonomialBasis;
 
   template< int dim, class F >
   struct MonomialBasisHelper
   {
-    typedef MonomialBasisSize< typename StdMonomialTopology<dim>::Type > Size;
+    typedef MonomialBasisSize< typename GenericGeometry::SimplexTopology< dim >::type > Size;
+
     static void
     copy ( const unsigned int deriv, F *&wit, F *&rit, const unsigned int numBaseFunc, const F &z )
     {
@@ -279,6 +267,8 @@ namespace Dune
       *wit = Unity<F>();
     }
   };
+
+
 
   // MonomialBasisImpl
   // -----------------
@@ -322,7 +312,6 @@ namespace Dune
     {
       values[ 0 ] = Unity< Field >();
     }
-
   };
 
   template< class BaseTopology, class F >
@@ -550,6 +539,8 @@ namespace Dune
     }
   };
 
+
+
   // MonomialBasis
   // -------------
 
@@ -592,7 +583,8 @@ namespace Dune
     void evaluate ( unsigned int deriv, const DomainVector &x,
                     Field *const values ) const
     {
-      MonomialBasisSize< typename StdMonomialTopology<dimension>::Type >::instance().computeSizes(deriv);
+      typedef typename GenericGeometry::SimplexTopology< dimension >::type SimplexTopology;
+      MonomialBasisSize< SimplexTopology >::instance().computeSizes( deriv );
       Base::evaluate( deriv, order_, x, sizes( order_ ), values );
     }
 
@@ -644,38 +636,45 @@ namespace Dune
     Size &size_;
   };
 
-  // StdMonomialTopology
-  // -------------------
+
+
+  // StdMonomialBasis
+  // ----------------
 
   template< int dim,class F >
   class StandardMonomialBasis
-    : public MonomialBasis< typename StdMonomialTopology<dim>::Type, F >
+    : public MonomialBasis< typename GenericGeometry::SimplexTopology< dim >::type, F >
   {
-  public:
-    typedef typename StdMonomialTopology<dim>::Type Topology;
-    static const int dimension = dim;
-  private:
     typedef StandardMonomialBasis< dim, F > This;
-    typedef MonomialBasis< Topology, F > Base;
+    typedef MonomialBasis< typename GenericGeometry::SimplexTopology< dim >::type, F > Base;
+
   public:
+    typedef typename GenericGeometry::SimplexTopology< dim >::type Topology;
+    static const int dimension = dim;
+
     StandardMonomialBasis ( unsigned int order )
       : Base( order )
     {}
   };
 
+
+
+  // StandardBiMonomialBasis
+  // -----------------------
+
   template< int dim, class F >
   class StandardBiMonomialBasis
-    : public MonomialBasis< typename StdBiMonomialTopology<dim>::Type, F >
+    : public MonomialBasis< typename GenericGeometry::CubeTopology< dim >::type, F >
   {
-  public:
-    typedef typename StdBiMonomialTopology<dim>::Type Topology;
-    static const int dimension = dim;
-  private:
     typedef StandardBiMonomialBasis< dim, F > This;
-    typedef MonomialBasis< Topology, F > Base;
+    typedef MonomialBasis< typename GenericGeometry::CubeTopology< dim >::type, F > Base;
+
   public:
+    typedef typename GenericGeometry::CubeTopology< dim >::type Topology;
+    static const int dimension = dim;
+
     StandardBiMonomialBasis ( unsigned int order )
-      : Base(order)
+      : Base( order )
     {}
   };
 

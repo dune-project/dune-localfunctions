@@ -308,7 +308,7 @@ namespace ONB {
   template <class Topology,class scalar_t>
   struct ONBMatrix {
     enum {dim = Topology::dimension};
-    typedef Compute<scalar_t> Compute;
+    typedef ONB::Compute< scalar_t > Compute;
     typedef typename Compute::vec_t vec_t;
     typedef typename Compute::mat_t mat_t;
     ONBMatrix(int maxOrder)

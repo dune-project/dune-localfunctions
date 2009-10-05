@@ -20,7 +20,7 @@ namespace Dune
     typedef StandardEvaluator<MBasis> Evaluator;
     typedef PolynomialBasis<Evaluator,CoefficientMatrix> Basis;
     typedef unsigned int Key;
-    typedef typename StdMonomialTopology<dim>::Type SimplexTopology;
+    typedef typename GenericGeometry::SimplexTopology< dim >::type SimplexTopology;
 
     template <class Topology>
     struct Maker

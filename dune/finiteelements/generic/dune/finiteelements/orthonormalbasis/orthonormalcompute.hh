@@ -11,22 +11,22 @@
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
 template <int d>
-struct MultiIndex { // FieldVector<int,d> {
+struct OldMultiIndex { // FieldVector<int,d> {
   int absval;
   std::vector<int> dat;
-  MultiIndex(int v=0) : dat(d) {
+  OldMultiIndex(int v=0) : dat(d) {
     set(v);
   }
-  MultiIndex& operator=(int v) {
+  OldMultiIndex& operator=(int v) {
     set(v);
     return *this;
   }
-  MultiIndex(const MultiIndex<d>& other) :
+  OldMultiIndex(const OldMultiIndex<d>& other) :
     absval(other.absval),
     dat(other.dat) {
     assert(dat.size()==other.dat.size());
   }
-  MultiIndex& operator=(const MultiIndex& other) {
+  OldMultiIndex& operator=(const OldMultiIndex& other) {
     dat=other.dat;
     absval = other.absval;
     return *this;
@@ -69,7 +69,7 @@ struct MultiIndex { // FieldVector<int,d> {
       ret += dat[i];
     return ret;
   }
-  inline MultiIndex<d>& operator+=(const MultiIndex<d>& m) {
+  inline OldMultiIndex<d>& operator+=(const OldMultiIndex<d>& m) {
     for (int i=0; i<d; i++)
       dat[i] += m.dat[i];
     absval += m.absval;
@@ -77,11 +77,11 @@ struct MultiIndex { // FieldVector<int,d> {
   }
 };
 template<int d>
-inline bool operator<(const MultiIndex<d>& x, const MultiIndex<d>& y) {
+inline bool operator<(const OldMultiIndex<d>& x, const OldMultiIndex<d>& y) {
   return (x.dat < y.dat);
 }
 template<int n>
-std::ostream& operator<< (std::ostream& s, const MultiIndex<n>& v)
+std::ostream& operator<< (std::ostream& s, const OldMultiIndex<n>& v)
 {
   for (int i=0; i<n; i++)
     s << ((i>0) ? " " : "") << v[i];
@@ -94,7 +94,7 @@ struct Monoms {
       typename Dune::GeometryWrapper<Dune::GeometryType :: simplex,d>::GenericGeometryType,ord>
   PointType;
   enum {size=PointType::numLagrangePoints};
-  static void multiindex(int idx,MultiIndex<d>& coord,
+  static void multiindex(int idx,OldMultiIndex<d>& coord,
                          order_t order=absvalue) {
     if (order==absvalue)
       idx = size-1-idx;
@@ -135,8 +135,8 @@ scalar_t factorial(int start,int end) {
 
 template <int d,int dim>
 struct IntegralHelper {
-  static void compute(MultiIndex<dim>& geo,
-                      MultiIndex<dim>& alpha,scalar_t& p,scalar_t& q) {
+  static void compute(OldMultiIndex<dim>& geo,
+                      OldMultiIndex<dim>& alpha,scalar_t& p,scalar_t& q) {
     IntegralHelper<d-1,dim>::compute(geo,alpha,p,q);
     if (geo[d-1] == 1) {
       p *= factorial(1,alpha[d-1]);
@@ -150,8 +150,8 @@ struct IntegralHelper {
 };
 template <int dim>
 struct IntegralHelper<1,dim> {
-  static void compute(MultiIndex<dim>& geo,
-                      MultiIndex<dim>& alpha,scalar_t& p,scalar_t& q) {
+  static void compute(OldMultiIndex<dim>& geo,
+                      OldMultiIndex<dim>& alpha,scalar_t& p,scalar_t& q) {
     if (geo[0] == 1) {
       p = 1.;
       q = alpha[0]+1;
@@ -164,9 +164,9 @@ struct IntegralHelper<1,dim> {
 };
 template <int dim,int ord>
 struct Integral {
-  static void compute(MultiIndex<dim>& geo,
+  static void compute(OldMultiIndex<dim>& geo,
                       int i,int j,scalar_t& p,scalar_t& q) {
-    MultiIndex<dim> coordi,coordj;
+    OldMultiIndex<dim> coordi,coordj;
     Monoms<dim,ord>::multiindex(i,coordi);
     Monoms<dim,ord>::multiindex(j,coordj);
     coordi += coordj;
@@ -204,7 +204,7 @@ struct CalcCoeffsBase {
     }
   }
   virtual void compute() = 0;
-  void compute(MultiIndex<dim>& geo) {
+  void compute(OldMultiIndex<dim>& geo) {
     // Aufstellen der Matrix fuer die Bilinearform xSy
     // S_ij = int_A x^(i+j)
     for (int i=1; i<=N; ++i) {
@@ -380,7 +380,7 @@ struct CalcCoeffs {
   ~CalcCoeffs() {
     delete method;
   }
-  void compute(MultiIndex<dim>& geo) {
+  void compute(OldMultiIndex<dim>& geo) {
     method->compute(geo);
   }
 };

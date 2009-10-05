@@ -4,5 +4,5 @@
 using namespace Dune;
 using namespace GenericGeometry;
 int main() {
-  OrthonormalBasis<TOPOLOGY,1,double> onb;
+  OrthonormalBasis<TOPOLOGY,ORDER,double> onb;
 }

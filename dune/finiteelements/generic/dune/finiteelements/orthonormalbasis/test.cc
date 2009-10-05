@@ -2,7 +2,7 @@
 // vi: set et ts=4 sw=2 sts=2:
 #include <dune/finiteelements/orthonormalbasis.hh>
 
-#include <dune/quadrature/quadrature.hh>
+#include <dune/grid/quadrature/genericquadrature.hh>
 
 using namespace Dune;
 using namespace GenericGeometry;
@@ -22,21 +22,16 @@ bool test(unsigned int order) {
   for( unsigned int i = 0; i < size * size; ++i )
     m[ i ] = 0;
 
-  // typedef QuadratureRuleImpl< Topology > Quadrature;
-  // Quadrature quadrature( 2*order+1 );
-  int quadOrder = 2*order;
-  typedef Quadrature<Topology,double,amp::ampf<1024> > QuadType;
-  int quadSize = QuadType::size(quadOrder);
-  const typename QuadType::Points& points = QuadType::points(quadOrder);
-  const typename QuadType::Weights& weights = QuadType::weights(quadOrder);
-
-  for (int q=0; q<quadSize; ++q)
+  typedef GenericQuadratureRule< Topology > Quadrature;
+  Quadrature quadrature( 2*order+1 );
+  const typename Quadrature::iterator end = quadrature.end();
+  for( typename Quadrature::iterator it = quadrature.begin(); it != end; ++it )
   {
-    basis.evaluate( order, points[q], y );
+    basis.evaluate( order, it->position(), y );
     for( unsigned int i = 0; i < size; ++i )
     {
       for( unsigned int j = 0; j < size; ++j )
-        m[ i*size + j ] += weights[q] * y[ i ] * y[ j ];
+        m[ i*size + j ] += it->weight() * y[ i ] * y[ j ];
     }
   }
 

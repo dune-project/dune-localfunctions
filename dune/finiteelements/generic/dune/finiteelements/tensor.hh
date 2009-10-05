@@ -109,6 +109,7 @@ namespace Dune
     typedef Derivatives<F,dimD,dimR,deriv,value> This;
     typedef Derivatives<F,dimD,dimR,deriv-1,value> Base;
     typedef Tensor<F,dimD,deriv> ThisTensor;
+    typedef F Field;
     static const DerivativeLayout layout = value;
     static const unsigned int dimDomain = dimD;
     static const unsigned int dimRange = dimR;
@@ -194,6 +195,18 @@ namespace Dune
     {
       return tensor(Int2Type<dorder>());
     }
+    template <unsigned int dorder>
+    const Dune::FieldVector<F,Tensor<F,dimD,dorder>::size*dimR> &block() const
+    {
+      const Int2Type<dorder> a = Int2Type<dorder>();
+      return reinterpret_cast<const Dune::FieldVector<F,Tensor<F,dimD,dorder>::size*dimR>&>(tensor(a));
+    }
+    template <unsigned int dorder>
+    Dune::FieldVector<F,Tensor<F,dimD,dorder>::size*dimR> &block()
+    {
+      const Int2Type<dorder> a = Int2Type<dorder>();
+      return reinterpret_cast<Dune::FieldVector<F,Tensor<F,dimD,dorder>::size*dimR>&>(tensor(a));
+    }
     ThisTensor &operator[](int r) {
       return tensor_[r];
     }
@@ -247,6 +260,7 @@ namespace Dune
   {
     typedef Derivatives<F,dimD,dimR,0,value> This;
     typedef Tensor<F,dimD,0> ThisTensor;
+    typedef F Field;
     static const DerivativeLayout layout = value;
     static const unsigned int dimDomain = dimD;
     static const unsigned int dimRange = dimR;
@@ -325,6 +339,18 @@ namespace Dune
     {
       return tensor_;
     }
+    template <unsigned int dorder>
+    const Dune::FieldVector<F,Tensor<F,dimD,dorder>::size*dimR> &block() const
+    {
+      const Int2Type<dorder> a = Int2Type<dorder>();
+      return reinterpret_cast<const Dune::FieldVector<F,Tensor<F,dimD,dorder>::size*dimR>&>(tensor(a));
+    }
+    template <unsigned int dorder>
+    Dune::FieldVector<F,Tensor<F,dimD,dorder>::size*dimR> &block()
+    {
+      const Int2Type<dorder> a = Int2Type<dorder>();
+      return reinterpret_cast<Dune::FieldVector<F,Tensor<F,dimD,dorder>::size*dimR>&>(tensor(a));
+    }
 
   protected:
     const Dune::FieldVector<Tensor<F,dimD,0>,dimR> &tensor(const Int2Type<0> &dorderVar) const
@@ -359,6 +385,7 @@ namespace Dune
   {
     typedef Derivatives<F,dimD,dimR,deriv,derivative> This;
     typedef Derivatives<F,dimD,1,deriv,value> ScalarDeriv;
+    typedef F Field;
     static const DerivativeLayout layout = value;
     static const unsigned int dimDomain = dimD;
     static const unsigned int dimRange = dimR;
@@ -417,6 +444,85 @@ namespace Dune
     }
   protected:
     Dune::FieldVector<ScalarDeriv,dimR> deriv_;
+  };
+
+  // ******************************************
+  // AXPY *************************************
+  // ******************************************
+  template <class Vec1,class Vec2,unsigned int deriv>
+  struct TensorAxpy
+  {
+    template <class Field>
+    static void apply(unsigned int r,const Field &a,
+                      const Vec1 &x, Vec2 &y)
+    {
+      y.axpy(a,x);
+    }
+  };
+  template <class F1,int dimD,int dimR,
+      unsigned int d,
+      class Vec2,
+      unsigned int deriv>
+  struct TensorAxpy<Derivatives<F1,dimD,dimR,d,value>,Vec2,deriv>
+  {
+    typedef Derivatives<F1,dimD,dimR,d,value> Vec1;
+    template <class Field>
+    static void apply(unsigned int r,const Field &a,
+                      const Vec1 &x, Vec2 &y)
+    {
+      const FieldVector<F1,Vec2::size> &xx = x.template block<deriv>();
+      for (int i=0; i<y.size; ++i)
+        y[i] += xx[i]*a;
+    }
+  };
+  template <class F1,int dimD,int dimR,
+      unsigned int d,
+      class Vec2,
+      unsigned int deriv>
+  struct TensorAxpy<Derivatives<F1,dimD,dimR,d,derivative>,Vec2,deriv>
+  {
+    typedef Derivatives<F1,dimD,dimR,d,derivative> Vec1;
+    template <class Field>
+    static void apply(unsigned int r,const Field &a,
+                      const Vec1 &x, Vec2 &y)
+    {
+      for (int rr=0; rr<dimR; ++rr)
+        TensorAxpy<Derivatives<F1,dimD,1,d,value>,
+            Vec2,deriv>::apply(rr,a,x[rr],y);
+    }
+  };
+  template <class F1,int dimD,
+      unsigned int d,
+      class Vec2,
+      unsigned int deriv>
+  struct TensorAxpy<Derivatives<F1,dimD,1,d,derivative>,Vec2,deriv>
+  {
+    typedef Derivatives<F1,dimD,1,d,derivative> Vec1;
+    template <class Field>
+    static void apply(unsigned int r,const Field &a,
+                      const Vec1 &x, Vec2 &y)
+    {
+      TensorAxpy<Derivatives<F1,dimD,1,d,value>,
+          Vec2,deriv>::apply(r,a,x[0],y);
+    }
+  };
+  template <class F1,int dimD,
+      unsigned int d,
+      class Vec2,
+      unsigned int deriv>
+  struct TensorAxpy<Derivatives<F1,dimD,1,d,value>,Vec2,deriv>
+  {
+    typedef Derivatives<F1,dimD,1,d,value> Vec1;
+    template <class Field>
+    static void apply(unsigned int r,const Field &a,
+                      const Vec1 &x, Vec2 &y)
+    {
+      typedef Tensor<F1,dimD,deriv> TensorType;
+      const unsigned int rr = r*TensorType::size;
+      const FieldVector<F1,TensorType::size> &xx = x.template block<deriv>();
+      for (int i=0; i<xx.size; ++i)
+        y[rr+i] += xx[i]*a;
+    }
   };
 
   // ***********************************************
@@ -536,6 +642,79 @@ namespace Dune
     static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
       field_cast(vec1.block(),vec2.block());
+    }
+  };
+  template <int dimD,int dimR,
+      class F1,unsigned int deriv,
+      class F2>
+  struct DerivativeAssign<Derivatives<F1,dimD,dimR,deriv,value>,FieldVector<F2,dimR> >
+  {
+    typedef Derivatives<F1,dimD,dimR,deriv,value> Vec1;
+    typedef FieldVector<F2,dimR> Vec2;
+    static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
+    {
+      field_cast(reinterpret_cast<const FieldVector<F1,dimR>&>(vec1.template tensor<0>()),vec2);
+    }
+  };
+  template <int dimD,int dimR,
+      class F1,unsigned int deriv,
+      class F2>
+  struct DerivativeAssign<Derivatives<F1,dimD,dimR,deriv,derivative>,FieldVector<F2,dimR> >
+  {
+    typedef Derivatives<F1,dimD,dimR,deriv,derivative> Vec1;
+    typedef FieldVector<F2,dimR> Vec2;
+    static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
+    {
+      for (int rr=0; rr<dimR; ++rr)
+        field_cast(vec1[rr].template tensor<0>()[0].block(),vec2[rr]);
+    }
+  };
+  template <int dimD,
+      class F1,unsigned int deriv,
+      class F2,int dimR>
+  struct DerivativeAssign<Derivatives<F1,dimD,1,deriv,value>,FieldVector<F2,dimR> >
+  {
+    typedef Derivatives<F1,dimD,1,deriv,value> Vec1;
+    typedef FieldVector<F2,dimR> Vec2;
+    static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
+    {
+      field_cast(vec1.template tensor<0>()[0].block(),vec2[r]);
+    }
+  };
+  template <int dimD,
+      class F1,unsigned int deriv,
+      class F2,int dimR>
+  struct DerivativeAssign<Derivatives<F1,dimD,1,deriv,derivative>,FieldVector<F2,dimR> >
+  {
+    typedef Derivatives<F1,dimD,1,deriv,derivative> Vec1;
+    typedef FieldVector<F2,dimR> Vec2;
+    static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
+    {
+      field_cast(vec1[0].template tensor<0>()[0].block(),vec2[r]);
+    }
+  };
+  template <int dimD,
+      class F1,unsigned int deriv,
+      class F2>
+  struct DerivativeAssign<Derivatives<F1,dimD,1,deriv,value>,FieldVector<F2,1> >
+  {
+    typedef Derivatives<F1,dimD,1,deriv,value> Vec1;
+    typedef FieldVector<F2,1> Vec2;
+    static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
+    {
+      field_cast(vec1.template tensor<0>()[0].block(),vec2);
+    }
+  };
+  template <int dimD,
+      class F1,unsigned int deriv,
+      class F2>
+  struct DerivativeAssign<Derivatives<F1,dimD,1,deriv,derivative>,FieldVector<F2,1> >
+  {
+    typedef Derivatives<F1,dimD,1,deriv,derivative> Vec1;
+    typedef FieldVector<F2,1> Vec2;
+    static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
+    {
+      field_cast(vec1[0].template tensor<0>()[0].block(),vec2);
     }
   };
 

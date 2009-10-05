@@ -66,10 +66,12 @@ namespace Dune
   struct MonomialEvaluator< B >::BaseIterator
   {
     typedef Deriv Derivatives;
+    typedef typename Deriv::Field Field;
     static const unsigned int blockSize = Deriv::size;
     typedef Dune::FieldVector<Field,blockSize> Block;
     static const DerivativeLayout layout = Deriv::layout;
     static const unsigned int dimDomain = Deriv::dimDomain;
+    static const unsigned int dimRange = Deriv::dimRange;
 
     typedef typename Container::iterator CIter;
 

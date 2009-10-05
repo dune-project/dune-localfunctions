@@ -316,6 +316,26 @@ namespace Dune
     out << "\\end{eqnarray*}" << std::endl;
     return out;
   }
+  template <int d,int dimR1,int dimR2>
+  std::ostream &operator<<(std::ostream& out,
+                           const std::vector<Dune::FieldMatrix<MultiIndex<d>,dimR1,dimR2> >& y) {
+    out << "\\begin{eqnarray*}" << std::endl;
+    for (unsigned int k=0; k<y.size(); ++k) {
+      for (int q=0; q<dimR2; q++) {
+        out << "d_{" << char('a'+q) << "}f_{" << k << "}(" << char('a');
+        for (int i=1; i<d; ++i)
+          out << "," << char('a'+i);
+        out << ") &=& ( ";
+        out << y[k][0][q] ;
+        for (unsigned int r=1; r<dimR1; ++r) {
+          out << " , " << y[k][r][q] ;
+        }
+        out << " ) \\\\" << std::endl;
+      }
+    }
+    out << "\\end{eqnarray*}" << std::endl;
+    return out;
+  }
   template <int d>
   std::ostream &operator<<(std::ostream& out,const MultiIndex<d>& val)
   {

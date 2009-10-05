@@ -50,7 +50,7 @@ namespace Dune
 
   public:
     static const int dimension = Evaluator::dimension;
-    static const int dimRange = Evaluator::dimRange;
+    static const int dimRange = Evaluator::dimRange*CoefficientMatrix::blockSize;
     typedef typename Evaluator::Basis Basis;
     typedef typename Evaluator::DomainVector DomainVector;
     typedef typename CoefficientMatrix::Field Field;
@@ -82,11 +82,22 @@ namespace Dune
       assert(values.size()>=size());
       coeffMatrix_->mult( eval_.template evaluate<deriv>( x ), values );
     }
-
-    template< class Vector >
-    void evaluate ( const DomainVector &x, Vector &values ) const
+    template< unsigned int deriv, class Vector >
+    void evaluateSingle ( const DomainVector &x, Vector &values ) const
     {
-      evaluate<0>(x,values);
+      assert(values.size()>=size());
+      coeffMatrix_->template mult<deriv>( eval_.template evaluate<deriv>( x ), values );
+    }
+    template <class Fy>
+    void jacobian ( const DomainVector &x, std::vector<FieldMatrix<Fy,dimRange,dimension> > &values ) const
+    {
+      assert(values.size()>=size());
+      evaluateSingle<1>(x,reinterpret_cast<std::vector<FieldVector<Fy,dimRange*dimension> >&>(values));
+    }
+    template <class Fy>
+    void evaluate ( const DomainVector &x, std::vector<FieldVector<Fy,dimRange> > &values ) const
+    {
+      evaluateSingle<0>(x,values);
     }
 
     template< class DVector, class RVector >

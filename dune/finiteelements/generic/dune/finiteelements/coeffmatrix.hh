@@ -136,12 +136,13 @@ namespace Dune
   };
 #endif
 
-  template< class F , unsigned int blockSize >
+  template< class F , unsigned int bSize >
   class SparseCoeffMatrix
   {
   public:
-    typedef SparseCoeffMatrix<F,blockSize> This;
     typedef F Field;
+    static const unsigned int blockSize = bSize;
+    typedef SparseCoeffMatrix<Field,blockSize> This;
 
     SparseCoeffMatrix()
       : coeff_(0),
@@ -167,40 +168,21 @@ namespace Dune
       return numCols_;
     }
 
-    template< class BasisIterator >
-    void mult ( const BasisIterator &x, std::vector< Field > &y ) const
-    {
-      typedef Derivatives< Field, BasisIterator::dimDomain, 1, 0, BasisIterator::layout > Deriv;
-      mult( x, reinterpret_cast< std::vector< Deriv > & >( y ) );
-    }
-
-    template< class BasisIterator, class Vector >
+    template< class BasisIterator, class Vector>
     void mult ( const BasisIterator &x,
-                std::vector<Vector> &y ) const
+                Vector &y ) const
     {
-      typedef Derivatives<typename Vector::field_type,BasisIterator::dimDomain,
-          Vector::size,0,BasisIterator::layout> Deriv;
-      mult(x,reinterpret_cast<std::vector<Deriv>&>(y));
-    }
-
-    template< class BasisIterator, class Fy, int dimD, int dimR, unsigned int deriv,DerivativeLayout layout >
-    void mult ( const BasisIterator &x,
-                std::vector<Dune::Derivatives<Fy,dimD,dimR,deriv,layout> > &y ) const
-    {
-      typedef Dune::Derivatives<Fy,dimD,dimR,deriv,layout> YDerivatives;
+      typedef typename Vector::value_type YDerivatives;
       typedef typename BasisIterator::Derivatives XDerivatives;
-      const unsigned int R = (XDerivatives::dimRange==YDerivatives::dimRange) ?
-                             1 : YDerivatives::dimRange;
-      assert(R==blockSize);
       size_t numLsg = y.size();
-      assert( numLsg*R <= (size_t)numRows_ );
+      assert( numLsg*blockSize <= (size_t)numRows_ );
       unsigned int row = 0;
       Field *pos = rows_[ 0 ];
       unsigned int *skipIt = skip_;
       XDerivatives val;
       for( size_t i = 0; i < numLsg; ++i)
       {
-        for( unsigned int r = 0; r < R; ++r, ++row )
+        for( unsigned int r = 0; r < blockSize; ++r, ++row )
         {
           val = 0;
           BasisIterator itx = x;
@@ -211,6 +193,33 @@ namespace Dune
           }
           DerivativeAssign<XDerivatives,YDerivatives>::apply(r,val,y[i]);
         }
+      }
+    }
+    template <unsigned int deriv, class BasisIterator, class Vector>
+    void mult ( const BasisIterator &x,
+                Vector &y ) const
+    {
+      typedef typename Vector::value_type YDerivatives;
+      typedef typename BasisIterator::Derivatives XDerivatives;
+      typedef FieldVector<typename XDerivatives::Field,YDerivatives::size> XTensor;
+      size_t numLsg = y.size();
+      assert( numLsg*blockSize <= (size_t)numRows_ );
+      unsigned int row = 0;
+      Field *pos = rows_[ 0 ];
+      unsigned int *skipIt = skip_;
+      for( size_t i = 0; i < numLsg; ++i)
+      {
+        XTensor val(typename XDerivatives::Field(0));
+        for( unsigned int r = 0; r < blockSize; ++r, ++row )
+        {
+          BasisIterator itx = x;
+          for( ; pos != rows_[ row+1 ]; ++pos, ++skipIt )
+          {
+            itx += *skipIt;
+            TensorAxpy<XDerivatives,XTensor,deriv>::apply(r,*pos,*itx,val);
+          }
+        }
+        field_cast(val,y[i]);
       }
     }
 

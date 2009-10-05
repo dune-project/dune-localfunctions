@@ -112,6 +112,35 @@ void vecTest(int testNr,unsigned int p)
     hess[ i ] = -42.3456789;
   basis.template evaluate<2>( x, hess );
   out << hess  << std::endl;
+
+  out << "Values (FieldVector): " << std::endl;
+  std::vector< FieldVector<Field,dimR> > valueFV( size );
+  for( unsigned int i = 0; i < valueFV.size(); ++i )
+    valueFV[ i ] = -42.3456789;
+  basis.template evaluate( x, valueFV );
+  out << valueFV  << std::endl;
+
+  out << "Jacobian (FieldMatrix): " << std::endl;
+  std::vector< FieldMatrix<Field,dimR,dimension> > jacobianFV( size );
+  for( unsigned int k = 0; k < jacobianFV.size(); ++k )
+    for( unsigned int i = 0; i < dimR; ++i )
+      for( unsigned int j = 0; j < dimension; ++j )
+        jacobianFV[ k ][ i ][ j ] = -42.3456789;
+  basis.jacobian( x, jacobianFV );
+  out << jacobianFV  << std::endl;
+
+  /*
+     out << "Hessian (compressed) (FieldVector): " << std::endl;
+     std::vector< FieldVector<Tensor<Field,dimension,2>,dimR> > hessFV( size );
+     for( unsigned int k = 0; k < hessFV.size(); ++k )
+     for( unsigned int i = 0; i < dimR; ++i )
+      hessFV[ k ][ i ] = Field(-42.3456789);
+     basis.template evaluateSingle<2>( x, hessFV );
+     for( unsigned int k = 0; k < hessFV.size(); ++k )
+     for( unsigned int i = 0; i < dimR; ++i )
+      out << hessFV[k][i]  << std::endl;
+   */
+  std::cout << "Ending test : " << testNr << std::endl;
 }
 
 int main ( int argc, char **argv )

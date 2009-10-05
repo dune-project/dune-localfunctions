@@ -214,9 +214,20 @@ namespace Dune
         basis = new Basis(_mBasis);
         RaviartThomasMatrix<Topology,ComputeField> matrix(order);
         basis->fill(matrix);
-        std::stringstream name;
-        name << "lagrange_" << Topology::name() << "_p" << order;
-        basis->template printBasis<Topology>(name.str(),matrix);
+        /*
+           std::stringstream name;
+           name << "lagrange_" << Topology::name() << "_p" << order;
+           basis->template printBasis<Topology>(name.str(),matrix);
+         */
+        {
+          typedef MultiIndex< dimension > MIField;
+          typedef VirtualMonomialBasis<dim,MIField> MBasisMI;
+          typedef PolynomialBasisWithMatrix<RaviartThomasEvaluator<MBasisMI>,SparseCoeffMatrix<StorageField> > BasisMI;
+          const MBasisMI &_mBasisMI = MonomialBasisProvider<dimension,MIField>::template basis<SimplexTopology>(order);
+          BasisMI basisMI(_mBasisMI);
+          basisMI.fill(matrix);
+          basisPrint(basisMI);
+        }
       }
     };
   };

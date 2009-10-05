@@ -136,7 +136,7 @@ namespace Dune
    * value type. This class stores the coefficient matrix with can be
    * constructed via the fill method
    */
-  template< class Eval, class CM = CoeffMatrix<typename Eval::Field> >
+  template< class Eval, class CM = SparseCoeffMatrix<typename Eval::Field> >
   class PolynomialBasisWithMatrix
     : public PolynomialBasis< Eval, CM >
   {

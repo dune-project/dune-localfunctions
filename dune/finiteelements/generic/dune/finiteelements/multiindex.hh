@@ -37,25 +37,42 @@ namespace Dune
     MultiIndex ()
       : vecZ_( 0 ),
         vecOMZ_( 0 ),
-        factor_( 1. )
+        factor_( 1. ),
+        next_( 0 )
     {}
     MultiIndex (double f)
       : vecZ_( 0 ),
         vecOMZ_( 0 ),
-        factor_( f )
+        factor_( f ),
+        next_( 0 )
     {}
 
     MultiIndex ( int, const MultiIndex &other )
       : vecZ_( other.vecOMZ_ ),
         vecOMZ_( other.vecZ_ ),
         factor_( other.factor_ )
-    {}
+    {
+      const This *o = &other;
+      if (o->next_)
+      {
+        next_ = new MultiIndex( *(other.next_) );
+      }
+      else
+        next_ = 0;
+    }
 
     MultiIndex ( const This &other )
       : vecZ_( other.vecZ_ ),
         vecOMZ_( other.vecOMZ_ ),
         factor_( other.factor_ )
-    {}
+    {
+      if (other.next_)
+      {
+        next_ = new MultiIndex( *(other.next_) );
+      }
+      else
+        next_ = 0;
+    }
 
     int z(int i) const
     {
@@ -75,6 +92,12 @@ namespace Dune
       vecZ_   = other.vecZ_;
       vecOMZ_ = other.vecOMZ_;
       factor_ = other.factor_;
+      assert(!next_);
+      if (other.next_)
+      {
+        next_ = new MultiIndex;
+        next_ = other.next_;
+      }
       return *this;
     }
     This &operator= ( const double f )
@@ -111,14 +134,32 @@ namespace Dune
 
     This &operator+= ( const This &other )
     {
-      factor_ += other.factor_;
-      assert( sameMultiIndex(other) );
+      if (!sameMultiIndex(other))
+      {
+        if (next_)
+          (*next_)+=other;
+        else
+        {
+          next_ = new This(other);
+        }
+      }
+      else
+        factor_ += other.factor_;
       return *this;
     }
     This &operator-= ( const This &other )
     {
-      factor_ -= other.factor_;
-      assert( sameMultiIndex(other) );
+      if (!sameMultiIndex(other))
+      {
+        if (next_)
+          next_+=other;
+        else
+        {
+          next_ = new This(other);
+        }
+      }
+      else
+        factor_ -= other.factor_;
       return *this;
     }
 
@@ -193,6 +234,8 @@ namespace Dune
     Vector vecZ_;
     Vector vecOMZ_;
     double factor_;
+
+    This *next_;
   };
 
   template <int dim>
@@ -221,8 +264,29 @@ namespace Dune
     }
     return out;
   }
+  template <int d,int dimR>
+  std::ostream &operator<<(std::ostream& out,
+                           const std::vector<Dune::FieldVector<MultiIndex<d>,dimR> >& y) {
+    for (unsigned int k=0; k<y.size(); ++k) {
+      out << "f_" << k << "(" << char('a');
+      for (int i=1; i<d; ++i)
+        out << "," << char('a'+i);
+      out << ") = ( ";
+      out << y[k][0] ;
+      for (unsigned int r=1; r<dimR; ++r) {
+        out << " , " << y[k][r] ;
+      }
+      out << " )" << std::endl;
+    }
+    return out;
+  }
   template <int d>
   std::ostream &operator<<(std::ostream& out,const MultiIndex<d>& mi) {
+    if (mi.next_)
+    {
+      assert( &mi != mi.next_ );
+      out << *(mi.next_) << " + ";
+    }
     if (mi.absZ()==0 && std::abs(mi.factor())<1e-10)
       out << "0";
     else if (mi.absZ()==0)

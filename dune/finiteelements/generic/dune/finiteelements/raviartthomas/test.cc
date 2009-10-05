@@ -1,7 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
 #include <dune/finiteelements/raviartthomas/raviartthomasbasis.hh>
-
+#include <dune/finiteelements/basisprint.hh>
 using namespace Dune;
 using namespace GenericGeometry;
 
@@ -19,22 +19,23 @@ bool test(unsigned int order) {
     std::cout << "Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
     typedef RaviartThomasBasisProvider<Topology::dimension,StorageField,ComputeField> BasisProvider;
     const typename BasisProvider::Basis &basis = BasisProvider::basis(Topology::id,o);
+    /*
+       typedef Dune::LagrangePoints< Topology, StorageField > LagrangePoints;
+       LagrangePoints points( 1 );
 
-    typedef Dune::LagrangePoints< Topology, StorageField > LagrangePoints;
-    LagrangePoints points( 1 );
-
-    std::vector< Dune::FieldVector< double, Topology::dimension > > y( basis.size() );
-    for( unsigned int index = 0; index < points.size(); ++index )
-    {
-      basis.evaluate( points[ index ].point(), y );
-      bool first = true;
-      std::cout << "At point points[ " << index << " ] = " << points[ index ].point() << std::endl;
-      for( unsigned int i = 0; i < y.size(); ++i)
-      {
+       std::vector< Dune::FieldVector< double, Topology::dimension > > y( basis.size() );
+       for( unsigned int index = 0; index < points.size(); ++index )
+       {
+       basis.evaluate( points[ index ].point(), y );
+       bool first = true;
+       std::cout << "At point points[ " << index << " ] = " << points[ index ].point() << std::endl;
+       for( unsigned int i = 0; i < y.size(); ++i)
+       {
         std::cout << "  y [ " << i << " ] = " << y[i] << std::endl;
         first = false;
-      }
-    }
+       }
+       }
+     */
   }
   if (!ret) {
     std::cout << "   FAILED !" << std::endl;

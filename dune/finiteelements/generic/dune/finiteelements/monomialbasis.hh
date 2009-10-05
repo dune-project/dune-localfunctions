@@ -152,13 +152,16 @@ namespace Dune
       RangeVector *row0 = values;
       for( unsigned int k = 1; k <= order; ++k )
       {
-        RangeVector *row1 = values + offsets[ k-1 ];
-        RangeVector *it = row1 + baseSizes[ k ];
-        RangeVector *const colkEnd = row1 + (k+1)*baseSizes[ k ];
-        for( ; it != colkEnd; ++row1, ++it )
-          *it = z * (*row1);
-        RangeVector *const row1End = row1 + sizes_[ k ];
+        RangeVector *const row1begin = values + offsets[ k-1 ];
+        RangeVector *const colkEnd = row1begin + (k+1)*baseSizes[ k ];
+        assert( (unsigned int)(colkEnd - values) <= offsets[ k ] );
+        RangeVector *const row1End = row1begin + sizes_[ k ];
         assert( (unsigned int)(row1End - values) <= offsets[ k ] );
+
+        RangeVector *row1 = row1begin;
+        RangeVector *it;
+        for( it = row1begin + baseSizes[ k ]; it != colkEnd; ++row1, ++it )
+          *it = z * (*row1);
         for( ; it != row1End; ++row0, ++it )
           *it = z * (*row0);
         row0 = row1;

@@ -9,7 +9,6 @@
 #include <dune/common/fmatrix.hh>
 
 #include <dune/grid/genericgeometry/topologytypes.hh>
-#include <dune/grid/genericgeometry/misc.hh>
 
 #include <dune/common/field.hh>
 

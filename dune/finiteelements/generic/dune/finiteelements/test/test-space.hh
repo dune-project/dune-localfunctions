@@ -10,7 +10,6 @@
 
 #include <dune/finiteelements/global/vtkfunctionwrapper.hh>
 #include <dune/finiteelements/global/grapefunctionwrapper.hh>
-#include <dune/finiteelements/global/interpolation.hh>
 
 const unsigned int dimension = GridType::dimension;
 

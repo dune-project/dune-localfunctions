@@ -8,12 +8,6 @@
 namespace Dune
 {
 
-  // External Forward Declarations
-  // -----------------------------
-
-  template< class Topology, class F >
-  class MonomialBasis;
-
   template< class LPCreator >
   struct LocalLagrangeInterpolationCreator;
 
@@ -53,19 +47,6 @@ namespace Dune
       const Iterator end = lagrangePoints_.end();
       for( Iterator it = lagrangePoints_.begin(); it != end; ++it )
         field_cast(function( it->point() ), coefficients[ index++ ] );
-    }
-
-    template< class Topology, class Matrix >
-    void interpolate ( const MonomialBasis< Topology, Field > &basis, Matrix &coefficients ) const
-    {
-      typedef typename LagrangePoints::iterator Iterator;
-
-      coefficients.resize( lagrangePoints().size(), basis.size( ) );
-
-      unsigned int index = 0;
-      const Iterator end = lagrangePoints().end();
-      for( Iterator it = lagrangePoints().begin(); it != end; ++it )
-        basis.template evaluate<0>( it->point(), coefficients.rowPtr( index++ ) );
     }
 
     template< class Matrix, class Basis >

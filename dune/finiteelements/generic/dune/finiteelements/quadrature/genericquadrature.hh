@@ -14,31 +14,19 @@ namespace Dune
   namespace GenericGeometry
   {
 
-    // DefaultQuadratureTraits
-    // -----------------------
-
-    struct DefaultQuadratureTraits
-    {
-      typedef double Field;
-
-      typedef GaussQuadrature< Field > OneDQuadrature;
-    };
-
-
-
     // GenericQuadrature
     // -----------------
 
-    template< class Topology, class Traits = DefaultQuadratureTraits >
+    template< class Topology, class F, class OneDQuad = GaussQuadrature< F > >
     class GenericQuadrature;
 
 
-    template< class Traits >
-    class GenericQuadrature< Point, Traits >
-      : public Quadrature< 0, typename Traits::Field >
+    template< class F, class OneDQuad >
+    class GenericQuadrature< Point, F, OneDQuad >
+      : public Quadrature< 0, F >
     {
-      typedef GenericQuadrature< Point, Traits > This;
-      typedef Quadrature< 0, typename Traits::Field > Base;
+      typedef GenericQuadrature< Point, F, OneDQuad > This;
+      typedef Quadrature< 0, F > Base;
 
     public:
       typedef Point Topology;
@@ -56,12 +44,12 @@ namespace Dune
     };
 
 
-    template< class BaseTopology, class Traits >
-    class GenericQuadrature< Prism< BaseTopology >, Traits >
-      : public Quadrature< Prism< BaseTopology >::dimension, typename Traits::Field >
+    template< class BaseTopology, class F, class OneDQuad >
+    class GenericQuadrature< Prism< BaseTopology >, F, OneDQuad >
+      : public Quadrature< Prism< BaseTopology >::dimension, F >
     {
-      typedef GenericQuadrature< Prism< BaseTopology >, Traits > This;
-      typedef Quadrature< Prism< BaseTopology >::dimension, typename Traits::Field > Base;
+      typedef GenericQuadrature< Prism< BaseTopology >, F, OneDQuad > This;
+      typedef Quadrature< Prism< BaseTopology >::dimension, F > Base;
 
     public:
       typedef Prism< BaseTopology > Topology;
@@ -72,8 +60,8 @@ namespace Dune
       typedef typename Base::Vector Vector;
 
     private:
-      typedef typename Traits::OneDQuadrature OneDQuadrature;
-      typedef GenericQuadrature< BaseTopology, Traits > BaseQuadrature;
+      typedef OneDQuad OneDQuadrature;
+      typedef GenericQuadrature< BaseTopology, Field, OneDQuadrature > BaseQuadrature;
 
     public:
       explicit GenericQuadrature ( unsigned int order )
@@ -121,12 +109,12 @@ namespace Dune
      *  Question: If the polynomials are created via Duffy Transformation, do we
      *            really need a higher quadrature order?
      */
-    template< class BaseTopology, class Traits >
-    class GenericQuadrature< Pyramid< BaseTopology >, Traits >
-      : public Quadrature< Pyramid< BaseTopology >::dimension, typename Traits::Field >
+    template< class BaseTopology, class F, class OneDQuad >
+    class GenericQuadrature< Pyramid< BaseTopology >, F, OneDQuad >
+      : public Quadrature< Pyramid< BaseTopology >::dimension, F >
     {
-      typedef GenericQuadrature< Pyramid< BaseTopology >, Traits > This;
-      typedef Quadrature< Pyramid< BaseTopology >::dimension, typename Traits::Field > Base;
+      typedef GenericQuadrature< Pyramid< BaseTopology >, F, OneDQuad > This;
+      typedef Quadrature< Pyramid< BaseTopology >::dimension, F > Base;
 
     public:
       typedef Pyramid< BaseTopology > Topology;
@@ -137,8 +125,8 @@ namespace Dune
       typedef typename Base::Vector Vector;
 
     private:
-      typedef typename Traits::OneDQuadrature OneDQuadrature;
-      typedef GenericQuadrature< BaseTopology, Traits > BaseQuadrature;
+      typedef OneDQuad OneDQuadrature;
+      typedef GenericQuadrature< BaseTopology, Field, OneDQuadrature > BaseQuadrature;
 
     public:
       explicit GenericQuadrature ( unsigned int order )

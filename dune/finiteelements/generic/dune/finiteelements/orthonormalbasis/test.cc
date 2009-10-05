@@ -24,7 +24,7 @@ bool test(unsigned int order) {
     for( unsigned int i = 0; i < size * size; ++i )
       m[ i ] = 0;
 
-    GenericQuadrature< Topology > quadrature( 2*order+1 );
+    GenericQuadrature< Topology, double > quadrature( 2*order+1 );
     const unsigned int quadratureSize = quadrature.size();
     for( unsigned int qi = 0; qi < quadratureSize; ++qi )
     {

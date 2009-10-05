@@ -29,7 +29,7 @@ int main ( int argc, char **argv )
 
   typedef TOPOLOGY Topology;
   typedef Dune::AlgLib::MultiPrecision<640> Field;
-  const int dimension = Topology::dimension;
+  //const int dimension = Topology::dimension;
 
   Dune::MonomialBasis< Topology, Field > basis;
   const unsigned int size = basis.size( p );

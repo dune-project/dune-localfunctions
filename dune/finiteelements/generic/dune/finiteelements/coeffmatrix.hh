@@ -105,10 +105,8 @@ namespace Dune
       {
         Result val(0.);
         const DomainVector *itx = &(x[ 0 ]);
-        int i=0;
-        for( ; row != rows_[ r+1 ]; ++row, ++itx, ++i)
+        for( ; row != rows_[ r+1 ]; ++row, ++itx )
         {
-          assert(i<x.size());
           Multiply::add(*row,*itx,val);
           // val += (*itx) * (*row) ;
         }

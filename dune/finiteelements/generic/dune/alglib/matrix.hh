@@ -65,6 +65,7 @@ namespace Dune
 
       const Field *rowPtr ( const unsigned int row ) const
       {
+        assert(row<rows());
         const int lastCol = matrix_.gethighbound( 2 );
         ap::const_raw_vector< RealField > rowVector = matrix_.getrow( row, 0, lastCol );
         assert( (rowVector.GetStep() == 1) && (rowVector.GetLength() == lastCol+1) );
@@ -73,6 +74,7 @@ namespace Dune
 
       Field *rowPtr ( const unsigned int row )
       {
+        assert(row<rows());
         const int lastCol = matrix_.gethighbound( 2 );
         ap::raw_vector< RealField > rowVector = matrix_.getrow( row, 0, lastCol );
         assert( (rowVector.GetStep() == 1) && (rowVector.GetLength() == lastCol+1) );

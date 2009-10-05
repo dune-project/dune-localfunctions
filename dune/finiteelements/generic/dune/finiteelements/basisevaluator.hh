@@ -140,13 +140,11 @@ namespace Dune
       }
       BaseIterator &operator++()
       {
-        assert(blockSize == 1);
         pos_ += blockSize;
         return *this;
       }
       BaseIterator &operator+=(unsigned int skip)
       {
-        assert(blockSize == 1);
         pos_ += skip*blockSize;
         return *this;
       }
@@ -367,9 +365,9 @@ namespace Dune
       for ( ; !iter.done(); ++iter)
       {
         const typename Iter::Block &block = iter.block();
-        for (int b=0; b<iter.blockSize; ++b)
+        for (int r1=0; r1<dimR; ++r1)
         {
-          for (int r1=0; r1<dimR; ++r1)
+          for (int b=0; b<iter.blockSize; ++b)
           {
             for (int r2=0; r2<dimR; ++r2)
             {

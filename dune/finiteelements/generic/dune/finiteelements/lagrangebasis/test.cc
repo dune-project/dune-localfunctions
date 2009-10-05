@@ -7,7 +7,7 @@
 #include <dune/finiteelements/pk3d/pk3dlocalbasis.hh>
 
 #define USE_GENERIC 1
-const unsigned int iterations = 10000000;
+const unsigned int iterations = 1;
 
 using namespace Dune;
 using namespace GenericGeometry;
@@ -58,21 +58,20 @@ bool test(unsigned int order) {
 
   bool ret = true;
 
-  for (unsigned int o=order; o<=order; ++o)
+  for (unsigned int o=1; o<=order; ++o)
   {
     std::cout << "Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
 
     typedef Dune::LagrangePoints< Topology, StorageField > LagrangePoints;
-    LagrangePoints points( order );
+    LagrangePoints points( o );
 
-    std::vector< Dune::FieldVector< double, 1 > > y( points.size() );
 
 #if USE_GENERIC
     typedef LagrangeBasisProvider<Topology::dimension,StorageField,ComputeField> BasisProvider;
     const typename BasisProvider::Basis &basis = BasisProvider::basis(Topology::id,o);
+    std::vector< Dune::FieldVector< double, 1 > > y( basis.size() );
     for (unsigned int count = 0; count < iterations; ++count)
     {
-
       for( unsigned int index = 0; index < points.size(); ++index )
       {
         basis.evaluate( points[ index ].point(), y );
@@ -101,6 +100,7 @@ bool test(unsigned int order) {
     }
 #else
     SpecialBasis specialBasis;
+    std::vector< Dune::FieldVector< double, 1 > > y( points.size() );
     for (unsigned int count = 0; count < iterations; ++count)
     {
       for( unsigned int index = 0; index < points.size(); ++index )
@@ -158,9 +158,10 @@ int main ( int argc, char **argv )
 
   tests &= test<Prism<Prism<Prism<Point> > > >(order);
   tests &= test<Prism<Pyramid<Pyramid<Point> > > >(order);
-  // tests &= test<Pyramid<Prism<Prism<Point> > > >(order);
-  std::cout << "NOT CHECKING PYRAMID!" << std::endl;
   tests &= test<Pyramid<Pyramid<Pyramid<Point> > > >(order);
+
+  tests &= test<Pyramid<Prism<Prism<Point> > > >(order);
+  // std::cout << "NOT CHECKING PYRAMID!" << std::endl;
 
   tests &= test<Prism<Prism<Prism<Prism<Point> > > > >(order);
   tests &= test<Pyramid<Pyramid<Pyramid<Pyramid<Point> > > > >(order);

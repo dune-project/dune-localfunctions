@@ -31,7 +31,7 @@ namespace Dune
   struct MonomialBasisHelper
   {
     static void
-    copy ( F *&wit, const F *&rit, const unsigned int size, const F &z )
+    copy ( F *&wit, F *&rit, const unsigned int size, const F &z )
     {
       const F *const rend = rit + size;
       for( ; rit != rend; ++rit, ++wit )
@@ -173,7 +173,7 @@ namespace Dune
 
       // fill first column
       baseBasis_.evaluate( order, x, offsets, values );
-      //const unsigned int *const baseSizes = baseBasis_.sizes_;
+      const unsigned int *const baseSizes = baseBasis_.sizes_;
 
       Field *row0 = values;
       for( unsigned int k = 1; k <= order; ++k )
@@ -192,13 +192,14 @@ namespace Dune
         for( ; it != row1End; ++row0, ++it )
           *it = z * (*row0);
         row0 = row1;
-#endif
+#else
 
         Field *row1 = values + offsets[ k-1 ];
         Field *wit = row1 + baseBasis_.sizes_[ k ];
         Helper::copy( wit, row1, k*baseBasis_.sizes_[ k ], z );
-        Helper::copy( wit, row0, baseBasis_.numBaseFunctions_[ k-1 ] );
+        Helper::copy( wit, row0, baseBasis_.numBaseFunctions_[ k-1 ], z );
         row0 = row1;
+#endif
       }
     }
 
@@ -278,6 +279,8 @@ namespace Dune
     friend class MonomialBasisImpl< GenericGeometry::Prism< Topology >, Field >;
     friend class MonomialBasisImpl< GenericGeometry::Pyramid< Topology >, Field >;
 
+    typedef MonomialBasisHelper< Field > Helper;
+
     MonomialBasisImpl< BaseTopology, Field > baseBasis_;
     // sizes_[ k ]: number of basis functions of exactly order k
     mutable unsigned int *sizes_;
@@ -312,12 +315,21 @@ namespace Dune
       Field *row0 = values;
       for( unsigned int k = 1; k <= order; ++k )
       {
+#if 0
         Field *const row1 = values+offsets[ k-1 ];
         Field *const row1End = row1+sizes_[ k ];
         assert( (unsigned int)(row1End - values) <= offsets[ k ] );
         for( Field *it = row1 + baseSizes[ k ]; it != row1End; ++row0, ++it )
           *it = z * (*row0);
         row0 = row1;
+
+#else
+
+        Field *row1 = values + offsets[ k-1 ];
+        Field *wit = row1 + baseBasis_.sizes_[ k ];
+        Helper::copy( wit, row0, baseBasis_.numBaseFunctions_[ k-1 ], z );
+        row0 = row1;
+#endif
       }
     }
 

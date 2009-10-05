@@ -11,33 +11,36 @@ namespace Dune
   template< int dim, class SF, class CF >
   struct ONBasisCreator
   {
-    typedef StandardMonomialBasis<dim,SF> MBasis;
+    // typedef StandardMonomialBasis<dim,SF> MBasis;
+    typedef VirtualMonomialBasis<dim,SF> MBasis;
     typedef SF StorageField;
     typedef AlgLib::MultiPrecision< Precision<CF>::value > ComputeField;
     static const int dimension = dim;
     typedef SparseCoeffMatrix< StorageField > CoefficientMatrix;
-    typedef MonomialEvaluator<MBasis> Evaluator;
+    typedef StandardEvaluator<MBasis> Evaluator;
     typedef PolynomialBasis<Evaluator,CoefficientMatrix> Basis;
     typedef unsigned int Key;
+    typedef typename StdMonomialTopology<dim>::Type SimplexTopology;
 
     template <class Topology>
     struct Maker
     {
       static void apply(unsigned int order,Basis* &basis)
       {
-        static MBasis _basis;
+        const MBasis &_basis = MonomialBasisProvider<dimension,StorageField>::template basis<SimplexTopology>(order);
+        // static MBasis _basis;
         static CoefficientMatrix _coeffs;
-        if ( _coeffs.size() <= _basis.size(order) )
+        if ( _coeffs.size() <= _basis.size() )
         {
           ONB::ONBMatrix<Topology,ComputeField> matrix(order);
           _coeffs.fill(matrix);
-          basis = new Basis(_basis,_coeffs,order,_basis.size(order));
+          basis = new Basis(_basis,_coeffs,order,_basis.size());
           std::stringstream name;
           name << "onb_" << Topology::name() << "_p" << order;
           basis->template printBasis<Topology>(name.str(),matrix);
         }
         else
-          basis = new Basis(_basis,_coeffs,order,_basis.size(order));
+          basis = new Basis(_basis,_coeffs,order,_basis.size());
       }
     };
   };

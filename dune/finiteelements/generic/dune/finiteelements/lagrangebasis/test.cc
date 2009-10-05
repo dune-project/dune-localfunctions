@@ -7,7 +7,7 @@
 #include <dune/finiteelements/pk3d/pk3dlocalbasis.hh>
 
 #define USE_GENERIC 1
-const unsigned int iterations = 1000000;
+const unsigned int iterations = 10000000;
 
 using namespace Dune;
 using namespace GenericGeometry;

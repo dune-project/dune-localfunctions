@@ -283,8 +283,8 @@ namespace Dune
     using Base::container_;
   };
 
-  template <class B,int dimR>
-  struct VectorialEvaluator : public StandardEvaluator<B>
+  template <class B,class Fill>
+  struct VecEvaluator : public StandardEvaluator<B>
   {
     typedef B Basis;
     typedef typename Basis::Field Field;
@@ -292,30 +292,33 @@ namespace Dune
     typedef std::vector<Field> Container;
     static const int dimension = Basis::dimension;
     typedef StandardEvaluator<B> Base;
+    static const int dimRange = Fill::dimRange;
 
     template <unsigned int deriv>
     struct Iterator
     {
-      typedef typename Base::template BaseIterator<Tensor<Field,dimension,dimR,deriv,true> > All;
-      typedef typename Base::template BaseIterator<Tensor<Field,dimension,dimR,deriv,false> > Single;
+      typedef typename Base::template BaseIterator<Tensor<Field,dimension,dimRange,deriv,true> > All;
+      typedef typename Base::template BaseIterator<Tensor<Field,dimension,dimRange,deriv,false> > Single;
     };
 
-    VectorialEvaluator(const Basis &basis,unsigned int order)
+    VecEvaluator(const Basis &basis,
+                 unsigned int order,
+                 const Fill &fill)
       : Base(basis,order),
-        vecSize_(basis.size()*dimR)
+        fill_(fill)
     {
       resize<2,true>();
     }
     template <unsigned int deriv>
     typename Iterator<deriv>::Single evaluate(const DomainVector &x)
     {
-      fill( Base::template evaluate<deriv>(x) );
+      fill_( x,Base::template evaluate<deriv>(x), vecContainer_ );
       return typename Iterator<deriv>::Single(vecContainer_);
     }
     template <unsigned int deriv>
     typename Iterator<deriv>::All evaluateAll(const DomainVector &x)
     {
-      fill( Base::template evaluateAll<deriv>(x) );
+      fill_( x,Base::template evaluateAll<deriv>(x), vecContainer_ );
       return typename Iterator<deriv>::All(vecContainer_);
     }
     typename Iterator<0>::Single evaluate(const DomainVector &x)
@@ -336,19 +339,31 @@ namespace Dune
     }
     unsigned int size() const
     {
-      return vecSize_;
+      return size_*dimRange;
     }
   protected:
     template <int deriv,bool useAll>
     void resize()
     {
-      const int totalSize = Tensor<Field,dimension,dimR,deriv,useAll>::blockSize*vecSize_;
+      const int totalSize = Tensor<Field,dimension,dimRange,deriv,useAll>::blockSize*size_;
       vecContainer_.resize(totalSize);
     }
-    template <class Iter>
-    void fill(Iter iter)
+    VecEvaluator(const VecEvaluator&);
+    Container vecContainer_;
+    using Base::size_;
+    const Fill &fill_;
+  };
+
+  template <int dimR>
+  struct DiagonalFill
+  {
+    static const int dimRange = dimR;
+    template <class Domain, class Iter,class Field>
+    void operator()(const Domain &x,
+                    Iter iter,std::vector<Field> &vecContainer) const
     {
-      typename Container::iterator vecIter = vecContainer_.begin();
+      typedef std::vector<Field> Container;
+      typename Container::iterator vecIter = vecContainer.begin();
       for ( ; !iter.done(); ++iter)
       {
         const typename Iter::Block &block = iter.block();
@@ -365,9 +380,20 @@ namespace Dune
         }
       }
     }
-    VectorialEvaluator(const VectorialEvaluator&);
-    Container vecContainer_;
-    unsigned int vecSize_;
+  };
+
+  template <class B,int dimR>
+  struct VectorialEvaluator
+    : public VecEvaluator<B,DiagonalFill<dimR> >
+  {
+    typedef DiagonalFill<dimR> Fill;
+    typedef VecEvaluator< B,Fill > Base;
+    VectorialEvaluator(const B &basis,
+                       unsigned int order)
+      : Base(basis,order,fill_)
+    {}
+  private:
+    Fill fill_;
   };
 
 #if 0

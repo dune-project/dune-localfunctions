@@ -12,78 +12,79 @@
 #include <dune/finiteelements/polynomialbasis.hh>
 namespace Dune
 {
-  template <int d,class F>
-  struct RaviartThomasContainer
+  template <class MBasis>
+  struct RaviartThomasFill
   {
-    struct Iterator
+    static const int dimRange = MBasis::dimension;
+    RaviartThomasFill(const MBasis &basis)
+      : basis_(basis)
+    {}
+    template <class Domain,class Iter,class Field>
+    void operator()(const Domain &x, Iter iter,std::vector<Field> &vecContainer) const
     {
-      Iterator(const std::vector<F>& mBasis, bool end)
-        : mBasis_(mBasis),
-          pos_(0), dim_(0),
-          done_(end) {
-        val_[dim_] = mBasis_[pos_];
-      }
-      Iterator(const Iterator& other)
-        : mBasis_(other.mBasis_),
-          pos_(other.pos_), dim_(other.dim_),
-          done_(other.done_)
-      {}
-      Iterator &operator=(const Iterator& other)
+      typedef std::vector<Field> Container;
+      typename Container::iterator vecIter = vecContainer.begin();
+      unsigned int notHomogen = basis_.size(basis_.order()-1);
+      std::cout << " Order: " << basis_.order()
+                << " notHomo: " << notHomogen
+                << " Homo:    " << basis_.size()-notHomogen
+                << std::endl;
+      for (unsigned int baseFunc = 0 ;
+           baseFunc<notHomogen; ++iter, ++baseFunc)
       {
-        mBasis_ = other.mBasis;
-        pos_ = other.pos_;
-        dim_ = other.dim_;
-        done_ = other.done_;
-      }
-      const FieldVector<F,d>& operator*() const
-      {
-        assert(!done_);
-        return val_;
-      }
-      const Iterator &operator++()
-      {
-        val_[dim_] = 0;
-        if (dim_ == d-1)
+        const typename Iter::Block &block = iter.block();
+        for (int b=0; b<iter.blockSize; ++b)
         {
-          dim_ = 0;
-          ++pos_;
+          for (int r1=0; r1<dimRange; ++r1)
+          {
+            for (int r2=0; r2<dimRange; ++r2)
+            {
+              *vecIter = (r1==r2 ? block[b] : Field(0));
+              ++vecIter;
+            }
+          }
         }
-        else
-          ++dim_;
-        if (pos_==mBasis_.size())
-          done_ = true;
-        else
-          val_[dim_] = mBasis_[pos_];
-        return *this;
       }
-      FieldVector<F,d> val_;
-      const std::vector<F>& mBasis_;
-      unsigned int pos_;
-      int dim_;
-      bool done_;
-    };
-    typedef Dune::FieldVector<F,d> value_type;
-    typedef Iterator const_iterator;
-    RaviartThomasContainer(int size)
-      : mBasis_(size/d) {}
-    Iterator begin() const
-    {
-      return Iterator(mBasis_,false);
+      for ( ; !iter.done(); ++iter )
+      {
+        const typename Iter::Block &block = iter.block();
+        for (int b=0; b<iter.blockSize; ++b)
+        {
+          for (int r1=0; r1<dimRange; ++r1)
+          {
+            for (int r2=0; r2<dimRange; ++r2)
+            {
+              *vecIter = (r1==r2 ? block[b] : Field(0));
+              ++vecIter;
+            }
+          }
+        }
+        for (int b=0; b<iter.blockSize; ++b)
+        {
+          for (int r1=0; r1<dimRange; ++r1)
+          {
+            *vecIter = x[r1]*block[b];
+            ++vecIter;
+          }
+        }
+      }
     }
-    Iterator end() const
-    {
-      return Iterator(mBasis_,true);
-    }
-    // for debuging
-    int size() const
-    {
-      return mBasis_.size()*d;
-    }
-    operator F*()
-    {
-      return &(mBasis_[0]);
-    }
-    std::vector<F> mBasis_;
+    const MBasis &basis_;
+  };
+
+  template <class B>
+  struct RaviartThomasEvaluator
+    : public VecEvaluator<B,RaviartThomasFill<B> >
+  {
+    typedef RaviartThomasFill<B> Fill;
+    typedef VecEvaluator< B,Fill > Base;
+    RaviartThomasEvaluator(const B &basis,
+                           unsigned int order)
+      : Base(basis,order,fill_),
+        fill_(basis)
+    {}
+  private:
+    Fill fill_;
   };
 
   template <class Topology,class scalar_t>
@@ -91,7 +92,7 @@ namespace Dune
     enum {dim = Topology::dimension};
     typedef Dune::AlgLib::Matrix< scalar_t > mat_t;
     typedef StandardMonomialBasis<dim,scalar_t> MBasis;
-    RaviartThomasMatrix(int order) : basis_(), order_(order)
+    RaviartThomasMatrix(int order) : basis_(order), order_(order)
     {}
     int colSize(int row) const {
       return (dim+1)*basis_.size(order_)-basis_.sizes(order_)[order_-1];
@@ -99,12 +100,9 @@ namespace Dune
     int rowSize() const {
       return (dim+1)*basis_.size(order_)-basis_.sizes(order_)[order_-1];
     }
-    const Dune::FieldMatrix< scalar_t,dim,dim > operator() ( int r, int c ) const
+    const scalar_t operator() ( int r, int c ) const
     {
-      Dune::FieldMatrix< scalar_t, dim,dim > ret(0);
-      for (int i=0; i<dim; ++i)
-        ret[i][i] = 1.;
-      return ret;
+      return ( (r==c) ? scalar_t(1) : scalar_t(0) );
     }
     void print(std::ostream& out,int N = rowSize()) const {}
     MBasis basis_;
@@ -119,7 +117,7 @@ namespace Dune
     typedef SF StorageField;
     typedef AlgLib::MultiPrecision< Precision<CF>::value > ComputeField;
     static const int dimension = dim;
-    typedef PolynomialBasisWithMatrix<MBasis,StorageField,dimension,RaviartThomasContainer<dimension,StorageField> > Basis;
+    typedef PolynomialBasisWithMatrix<RaviartThomasEvaluator<MBasis>,SparseCoeffMatrix<StorageField> > Basis;
     typedef unsigned int Key;
 
     template <class Topology>
@@ -129,7 +127,7 @@ namespace Dune
       {
         // bool RTBasis_only_for_implemented_for_simplex = GenericGeometry::IsSimplex<Topology>::value ;
         // assert(RTBasis_only_for_implemented_for_simplex);
-        static MBasis _mBasis;
+        static MBasis _mBasis(order);
         basis = new Basis(_mBasis,order);
         RaviartThomasMatrix<Topology,ComputeField> matrix(order);
         basis->fill(matrix);

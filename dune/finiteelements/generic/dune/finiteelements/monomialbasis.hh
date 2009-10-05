@@ -421,8 +421,6 @@ namespace Dune
     }
   };
 
-
-
   // MonomialBasis
   // -------------
 
@@ -500,6 +498,64 @@ namespace Dune
     MonomialBasis(const This&);
     This& operator=(const This&);
   };
+
+  // StdMonomialTopology
+  // -------------------
+
+  // Simplex
+  template <int dim>
+  struct StdMonomialTopology {
+    typedef StdMonomialTopology<dim-1> BaseType;
+    typedef GenericGeometry::Pyramid<typename BaseType::Type> Type;
+  };
+  template <>
+  struct StdMonomialTopology<0> {
+    typedef GenericGeometry::Point Type;
+  };
+  template< int dim,class F >
+  class StandardMonomialBasis
+    : public MonomialBasis< typename StdMonomialTopology<dim>::Type, F >
+  {
+  public:
+    typedef typename StdMonomialTopology<dim>::Type Topology;
+    static const int dimension = dim;
+  private:
+    typedef StandardMonomialBasis< dim, F > This;
+    typedef MonomialBasis< Topology, F > Base;
+  public:
+    StandardMonomialBasis ()
+      : Base()
+    {}
+  };
+
+  // Cube
+  template <int dim>
+  struct StdBiMonomialTopology {
+    typedef GenericGeometry::Prism<typename StdBiMonomialTopology<dim-1>::Type> Type;
+  };
+  template <>
+  struct StdBiMonomialTopology<0> {
+    typedef GenericGeometry::Point Type;
+  };
+  template< int dim, class F >
+  class StandardBiMonomialBasis
+    : public MonomialBasis< typename StdBiMonomialTopology<dim>::Type, F >
+  {
+  public:
+    typedef typename StdBiMonomialTopology<dim>::Type Topology;
+    static const int dimension = dim;
+  private:
+    typedef StandardBiMonomialBasis< dim, F > This;
+    typedef MonomialBasis< Topology, F > Base;
+  public:
+    StandardBiMonomialBasis ()
+      : Base()
+    {}
+  };
+
+  // VirtualMonomialBasis
+  // -------------------
+
   template< int dim, class F >
   class VirtualMonomialBasis
   {
@@ -521,6 +577,11 @@ namespace Dune
     const unsigned int size ( ) const
     {
       return sizes( )[ order_ ];
+    }
+
+    const unsigned int order () const
+    {
+      return order_;
     }
 
     virtual void evaluate ( const DomainVector &x,
@@ -609,56 +670,6 @@ namespace Dune
     : public BasisProvider<MonomialBasisCreator<dim,SF> >
   {};
 
-  // StdMonomialTopology
-  // -------------------
-
-  template <int dim>
-  struct StdMonomialTopology {
-    typedef StdMonomialTopology<dim-1> BaseType;
-    typedef GenericGeometry::Pyramid<typename BaseType::Type> Type;
-  };
-  template <>
-  struct StdMonomialTopology<0> {
-    typedef GenericGeometry::Point Type;
-  };
-  template <int dim>
-  struct StdBiMonomialTopology {
-    typedef GenericGeometry::Prism<typename StdBiMonomialTopology<dim-1>::Type> Type;
-  };
-  template <>
-  struct StdBiMonomialTopology<0> {
-    typedef GenericGeometry::Point Type;
-  };
-  template< int dim,class F >
-  class StandardMonomialBasis
-    : public MonomialBasis< typename StdMonomialTopology<dim>::Type, F >
-  {
-  public:
-    typedef typename StdMonomialTopology<dim>::Type Topology;
-    static const int dimension = dim;
-  private:
-    typedef StandardMonomialBasis< dim, F > This;
-    typedef MonomialBasis< Topology, F > Base;
-  public:
-    StandardMonomialBasis ()
-      : Base()
-    {}
-  };
-  template< int dim, class F >
-  class StandardBiMonomialBasis
-    : public MonomialBasis< typename StdBiMonomialTopology<dim>::Type, F >
-  {
-  public:
-    typedef typename StdBiMonomialTopology<dim>::Type Topology;
-    static const int dimension = dim;
-  private:
-    typedef StandardBiMonomialBasis< dim, F > This;
-    typedef MonomialBasis< Topology, F > Base;
-  public:
-    StandardBiMonomialBasis ()
-      : Base()
-    {}
-  };
 }
 
 #endif

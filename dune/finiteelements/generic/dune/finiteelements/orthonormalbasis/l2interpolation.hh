@@ -86,7 +86,7 @@ namespace Dune
     {
       typedef GenericGeometry::GenericQuadrature< Topology, Field > GenericQuadrature;
       const Basis &basis = BasisCreator::template basis< Topology >( key );
-      const Quadrature *quadrature = new GenericQuadrature( basis.order() );
+      const Quadrature *quadrature = new GenericQuadrature( 2*basis.order()+1 );
       return *(new LocalInterpolation( basis, *quadrature ));
     }
 

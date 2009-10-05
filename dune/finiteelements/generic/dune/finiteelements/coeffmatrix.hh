@@ -160,9 +160,9 @@ namespace Dune
       return numCols_;
     }
 
-    template< class BasisVector, class RangeVector >
+    template< class BasisVector, class Vector >
     void mult ( const BasisVector &x,
-                std::vector< RangeVector > &y ) const
+                Vector  &y ) const
     {
       typedef typename BasisVector::Block DomainVector;
       typedef Mult<Field,DomainVector> Multiply;

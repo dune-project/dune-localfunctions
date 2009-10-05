@@ -7,17 +7,11 @@
 using namespace Dune;
 using namespace GenericGeometry;
 
-int main ( int argc, char **argv )
-{
-  if( argc < 2 )
-  {
-    std::cerr << "Usage: " << argv[ 0 ] << " <p>" << std::endl;
-    return 1;
-  }
+template <class Topology>
+bool test(int order) {
+  std::cout << "Testing " << Topology::name() << " in dimension " << Topology::dimension << std::endl;
 
-  typedef TOPOLOGY Topology;
-
-  const unsigned int order = atoi( argv[ 1 ] );
+  bool ret = true;
   OrthonormalBasis< Topology, double > basis( order );
 
   const unsigned int size = basis.size( order );
@@ -29,8 +23,8 @@ int main ( int argc, char **argv )
 
   typedef QuadratureRuleImpl< Topology > Quadrature;
   Quadrature quadrature( 2*order+1 );
-  const Quadrature::iterator end = quadrature.end();
-  for( Quadrature::iterator it = quadrature.begin(); it != end; ++it )
+  const typename Quadrature::iterator end = quadrature.end();
+  for( typename Quadrature::iterator it = quadrature.begin(); it != end; ++it )
   {
     basis.evaluate( order, it->position(), y );
     for( unsigned int i = 0; i < size; ++i )
@@ -45,8 +39,44 @@ int main ( int argc, char **argv )
     for( unsigned int j = 0; j < size; ++j )
     {
       const double value = m[ i*size + j ];
-      if( fabs( value - double( i == j ) ) > 1e-10 )
+      if( fabs( value - double( i == j ) ) > 1e-10 ) {
         std::cout << "i = " << i << ", j = " << j << ": " << value << std::endl;
+        ret = false;
+      }
     }
   }
+  if (!ret) {
+    std::cout << "   FAILED !" << std::endl;
+  }
+  std::cout << std::endl;
+  return ret;
+}
+int main ( int argc, char **argv )
+{
+  if( argc < 2 )
+  {
+    std::cerr << "Usage: " << argv[ 0 ] << " <p>" << std::endl;
+    return 2;
+  }
+
+  const unsigned int order = atoi( argv[ 1 ] );
+#ifdef TOPOLOGY
+  return (test<TOPOLOGY>(order) ? 0 : 1 );
+#else
+  bool tests = true;
+  tests &= test<Prism<Point> > (order);
+  tests &= test<Pyramid<Point> > (order);
+
+  tests &= test<Prism<Prism<Point> > > (order);
+  tests &= test<Pyramid<Pyramid<Point> > >(order);
+
+  tests &= test<Prism<Prism<Prism<Point> > > >(order);
+  tests &= test<Prism<Pyramid<Pyramid<Point> > > >(order);
+  tests &= test<Pyramid<Prism<Prism<Point> > > >(order);
+  tests &= test<Pyramid<Pyramid<Pyramid<Point> > > >(order);
+
+  tests &= test<Prism<Prism<Prism<Prism<Point> > > > >(order);
+  tests &= test<Pyramid<Pyramid<Pyramid<Pyramid<Point> > > > >(order);
+  return (tests ? 0 : 1);
+#endif // TOPOLOGY
 }

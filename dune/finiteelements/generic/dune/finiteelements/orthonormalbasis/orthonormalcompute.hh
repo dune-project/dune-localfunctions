@@ -27,9 +27,9 @@ namespace ONB {
   struct Integral<Dune::GenericGeometry::Pyramid<Base> > {
     enum {d = Base::dimension+1};
     template <int dim,class scalar_t>
-    static double compute(const Dune::MultiIndex<dim>& alpha,
-                          scalar_t& p,scalar_t& q) {
-      int i = alpha.z(dim-d);
+    static int compute(const Dune::MultiIndex<dim>& alpha,
+                       scalar_t& p,scalar_t& q) {
+      int i = alpha.z(d-1);
       int ord = Integral<Base>::compute(alpha,p,q);
       p *= factorial<scalar_t>(1,i);
       q *= factorial<scalar_t>(d+ord,d+ord+i);
@@ -42,7 +42,7 @@ namespace ONB {
     template <int dim,class scalar_t>
     static int compute(const Dune::MultiIndex<dim>& alpha,
                        scalar_t& p,scalar_t& q) {
-      int i = alpha.z(dim-d);
+      int i = alpha.z(d-1);
       int ord = Integral<Base>::compute(alpha,p,q);
       Integral<Base>::compute(alpha,p,q);
       p *= 1.;
@@ -103,8 +103,9 @@ namespace ONB {
         const unsigned int size = basis.sizes( ord )[ ord ];
         std::vector< Dune::FieldVector< MI,1> > y( size );
         Dune::FieldVector< MI, dim > x;
-        for (int i=0; i<dim; ++i)
+        for (int i=0; i<dim; ++i) {
           x[i].set(i);
+        }
         basis.evaluate( ord , x, y );
         // set bounds of data
         res.setbounds(1,size,1,size);

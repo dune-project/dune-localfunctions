@@ -38,6 +38,7 @@ namespace Dune
     struct Iterator
     {
       typedef BaseIterator<Derivatives<Field,dimension,dimRange,deriv,derivative> > All;
+      typedef BaseIterator<Derivatives<Field,dimension,1,0,value> > Integrate;
     };
 
     unsigned int size() const
@@ -143,6 +144,12 @@ namespace Dune
       Base::template resize<deriv>();
       basis_.template evaluate<deriv>(x,&(container_[0]));
       return typename Iterator<deriv>::All(container_);
+    }
+    typename Iterator<0>::Integrate integrate()
+    {
+      Base::template resize<0>();
+      basis_.integrate(&(container_[0]));
+      return typename Iterator<0>::Integrate(container_);
     }
 
   protected:

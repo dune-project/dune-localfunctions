@@ -347,9 +347,9 @@ namespace Dune
         *it = Zero< F >();
     }
 
-    void integral ( const unsigned int order,
-                    const unsigned int *const offsets,
-                    Field *const values ) const
+    void integrate ( const unsigned int order,
+                     const unsigned int *const offsets,
+                     Field *const values ) const
     {
       values[ 0 ] = Unity< Field >();
     }
@@ -406,14 +406,14 @@ namespace Dune
       }
     }
 
-    void integral ( const unsigned int order,
-                    const unsigned int *const offsets,
-                    Field *const values ) const
+    void integrate ( const unsigned int order,
+                     const unsigned int *const offsets,
+                     Field *const values ) const
     {
       const BaseSize &size = BaseSize::instance();
       const Size &mySize = Size::instance();
       // fill first column
-      baseBasis_.integral( order, offsets, values );
+      baseBasis_.integrate( order, offsets, values );
       const unsigned int *const baseSizes = size.sizes_;
 
       Field *row0 = values;
@@ -542,14 +542,14 @@ namespace Dune
       }
     }
 
-    void integral ( const unsigned int order,
-                    const unsigned int *const offsets,
-                    Field *const values ) const
+    void integrate ( const unsigned int order,
+                     const unsigned int *const offsets,
+                     Field *const values ) const
     {
       const BaseSize &size = BaseSize::instance();
 
       // fill first column
-      baseBasis_.integral( order, offsets, values );
+      baseBasis_.integrate( order, offsets, values );
 
       const unsigned int *const baseSizes = size.sizes_;
 
@@ -680,20 +680,21 @@ namespace Dune
     template< class DVector, class RVector >
     void evaluate ( const DVector &x, RVector &values ) const
     {
+      assert( DVector::size == dimension);
       DomainVector bx;
       for( int d = 0; d < dimension; ++d )
         field_cast( x[ d ], bx[ d ] );
       evaluate<0>( bx, values );
     }
 
-    void integral ( Field *const values ) const
+    void integrate ( Field *const values ) const
     {
-      Base::integral( order_, sizes( order_ ), values );
+      Base::integrate( order_, sizes( order_ ), values );
     }
     template <class Vector>
-    void integral ( Vector &values ) const
+    void integrate ( Vector &values ) const
     {
-      integral( &(values[ 0 ]) );
+      integrate( &(values[ 0 ]) );
     }
   private:
     MonomialBasis(const This&);
@@ -814,6 +815,7 @@ namespace Dune
     template< class DVector, class RVector >
     void evaluate ( const DVector &x, RVector &values ) const
     {
+      assert( DVector::size == dimension);
       DomainVector bx;
       for( int d = 0; d < dimension; ++d )
         field_cast( x[ d ], bx[ d ] );
@@ -822,18 +824,18 @@ namespace Dune
     template< unsigned int deriv, class DVector, class RVector >
     void evaluate ( const DVector &x, RVector &values ) const
     {
+      assert( DVector::size == dimension);
       DomainVector bx;
       for( int d = 0; d < dimension; ++d )
         field_cast( x[ d ], bx[ d ] );
       evaluate<deriv>( bx, values );
     }
 
-
-    virtual void integral ( Field *const values ) const = 0;
+    virtual void integrate ( Field *const values ) const = 0;
     template <class Vector>
-    void integral ( Vector &values ) const
+    void integrate ( Vector &values ) const
     {
-      integral( &(values[ 0 ]) );
+      integrate( &(values[ 0 ]) );
     }
   protected:
     unsigned int order_;
@@ -865,9 +867,9 @@ namespace Dune
       basis_.evaluate(deriv,x,values);
     }
 
-    void integral ( Field *const values ) const
+    void integrate ( Field *const values ) const
     {
-      basis_.integral(values);
+      basis_.integrate(values);
     }
 
   private:

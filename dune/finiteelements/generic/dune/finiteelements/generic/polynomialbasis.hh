@@ -116,6 +116,7 @@ namespace Dune
     template< class DVector, class RVector >
     void evaluate ( const DVector &x, RVector &values ) const
     {
+      assert( DVector::size == dimension);
       DomainVector bx;
       for( int d = 0; d < dimension; ++d )
         field_cast( x[ d ], bx[ d ] );
@@ -124,10 +125,18 @@ namespace Dune
     template< unsigned int deriv, class DVector, class RVector >
     void evaluate ( const DVector &x, RVector &values ) const
     {
+      assert( DVector::size == dimension);
       DomainVector bx;
       for( int d = 0; d < dimension; ++d )
         field_cast( x[ d ], bx[ d ] );
       evaluate<deriv>( bx, values );
+    }
+
+    template <class Fy>
+    void integrate ( std::vector<Fy> &values ) const
+    {
+      assert(values.size()>=size());
+      coeffMatrix_->mult( eval_.template integrate(), values );
     }
 
   protected:

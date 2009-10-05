@@ -129,7 +129,6 @@ namespace Dune
         size_ += (it->size > 0 ? indexSet_.size( it->type ) * it->size : 0);
       }
     }
-    std::cout << "size = " << size_ << std::endl;
 
     for( unsigned int topologyId = 0; topologyId < numTopologies; ++topologyId )
     {

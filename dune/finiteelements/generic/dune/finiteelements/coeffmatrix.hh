@@ -176,7 +176,7 @@ namespace Dune
       XDerivatives val;
       for( size_t i = 0; i < numLsg; ++i)
       {
-        for ( int r = 0; r<R; ++r,++row)
+        for( unsigned int r = 0; r < R; ++r, ++row )
         {
           val = 0;
           BasisIterator itx = x;
@@ -185,7 +185,7 @@ namespace Dune
             itx += *skipIt;
             val.axpy(*pos,*itx);
           }
-          y[i].assign(r,val);
+          y[ i ].assign( r, val );
         }
       }
     }

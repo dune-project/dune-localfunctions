@@ -45,6 +45,7 @@ namespace Dune
 
       static std::vector< RangeVector > basisValues;
       const Basis &basis = dfSpace_.basis( entity );
+      basisValues.resize( basis.size() );
       basis.evaluate( x, basisValues );
 
       RangeField y( 0 );

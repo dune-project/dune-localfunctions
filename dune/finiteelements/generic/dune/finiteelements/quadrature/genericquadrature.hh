@@ -7,6 +7,7 @@
 
 #include <dune/finiteelements/quadrature/quadrature.hh>
 #include <dune/finiteelements/quadrature/gaussquadrature.hh>
+#include <dune/finiteelements/quadrature/quadratureprovider.hh>
 
 namespace Dune
 {
@@ -159,6 +160,42 @@ namespace Dune
         }
       }
     };
+
+
+
+    // GenericQuadratureCreator
+    // ------------------------
+
+    template< unsigned int dim, class F, class OneDQuad = GaussQuadrature< F > >
+    struct GenericQuadratureCreator
+    {
+      typedef F Field;
+      static const unsigned int dimension = dim;
+      typedef GenericGeometry::Quadrature< dim, F > Quadrature;
+
+      typedef unsigned int Key;
+
+      template< class Topology >
+      static const Quadrature &quadrature ( const Key &order )
+      {
+        return *(new GenericQuadrature< Topology, F, OneDQuad >( order ));
+      }
+
+      static void release ( const Quadrature &quadrature )
+      {
+        delete &quadrature;
+      }
+    };
+
+
+
+    // GenericQuadratureProvider
+    // -------------------------
+
+    template< unsigned int dim, class F, class OneDQuad = GaussQuadrature< F > >
+    struct GenericQuadratureProvider
+      : public QuadratureProvider< GenericQuadratureCreator< dim, F, OneDQuad > >
+    {};
 
   }
 

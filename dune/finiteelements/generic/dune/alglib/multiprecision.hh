@@ -48,6 +48,14 @@ namespace Dune
 
     template< unsigned int precision >
     inline MultiPrecision< precision >
+    operator- ( const MultiPrecision< precision > &a )
+    {
+      typedef amp::ampf< precision > F;
+      return -((const F &)a);
+    }
+
+    template< unsigned int precision >
+    inline MultiPrecision< precision >
     operator* ( const MultiPrecision< precision > &a, const MultiPrecision< precision > &b )
     {
       typedef amp::ampf< precision > F;

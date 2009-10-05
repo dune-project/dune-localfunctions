@@ -36,12 +36,16 @@ namespace Dune
           out << "," << char('a'+i);
         out << ")=";
         RangeVector *itx = (&x[0]);
-        out << (*row) << "*" << (*itx);
-        ++row,++itx;
+        bool first = true;
         for (; row != rows_[r+1]; ++row, ++itx) {
-          if (*row < -1e-15 ||
-              *row > 1e-15)
-            out << " + " << (*row) << "*" << (*itx);
+          if (*row > 1e-15) {
+            out << ((!first) ? " + " : "") << (*row) << "*" << (*itx);
+            first = false;
+          }
+          else if (*row < -1e-15) {
+            out << " - " << -(*row) << "*" << (*itx);
+            first = false;
+          }
         }
         out << std::endl;
       }
@@ -53,11 +57,12 @@ namespace Dune
       assert(numLsg<=numRows_);
       Field *row = rows_[0];
       for (int r=0; r<numLsg; ++r) {
-        y[r] = Field(0);
-        RangeVector *const itx = (&x[0]);
+        Field val = 0;
+        const RangeVector * itx = (&x[0]);
         for (; row != rows_[r+1]; ++row, ++itx) {
-          y[r] += (*row)*(*itx);
+          val += (*row)*(*itx);
         }
+        y[r] = val.toDouble();
       }
     }
     template <class FullMatrix>

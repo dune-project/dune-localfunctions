@@ -44,7 +44,7 @@ namespace Dune
       : gridView_( gridView ),
         dofMapper_( gridView_.indexSet(), order )
     {
-      GenericGeometry::ForLoop< Build, 0, numTopologies-1 >::apply( order, basis_, localInterpolation_ );
+      GenericGeometry::ForLoop< Build, 0, numTopologies-1 >::apply( order, basis_, interpolation_ );
     }
 
     ~LagrangeSpace ()
@@ -52,8 +52,13 @@ namespace Dune
       for( unsigned int topologyId = 0; topologyId < numTopologies; ++topologyId )
       {
         BasisCreator::release( *(basis_[ topologyId ]) );
-        LocalInterpolationCreator::release( *(localInterpolation_[ topologyId ]) );
+        LocalInterpolationCreator::release( *(interpolation_[ topologyId ]) );
       }
+    }
+
+    const GridView &gridView () const
+    {
+      return gridView_;
     }
 
     const DofMapper &dofMapper () const
@@ -67,13 +72,19 @@ namespace Dune
       return *(basis_[ topologyId ]);
     }
 
+    const LocalInterpolation &interpolation ( const typename GridView::template Codim< 0 >::Entity &entity ) const
+    {
+      const unsigned int topologyId = Dune::GenericGeometry::topologyId( entity.type() );
+      return *(interpolation_[ topologyId ]);
+    }
+
   private:
     static const unsigned int numTopologies = (1 << dimDomain);
 
     GridView gridView_;
     DofMapper dofMapper_;
     const Basis *basis_[ numTopologies ];
-    const LocalInterpolation *localInterpolation_[ numTopologies ];
+    const LocalInterpolation *interpolation_[ numTopologies ];
   };
 
 
@@ -83,11 +94,11 @@ namespace Dune
   struct LagrangeSpace< GV, SF, CF >::Build
   {
     static void apply ( const Key &order, const Basis *(&basis)[ numTopologies ],
-                        const LocalInterpolation *(&localInterpolation)[ numTopologies ] )
+                        const LocalInterpolation *(&interpolation)[ numTopologies ] )
     {
       typedef typename GenericGeometry::Topology< topologyId, dimDomain >::type Topology;
       basis[ topologyId ] = &BasisCreator::template basis< Topology >( order );
-      localInterpolation[ topologyId ] = &LocalInterpolationCreator::template localInterpolation< Topology >( order );
+      interpolation[ topologyId ] = &LocalInterpolationCreator::template localInterpolation< Topology >( order );
     }
   };
 

@@ -6,16 +6,31 @@
 #include <dune/grid/io/file/dgfparser/dgfgridtype.hh>
 
 #include <dune/finiteelements/lagrangebasis/space.hh>
+#include <dune/finiteelements/global/interpolation.hh>
 #include <dune/finiteelements/global/vtkfunctionwrapper.hh>
 
 const unsigned int dimension = GridType::dimension;
 
 typedef GridType::LeafGridView GridView;
 typedef Dune::LagrangeSpace< GridView, double > Space;
+typedef Dune::Interpolation< Space > Interpolation;
 typedef Dune::VTKFunctionWrapper< Space > VTKFunction;
 
 typedef GridView::Codim< 0 >::Entity Entity;
 typedef GridView::Codim< 0 >::Iterator Iterator;
+
+struct Function
+{
+  typedef Dune::FieldVector< double, dimension > DomainVector;
+  typedef Dune::FieldVector< double, 1 > RangeVector;
+
+  RangeVector operator() ( const DomainVector &x ) const
+  {
+    return exp( -x.two_norm() );
+  }
+};
+
+
 
 int main ( int argc, char **argv )
 {
@@ -34,14 +49,9 @@ int main ( int argc, char **argv )
   Space space( gridView, order );
   const Space::DofMapper &dofMapper = space.dofMapper();
   std::vector< double > dofs( dofMapper.size() );
+
+  Interpolation interpolation( space );
+  interpolation( Function(), dofs );
+
   VTKFunction vtkFunction( space, dofs );
-
-  const Iterator end = gridView.end< 0 >();
-  for( Iterator it = gridView.begin< 0 >(); it != end; ++it )
-  {
-    const Entity &entity = *it;
-
-    const Space::Basis &basis = space.basis( entity );
-
-  }
 }

@@ -72,16 +72,21 @@ namespace Dune
 
     typedef GenericGeometry::Point Topology;
 
+    friend class LagrangePoints< Topology, F >;
+    friend class LagrangePointsImpl< GenericGeometry::Prism< Topology >, F >;
+    friend class LagrangePointsImpl< GenericGeometry::Pyramid< Topology >, F >;
+
   public:
     typedef F Field;
 
     static const unsigned int dimension = Topology::dimension;
 
-    // private: ???
-    friend class LagrangePoints< Topology, Field >;
-    friend class LagrangePointsImpl< GenericGeometry::Prism< Topology >, Field >;
-    friend class LagrangePointsImpl< GenericGeometry::Pyramid< Topology >, Field >;
+    static unsigned int size ( const unsigned int order )
+    {
+      return 1;
+    }
 
+  private:
     template< unsigned int codim, unsigned int dim >
     static unsigned int setup ( const unsigned int order,
                                 unsigned int *count,
@@ -90,11 +95,6 @@ namespace Dune
       assert( codim == 0 );
       points->localKey_ = LocalKey( 0, 0, count[ 0 ]++ );
       points->point_ = Field( 0 );
-      return 1;
-    }
-
-    static unsigned int size ( const unsigned int order )
-    {
       return 1;
     }
   };
@@ -106,18 +106,23 @@ namespace Dune
 
     typedef GenericGeometry::Prism< BaseTopology > Topology;
 
+    friend class LagrangePoints< Topology, F >;
+    friend class LagrangePointsImpl< GenericGeometry::Prism< Topology >, F >;
+    friend class LagrangePointsImpl< GenericGeometry::Pyramid< Topology >, F >;
+
+    typedef LagrangePointsImpl< BaseTopology, F > BaseImpl;
+
   public:
     typedef F Field;
 
     static const unsigned int dimension = Topology::dimension;
 
-    // private: ???
-    friend class LagrangePoints< Topology, Field >;
-    friend class LagrangePointsImpl< GenericGeometry::Prism< Topology >, Field >;
-    friend class LagrangePointsImpl< GenericGeometry::Pyramid< Topology >, Field >;
+    static unsigned int size ( const unsigned int order )
+    {
+      return BaseImpl::size( order ) * (order+1);
+    }
 
-    typedef LagrangePointsImpl< BaseTopology, Field > BaseImpl;
-
+  private:
     template< unsigned int codim, unsigned int dim >
     static unsigned int setup ( const unsigned int order,
                                 unsigned int *count,
@@ -162,11 +167,6 @@ namespace Dune
       }
       return size;
     }
-
-    static unsigned int size ( const unsigned int order )
-    {
-      return BaseImpl::size( order ) * (order+1);
-    }
   };
 
   template< class BaseTopology, class F >
@@ -176,18 +176,26 @@ namespace Dune
 
     typedef GenericGeometry::Pyramid< BaseTopology > Topology;
 
+    friend class LagrangePoints< Topology, F >;
+    friend class LagrangePointsImpl< GenericGeometry::Prism< Topology >, F >;
+    friend class LagrangePointsImpl< GenericGeometry::Pyramid< Topology >, F >;
+
+    typedef LagrangePointsImpl< BaseTopology, F > BaseImpl;
+
   public:
     typedef F Field;
 
     static const unsigned int dimension = Topology::dimension;
 
-    // private: ???
-    friend class LagrangePoints< Topology, Field >;
-    friend class LagrangePointsImpl< GenericGeometry::Prism< Topology >, Field >;
-    friend class LagrangePointsImpl< GenericGeometry::Pyramid< Topology >, Field >;
+    static unsigned int size ( const unsigned int order )
+    {
+      unsigned int size = BaseImpl::size( order );
+      for( unsigned int i = 1; i <= order; ++i )
+        size += BaseImpl::size( order - i );
+      return size;
+    }
 
-    typedef LagrangePointsImpl< BaseTopology, Field > BaseImpl;
-
+  private:
     template< unsigned int codim, unsigned int dim >
     static unsigned int setup ( const unsigned int order,
                                 unsigned int *count,
@@ -235,14 +243,6 @@ namespace Dune
         ++size;
       }
 
-      return size;
-    }
-
-    static unsigned int size ( const unsigned int order )
-    {
-      unsigned int size = BaseImpl::size( order );
-      for( unsigned int i = 1; i <= order; ++i )
-        size += BaseImpl::size( order - i );
       return size;
     }
   };

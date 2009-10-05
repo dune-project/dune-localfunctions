@@ -30,7 +30,7 @@ int main ( int argc, char **argv )
   typedef Dune::AlgLib::MultiPrecision< 256 > Field;
   typedef TOPOLOGY Topology;
 
-  Dune::MonomialBasis< Topology, Field > basis;
+  Dune::MonomialBasis< Topology, Field > basis( p );
 
   Dune::LocalLagrangeInterpolation< Topology, Field  > interpolation( p );
 

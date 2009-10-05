@@ -7,6 +7,7 @@
 
 #include <dune/alglib/multiprecision.hh>
 #include <dune/alglib/vector.hh>
+#include <dune/common/field.hh>
 
 #include <alglib/ap.h>
 #include <alglib/inv.h>
@@ -99,6 +100,21 @@ namespace Dune
     private:
       RealMatrix matrix_;
     };
+
+    template< class Field, bool aligned >
+    inline std::ostream &operator<<(std::ostream &out, const Matrix<Field,aligned> &mat)
+    {
+      for (unsigned int r=0; r<mat.rows(); ++r)
+      {
+        out << field_cast<double>(mat(r,0));
+        for (unsigned int c=1; c<mat.cols(); ++c)
+        {
+          out << " , " << field_cast<double>(mat(r,c));
+        }
+        out << std::endl;
+      }
+      return out;
+    }
 
   }
 

@@ -52,18 +52,18 @@ namespace Dune
     std::vector< LocalKey > localKey_;
   };
 
-  // A small helper class to avoid having to
-  // write the interpolation twice (once for function
-  // and once for a basis)
-  template< class F, unsigned int dimension,
-      class Impl >
-  struct RaviartThomasInterpolation
+  template< unsigned int dimension, class Impl >
+  struct InterpolationWrapper
   {
-    typedef typename Impl::Field Field;
-    RaviartThomasInterpolation(const Impl *impl)
-      : impl_(impl) {}
+    // A small helper class to avoid having to
+    // write the interpolation twice (once for function
+    // and once for a basis)
+    template <class F, class Func,class Container, bool type>
+    struct Helper;
 
-    ~RaviartThomasInterpolation()
+    InterpolationWrapper(const Impl *impl)
+      : impl_(impl) {}
+    ~InterpolationWrapper()
     {
       delete impl_;
     }
@@ -81,31 +81,29 @@ namespace Dune
     void interpolate ( const Function &function, std::vector< Fy > &coefficients ) const
     {
       coefficients.resize(size());
-      Helper<Function,std::vector<Fy>,true> func( function, coefficients );
+      Helper<typename Impl::Field,Function,std::vector<Fy>,true> func( function, coefficients );
       impl_->interpolate(func);
     }
     template< class Basis, class Matrix >
     void interpolate ( const Basis &basis, Matrix &matrix ) const
     {
       matrix.resize( size(), basis.size() );
-      Helper<Basis,Matrix,false> func( basis, matrix );
+      Helper<typename Impl::Field,Basis,Matrix,false> func( basis, matrix );
       impl_->interpolate(func);
     }
-    const Impl *impl_;
 
-    template <class Func,class Container, bool type>
-    struct Helper;
+  private:
+    const Impl *impl_;
   };
-  template <class F,unsigned int d,class Impl>
-  template <class Func,class Vector>
-  struct RaviartThomasInterpolation<F,d,Impl>::Helper<Func,Vector,true>
+  template <unsigned int d,class Impl>
+  template <class F, class Func,class Vector>
+  struct InterpolationWrapper<d,Impl>::Helper<F,Func,Vector,true>
   // Func is of Function type
   {
-    typedef std::vector< Dune::FieldVector<F,d> > Result;
+    typedef Dune::FieldVector<F,d> Result[1];
     Helper(const Func & func, Vector &vec)
       : func_(func),
-        vec_(vec),
-        tmp_(1)
+        vec_(vec)
     {}
     const typename Vector::value_type &operator()(unsigned int row,unsigned int col)
     {
@@ -141,9 +139,9 @@ namespace Dune
     Vector &vec_;
     mutable Result tmp_;
   };
-  template <class F,unsigned int d,class Impl>
-  template <class Basis,class Matrix>
-  struct RaviartThomasInterpolation<F,d,Impl>::Helper<Basis,Matrix,false>
+  template <unsigned int d,class Impl>
+  template <class F,class Basis,class Matrix>
+  struct InterpolationWrapper<d,Impl>::Helper<F,Basis,Matrix,false>
   // Func is of Basis type
   {
     typedef std::vector< Dune::FieldVector<F,d> > Result;
@@ -152,10 +150,6 @@ namespace Dune
         matrix_(matrix),
         tmp_(basis.size()) {}
     const F &operator()(unsigned int row,unsigned int col) const
-    {
-      return matrix_(row,col);
-    }
-    F &operator()(unsigned int row,unsigned int col)
     {
       return matrix_(row,col);
     }
@@ -191,32 +185,32 @@ namespace Dune
     mutable Result tmp_;
   };
 
+  // ********************************************************
+
   template <class Topology,
-      class PreMatrix,
-      class Interpolation>
-  struct RaviartThomasMatrix {
-    typedef typename Interpolation::Field Field;
+      class PreMatrix>
+  struct MatrixBuilder {
     enum {dim = Topology::dimension};
+    typedef typename PreMatrix::Field Field;
     typedef Dune::AlgLib::Matrix< Field > mat_t;
-    typedef MonomialBasis<Topology,Field> MBasis;
-    RaviartThomasMatrix(const Interpolation &interpolation) :
-      order_(interpolation.order()),
-      interpolation_(interpolation),
-      vecMatrix_(order_)
+    template <class Interpolation,class Basis>
+    MatrixBuilder(const Interpolation &interpolation,
+                  const Basis &basis,
+                  const PreMatrix &preMatrix) :
+      preMatrix_(preMatrix)
     {
-      MBasis basis(order_+1);
-      typedef StandardEvaluator<MBasis> EvalMBasis;
+      typedef StandardEvaluator<Basis> EvalMBasis;
       typedef PolynomialBasisWithMatrix<EvalMBasis,SparseCoeffMatrix<Field,dim> > TMBasis;
       TMBasis tmBasis(basis);
-      tmBasis.fill(vecMatrix_);
-      interpolation_.interpolate( tmBasis , matrix_ );
+      tmBasis.fill(preMatrix_);
+      interpolation.interpolate( tmBasis , matrix_ );
       matrix_.invert();
     }
     unsigned int colSize(int row) const {
-      return vecMatrix_.colSize(row);
+      return preMatrix_.colSize(row);
     }
     unsigned int rowSize() const {
-      return vecMatrix_.rowSize();
+      return preMatrix_.rowSize();
     }
     const Field operator() ( int r, int c ) const
     {
@@ -224,13 +218,11 @@ namespace Dune
       int rdiv = r/dim;
       Field ret = 0;
       for (unsigned int k=0; k<matrix_.cols(); ++k) {
-        ret += matrix_(k,rdiv)*vecMatrix_(k*dim+rmod,c);
+        ret += matrix_(k,rdiv)*preMatrix_(k*dim+rmod,c);
       }
       return ret;
     }
-    int order_;
-    const Interpolation &interpolation_;
-    PreMatrix vecMatrix_;
+    const PreMatrix &preMatrix_;
     mat_t matrix_;
   };
 

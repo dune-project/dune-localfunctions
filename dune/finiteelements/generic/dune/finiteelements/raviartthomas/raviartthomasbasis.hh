@@ -17,6 +17,9 @@
 #include <dune/finiteelements/generic/polynomialbasis.hh>
 #include <dune/finiteelements/quadrature/genericquadrature.hh>
 #include <dune/finiteelements/quadrature/subquadrature.hh>
+#include <dune/finiteelements/orthonormalbasis/orthonormalbasis.hh>
+#include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
+#include <dune/finiteelements/lagrangebasis/lobattopoints.hh>
 
 namespace Dune
 {
@@ -305,8 +308,14 @@ namespace Dune
     typedef F Field;
     typedef typename GenericGeometry::SimplexTopology<dimension>::type Topology;
     typedef typename GenericGeometry::SimplexTopology<dimension-1>::type FaceTopology;
-    typedef MonomialBasisProvider<dimension,Field> TestBasisProvider;
-    typedef MonomialBasisProvider<dimension-1,Field> TestFaceBasisProvider;
+    // typedef MonomialBasisProvider<dimension,Field> TestBasisProvider;
+    // typedef MonomialBasisProvider<dimension-1,Field> TestFaceBasisProvider;
+    typedef OrthonormalBasisProvider<dimension,Field> TestBasisProvider;
+    typedef OrthonormalBasisProvider<dimension-1,Field> TestFaceBasisProvider;
+    // typedef LagrangeBasisProvider<dimension,Field> TestBasisProvider;
+    // typedef LagrangeBasisProvider<dimension-1,Field> TestFaceBasisProvider;
+    // typedef LobattoBasisProvider<dimension,Field> TestBasisProvider;
+    // typedef LobattoBasisProvider<dimension-1,Field> TestFaceBasisProvider;
 
     RaviartThomasL2Interpolation
       ( const unsigned int order,
@@ -359,6 +368,7 @@ namespace Dune
     void interpolate ( typename Base::template Helper<Func,Container,type> &func ) const
     {
       std::vector< Field > testBasisVal;
+      std::vector< Field > testBasisInt;
 
       for (unsigned int i=0; i<size(); ++i)
         for (unsigned int j=0; j<func.size(); ++j)
@@ -371,7 +381,9 @@ namespace Dune
       typedef Dune::GenericGeometry::SubQuadratureProvider< dimension, FaceQuadratureProvider> SubQuadratureProvider;
 
       testBasisVal.resize(mFaceBasis_.size());
+      testBasisInt.resize(mFaceBasis_.size());
 
+      // mFaceBasis_.integral(testBasisInt);
       for (unsigned int f=0; f<dimension+1; ++f)
       {
         const typename SubQuadratureProvider::Quadrature &faceQuad = SubQuadratureProvider::template quadrature<Topology>( std::make_pair(f,2*order_+1) );
@@ -381,6 +393,8 @@ namespace Dune
         for( unsigned int qi = 0; qi < quadratureSize; ++qi )
         {
           mFaceBasis_.template evaluate<0>(faceSubQuad.point(qi),testBasisVal);
+          // for (int i=0;i<testBasisVal.size();++i)
+          //  testBasisVal[i] /= testBasisInt[i];
           fillBnd( row, testBasisVal,
                    func.evaluate(faceQuad.point(qi)),
                    normal_[f], faceQuad.weight(qi),
@@ -392,13 +406,17 @@ namespace Dune
       if (row<size())
       {
         testBasisVal.resize(mBasis_.size());
+        testBasisInt.resize(mBasis_.size());
 
         typedef Dune::GenericGeometry::GenericQuadratureProvider< dimension, Field > QuadratureProvider;
-        const typename QuadratureProvider::Quadrature &elemQuad = QuadratureProvider::template quadrature<Topology>(2*order_+1);
+        const typename QuadratureProvider::Quadrature &elemQuad = QuadratureProvider::template quadrature<Topology>(2*order_);
         const unsigned int quadratureSize = elemQuad.size();
+        // mBasis_.integral(testBasisInt);
         for( unsigned int qi = 0; qi < quadratureSize; ++qi )
         {
           mBasis_.template evaluate<0>(elemQuad.point(qi),testBasisVal);
+          // for (int i=0;i<testBasisVal.size();++i)
+          //   testBasisVal[i] /= testBasisInt[i];
           fillInterior( row, testBasisVal,
                         func.evaluate(elemQuad.point(qi)),
                         elemQuad.weight(qi),
@@ -428,7 +446,7 @@ namespace Dune
         for (unsigned int row = startRow;
              row!=endRow; ++miter, ++row )
         {
-          matrix.add(row,col, weight*(cFactor*(*miter)) );
+          matrix.add(row,col, (weight*cFactor)*(*miter) );
         }
         assert( miter == mVal.end() );
       }
@@ -450,7 +468,7 @@ namespace Dune
         {
           for (unsigned int i=0; i<dimension; ++i)
           {
-            matrix.add(row+i,col, weight*(*rtiter)[i]*(*miter) );
+            matrix.add(row+i,col, (weight*(*miter))*(*rtiter)[i] );
           }
         }
         assert( miter == mVal.end() );
@@ -516,19 +534,18 @@ namespace Dune
             {
               mat_[row][j] = 0.;
             }
-            unsigned int q = -1;
+            unsigned int w;
             MI xval = val[notHomogen+i];
             xval *= x[r];
-            for (unsigned int w=homogen+notHomogen; w<val.size(); ++w)
+            for (w=homogen+notHomogen; w<val.size(); ++w)
             {
               if (val[w] == xval)
               {
-                q=w;
+                mat_[row][w] = 1.;
                 break;
               }
             }
-            assert(q>=0);
-            mat_[row][q] = 1.;
+            assert(w<val.size());
             ++row;
           }
         }
@@ -567,6 +584,7 @@ namespace Dune
       TMBasis tmBasis(basis);
       tmBasis.fill(vecMatrix_);
       interpolation_.interpolate( tmBasis , matrix_ );
+      // std::cout << matrix_ << std::endl;
       matrix_.invert();
     }
     unsigned int colSize(int row) const {

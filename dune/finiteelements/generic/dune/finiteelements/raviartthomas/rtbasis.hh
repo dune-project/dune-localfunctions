@@ -10,28 +10,39 @@
 
 namespace Dune
 {
-  template< int dim, class SF, class CF >
-  struct RaviartThomasBasisCreator
+  #define RTLAGRANGE 1
+  struct RaviartThomasSpaceCreatorTraits
   {
     typedef unsigned int Key;
-    typedef typename GenericGeometry::SimplexTopology< dim >::type SimplexTopology;
 
-    typedef VirtualMonomialBasis<dim,SF> MBasis;
+    template < int dimension, class Field >
+    struct Interpolation
+    {
+#if RTLAGRANGE
+      typedef LagrangePointsCreator< Field, dimension > PointsSetCreator;
+      // typedef LobattoPointsCreator< ComputeField, dimension > PointsSetCreator;
+      typedef RaviartThomasLagrangeInterpolation< Field, PointsSetCreator > Type;
+#else
+      typedef RaviartThomasL2Interpolation< Field, dimension > Type;
+#endif
+      typedef VirtualMonomialBasis<dimension,Field> MonomialBasis;
+    };
+  };
+  // *****************************************
+  template< int dim, class SF, class CF, class Traits >
+  struct RaviartThomasBasisCreator
+  {
+    static const int dimension = dim;
     typedef SF StorageField;
     typedef AlgLib::MultiPrecision< Precision<CF>::value > ComputeField;
-    static const int dimension = dim;
-    typedef PolynomialBasisWithMatrix<StandardEvaluator<MBasis>,SparseCoeffMatrix<StorageField,dim> > Basis;
-    typedef LocalCoefficientsContainer LocalCoefficients;
 
-    #define RTLAGRANGE 0
-#if RTLAGRANGE
-    // typedef LagrangePointsCreator< ComputeField, dimension > PointsSetCreator;
-    typedef LobattoPointsCreator< ComputeField, dimension > PointsSetCreator;
-    typedef RaviartThomasLagrangeInterpolation< ComputeField, PointsSetCreator > LocalInterpolationImpl;
-#else
-    typedef RaviartThomasL2Interpolation< ComputeField, dimension > LocalInterpolationImpl;
-#endif
-    typedef RaviartThomasInterpolation< ComputeField, dimension, LocalInterpolationImpl > LocalInterpolation;
+    typedef typename Traits::Key Key;
+    typedef typename Traits::template Types<dim,SF>::Interpolation LocalInterpolationImpl;
+    typedef typename Traits::template Types<dim,SF>::MonomialBasis MonomialBasis;
+
+    typedef PolynomialBasisWithMatrix<StandardEvaluator<MonomialBasis>,SparseCoeffMatrix<SF,dim> > Basis;
+    typedef LocalCoefficientsContainer LocalCoefficients;
+    typedef InterpolationWrapper< dimension, LocalInterpolationImpl > LocalInterpolation;
 
     template< class Topology >
     static const LocalInterpolationImpl *localInterpolationImpl ( const Key &order )
@@ -39,9 +50,9 @@ namespace Dune
       FieldMatrix<ComputeField,dimension+1,dimension> normal;
       for (int f=0; f<dimension+1; ++f)
         normal[f] = GenericGeometry::ReferenceElement<Topology,ComputeField>::integrationOuterNormal(f);
+      LocalInterpolationImpl template interpolation<Topology>(order,normal);
 #if RTLAGRANGE
-      const typename PointsSetCreator::LagrangePoints &points = PointsSetCreator::template lagrangePoints< Topology >( order+dimension );
-      LocalInterpolationImpl *interpolation = new LocalInterpolationImpl(order,points,normal);
+      LocalInterpolationImpl *interpolation = new LocalInterpolationImpl::template LocalInterpolationImpl<Topology>(order,normal);
 #else
       LocalInterpolationImpl *interpolation = new LocalInterpolationImpl(order,normal);
 #endif
@@ -56,18 +67,19 @@ namespace Dune
     static Basis &basis(unsigned int order)
     {
       typedef RTPreMatrix<Topology,ComputeField> PreMatrix;
-      const MBasis &_mBasis = MonomialBasisProvider<dimension,StorageField>::template basis<Topology>(order+1);
-      Basis *basis = new Basis(_mBasis);
+      const MBasis &mBasis = MonomialBasisProvider<dimension,StorageField>::template basis<Topology>(order+1);
+      Basis *basis = new Basis(mBasis);
       const LocalInterpolationImpl *interpolation = localInterpolationImpl<Topology>(order);
       LocalInterpolation interpolWrapper(interpolation);
-      RaviartThomasMatrix<Topology,PreMatrix,LocalInterpolation> matrix(interpolWrapper);
+      PreMatrix preMatrix(order);
+      MatrixBuilder<Topology,PreMatrix> matrix(interpolWrapper,mBasis,preMatrix);
       basis->fill(matrix);
       {
         typedef MultiIndex< dimension > MIField;
         typedef VirtualMonomialBasis<dim,MIField> MBasisMI;
         typedef PolynomialBasisWithMatrix<StandardEvaluator<MBasisMI>,SparseCoeffMatrix<StorageField,dimension> > BasisMI;
-        const MBasisMI &_mBasisMI = MonomialBasisProvider<dimension,MIField>::template basis<Topology>(order+1);
-        BasisMI basisMI(_mBasisMI);
+        const MBasisMI &mBasisMI = MonomialBasisProvider<dimension,MIField>::template basis<Topology>(order+1);
+        BasisMI basisMI(mBasisMI);
         basisMI.fill(matrix);
         std::stringstream name;
         name << "rt_" << Topology::name() << "_p" << order;

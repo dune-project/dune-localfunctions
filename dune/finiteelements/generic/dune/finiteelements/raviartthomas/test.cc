@@ -7,10 +7,10 @@ using namespace GenericGeometry;
 
 template <class Topology>
 bool test(unsigned int order) {
-  // typedef AlgLib::MultiPrecision<128> StorageField;
-  typedef double StorageField;
-  // typedef AlgLib::MultiPrecision<512> ComputeField;
-  typedef double ComputeField;
+  typedef AlgLib::MultiPrecision<128> StorageField;
+  // typedef double StorageField;
+  typedef AlgLib::MultiPrecision<1024> ComputeField;
+  // typedef double ComputeField;
 
   bool ret = true;
 

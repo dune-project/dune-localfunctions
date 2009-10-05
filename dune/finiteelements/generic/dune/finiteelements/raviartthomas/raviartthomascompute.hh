@@ -17,13 +17,12 @@ namespace Dune
   public:
     typedef F Field;
 
-  public:
+    template <class Topology>
     RaviartThomasLagrangeInterpolation
       ( const unsigned int order,
-      const LagrangePoints &points,
-      const FieldMatrix<Field,dimension+1,dimension> &normal )
+      const FieldMatrix<F,dimension+1,dimension> &normal )
       : order_(order),
-        lagrangePoints_ ( points ),
+        lagrangePoints_(PointsSetCreator::template lagrangePoints< Topology >( order+dimension ) ),
         normal_(normal),
         size_(0)
     {
@@ -95,7 +94,7 @@ namespace Dune
     /** /brief evaluate boundary functionals **/
     template <class Val,class Result>
     void fillBnd (unsigned int &row,
-                  const FieldVector<Field,dimension> &normal,
+                  const FieldVector<F,dimension> &normal,
                   const Val &val,
                   Result &res) const
     {
@@ -117,11 +116,12 @@ namespace Dune
     }
 
     unsigned int order_;
-    FieldMatrix<Field,dimension+1,dimension> normal_;
+    FieldMatrix<F,dimension+1,dimension> normal_;
     const LagrangePoints &lagrangePoints_;
     unsigned int size_;
   };
 
+#if 0
   // A L2 based interpolation for Raviart Thomas
   // --------------------------------------------------
   template< class F, unsigned int dimension >
@@ -276,10 +276,15 @@ namespace Dune
     const typename TestFaceBasisProvider::Basis &mFaceBasis_;
     unsigned int size_;
   };
+#endif
 
-  template <class Topology, class Field>
+  // ********************************************************
+
+  template <class Topology, class F>
   struct RTPreMatrix
   {
+    typedef F Field;
+    typedef MonomialBasis<Topology,Field> Basis;
     enum {dim = Topology::dimension};
     typedef MultiIndex<dim> MI;
     typedef MonomialBasis<Topology,MI> MIBasis;

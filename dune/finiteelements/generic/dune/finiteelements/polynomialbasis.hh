@@ -48,7 +48,6 @@ namespace Dune
     static const int dimRange = Evaluator::dimRange;
     typedef typename Evaluator::Basis Basis;
     typedef typename Evaluator::DomainVector DomainVector;
-    typedef typename Evaluator::RangeVector RangeVector;
     typedef typename CoefficientMatrix::Field Field;
 
     PolynomialBasis (const Basis &basis,

@@ -295,7 +295,6 @@ namespace Dune
           }
           *wit = F(d) * *prit + z * *rit;
           ++prit, ++rit, ++wit;
-          std::cout << "FINISHED: " << d << std::endl;
           assert(derivEnd == rit);
           rit += size.sizes_[d] - mySize.sizes_[d];
           prit += size.sizes_[d-1] - mySize.sizes_[d-1];

@@ -149,11 +149,16 @@ void polynomialBaseTest(unsigned int p)
 template <class Topology>
 void multiIndexTest(unsigned int p)
 {
+  const int dimR = 2;
   const int dimension = Topology::dimension;
   typedef MultiIndex< dimension > Field;
 
   typedef MonomialBasis< Topology, Field > Basis;
-  Basis basis(p);
+  Basis mbasis(p);
+  typedef VectorialEvaluator<Basis,dimR> Evaluator;
+  PolynomialBasisWithMatrix<Evaluator,SparseCoeffMatrix<double> > basis(mbasis);
+  TestMatrix<dimR> matrix(mbasis);
+  basis.fill(matrix);
 
   unsigned int size = basis.size();
   std::cout << "Number of base functions:  " << size << std::endl;
@@ -164,21 +169,21 @@ void multiIndexTest(unsigned int p)
     x[ i ].set( i, 1 );
 
   std::cout << "Values: " << std::endl;
-  std::vector< Field > val( size );
+  std::vector< Derivative<Field,dimension,dimR,0> > val( size );
   for( unsigned int i = 0; i < val.size(); ++i )
     val[ i ] = -42.3456789;
   basis.template evaluate( x, val );
   std::cout << val << std::endl;
 
   std::cout << "Values+Jacobian: " << std::endl;
-  std::vector< Field > deriv( size*basis.derivSize(1) );
+  std::vector< Derivative<Field,dimension,dimR,1> > deriv( size );
   for( unsigned int i = 0; i < deriv.size(); ++i )
     deriv[ i ] = -42.3456789;
   basis.template evaluate<1>( x, deriv );
   std::cout << deriv << std::endl;
 
   std::cout << "Values+Jacobian+Hessian: " << std::endl;
-  std::vector< Field > hess( size*basis.derivSize(2) );
+  std::vector< Derivative<Field,dimension,dimR,2> > hess( size );
   for( unsigned int i = 0; i < hess.size(); ++i )
     hess[ i ] = -42.3456789;
   basis.template evaluate<2>( x, hess );
@@ -199,14 +204,27 @@ void multiIndexTest(unsigned int p)
   pBasis.fill(matrix);
   basisPrint<0>(std::cout,pBasis);
 
+  {
+    const int dimR = 2;
+    std::cout << ">>> Polynomial basis (derivative): " << std::endl;
+    typedef VectorialEvaluator<Basis,dimR> Evaluator;
+    Evaluator eval(basis);
+    typedef PolynomialBasisWithMatrix<Evaluator,SparseCoeffMatrix<double> > PBasis;
+    PBasis pBasis(basis);
+    TestMatrix<dimR> matrix(basis);
+    pBasis.fill(matrix);
+    basisPrint<0>(std::cout,pBasis);
+  }
   /*
-     std::cout << ">>> Vectorial Polynomial basis: " << std::endl;
-     typedef VectorialEvaluator<PBasis,dimR> PEvaluator;
-     PEvaluator peval(pBasis);
-     typedef PolynomialBasisWithMatrix<PEvaluator,SparseCoeffMatrix<double> > PPBasis;
-     PPBasis ppBasis(pBasis);
-     ppBasis.fill(matrix);
-     basisPrint<0>(std::cout,ppBasis);
+     {
+      std::cout << ">>> Vectorial Polynomial basis: " << std::endl;
+      typedef VectorialEvaluator<PBasis,dimR> PEvaluator;
+      PEvaluator peval(pBasis);
+      typedef PolynomialBasisWithMatrix<PEvaluator,SparseCoeffMatrix<double> > PPBasis;
+      PPBasis ppBasis(pBasis);
+      ppBasis.fill(matrix);
+      basisPrint<0>(std::cout,ppBasis);
+     }
    */
 #endif
 }

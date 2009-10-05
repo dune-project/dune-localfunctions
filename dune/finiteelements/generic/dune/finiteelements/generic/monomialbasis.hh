@@ -13,7 +13,7 @@
 
 #include <dune/common/field.hh>
 
-#include <dune/finiteelements/basisprovider.hh>
+#include <dune/finiteelements/generic/basisprovider.hh>
 #include <dune/finiteelements/multiindex.hh>
 #include <dune/finiteelements/tensor.hh>
 

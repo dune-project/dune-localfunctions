@@ -3,6 +3,9 @@
 #ifndef DUNE_FINITEELEMENTS_INTERPOLATION_HH
 #define DUNE_FINITEELEMENTS_INTERPOLATION_HH
 
+#include <dune/common/field.hh>
+#include <dune/common/fvector.hh>
+
 namespace Dune
 {
 
@@ -22,10 +25,10 @@ namespace Dune
         geometry_( entity.geometry() )
     {}
 
-    template <class xF>
-    RangeVector operator() ( const Dune::FieldVector<xF,Entity::dimension> &x ) const
+    template< class xF >
+    RangeVector operator() ( const Dune::FieldVector< xF, Entity::dimension > &x ) const
     {
-      return this->operator()(field_cast<double>(x));
+      return this->operator()( field_cast< double >( x ) );
     }
     RangeVector operator() ( const DomainVector &x ) const
     {

@@ -3,6 +3,8 @@
 #ifndef DUNE_DGLOCALCOEFFICIENTS_HH
 #define DUNE_DGLOCALCOEFFICIENTS_HH
 
+#include <cassert>
+
 #include <dune/finiteelements/common/localcoefficients.hh>
 
 namespace Dune

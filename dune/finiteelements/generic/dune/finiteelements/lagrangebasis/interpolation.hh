@@ -3,6 +3,7 @@
 #ifndef DUNE_LAGRANGEBASIS_INTERPOLATION_HH
 #define DUNE_LAGRANGEBASIS_INTERPOLATION_HH
 
+#include <vector>
 
 namespace Dune
 {

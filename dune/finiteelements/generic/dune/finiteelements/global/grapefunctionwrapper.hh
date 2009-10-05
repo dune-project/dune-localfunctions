@@ -3,7 +3,9 @@
 #ifndef DUNE_GRAPEFUNCTIONWRAPPER_HH
 #define DUNE_GRAPEFUNCTIONWRAPPER_HH
 
-#include <dune/grid/io/file/vtk/vtkwriter.hh>
+#include <dune/common/field.hh>
+
+#include <dune/grid/io/visual/grapedatadisplay.hh>
 
 namespace Dune
 {

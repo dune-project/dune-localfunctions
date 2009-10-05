@@ -10,7 +10,7 @@
 
 #include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
 #include <dune/finiteelements/lagrangebasis/interpolation.hh>
-#include <dune/finiteelements/basisprovider.hh>
+#include <dune/finiteelements/generic/basisprovider.hh>
 #include <dune/finiteelements/basisprint.hh>
 #include <dune/finiteelements/generic/polynomialbasis.hh>
 

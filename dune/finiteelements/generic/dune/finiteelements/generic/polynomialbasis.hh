@@ -7,10 +7,10 @@
 
 #include <dune/common/fmatrix.hh>
 
-#include <dune/finiteelements/coeffmatrix.hh>
+#include <dune/finiteelements/generic/coeffmatrix.hh>
 #include <dune/finiteelements/generic/monomialbasis.hh>
 #include <dune/finiteelements/multiindex.hh>
-#include <dune/finiteelements/basisevaluator.hh>
+#include <dune/finiteelements/generic/basisevaluator.hh>
 
 namespace Dune
 {

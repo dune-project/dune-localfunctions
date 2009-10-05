@@ -12,7 +12,7 @@
 #include <dune/grid/genericgeometry/subtopologies.hh>
 
 #include <dune/finiteelements/common/localcoefficients.hh>
-#include <dune/finiteelements/basisprovider.hh>
+#include <dune/finiteelements/generic/basisprovider.hh>
 #include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
 
 namespace Dune

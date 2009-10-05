@@ -56,12 +56,12 @@ namespace Dune
       typedef typename LagrangePoints< Topology, F >::iterator Iterator;
 
       const unsigned int order = lagrangePoints_.order();
-      coefficients.resize( lagrangePoints_.size, basis.size( order ) );
+      coefficients.resize( lagrangePoints_.size(), basis.size( order ) );
 
       unsigned int index = 0;
       const Iterator end = lagrangePoints_.end();
       for( Iterator it = lagrangePoints_.begin(); it != end; ++it )
-        basis.evaluate( order, *it, coefficients.rowPtr( index++ ) );
+        basis.evaluate( order, it->point(), coefficients.rowPtr( index++ ) );
     }
   };
 

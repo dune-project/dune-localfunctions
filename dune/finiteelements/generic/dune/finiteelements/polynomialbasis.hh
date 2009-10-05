@@ -69,8 +69,12 @@ namespace Dune
                     std::vector< RangeVector > &values ) const
     {
       assert(values.size()>=size());
+      /*
+         eval_.evaluate( x );
+         coeffMatrix_->mult( eval_, values );
+       */
       eval_.evaluate( x );
-      coeffMatrix_->mult( eval_, values );
+      coeffMatrix_->mult( eval_.evaluate( x ), values );
     }
 
     template< class DomainVector, class RangeVector >

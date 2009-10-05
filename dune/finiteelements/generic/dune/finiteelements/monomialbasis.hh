@@ -180,30 +180,32 @@ namespace Dune
                     const unsigned int *const offsets,
                     Field *const values ) const
     {
-      // fill first column
-      baseBasis_.integral( order, offsets, values );
-      const unsigned int *const baseSizes = baseBasis_.sizes_;
+      /*
+         // fill first column
+         baseBasis_.integral( order, offsets, values );
+         const unsigned int *const baseSizes = baseBasis_.sizes_;
 
-      Field *row0 = values;
-      for( unsigned int k = 1; k <= order; ++k )
-      {
-        Field *const row1begin = values + offsets[ k-1 ];
-        Field *const row1End = row1begin + sizes_[ k ];
-        assert( (unsigned int)(row1End - values) <= offsets[ k ] );
+         Field *row0 = values;
+         for( unsigned int k = 1; k <= order; ++k )
+         {
+         Field *const row1begin = values + offsets[ k-1 ];
+         Field *const row1End = row1begin + sizes_[ k ];
+         assert( (unsigned int)(row1End - values) <= offsets[ k ] );
 
-        Field *row1 = row1begin;
-        Field *it = row1begin + baseSizes[ k ];
-        for( unsigned int j = 1; j <= k; ++j )
-        {
+         Field *row1 = row1begin;
+         Field *it = row1begin + baseSizes[ k ];
+         for( unsigned int j = 1; j <= k; ++j )
+         {
           Field *const end = it + baseSizes[ k ];
           assert( (unsigned int)(end - values) <= offsets[ k ] );
           for( ; it != end; ++row1, ++it )
-            *it = (Field( j ) / Field( j+1 )) * (*row1);
-        }
-        for( ; it != row1End; ++row0, ++it )
-          *it = (Field( k ) / Field( k+1 )) * (*row0);
-        row0 = row1;
-      }
+         *it = (Field( j ) / Field( j+1 )) * (*row1);
+         }
+         for( ; it != row1End; ++row0, ++it )
+         *it = (Field( k ) / Field( k+1 )) * (*row0);
+         row0 = row1;
+         }
+       */
     }
 
     unsigned int maxOrder() const
@@ -360,34 +362,36 @@ namespace Dune
                     const unsigned int *const offsets,
                     Field *const values ) const
     {
-      // fill first column
-      baseBasis_.integral( order, offsets, values );
+      /*
+         // fill first column
+         baseBasis_.integral( order, offsets, values );
 
-      const unsigned int *const baseSizes = baseBasis_.sizes_;
+         const unsigned int *const baseSizes = baseBasis_.sizes_;
 
-      Field *const col0End = values + baseSizes[ 0 ];
-      for( Field *it = values; it != col0End; ++it )
-        *it *= Field( 1 ) /  Field( double(dimDomain) );  // ??? double cast due to error in Linker
-      Field *row0 = values;
+         Field *const col0End = values + baseSizes[ 0 ];
+         for( Field *it = values; it != col0End; ++it )
+         *it *= Field( 1 ) /  Field( double(dimDomain) );  // ??? double cast due to error in Linker
+         Field *row0 = values;
 
-      for( unsigned int k = 1; k <= order; ++k )
-      {
-        const Field factor = (Field( 1 ) / Field( k + dimDomain ));
+         for( unsigned int k = 1; k <= order; ++k )
+         {
+          const Field factor = (Field( 1 ) / Field( k + dimDomain ));
 
-        Field *const row1 = values+offsets[ k-1 ];
-        Field *const col0End = row1 + baseSizes[ k ];
-        Field *it = row1;
-        for( ; it != col0End; ++it )
-          *it *= factor;
-        for( unsigned int i = 1; i <= k; ++i )
-        {
-          Field *const end = it + baseSizes[ k-i ];
-          assert( (unsigned int)(end - values) <= offsets[ k ] );
-          for( ; it != end; ++row0, ++it )
-            *it = (factor * Field( i )) * (*row0);
-        }
-        row0 = row1;
-      }
+          Field *const row1 = values+offsets[ k-1 ];
+          Field *const col0End = row1 + baseSizes[ k ];
+          Field *it = row1;
+          for( ; it != col0End; ++it )
+         *it *= factor;
+          for( unsigned int i = 1; i <= k; ++i )
+          {
+            Field *const end = it + baseSizes[ k-i ];
+            assert( (unsigned int)(end - values) <= offsets[ k ] );
+            for( ; it != end; ++row0, ++it )
+         *it = (factor * Field( i )) * (*row0);
+          }
+          row0 = row1;
+         }
+       */
     }
 
     unsigned int maxOrder() const
@@ -655,28 +659,59 @@ namespace Dune
   {
     typedef B Basis;
     typedef typename Basis::Field Field;
-    typedef typename Basis::Field RangeVector;
     typedef typename Basis::DomainVector DomainVector;
-    typedef std::vector<RangeVector> Container;
-    typedef typename Container::const_iterator Iterator;
+    typedef std::vector<Field> Container;
     static const int dimension = Basis::dimension;
+    struct Iterator
+    {
+      typedef typename Container::value_type RangeVector;
+      typedef typename Container::const_iterator CIter;
+      Iterator(const Container &container)
+        : pos_(container.begin()), end_(container.end())
+      {}
+      const RangeVector &operator*() const
+      {
+        assert(!done());
+        return *pos_;
+      }
+      bool done() const
+      {
+        return pos_==end_;
+      }
+      Iterator operator++()
+      {
+        ++pos_;
+        return *this;
+      }
+    private:
+      CIter pos_;
+      const CIter end_;
+    };
+
     StandardEvaluator(const Basis &basis,unsigned int order)
       : basis_(basis),
         order_(order),
         container_(basis.size(order))
     {}
-    void evaluate(const DomainVector &x)
+    Iterator evaluate(const DomainVector &x)
     {
       basis_.evaluate(order_,x,container_);
+      return Iterator(container_);
     }
-    Iterator begin() const
-    {
-      return container_.begin();
-    }
-    Iterator end() const
-    {
-      return container_.end();
-    }
+    /*
+       void evaluate(const DomainVector &x)
+       {
+       basis_.evaluate(order_,x,container_);
+       }
+       Iterator begin() const
+       {
+       return container_.begin();
+       }
+       Iterator end() const
+       {
+       return container_.end();
+       }
+     */
     unsigned int order() const
     {
       return order_;
@@ -687,6 +722,129 @@ namespace Dune
     }
   private:
     StandardEvaluator(const StandardEvaluator&);
+    const Basis &basis_;
+    unsigned int order_;
+    Container container_;
+  };
+
+  template <class F,unsigned int deriv,int dimD,int dimR>
+  struct Tensor
+  {
+    typedef typename Tensor<F,deriv-1,dimD,dimR>::Type BaseType;
+    typedef Dune::FieldVector<BaseType,dimD> Type;
+  };
+  template <class F,int dimD,int dimR>
+  struct Tensor<F,0,dimD,dimR>
+  {
+    typedef Dune::FieldVector<F,dimR> Type;
+  };
+
+  template <class B,class F>
+  struct MultiIndexEvaluator
+  {
+    typedef B Basis;
+    typedef F Field;
+    typedef std::vector<typename Basis::Field> Container;
+    static const int dimension = Basis::dimension;
+    typedef Dune::FieldVector<Field,dimension> DomainVector;
+    template <unsigned int deriv>
+    struct Iterator
+    {
+      typedef typename Tensor<Field,deriv,dimension,1>::Type RangeVector;
+      typedef typename Container::const_iterator CIter;
+      Iterator(const DomainVector &x,unsigned int order,
+               const Container &container)
+        : pos_(container.begin()), end_(container.end()),
+          x_(order+1),
+          factor_(order+1)
+      {
+        for (int d=0; d<dimension; ++d)
+        {
+          x_[0][d] = 1;
+          for (int i=1; i<=order; ++i) {
+            x_[i][d]=x_[i-1][d]*x[d];
+          }
+        }
+        for (int i=0; i<=order; ++i)
+        {
+          if (i<deriv)
+            factor_[i] = 0.;
+          else
+          {
+            factor_[i] = 1.;
+            for (int a=0; a<deriv; ++a)
+            {
+              factor_[i] *= (i-a);
+            }
+          }
+          // std::cout << "factor [ " << i << " ] = " << factor_[i] << std::endl;
+        }
+        set();
+      }
+      const RangeVector &operator*() const
+      {
+        assert(!done());
+        return val_;
+      }
+      bool done() const
+      {
+        return pos_==end_;
+      }
+      Iterator operator++()
+      {
+        ++pos_;
+        if (!done())
+          set();
+        return *this;
+      }
+    private:
+      void set()
+      {
+        val_[0]=1;
+        for (int d=0; d<dimension; ++d)
+        {
+          unsigned int o = pos_->z(d);
+          assert(o<x_.size());
+          if (o-deriv>=0)
+            val_[0]  *= factor_[o]*x_[o-deriv][d];
+        }
+      }
+      CIter pos_;
+      const CIter end_;
+      std::vector<DomainVector> x_;
+      std::vector<Field> factor_;
+      RangeVector val_;
+    };
+
+    MultiIndexEvaluator(const Basis &basis,unsigned int order)
+      : basis_(basis),
+        order_(order),
+        container_(basis.size(order))
+    {
+      typename Basis::DomainVector x;
+      for( int i = 0; i < dimension; ++i )
+        x[ i ].set( i, 1 );
+      basis_.evaluate(order_,x,container_);
+    }
+    Iterator<0> evaluate(const DomainVector &x)
+    {
+      return Iterator<0>(x,order_,container_);
+    }
+    template <unsigned int deriv>
+    Iterator<deriv> evaluate(const DomainVector &x)
+    {
+      return Iterator<deriv>(x,order_,container_);
+    }
+    unsigned int order() const
+    {
+      return order_;
+    }
+    unsigned int size() const
+    {
+      return basis_.size(order);
+    }
+  private:
+    MultiIndexEvaluator(const MultiIndexEvaluator&);
     const Basis &basis_;
     unsigned int order_;
     Container container_;

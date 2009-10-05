@@ -104,7 +104,8 @@ namespace Dune
       for( size_t r = 0; r < numLsg; ++r )
       {
         DomainVector val(0.);
-        typename BasisVector::Iterator itx = x.begin();
+        // typename BasisVector::Iterator itx = x.begin();
+        BasisVector itx = x;
         for( ; row != rows_[ r+1 ]; ++row, ++itx )
         {
           Multiply::add(*row,*itx,val);

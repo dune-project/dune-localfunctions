@@ -47,35 +47,41 @@ namespace Dune
     typedef typename Evaluator::Basis Basis;
     typedef typename Evaluator::DomainVector DomainVector;
     typedef typename Evaluator::Field Field;
-    typedef Dune::FieldVector<typename Evaluator::RangeVector,d> RangeVector;
     static const int dimension = Evaluator :: dimension;
 
     struct Iterator
     {
-      Iterator(const Container& eval, bool end)
-        : eval_(eval),
-          pos_(end ? eval.end() : eval.begin()),
+      typedef typename Container::Iterator CIter;
+      typedef Dune::FieldVector<typename CIter::RangeVector,d> RangeVector;
+      Iterator(const CIter& pos)
+        : pos_(pos),
           dim_(0)
       {
-        if (!end)
-          val_[dim_] = *pos_;
+        val_[dim_] = *pos_;
       }
-      Iterator(const Iterator& other)
-        : val_(other.val_),
-          eval_(other.eval_),
-          pos_(other.pos_),
-          dim_(other.dim_)
-      {}
-      Iterator &operator=(const Iterator& other)
+      /*
+         Iterator(const Iterator& other)
+         : val_(other.val_),
+         eval_(other.eval_),
+         pos_(other.pos_),
+         dim_(other.dim_)
+         {
+         }
+         Iterator &operator=(const Iterator& other)
+         {
+         val_ = other.val_;
+         eval_ = other.eval_;
+         pos_ = other.pos_;
+         dim_ = other.dim_;
+         }
+       */
+      bool done()
       {
-        val_ = other.val_;
-        eval_ = other.eval_;
-        pos_ = other.pos_;
-        dim_ = other.dim_;
+        return pos_.done();
       }
       const RangeVector& operator*() const
       {
-        assert(pos_!=eval_.end());
+        assert(!pos_.done());
         return val_;
       }
       const Iterator &operator++()
@@ -86,34 +92,39 @@ namespace Dune
         {
           dim_ = 0;
           ++pos_;
-          if (pos_ == eval_.end())
+          if (pos_.done())
             return *this;
         }
         val_[dim_] = *pos_;
         return *this;
       }
     private:
-      RangeVector val_;
-      const Container& eval_;
       typename Container::Iterator pos_;
+      RangeVector val_;
       int dim_;
     };
 
     VecEvaluator(const Basis &basis, unsigned int order)
       : eval_(basis,order)
     {}
-    void evaluate(const DomainVector &x)
+    Iterator evaluate(const DomainVector &x)
     {
-      eval_.evaluate(x);
+      return Iterator(eval_.evaluate(x));
     }
-    Iterator begin() const
-    {
-      return Iterator(eval_,false);
-    }
-    Iterator end() const
-    {
-      return Iterator(eval_,true);
-    }
+    /*
+       void evaluate(const DomainVector &x)
+       {
+       eval_.evaluate(x);
+       }
+       Iterator begin() const
+       {
+       return Iterator(eval_,false);
+       }
+       Iterator end() const
+       {
+       return Iterator(eval_,true);
+       }
+     */
     unsigned int order() const
     {
       return eval_.order();

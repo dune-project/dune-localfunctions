@@ -6,6 +6,7 @@
 #include <cassert>
 
 #include <dune/alglib/multiprecision.hh>
+#include <dune/alglib/vector.hh>
 
 #include <alglib/ap.h>
 #include <alglib/inv.h>
@@ -27,6 +28,7 @@ namespace Dune
 
     public:
       typedef MultiPrecision< precision > Field;
+      typedef Vector< Field > Vector;
 
     private:
       typedef amp::ampf< precision > RealField;
@@ -50,6 +52,8 @@ namespace Dune
 
       Field &operator() ( const unsigned int row, const unsigned int col )
       {
+        assert(row<rows());
+        assert(col<cols());
         return static_cast< Field & >( matrix_( row, col ) );
       }
 
@@ -61,6 +65,12 @@ namespace Dune
       unsigned int cols () const
       {
         return matrix_.gethighbound( 2 )+1;
+      }
+
+      Vector getColumn( const unsigned int column,
+                        const unsigned int rowStart, const unsigned int rowEnd)
+      {
+        return matrix_.getcolumn(column,rowStart,rowEnd);
       }
 
       const Field *rowPtr ( const unsigned int row ) const

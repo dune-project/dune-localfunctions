@@ -356,6 +356,7 @@ namespace Dune
   struct LagrangePointsCreator< F, dim >::Topology
   {
     typedef LagrangePointsImpl< T, F > Impl;
+    typedef Dune::LagrangePoint< F, dim > LagrangePoint;
 
     template< int pdim >
     struct Init

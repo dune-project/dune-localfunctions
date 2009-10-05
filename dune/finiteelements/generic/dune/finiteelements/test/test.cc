@@ -47,7 +47,7 @@ int main ( int argc, char **argv )
     basis.evaluate( p, it->point(), &(y[0]) );
     std::cout << "x = " << field_cast<double>(it->point())
               << " (codim = " << it->localKey().codim() << ", "
-              << "subentity = " << it->localKey().subentity() << ", "
+              << "subentity = " << it->localKey().subEntity() << ", "
               << "index = " << it->localKey().index() << "):" << std::endl;
     for( unsigned int i = 0; i < size; ++i )
       std::cout << "    y[ " << i << " ] = " << field_cast<double>(y[ i ]) << std::endl;

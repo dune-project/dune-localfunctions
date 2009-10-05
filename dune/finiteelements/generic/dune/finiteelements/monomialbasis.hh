@@ -27,6 +27,20 @@ namespace Dune
 
 
 
+  template< class F >
+  struct MonomialBasisHelper
+  {
+    static void
+    copy ( F *&wit, const F *&rit, const unsigned int size, const F &z )
+    {
+      const F *const rend = rit + size;
+      for( ; rit != rend; ++rit, ++wit )
+        *wit = z * *rit;
+    }
+  };
+
+
+
   // MonomialBasisImpl
   // -----------------
 
@@ -128,6 +142,8 @@ namespace Dune
     friend class MonomialBasisImpl< GenericGeometry::Prism< Topology >, Field >;
     friend class MonomialBasisImpl< GenericGeometry::Pyramid< Topology >, Field >;
 
+    typedef MonomialBasisHelper< Field > Helper;
+
     MonomialBasisImpl< BaseTopology, Field > baseBasis_;
     // sizes_[ k ]: number of basis functions of exactly order k
     mutable unsigned int *sizes_;
@@ -157,11 +173,12 @@ namespace Dune
 
       // fill first column
       baseBasis_.evaluate( order, x, offsets, values );
-      const unsigned int *const baseSizes = baseBasis_.sizes_;
+      //const unsigned int *const baseSizes = baseBasis_.sizes_;
 
       Field *row0 = values;
       for( unsigned int k = 1; k <= order; ++k )
       {
+#if 0
         Field *const row1begin = values + offsets[ k-1 ];
         Field *const colkEnd = row1begin + (k+1)*baseSizes[ k ];
         assert( (unsigned int)(colkEnd - values) <= offsets[ k ] );
@@ -174,6 +191,13 @@ namespace Dune
           *it = z * (*row1);
         for( ; it != row1End; ++row0, ++it )
           *it = z * (*row0);
+        row0 = row1;
+#endif
+
+        Field *row1 = values + offsets[ k-1 ];
+        Field *wit = row1 + baseBasis_.sizes_[ k ];
+        Helper::copy( wit, row1, k*baseBasis_.sizes_[ k ], z );
+        Helper::copy( wit, row0, baseBasis_.numBaseFunctions_[ k-1 ] );
         row0 = row1;
       }
     }

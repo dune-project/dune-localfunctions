@@ -29,6 +29,17 @@ namespace Dune
       block() = b;
       return *this;
     }
+
+    const F &operator[] ( const unsigned int i ) const
+    {
+      return block()[ i ];
+    }
+
+    F &operator[] ( const unsigned int i )
+    {
+      return block()[ i ];
+    }
+
     Block &block()
     {
       return block_;
@@ -76,6 +87,17 @@ namespace Dune
       block() = b;
       return *this;
     }
+
+    const F &operator[] ( const unsigned int i ) const
+    {
+      return block()[ i ];
+    }
+
+    F &operator[] ( const unsigned int i )
+    {
+      return block()[ i ];
+    }
+
     void axpy(const F& a, const This &y)
     {
       block().axpy(a,y.block());

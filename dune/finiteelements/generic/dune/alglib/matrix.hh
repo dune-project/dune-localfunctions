@@ -11,6 +11,7 @@
 
 #include <alglib/ap.h>
 #include <alglib/inv.h>
+#include <alglib/rcond.h>
 
 namespace Dune
 {
@@ -31,8 +32,7 @@ namespace Dune
       typedef MultiPrecision< precision > Field;
       typedef AlgLib::Vector< Field > Vector;
 
-      // private:
-    public:
+    private:
       typedef amp::ampf< precision > RealField;
       typedef ap::template_2d_array< RealField, aligned > RealMatrix;
 
@@ -103,9 +103,45 @@ namespace Dune
         return inv::rmatrixinverse< precision >( matrix_, rows() );
       }
 
+      Field conditionOne () const
+      {
+        return Field( 1 ) / rcond::rmatrixrcond1( matrix_, rows() );
+      }
+
+      Field conditionInfty () const
+      {
+        return Field( 1 ) / rcond::rmatrixrcondinf( matrix_, rows() );
+      }
+
+      // note that the sparse matrix is assumed quadratic, here
+      template< class SparseMatrix >
+      void fillFromSparseMatrix ( const SparseMatrix &sparseMatrix )
+      {
+        const unsigned int rows = sparseMatrix.rows();
+        resize( rows, rows );
+        for( unsigned int i = 0; i < rows; ++i )
+        {
+          for( unsigned int j = 0; j < rows; ++j )
+            (*this)( i, j ) = Field( 0 );
+
+          const unsigned int nonZero = sparseMatrix.nonZero();
+
+          for( unsigned int k = 0; k < nonZero; ++k )
+          {
+            if( !sparseMatrix.isZero( i, k ) )
+            {
+              const unsigned int j = sparseMatrix.column( i, k );
+              field_cast( sparseMatrix( i, k ), (*this)( i, j ) );
+            }
+          }
+        }
+      }
+
     private:
       RealMatrix matrix_;
     };
+
+
 
     template< class Field, bool aligned >
     inline std::ostream &operator<<(std::ostream &out, const Matrix<Field,aligned> &mat)

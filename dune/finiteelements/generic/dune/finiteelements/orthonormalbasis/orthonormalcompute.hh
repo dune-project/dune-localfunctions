@@ -105,14 +105,14 @@ namespace ONB {
         // get all multiindecies for monomial basis
         typedef Dune::MultiIndex<dim> MI;
         typedef Dune::StandardMonomialBasis< dim, MI  > Basis;
-        Basis basis;
-        const unsigned int size = basis.size( ord );
+        Basis basis( ord );
+        const unsigned int size = basis.size( );
         std::vector< Dune::FieldVector< MI,1> > y( size );
         Dune::FieldVector< MI, dim > x;
         for (int i=0; i<dim; ++i) {
           x[i].set(i);
         }
-        basis.evaluate( 0,ord , x, y );
+        basis.evaluate( x, y );
         // set bounds of data
         res.setbounds(0,size-1,0,size-1);
         S.setbounds(0,size-1,0,size-1);

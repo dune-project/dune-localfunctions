@@ -94,8 +94,8 @@ namespace Dune
     typedef B Basis;
     typedef typename Basis::Field Field;
     typedef typename Basis::DomainVector DomainVector;
-    typedef std::vector<Field> Container;
     static const int dimension = Basis::dimension;
+    typedef std::vector<Field> Container;
     template <class Tensor>
     struct BaseIterator
     {
@@ -152,61 +152,12 @@ namespace Dune
       CIter pos_;
       const CIter end_;
     };
-    /*
-       MonomialEvaluator(const Basis &basis,unsigned int order)
-       : basis_(basis),
-       order_(order),
-       size_(basis.size(order)),
-       container_(0)
-       {
-       resize<2,true>();
-       }
-     */
     template <unsigned int deriv>
     struct Iterator
     {
       typedef BaseIterator<Tensor<Field,dimension,1,deriv,true> > All;
       typedef BaseIterator<Tensor<Field,dimension,1,deriv,false> > Single;
     };
-    template <unsigned int deriv>
-    typename Iterator<deriv>::Single evaluate(const DomainVector &x)
-    {
-      resize<deriv,false>();
-      basis_.template evaluate<deriv>(order_,x,container_);
-      return typename Iterator<deriv>::Single(container_);
-    }
-    template <unsigned int deriv>
-    typename Iterator<deriv>::All evaluateAll(const DomainVector &x)
-    {
-      resize<deriv,true>();
-      basis_.template evaluate<deriv>(order_,x,container_);
-      return typename Iterator<deriv>::All(container_);
-    }
-
-    typename Iterator<0>::Single evaluate(const DomainVector &x)
-    {
-      return evaluate<0>(x);
-    }
-    typename Iterator<1>::Single jacobian(const DomainVector &x)
-    {
-      return evaluate<1>(x);
-    }
-    typename Iterator<0>::All evaluateAll(const DomainVector &x)
-    {
-      return evaluateAll<1>(x);
-    }
-    typename Iterator<1>::All jacobianAll(const DomainVector &x)
-    {
-      return evaluateAll<1>(x);
-    }
-    unsigned int order() const
-    {
-      return order_;
-    }
-    unsigned int size() const
-    {
-      return size_;
-    }
   protected:
     MonomialEvaluator(const Basis &basis,unsigned int order,unsigned int size)
       : basis_(basis),
@@ -242,8 +193,8 @@ namespace Dune
     struct Iterator : public Base::template Iterator<deriv>
     {};
 
-    StandardEvaluator(const Basis &basis,unsigned int order)
-      : Base(basis,order,basis.size())
+    StandardEvaluator(const Basis &basis)
+      : Base(basis,basis.order(),basis.size())
     {}
     template <unsigned int deriv>
     typename Iterator<deriv>::Single evaluate(const DomainVector &x)
@@ -301,10 +252,8 @@ namespace Dune
     };
 
     VecEvaluator(const Basis &basis,
-                 unsigned int order,
                  const Fill &fill)
-      : Base(basis,order),
-        fill_(fill)
+      : fill_(fill)
     {
       resize<2,true>();
     }

@@ -566,8 +566,9 @@ namespace Dune
 
     typedef MonomialBasisSize<Topology> Size;
 
-    MonomialBasis ()
+    MonomialBasis (unsigned int order)
       : Base(),
+        order_(order),
         size_(Size::instance())
     {}
 
@@ -576,47 +577,63 @@ namespace Dune
       size_.computeSizes( order );
       return size_.numBaseFunctions_;
     }
-
-    const unsigned int size ( unsigned int order ) const
+    const unsigned int size ( ) const
     {
-      return sizes( order )[ order ];
+      return sizes( order_ )[ order_ ];
     }
 
-    void evaluate ( const unsigned int deriv, const unsigned int order,
-                    const DomainVector &x,
+    void evaluate ( unsigned int deriv, const DomainVector &x,
                     Field *const values ) const
     {
       MonomialBasisSize< typename StdMonomialTopology<dimension>::Type >::instance().computeSizes(deriv);
-      Base::evaluate( deriv, order, x, sizes( order ), values );
-    }
-    template < class Field,int size >
-    void evaluate ( const unsigned int deriv, const unsigned int order, const DomainVector &x,
-                    Dune::FieldVector<Field,size> *const values ) const
-    {
-      evaluate( deriv, order, x, reinterpret_cast< Field * >( values ) );
-    }
-    template <class RangeVector>
-    void evaluate ( const unsigned int deriv, const unsigned int order,
-                    const DomainVector &x,
-                    std::vector< RangeVector > &values ) const
-    {
-      evaluate( deriv, order, x, &(values[ 0 ]) );
+      Base::evaluate( deriv, order_, x, sizes( order_ ), values );
     }
 
-    void integral ( const unsigned int order,
+    template <unsigned int deriv>
+    void evaluate ( const DomainVector &x,
                     Field *const values ) const
     {
-      Base::integral( order, sizes( order ), values );
+      evaluate( deriv, x, values );
+    }
+
+    template <unsigned int deriv, class F1 >
+    void evaluate ( const DomainVector &x,
+                    F1 *const values ) const
+    {
+      evaluate<deriv>( x, reinterpret_cast< Field * >( values ) );
+    }
+    template<unsigned int deriv, class Vector >
+    void evaluate ( const DomainVector &x,
+                    Vector &values ) const
+    {
+      evaluate<deriv>(x,&(values[0]));
+    }
+    template <class F1>
+    void evaluate ( const DomainVector &x,
+                    F1 *const values ) const
+    {
+      evaluate<0>( x, reinterpret_cast< Field * >( values ) );
+    }
+    template<class Vector >
+    void evaluate ( const DomainVector &x,
+                    Vector &values ) const
+    {
+      evaluate<0>(x,&(values[0]));
+    }
+
+    void integral ( Field *const values ) const
+    {
+      Base::integral( order_, sizes( order_ ), values );
     }
     template <class RangeVector>
-    void integral ( const unsigned int order,
-                    std::vector< RangeVector > &values ) const
+    void integral ( std::vector< RangeVector > &values ) const
     {
-      integral( order, &(values[ 0 ]) );
+      integral( &(values[ 0 ]) );
     }
   private:
     MonomialBasis(const This&);
     This& operator=(const This&);
+    unsigned int order_;
     Size &size_;
   };
 
@@ -634,8 +651,8 @@ namespace Dune
     typedef StandardMonomialBasis< dim, F > This;
     typedef MonomialBasis< Topology, F > Base;
   public:
-    StandardMonomialBasis ()
-      : Base()
+    StandardMonomialBasis ( unsigned int order )
+      : Base( order )
     {}
   };
 
@@ -650,8 +667,8 @@ namespace Dune
     typedef StandardBiMonomialBasis< dim, F > This;
     typedef MonomialBasis< Topology, F > Base;
   public:
-    StandardBiMonomialBasis ()
-      : Base()
+    StandardBiMonomialBasis ( unsigned int order )
+      : Base(order)
     {}
   };
 
@@ -702,6 +719,12 @@ namespace Dune
     {
       evaluate( deriv, x, &(values[ 0 ]) );
     }
+    template< class Vector >
+    void evaluate ( const DomainVector &x,
+                    Vector &values ) const
+    {
+      evaluate<0>(x,values);
+    }
 
     virtual void integral ( Field *const values ) const = 0;
     template <class RangeVector>
@@ -725,7 +748,8 @@ namespace Dune
     typedef typename Base::DomainVector DomainVector;
 
     VirtualMonomialBasisImpl(unsigned int order)
-      : Base(order) {}
+      : Base(order), basis_(order)
+    {}
 
     const unsigned int *sizes ( ) const
     {
@@ -735,12 +759,12 @@ namespace Dune
     void evaluate ( const unsigned int deriv, const DomainVector &x,
                     Field *const values ) const
     {
-      basis_.evaluate(deriv,order_,x,values);
+      basis_.evaluate(deriv,x,values);
     }
 
     void integral ( Field *const values ) const
     {
-      basis_.integral(order_,values);
+      basis_.integral(values);
     }
 
   private:

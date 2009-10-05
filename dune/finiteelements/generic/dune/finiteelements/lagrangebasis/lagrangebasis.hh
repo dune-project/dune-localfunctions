@@ -18,7 +18,7 @@ namespace Dune
     typedef Dune::AlgLib::Matrix< scalar_t > mat_t;
     LagrangeMatrix(int order)
     {
-      Dune::MonomialBasis< Topology, scalar_t > basis;
+      Dune::MonomialBasis< Topology, scalar_t > basis(order);
       Dune::LocalLagrangeInterpolation< Topology, scalar_t  > interpolation( order );
       interpolation.interpolate( basis, matrix_ );
       matrix_.invert();
@@ -75,7 +75,7 @@ namespace Dune
         const MBasis &virtBasis = MonomialBasisProvider<dimension,StorageField>::template basis<Topology>(order);
         // const MBasis &virtBasis = MonomialBasisProvider<dimension,MIF>::template basis<Topology>(order);
 
-        basis = new Basis(virtBasis,order);
+        basis = new Basis(virtBasis);
         LagrangeMatrix<Topology,ComputeField> matrix(order);
         basis->fill(matrix);
         std::stringstream name;

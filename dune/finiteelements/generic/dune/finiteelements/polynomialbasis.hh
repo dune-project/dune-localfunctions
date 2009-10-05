@@ -51,34 +51,24 @@ namespace Dune
 
     PolynomialBasis (const Basis &basis,
                      const CoefficientMatrix &coeffMatrix,
-                     int order, unsigned int size)
+                     unsigned int size)
       : coeffMatrix_(&coeffMatrix),
-        eval_(basis,order),
-        order_(order),
+        eval_(basis),
+        order_(basis.order()),
         size_(size)
     {
-      assert(size <= coeffMatrix.size());
+      assert(size_ <= coeffMatrix.size());
     }
 
     const unsigned int order () const
     {
       return order_;
     }
-
     const unsigned int size () const
     {
       return size_;
     }
 
-    /*
-       template< class RangeVector, unsigned int deriv >
-       void evaluateAll ( const DomainVector &x,
-                       std::vector< RangeVector > &values ) const
-       {
-       assert(values.size()>=size());
-       coeffMatrix_->mult( eval_.evaluateAll<deriv>( x ), values );
-       }
-     */
     template< unsigned int deriv, class RangeVector >
     void evaluate ( const DomainVector &x,
                     std::vector< RangeVector > &values ) const
@@ -86,22 +76,21 @@ namespace Dune
       assert(values.size()>=size());
       coeffMatrix_->mult( eval_.template evaluate<deriv>( x ), values );
     }
-    template< class RangeVector >
+    template< class Vector >
     void evaluate ( const DomainVector &x,
-                    std::vector< RangeVector > &values ) const
+                    Vector &values ) const
     {
-      assert(values.size()>=size());
-      coeffMatrix_->mult( eval_.template evaluate<0>( x ), values );
+      evaluate<0>(x,values);
     }
 
-    template< class DomainVector, class RangeVector >
-    void evaluate ( const DomainVector &x,
-                    std::vector< RangeVector > &values ) const
+    template< class DVector, class RVector >
+    void evaluate ( const DVector &x,
+                    RVector &values ) const
     {
-      typename This::DomainVector bx;
+      DomainVector bx;
       for( int d = 0; d < dimension; ++d )
         field_cast( x[ d ], bx[ d ] );
-      evaluate( bx, values );
+      evaluate<0>( bx, values );
     }
 
     template <class Topology,class FullMatrix>
@@ -160,9 +149,8 @@ namespace Dune
 
     typedef typename Base::Basis Basis;
   public:
-    PolynomialBasisWithMatrix (const Basis &basis,
-                               int order)
-      : Base(basis,coeffMatrix_,order,0)
+    PolynomialBasisWithMatrix (const Basis &basis)
+      : Base(basis,coeffMatrix_,0)
     {}
 
     template <class FullMatrix>

@@ -34,13 +34,13 @@ namespace Dune
         {
           ONB::ONBMatrix<Topology,ComputeField> matrix(order);
           _coeffs.fill(matrix);
-          basis = new Basis(_basis,_coeffs,order,_basis.size());
+          basis = new Basis(_basis,_coeffs,_basis.size());
           std::stringstream name;
           name << "onb_" << Topology::name() << "_p" << order;
           basis->template printBasis<Topology>(name.str(),matrix);
         }
         else
-          basis = new Basis(_basis,_coeffs,order,_basis.size());
+          basis = new Basis(_basis,_coeffs,_basis.size());
       }
     };
   };

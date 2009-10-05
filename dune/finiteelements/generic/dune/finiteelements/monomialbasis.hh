@@ -3,6 +3,10 @@
 #ifndef DUNE_MONOMIALBASIS_HH
 #define DUNE_MONOMIALBASIS_HH
 
+#include <dune/common/fvector.hh>
+
+#include <dune/grid/genericgeometry/topologytypes.hh>
+
 namespace Dune
 {
 

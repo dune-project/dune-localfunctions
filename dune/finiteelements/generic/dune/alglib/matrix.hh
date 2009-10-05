@@ -28,7 +28,7 @@ namespace Dune
 
     public:
       typedef MultiPrecision< precision > Field;
-      typedef Vector< Field > Vector;
+      typedef AlgLib::Vector< Field > Vector;
 
     private:
       typedef amp::ampf< precision > RealField;

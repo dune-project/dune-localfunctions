@@ -4,6 +4,7 @@
 #define DUNE_VTKFUNCTIONWRAPPER_HH
 
 #include <dune/grid/io/file/vtk/vtkwriter.hh>
+#include <dune/common/field.hh>
 
 namespace Dune
 {

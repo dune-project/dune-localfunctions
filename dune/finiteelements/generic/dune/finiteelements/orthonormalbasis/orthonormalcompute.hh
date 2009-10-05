@@ -24,7 +24,7 @@
 #include <dune/finiteelements/monomialbasis.hh>
 #include <dune/finiteelements/multiindex.hh>
 
-namespace ONB
+namespace ONBCompute
 {
 
   template <class scalar_t>
@@ -320,7 +320,7 @@ namespace ONB
   {
     static const unsigned int dimension = Topology::dimension;
 
-    typedef ONB::Compute< scalar_t > Compute;
+    typedef ONBCompute::Compute< scalar_t > Compute;
     typedef typename Compute::vec_t vec_t;
     typedef typename Compute::mat_t mat_t;
 

@@ -42,7 +42,7 @@ namespace Dune
       static CoefficientMatrix _coeffs;
       if( _coeffs.size() <= monomialBasis.size() )
       {
-        ONB::ONBMatrix< Topology, ComputeField > matrix( order );
+        ONBCompute::ONBMatrix< Topology, ComputeField > matrix( order );
         _coeffs.fill( matrix );
       }
 

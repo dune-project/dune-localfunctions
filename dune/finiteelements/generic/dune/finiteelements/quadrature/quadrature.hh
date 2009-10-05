@@ -132,7 +132,6 @@ namespace Dune
     private:
       std::vector< QuadraturePoint > points_;
       unsigned int topologyId_;
-
     };
 
   }

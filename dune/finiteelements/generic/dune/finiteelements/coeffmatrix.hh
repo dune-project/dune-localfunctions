@@ -251,7 +251,7 @@ namespace Dune
         {
           Field val;
           field_cast(mat(r,c),val);
-          if (std::abs(val)<1e-10)
+          if (val < Zero<Field>() && Zero<Field>() < val)
           {
             ++(*sit);
           } else

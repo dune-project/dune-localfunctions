@@ -39,6 +39,11 @@ namespace Dune
       typedef BaseIterator<Derivatives<Field,dimension,1,deriv,derivative> > All;
     };
 
+    unsigned int size() const
+    {
+      return size_;
+    }
+
   protected:
     MonomialEvaluator(const Basis &basis,unsigned int order,unsigned int size)
       : basis_(basis),

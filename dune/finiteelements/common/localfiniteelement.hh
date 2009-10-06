@@ -8,6 +8,10 @@
 
 #include <dune/common/geometrytype.hh>
 
+#include <dune/finiteelements/common/localbasis.hh>
+#include <dune/finiteelements/common/localcoefficients.hh>
+#include <dune/finiteelements/common/localinterpolation.hh>
+
 namespace Dune {
 
   //! traits helper struct
@@ -31,10 +35,46 @@ namespace Dune {
       \tparam T The controlling traits
    */
 #if DUNE_VIRTUAL_SHAPEFUNCTIONS
-  template<class T>
+  template <class DT, class RT, int dim>
+  class LocalFiniteElementInterface
+  {
+  public:
+
+    class Traits
+    {
+
+      typedef Dune::FieldVector<RT,1> RangeType;
+
+    };
+
+    typedef Dune::C1LocalBasisInterface<Dune::C1LocalBasisTraits<DT,
+            dim,
+            Dune::FieldVector<DT,dim>,
+            RT,
+            1,
+            Dune::FieldVector<RT,1>,
+            Dune::FieldVector<Dune::FieldVector<RT,dim>,1> > > LocalBasisType;
+
+    /** \todo Please doc me !
+     */
+    const virtual LocalBasisType& localBasis () const = 0;
+
+    /** \todo Please doc me !
+     */
+    const virtual LocalCoefficientsInterface& localCoefficients () const = 0;
+
+    /** \todo Please doc me !
+     */
+    const virtual LocalInterpolationInterface& localInterpolation () const = 0;
+
+    /** \todo Please doc me !
+     */
+    virtual GeometryType type () const = 0;
+
+  };
+
 #else
   template<class T, class Imp>
-#endif
   class LocalFiniteElementInterface
   {
   public:
@@ -45,54 +85,37 @@ namespace Dune {
 
     /** \todo Please doc me !
      */
-#if DUNE_VIRTUAL_SHAPEFUNCTIONS
-    const virtual typename T::LocalBasisType& localBasis () const = 0;
-#else
     const typename T::LocalBasisType& localBasis () const
     {
       return asImp().localBasis();
     }
-#endif
 
     /** \todo Please doc me !
      */
-#if DUNE_VIRTUAL_SHAPEFUNCTIONS
-    const virtual typename T::LocalCoefficientsType& localCoefficients () const = 0;
-#else
     const typename T::LocalCoefficientsType& localCoefficients () const
     {
       return asImp().localCoefficients();
     }
-#endif
 
     /** \todo Please doc me !
      */
-#if DUNE_VIRTUAL_SHAPEFUNCTIONS
-    const virtual typename T::LocalInterpolationType& localInterpolation () const = 0;
-#else
     const typename T::LocalInterpolationType& localInterpolation () const
     {
       return asImp().localInterpolation();
     }
-#endif
 
     /** \todo Please doc me !
      */
-#if DUNE_VIRTUAL_SHAPEFUNCTIONS
-    virtual GeometryType type () const = 0;
-#else
     GeometryType type () const
     {
       return asImp().type();
     }
-#endif
 
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
   private:
     Imp& asImp () {return static_cast<Imp &> (*this);}
     const Imp& asImp () const {return static_cast<const Imp &>(*this);}
-#endif
   };
+#endif
 
 }
 

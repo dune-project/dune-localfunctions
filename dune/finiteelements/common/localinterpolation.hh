@@ -9,11 +9,14 @@ namespace Dune
 {
 
   //! Interface class for interpolating a local basis
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
   template<class Imp>
+#endif
   class LocalInterpolationInterface
   {
   public:
 
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
     //! determine coefficients interpolating a given function
     /**
      * \tparam F Type of function to interpolate.  The class should provide a
@@ -34,6 +37,7 @@ namespace Dune
   private:
     Imp& asImp () {return static_cast<Imp &> (*this);}
     const Imp& asImp () const {return static_cast<const Imp &>(*this);}
+#endif
   };
 
 }

@@ -19,16 +19,14 @@ namespace Dune
   class Pk2DLocalFiniteElement
     :
 #if DUNE_VIRTUAL_SHAPEFUNCTIONS
-      public
-#endif
-      LocalFiniteElementInterface<
+      public LocalFiniteElementInterface<D,R,2>
+#else
+      public LocalFiniteElementInterface<
           LocalFiniteElementTraits<Pk2DLocalBasis<D,R,k>,
               Pk2DLocalCoefficients<k>,
               Pk2DLocalInterpolation<Pk2DLocalBasis<D,R,k> > >
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-          ,Pk2DLocalFiniteElement<D,R,k>
+          ,Pk2DLocalFiniteElement<D,R,k> >
 #endif
-          >
   {
   public:
     /** \todo Please doc me !

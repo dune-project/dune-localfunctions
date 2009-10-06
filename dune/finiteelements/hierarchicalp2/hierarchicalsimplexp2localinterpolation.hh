@@ -12,7 +12,11 @@ namespace Dune
    */
   template<class LB>
   class HierarchicalSimplexP2LocalInterpolation
+#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
+    : public LocalInterpolationInterface
+#else
     : public LocalInterpolationInterface<HierarchicalSimplexP2LocalInterpolation<LB> >
+#endif
   {
   public:
 

@@ -16,13 +16,15 @@ namespace Dune
   /** \todo Please doc me !
    */
   template<class D, class R>
-  class P23DLocalFiniteElement : LocalFiniteElementInterface<
-                                     LocalFiniteElementTraits<P23DLocalBasis<D,R>,P23DLocalCoefficients,
-                                         P23DLocalInterpolation<P23DLocalBasis<D,R> > >
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-                                     , P23DLocalFiniteElement<D,R>
+  class P23DLocalFiniteElement
+#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
+    : public LocalFiniteElementInterface<D,R,3>
+#else
+    : LocalFiniteElementInterface<
+          LocalFiniteElementTraits<P23DLocalBasis<D,R>,P23DLocalCoefficients,
+              P23DLocalInterpolation<P23DLocalBasis<D,R> > >,
+          P23DLocalFiniteElement<D,R> >
 #endif
-                                     >
   {
   public:
     /** \todo Please doc me !

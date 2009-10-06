@@ -9,7 +9,11 @@ namespace Dune
 {
   template<class LB>
   class P23DLocalInterpolation
+#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
+    : public LocalInterpolationInterface
+#else
     : public LocalInterpolationInterface<P23DLocalInterpolation<LB> >
+#endif
   {
   public:
 

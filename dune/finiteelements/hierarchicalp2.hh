@@ -20,14 +20,15 @@ namespace Dune
    */
   template<class D, class R, int dim>
   class HierarchicalP2LocalFiniteElement
+#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
+    : public LocalFiniteElementInterface<D,R,dim>
+#else
     : LocalFiniteElementInterface<
           LocalFiniteElementTraits<HierarchicalSimplexP2LocalBasis<D,R,dim>,
               typename Dune::SelectType<dim==2, Pk2DLocalCoefficients<2>, Pk3DLocalCoefficients<2> >::Type,
-              HierarchicalSimplexP2LocalInterpolation<HierarchicalSimplexP2LocalBasis<D,R,dim> > >
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-          , HierarchicalP2LocalFiniteElement<D,R,dim>
+              HierarchicalSimplexP2LocalInterpolation<HierarchicalSimplexP2LocalBasis<D,R,dim> > >,
+          HierarchicalP2LocalFiniteElement<D,R,dim> >
 #endif
-          >
   {
 
     dune_static_assert(dim==2 || dim==3, "HierarchicalP2LocalFiniteElement only implemented for dim==2, 3.");

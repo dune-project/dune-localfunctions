@@ -9,7 +9,11 @@ namespace Dune
 {
   template<class LB>
   class Pk3DLocalInterpolation
+#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
+    : public LocalInterpolationInterface
+#else
     : public LocalInterpolationInterface<Pk3DLocalInterpolation<LB> >
+#endif
   {
     enum {N = LB::N};
     enum {k = LB::O};

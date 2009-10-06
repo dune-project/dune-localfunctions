@@ -9,7 +9,11 @@ namespace Dune
 {
   template<class LB>
   class Pk2DLocalInterpolation
+#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
+    : public LocalInterpolationInterface
+#else
     : public LocalInterpolationInterface<Pk2DLocalInterpolation<LB> >
+#endif
   {
     /** \brief The number of degrees of freedom */
     enum {N = LB::N};

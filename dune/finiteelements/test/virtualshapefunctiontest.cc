@@ -8,7 +8,7 @@
 #include <dune/grid/common/quadraturerules.hh>
 
 #include <dune/finiteelements/pk2d.hh>
-#include <dune/finiteelements/q12d.hh>
+#include <dune/finiteelements/q1.hh>
 
 #include <dune/finiteelements/refinedp1.hh>
 
@@ -135,7 +135,7 @@ int main (int argc, char *argv[]) try
   testSumToOne<2>(&testSetk3.localBasis(), testSetk3.type());
   testShapeFunctionSet<2>(&testSetk3.localBasis(), testSetk3.type());
 
-  Q12DLocalFiniteElement<double,double> testSetQ1;
+  Q1LocalFiniteElement<double,double,2> testSetQ1;
   testSumToOne<2>(&testSetQ1.localBasis(), testSetQ1.type());
   testShapeFunctionSet<2>(&testSetQ1.localBasis(), testSetQ1.type());
 

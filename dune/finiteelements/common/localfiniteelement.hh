@@ -31,19 +31,33 @@ namespace Dune {
     typedef LI LocalInterpolationType;
   };
 
-  /** \brief interface for a finite element
-      \tparam T The controlling traits
-   */
 #if DUNE_VIRTUAL_SHAPEFUNCTIONS
+  /** \brief interface for a finite element
+      \tparam DT The type used for domain coordinates
+      \tparam RT The type used for range coordinates
+      \tparam dim Domain dimension
+   */
   template <class DT, class RT, int dim>
   class LocalFiniteElementInterface
   {
   public:
-
-    class Traits
+    /** \brief Export various types.  The weird nested structure
+        is there to mimick the static inheritance case.
+     */
+    struct Traits
     {
 
-      typedef Dune::FieldVector<RT,1> RangeType;
+      struct LocalBasisType
+      {
+
+        struct Traits
+        {
+          typedef Dune::FieldVector<Dune::FieldVector<DT,dim>,1> JacobianType;
+          typedef Dune::FieldVector<RT,1> RangeType;
+
+        };
+
+      };
 
     };
 
@@ -74,6 +88,10 @@ namespace Dune {
   };
 
 #else
+  /** \brief interface for a finite element
+      \tparam T The controlling traits
+      \tparam Imp The deriving implementation class
+   */
   template<class T, class Imp>
   class LocalFiniteElementInterface
   {

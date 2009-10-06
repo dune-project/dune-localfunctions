@@ -15,13 +15,14 @@ namespace Dune
    */
   template<class D, class R, int dim>
   class Q1LocalFiniteElement
+#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
+    : public LocalFiniteElementInterface<D,R,dim>
+#else
     : public LocalFiniteElementInterface<
           LocalFiniteElementTraits<Q1LocalBasis<D,R,dim>,Q1LocalCoefficients<dim>,
-              Q1LocalInterpolation<dim,Q1LocalBasis<D,R,dim> > >
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-          ,Q12DLocalFiniteElement<D,R,dim>
+              Q1LocalInterpolation<dim,Q1LocalBasis<D,R,dim> > >,
+          Q1LocalFiniteElement<D,R,dim> >
 #endif
-          >
   {
   public:
     /** \todo Please doc me !

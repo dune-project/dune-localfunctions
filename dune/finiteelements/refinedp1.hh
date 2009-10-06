@@ -32,14 +32,16 @@ namespace Dune
   /** \todo Please doc me !
    */
   template<class D, class R>
-  class RefinedP1LocalFiniteElement<D,R,2> : LocalFiniteElementInterface<
-                                                 LocalFiniteElementTraits<RefinedP1LocalBasis<D,R,2>,
-                                                     Pk2DLocalCoefficients<2>,
-                                                     Pk2DLocalInterpolation<Pk2DLocalBasis<D,R,2> > >
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-                                                 , RefinedP1LocalFiniteElement<D,R,2>
+  class RefinedP1LocalFiniteElement<D,R,2>
+#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
+    : public LocalFiniteElementInterface<D,R,2>
+#else
+    : public LocalFiniteElementInterface<
+          LocalFiniteElementTraits<RefinedP1LocalBasis<D,R,2>,
+              Pk2DLocalCoefficients<2>,
+              Pk2DLocalInterpolation<Pk2DLocalBasis<D,R,2> > >
+          , RefinedP1LocalFiniteElement<D,R,2> >
 #endif
-                                                 >
   {
   public:
     /** \todo Please doc me !
@@ -93,14 +95,16 @@ namespace Dune
   /** \todo Please doc me !
    */
   template<class D, class R>
-  class RefinedP1LocalFiniteElement<D,R,3> : LocalFiniteElementInterface<
-                                                 LocalFiniteElementTraits<RefinedP1LocalBasis<D,R,3>,
-                                                     Pk3DLocalCoefficients<2>,
-                                                     Pk3DLocalInterpolation<Pk3DLocalBasis<D,R,2> > >
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-                                                 , RefinedP1LocalFiniteElement<D,R,3>
+  class RefinedP1LocalFiniteElement<D,R,3>
+#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
+    : public LocalFiniteElementInterface<D,R,3>
+#else
+    : public LocalFiniteElementInterface<
+          LocalFiniteElementTraits<RefinedP1LocalBasis<D,R,3>,
+              Pk3DLocalCoefficients<2>,
+              Pk3DLocalInterpolation<Pk3DLocalBasis<D,R,2> > >
+          , RefinedP1LocalFiniteElement<D,R,3> >
 #endif
-                                                 >
   {
   public:
     /** \todo Please doc me !

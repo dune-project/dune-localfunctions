@@ -12,7 +12,11 @@ namespace Dune
 
   template<class LB>
   class P0LocalInterpolation
+#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
+    : public LocalInterpolationInterface
+#else
     : public LocalInterpolationInterface<P0LocalInterpolation<LB> >
+#endif
   {
   public:
     P0LocalInterpolation (GeometryType::BasicType basicType, int d) : gt(basicType,d)

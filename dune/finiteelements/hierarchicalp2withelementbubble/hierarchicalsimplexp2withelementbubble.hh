@@ -350,7 +350,11 @@ namespace Dune
 
   template<class LB>
   class HierarchicalSimplexP2WithElementBubbleLocalInterpolation
+#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
+    : public LocalInterpolationInterface
+#else
     : public Dune::LocalInterpolationInterface< HierarchicalSimplexP2WithElementBubbleLocalInterpolation<LB> >
+#endif
   {
   public:
 

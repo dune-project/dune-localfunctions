@@ -39,7 +39,6 @@ namespace Dune
         f.evaluate(x,y); out[i] = y;
 
       }
-
     }
   };
 }

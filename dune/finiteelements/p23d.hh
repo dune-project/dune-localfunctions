@@ -68,6 +68,11 @@ namespace Dune
       return gt;
     }
 
+    P23DLocalFiniteElement* clone () const
+    {
+      return new P23DLocalFiniteElement(*this);
+    }
+
   private:
     P23DLocalBasis<D,R> basis;
     P23DLocalCoefficients coefficients;

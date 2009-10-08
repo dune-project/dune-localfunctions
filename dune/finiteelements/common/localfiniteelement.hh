@@ -6,6 +6,7 @@
 #include <iostream>
 #include <vector>
 
+#include <dune/common/interfaces.hh>
 #include <dune/common/geometrytype.hh>
 
 #include <dune/finiteelements/common/localbasis.hh>
@@ -38,7 +39,8 @@ namespace Dune {
       \tparam dim Domain dimension
    */
   template <class DT, class RT, int dim>
-  class LocalFiniteElementInterface
+  class LocalFiniteElementInterface :
+    public Cloneable
   {
   public:
     /** \brief Export various types.  The weird nested structure
@@ -46,44 +48,37 @@ namespace Dune {
      */
     struct Traits
     {
+      typedef typename Dune::C1LocalBasisInterface<Dune::C1LocalBasisTraits<
+              DT,
+              dim,
+              Dune::FieldVector<DT,dim>,
+              RT,
+              1,
+              Dune::FieldVector<RT,1>,
+              Dune::FieldVector<Dune::FieldVector<RT,dim>,1> > > LocalBasisType;
 
-      struct LocalBasisType
-      {
-
-        struct Traits
-        {
-          typedef Dune::FieldVector<Dune::FieldVector<DT,dim>,1> JacobianType;
-          typedef Dune::FieldVector<RT,1> RangeType;
-
-        };
-
-      };
+      typedef Dune::LocalCoefficientsInterface LocalCoefficientsType;
+      typedef typename Dune::LocalInterpolationInterface<typename LocalBasisType::Traits::DomainType, typename LocalBasisType::Traits::RangeType> LocalInterpolationType;
 
     };
 
-    typedef Dune::C1LocalBasisInterface<Dune::C1LocalBasisTraits<DT,
-            dim,
-            Dune::FieldVector<DT,dim>,
-            RT,
-            1,
-            Dune::FieldVector<RT,1>,
-            Dune::FieldVector<Dune::FieldVector<RT,dim>,1> > > LocalBasisType;
+    /** \todo Please doc me !
+     */
+    const virtual typename Traits::LocalBasisType& localBasis () const = 0;
 
     /** \todo Please doc me !
      */
-    const virtual LocalBasisType& localBasis () const = 0;
+    const virtual typename Traits::LocalCoefficientsType& localCoefficients () const = 0;
 
     /** \todo Please doc me !
      */
-    const virtual LocalCoefficientsInterface& localCoefficients () const = 0;
-
-    /** \todo Please doc me !
-     */
-    const virtual LocalInterpolationInterface& localInterpolation () const = 0;
+    const virtual typename Traits::LocalInterpolationType& localInterpolation () const = 0;
 
     /** \todo Please doc me !
      */
     virtual GeometryType type () const = 0;
+
+    virtual LocalFiniteElementInterface* clone () const = 0;
 
   };
 
@@ -128,6 +123,11 @@ namespace Dune {
     {
       return asImp().type();
     }
+
+    //      Imp* clone () const
+    //      {
+    //        return asImp().clone();
+    //      }
 
   private:
     Imp& asImp () {return static_cast<Imp &> (*this);}

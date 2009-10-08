@@ -13,7 +13,7 @@ namespace Dune
   template<class LB>
   class P0LocalInterpolation
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public LocalInterpolationInterface
+    : public LocalInterpolationInterface<typename LB::Traits::DomainType, typename LB::Traits::RangeType>
 #else
     : public LocalInterpolationInterface<P0LocalInterpolation<LB> >
 #endif
@@ -37,6 +37,16 @@ namespace Dune
       out.resize(1);
       f.evaluate(x,y); out[0] = y;
     }
+
+#if DUNE_VIRTUAL_SHAPEFUNCTIONS
+    typedef LocalInterpolationInterface<typename LB::Traits::DomainType, typename LB::Traits::RangeType> Base;
+
+    void interpolate(const typename Base::FunctionType& f, typename std::vector<typename Base::CoefficientType>& out) const
+    {
+      interpolate<typename Base::FunctionType, typename Base::CoefficientType>(f, out);
+    }
+#endif
+
   private:
     GeometryType gt;
   };

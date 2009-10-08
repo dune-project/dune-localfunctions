@@ -85,6 +85,11 @@ namespace Dune
       return gt;
     }
 
+    RefinedP1LocalFiniteElement * clone () const
+    {
+      return new RefinedP1LocalFiniteElement(*this);
+    }
+
   private:
     RefinedP1LocalBasis<D,R,2> basis;
     Pk2DLocalCoefficients<2> coefficients;
@@ -146,6 +151,11 @@ namespace Dune
     GeometryType type () const
     {
       return gt;
+    }
+
+    RefinedP1LocalFiniteElement* clone () const
+    {
+      return new RefinedP1LocalFiniteElement(*this);
     }
 
   private:

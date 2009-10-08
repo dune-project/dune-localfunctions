@@ -65,6 +65,11 @@ namespace Dune
       return gt;
     }
 
+    Q1LocalFiniteElement* clone () const
+    {
+      return new Q1LocalFiniteElement(*this);
+    }
+
   private:
     Q1LocalBasis<D,R,dim> basis;
     Q1LocalCoefficients<dim> coefficients;

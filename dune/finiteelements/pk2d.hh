@@ -88,6 +88,11 @@ namespace Dune
       return gt;
     }
 
+    Pk2DLocalFiniteElement* clone () const
+    {
+      return new Pk2DLocalFiniteElement(*this);
+    }
+
   private:
     Pk2DLocalBasis<D,R,k> basis;
     Pk2DLocalCoefficients<k> coefficients;

@@ -10,6 +10,8 @@
 #include <cstdlib>
 #include <vector>
 
+#include <dune/common/function.hh>
+
 #include "../p0.hh"
 #include "../p1.hh"
 #include "../pk2d.hh"
@@ -18,6 +20,8 @@
 #include "../q1.hh"
 #include "../q22d.hh"
 #include "../rt02d.hh"
+#include "../rt0q2d.hh"
+#include "../rt0q3d.hh"
 #include "../refinedp1.hh"
 #include "../monom.hh"
 #include "../edger02d.hh"
@@ -28,13 +32,29 @@
 
 double TOL = 1e-10;
 
-class Func
+template<class FE>
+class Func :
+  public Dune::Function<
+      const typename FE::Traits::LocalBasisType::Traits::DomainType&,
+      typename FE::Traits::LocalBasisType::Traits::RangeType&>
 {
 public:
-  template<typename DT, typename RT>
-  void evaluate (const DT& x, RT& y) const
+  typedef typename FE::Traits::LocalBasisType::Traits::DomainType DomainType;
+  typedef typename FE::Traits::LocalBasisType::Traits::RangeType RangeType;
+  typedef typename Dune::Function<const DomainType&, RangeType&> Base;
+
+  // the base class exports the type but some FEs assume that
+  // it is encapsulated in a Traits class
+  struct Traits
   {
-    DT c(0.5);
+    typedef typename Base::RangeType RangeType;
+    typedef typename Base::DomainType DomainType;
+  };
+
+  void evaluate (const DomainType& x, RangeType& y) const
+  {
+    DomainType c(0.5);
+
     c -= x;
     y[0] = exp(-3.0*c.two_norm2());
   }
@@ -46,9 +66,24 @@ public:
 // This provides the evaluate method needed by the interpolate()
 // method.
 template<class FE>
-class LocalFEFunction
+class LocalFEFunction :
+  public Dune::Function<
+      const typename FE::Traits::LocalBasisType::Traits::DomainType&,
+      typename FE::Traits::LocalBasisType::Traits::RangeType&>
 {
 public:
+  typedef typename FE::Traits::LocalBasisType::Traits::DomainType DomainType;
+  typedef typename FE::Traits::LocalBasisType::Traits::RangeType RangeType;
+  typedef typename Dune::Function<const DomainType&, RangeType&> Base;
+
+  // the base class exports the type but some FEs assume that
+  // it is encapsulated in a Traits class
+  struct Traits
+  {
+    typedef typename Base::RangeType RangeType;
+    typedef typename Base::DomainType DomainType;
+  };
+
   typedef typename FE::Traits::LocalBasisType::Traits::RangeFieldType CT;
 
   LocalFEFunction(const FE fe) :
@@ -68,16 +103,13 @@ public:
   {
     coeff_.resize(fe_.localBasis().size());
     for(std::size_t i=0; i<coeff_.size(); ++i)
-      coeff_[i] = ((std::rand() / RAND_MAX) - 0.5)*2.0*max;
+      coeff_[i] = ((1.0*std::rand()) / RAND_MAX - 0.5)*2.0*max;
   }
 
 
-  template<typename DT, typename RT>
-  void evaluate (const DT& x, RT& y) const
+  void evaluate (const DomainType& x, RangeType& y) const
   {
-    typedef typename FE::Traits::LocalBasisType::Traits::RangeType RT;
-
-    std::vector<RT> yy;
+    std::vector<RangeType> yy;
     fe_.localBasis().evaluateFunction(x, yy);
 
     y = 0.0;
@@ -142,7 +174,8 @@ template<class FE>
 bool testFE(const FE& fe)
 {
   std::vector<double> c;
-  fe.localInterpolation().interpolate(Func(),c);
+
+  fe.localInterpolation().interpolate(Func<FE>(),c);
 
   return testLocalInterpolation(fe);
 }
@@ -153,13 +186,26 @@ template<int k>
 bool testArbitraryOrderFE()
 {
   bool success = true;
-  std::vector<double> c;
 
   Dune::Pk2DLocalFiniteElement<double,double,k> pk2dlfem(1);
   success = testFE(pk2dlfem) and success;
 
   Dune::Pk3DLocalFiniteElement<double,double,k> pk3dlfem;
   success = testFE(pk3dlfem) and success;
+
+  return testArbitraryOrderFE<k-1>() and success;
+}
+
+template<>
+bool testArbitraryOrderFE<0>()
+{
+  return true;
+}
+
+template<int k>
+bool testMonomials()
+{
+  bool success = true;
 
   Dune::MonomLocalFiniteElement<double,double,1,k> monom1d(Dune::GeometryType::simplex);
   success = testFE(monom1d) and success;
@@ -170,11 +216,11 @@ bool testArbitraryOrderFE()
   Dune::MonomLocalFiniteElement<double,double,3,k> monom3d(Dune::GeometryType::simplex);
   success = testFE(monom3d) and success;
 
-  return testArbitraryOrderFE<k-1>() and success;
+  return testMonomials<k-1>() and success;
 }
 
 template<>
-bool testArbitraryOrderFE<0>()
+bool testMonomials<-1>()
 {
   return true;
 }
@@ -216,8 +262,6 @@ int main(int argc, char** argv) try
   Dune::P23DLocalFiniteElement<double,double> p23dlfem;
   success = testFE(p23dlfem) and success;
 
-  success = testArbitraryOrderFE<7>() and success;
-
   Dune::EdgeR02DLocalFiniteElement<double,double> edger02dlfem;
   success = testFE(edger02dlfem) and success;
 
@@ -227,8 +271,14 @@ int main(int argc, char** argv) try
   Dune::EdgeS03DLocalFiniteElement<double,double> edges03dlfem;
   success = testFE(edges03dlfem) and success;
 
-  Dune::RT02DLocalFiniteElement<double,double> rt02dlfem;
+  Dune::RT02DLocalFiniteElement<double,double> rt02dlfem(1);
   success = testFE(rt02dlfem) and success;
+
+  Dune::RT0Q2DLocalFiniteElement<double,double> rt0q2dlfem(1);
+  success = testFE(rt0q2dlfem) and success;
+
+  Dune::RT0Q3DLocalFiniteElement<double,double> rt0q3dlfem(1);
+  success = testFE(rt0q3dlfem) and success;
 
   //     Dune::HierarchicalP2LocalFiniteElement<double,double,1> hierarchicalp21dlfem;
   //     success = testFE(hierarchicalp21dlfem) and success;
@@ -238,6 +288,11 @@ int main(int argc, char** argv) try
 
   Dune::HierarchicalP2LocalFiniteElement<double,double,3> hierarchicalp23dlfem;
   success = testFE(hierarchicalp23dlfem) and success;
+
+  success = testArbitraryOrderFE<10>() and success;
+
+  std::cout << "Monomials are only tested up to order 2 due to the instability of interpolate()." << std::endl;
+  success = testMonomials<2>() and success;
 
 
   return success;

@@ -4,6 +4,8 @@
 #include "config.h"
 #endif
 
+//#define DUNE_VIRTUAL_SHAPEFUNCTIONS 1
+
 #include <cstddef>
 #include <iostream>
 #include <typeinfo>
@@ -40,9 +42,15 @@ double TOL = 1e-10;
 
 template<class FE>
 class Func :
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
   public Dune::Function<
       const typename FE::Traits::LocalBasisType::Traits::DomainType&,
       typename FE::Traits::LocalBasisType::Traits::RangeType&>
+#else
+  public Dune::VirtualFunction<
+      typename FE::Traits::LocalBasisType::Traits::DomainType,
+      typename FE::Traits::LocalBasisType::Traits::RangeType>
+#endif
 {
 public:
   typedef typename FE::Traits::LocalBasisType::Traits::DomainType DomainType;
@@ -73,9 +81,15 @@ public:
 // method.
 template<class FE>
 class LocalFEFunction :
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
   public Dune::Function<
       const typename FE::Traits::LocalBasisType::Traits::DomainType&,
       typename FE::Traits::LocalBasisType::Traits::RangeType&>
+#else
+  public Dune::VirtualFunction<
+      typename FE::Traits::LocalBasisType::Traits::DomainType,
+      typename FE::Traits::LocalBasisType::Traits::RangeType>
+#endif
 {
 public:
   typedef typename FE::Traits::LocalBasisType::Traits::DomainType DomainType;
@@ -92,7 +106,7 @@ public:
 
   typedef typename FE::Traits::LocalBasisType::Traits::RangeFieldType CT;
 
-  LocalFEFunction(const FE fe) :
+  LocalFEFunction(const FE& fe) :
     fe_(fe)
   {
     resetCoefficients();
@@ -126,7 +140,7 @@ public:
   std::vector<CT> coeff_;
 
 private:
-  const FE fe_;
+  const FE& fe_;
 };
 
 
@@ -183,7 +197,15 @@ bool testFE(const FE& fe)
 
   fe.localInterpolation().interpolate(Func<FE>(),c);
 
-  return testLocalInterpolation(fe);
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
+  return testLocalInterpolation<FE>(fe);
+#else
+  typedef typename FE::Traits::LocalBasisType::Traits::DomainFieldType DT;
+  typedef typename FE::Traits::LocalBasisType::Traits::RangeFieldType RT;
+  const int dim = FE::Traits::LocalBasisType::Traits::dimDomain;
+  typedef Dune::LocalFiniteElementInterface<DT, RT, dim> FEBase;
+  return testLocalInterpolation<FEBase>(fe);
+#endif
 }
 
 

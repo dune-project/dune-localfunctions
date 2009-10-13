@@ -10,7 +10,7 @@ namespace Dune
   template<class LB>
   class PrismP1LocalInterpolation
 #ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public LocalInterpolationInterface<PrismP1LocalInterpolation<dim,LB> >
+    : public LocalInterpolationInterface<PrismP1LocalInterpolation<LB> >
 #else
     : public LocalInterpolationInterface<typename LB::Traits::DomainType, typename LB::Traits::RangeType>
 #endif

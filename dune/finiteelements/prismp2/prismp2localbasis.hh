@@ -23,7 +23,7 @@ namespace Dune
         C1LocalBasisTraits<D,3,Dune::FieldVector<D,3>,R,1,Dune::FieldVector<R,1>,
             Dune::FieldVector<Dune::FieldVector<R,3>,1> >
 #ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-        , Prism23DLocalBasis<D,R>
+        , PrismP2LocalBasis<D,R>
 #endif
         >
   {

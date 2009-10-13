@@ -22,9 +22,11 @@ namespace Dune
     : public LocalFiniteElementInterface<D,R,3>
 #else
     : LocalFiniteElementInterface<
-          LocalFiniteElementTraits<PrismP1LocalBasis<D,R>,PrismP1DLocalCoefficients,
+          LocalFiniteElementTraits<
+              PrismP1LocalBasis<D,R>,
+              PrismP1LocalCoefficients,
               PrismP1LocalInterpolation<PrismP1LocalBasis<D,R> > >,
-          , PrismP1LocalFiniteElement<D,R> >
+          PrismP1LocalFiniteElement<D,R> >
 #endif
   {
   public:

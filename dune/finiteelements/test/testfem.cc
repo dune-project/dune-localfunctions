@@ -14,20 +14,26 @@
 
 #include "../p0.hh"
 #include "../p1.hh"
-#include "../pk2d.hh"
-#include "../p23d.hh"
-#include "../pk3d.hh"
+#include "../prismp1.hh"
+#include "../prismp2.hh"
 #include "../q1.hh"
+#include "../refinedp1.hh"
+#include "../p23d.hh"
+#include "../hierarchicalp2.hh"
+
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
+// these shape functions don't provide the virtual interface
+#include "../pk2d.hh"
+#include "../pk3d.hh"
 #include "../q22d.hh"
 #include "../rt02d.hh"
 #include "../rt0q2d.hh"
 #include "../rt0q3d.hh"
-#include "../refinedp1.hh"
 #include "../monom.hh"
 #include "../edger02d.hh"
 #include "../edges02d.hh"
 #include "../edges03d.hh"
-#include "../hierarchicalp2.hh"
+#endif
 
 
 double TOL = 1e-10;
@@ -187,11 +193,13 @@ bool testArbitraryOrderFE()
 {
   bool success = true;
 
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
   Dune::Pk2DLocalFiniteElement<double,double,k> pk2dlfem(1);
   success = testFE(pk2dlfem) and success;
 
   Dune::Pk3DLocalFiniteElement<double,double,k> pk3dlfem;
   success = testFE(pk3dlfem) and success;
+#endif
 
   return testArbitraryOrderFE<k-1>() and success;
 }
@@ -207,6 +215,7 @@ bool testMonomials()
 {
   bool success = true;
 
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
   Dune::MonomLocalFiniteElement<double,double,1,k> monom1d(Dune::GeometryType::simplex);
   success = testFE(monom1d) and success;
 
@@ -215,6 +224,7 @@ bool testMonomials()
 
   Dune::MonomLocalFiniteElement<double,double,3,k> monom3d(Dune::GeometryType::simplex);
   success = testFE(monom3d) and success;
+#endif
 
   return testMonomials<k-1>() and success;
 }
@@ -250,9 +260,6 @@ int main(int argc, char** argv) try
   Dune::Q1LocalFiniteElement<double,double,3> q13dlfem;
   success = testFE(q13dlfem) and success;
 
-  Dune::Q22DLocalFiniteElement<double,double> q22dlfem;
-  success = testFE(q22dlfem) and success;
-
   Dune::RefinedP1LocalFiniteElement<double,double,2> refp12dlfem;
   success = testFE(refp12dlfem) and success;
 
@@ -261,6 +268,24 @@ int main(int argc, char** argv) try
 
   Dune::P23DLocalFiniteElement<double,double> p23dlfem;
   success = testFE(p23dlfem) and success;
+
+  Dune::HierarchicalP2LocalFiniteElement<double,double,2> hierarchicalp22dlfem;
+  success = testFE(hierarchicalp22dlfem) and success;
+
+  Dune::HierarchicalP2LocalFiniteElement<double,double,3> hierarchicalp23dlfem;
+  success = testFE(hierarchicalp23dlfem) and success;
+
+  Dune::PrismP1LocalFiniteElement<double,double> prismp1fem;
+  success = testFE(prismp1fem) and success;
+
+  Dune::PrismP2LocalFiniteElement<double,double> prismp2fem;
+  success = testFE(prismp2fem) and success;
+
+  success = testArbitraryOrderFE<10>() and success;
+
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
+  Dune::Q22DLocalFiniteElement<double,double> q22dlfem;
+  success = testFE(q22dlfem) and success;
 
   Dune::EdgeR02DLocalFiniteElement<double,double> edger02dlfem;
   success = testFE(edger02dlfem) and success;
@@ -280,16 +305,9 @@ int main(int argc, char** argv) try
   Dune::RT0Q3DLocalFiniteElement<double,double> rt0q3dlfem(1);
   success = testFE(rt0q3dlfem) and success;
 
-  //     Dune::HierarchicalP2LocalFiniteElement<double,double,1> hierarchicalp21dlfem;
-  //     success = testFE(hierarchicalp21dlfem) and success;
-
-  Dune::HierarchicalP2LocalFiniteElement<double,double,2> hierarchicalp22dlfem;
-  success = testFE(hierarchicalp22dlfem) and success;
-
-  Dune::HierarchicalP2LocalFiniteElement<double,double,3> hierarchicalp23dlfem;
-  success = testFE(hierarchicalp23dlfem) and success;
-
-  success = testArbitraryOrderFE<10>() and success;
+  //    Dune::HierarchicalP2LocalFiniteElement<double,double,1> hierarchicalp21dlfem;
+  //    success = testFE(hierarchicalp21dlfem) and success;
+#endif
 
   std::cout << "Monomials are only tested up to order 2 due to the instability of interpolate()." << std::endl;
   success = testMonomials<2>() and success;

@@ -98,7 +98,47 @@ namespace Dune
       bool invert ()
       {
         assert( rows() == cols() );
-        return inv::rmatrixinverse< precision >( matrix_, rows() );
+        // return inv::rmatrixinverse< precision >( matrix_, rows() );
+        std::vector<unsigned int> p(rows());
+        for (unsigned int j=0; j<rows(); ++j)
+          p[j] = j;
+        for (unsigned int j=0; j<rows(); ++j)
+        {
+          unsigned int r = j;
+          Field max = std::abs( (*this)(j,j) );
+          for (unsigned int i=j+1; i<rows(); ++i)
+            if ( std::abs( (*this)(i,j) ) > max )
+              r = i;
+          if (max == 0)
+            return false;
+          if (r > j)
+          {
+            for (unsigned int k=0; k<rows(); ++k)
+            {
+              std::swap( (*this)(j,k), (*this)(r,k) );
+            }
+            std::swap( p[j], p[r] );
+          }
+          Field hr = Unity<Field>()/(*this)(j,j);
+          for (unsigned int k=0; k<rows(); ++k)
+          {
+            if (k==j) continue;
+            for (unsigned int i=0; i<rows(); ++i)
+            {
+              if (i==j) continue;
+              (*this)(i,k) -= (*this)(i,j)*(*this)(j,k);
+            }
+            (*this)(j,k) *= -hr;
+          }
+        }
+        Vector hv(rows());
+        for (unsigned int i=0; i<rows(); ++i)
+        {
+          for (unsigned int k=0; k<rows(); ++k)
+            hv[ p[k] ] = (*this)(i,k);
+          for (unsigned int k=0; k<rows(); ++k)
+            (*this)(i,k) = hv[k];
+        }
       }
 
     private:

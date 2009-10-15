@@ -115,6 +115,11 @@ namespace std
     return amp::sqrt( a );
   }
 
+  template< unsigned int precision >
+  inline amp::ampf< precision > abs ( const amp::ampf< precision > &a )
+  {
+    return amp::abs( a );
+  }
 }
 
 

@@ -4,9 +4,9 @@
 #include <dune/finiteelements/lagrangebasis/lobattopoints.hh>
 #include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
 #include <dune/finiteelements/quadrature/genericquadrature.hh>
-#include <dune/finiteelements/p13d/p13dlocalbasis.hh>
-#include <dune/finiteelements/p23d/p23dlocalbasis.hh>
-#include <dune/finiteelements/pk3d/pk3dlocalbasis.hh>
+// #include <dune/finiteelements/p13dlocalbasis.hh>
+// #include <dune/finiteelements/p23dlocalbasis.hh>
+// #include <dune/finiteelements/pk3dlocalbasis.hh>
 
 #define USE_GENERIC 1
 const unsigned int iterations = 1;
@@ -14,6 +14,7 @@ const unsigned int iterations = 1;
 using namespace Dune;
 using namespace GenericGeometry;
 
+#if 0
 struct SpecialBasis : public Pk3DLocalBasis<double,double,1>
                       // struct SpecialBasis :public P23DLocalBasis<double,double>
                       // struct SpecialBasis :public P13DLocalBasis<double,double>
@@ -49,6 +50,7 @@ struct SpecialBasis : public Pk3DLocalBasis<double,double,1>
   }
 #endif
 };
+#endif
 
 template <class Topology>
 bool test(unsigned int order, bool verbose = false) {
@@ -159,7 +161,7 @@ int main ( int argc, char **argv )
 
   const unsigned int order = atoi( argv[ 1 ] );
 #ifdef TOPOLOGY
-  return (test<TOPOLOGY>(order,true) ? 0 : 1 );
+  return (test<TOPOLOGY>(order,false) ? 0 : 1 );
 #else
   bool tests = true;
   tests &= test<Prism<Point> > (order);

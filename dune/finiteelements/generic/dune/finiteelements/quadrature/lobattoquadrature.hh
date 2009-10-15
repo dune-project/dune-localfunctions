@@ -30,7 +30,7 @@ namespace Dune
       typedef LobattoPoints< amp::ampf< precision > > This;
 
     public:
-      typedef ampf::ampf< precision > Field;
+      typedef amp::ampf< precision > Field;
       typedef AlgLib::Vector< Field > Vector;
 
       struct Iterator;

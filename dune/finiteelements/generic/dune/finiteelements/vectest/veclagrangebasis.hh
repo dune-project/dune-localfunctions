@@ -117,7 +117,7 @@ namespace Dune
     typedef Dune::MonomialBasisProvider< dimension, BasisField > MonomialBasisProvider;
     typedef typename MonomialBasisProvider::Basis MonomialBasis;
 
-    typedef AlgLib::MultiPrecision< Precision< CF >::value > ComputeField;
+    typedef amp::ampf< Precision< CF >::value > ComputeField;
     typedef unsigned int Key;
 
     typedef VectorialEvaluator< MonomialBasis,dimR,value > Evaluator;
@@ -149,7 +149,7 @@ namespace Dune
   {
     typedef VirtualMonomialBasis<dim,SF> MBasis;
     typedef SF StorageField;
-    typedef AlgLib::MultiPrecision< Precision<CF>::value > ComputeField;
+    typedef amp::ampf< Precision<CF>::value > ComputeField;
     static const int dimension = dim;
     typedef VectorialEvaluator<MBasis,dimR,derivative> Evaluator;
     typedef PolynomialBasisWithMatrix<Evaluator,SparseCoeffMatrix<StorageField> > Basis;

@@ -25,12 +25,12 @@ namespace Dune
     class GaussPoints;
 
     template< unsigned int precision >
-    class GaussPoints< AlgLib::MultiPrecision< precision > >
+    class GaussPoints< amp::ampf< precision > >
     {
-      typedef GaussPoints< AlgLib::MultiPrecision< precision > > This;
+      typedef GaussPoints< amp::ampf< precision > > This;
 
     public:
-      typedef AlgLib::MultiPrecision< precision > Field;
+      typedef amp::ampf< precision > Field;
       typedef AlgLib::Vector< Field > Vector;
 
       struct Iterator;
@@ -96,9 +96,9 @@ namespace Dune
     // ---------------------
 
     template< unsigned int precision >
-    struct GaussPoints< AlgLib::MultiPrecision< precision > >::Iterator
+    struct GaussPoints< amp::ampf< precision > >::Iterator
     {
-      typedef AlgLib::MultiPrecision< precision > Field;
+      typedef amp::ampf< precision > Field;
       typedef GenericGeometry::QuadraturePoint< Field, 1 > QuadraturePoint;
 
       Iterator ( const GaussPoints< Field > &points, const unsigned int index )
@@ -141,7 +141,7 @@ namespace Dune
       explicit GaussQuadrature ( unsigned int order )
         : Base( (unsigned int)(0) )
       {
-        typedef AlgLib::MultiPrecision< Precision< Field >::value > MPField;
+        typedef amp::ampf< Precision< Field >::value > MPField;
         GaussPoints< MPField > gaussPoints( (order+1) / 2 );
         for( unsigned int i = 0; i < gaussPoints.size(); ++i )
         {

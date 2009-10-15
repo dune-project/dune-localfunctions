@@ -7,10 +7,11 @@ using namespace Dune;
 using namespace GenericGeometry;
 
 template <class Topology>
-bool test(unsigned int order) {
-  // typedef AlgLib::MultiPrecision<128> StorageField;
+bool test(unsigned int order)
+{
+  // typedef amp::ampf< 128 > StorageField;
   typedef double StorageField;
-  typedef AlgLib::MultiPrecision<512> ComputeField;
+  typedef amp::ampf< 512 > ComputeField;
   // typedef double ComputeField;
 
   static const int dimRange = 5;

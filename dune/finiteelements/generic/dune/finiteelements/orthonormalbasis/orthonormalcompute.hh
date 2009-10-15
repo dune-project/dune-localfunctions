@@ -242,7 +242,7 @@ namespace ONBCompute
           if (fabs(v)<1e-20)
             out << 0 << "\t\t" << std::flush;
           else {
-            Dune::AlgLib::MultiPrecision<128> v = calc.res(j,i);
+            amp::ampf<128> v = calc.res(j,i);
             out << v << "\t\t" << std::flush;
           }
         }

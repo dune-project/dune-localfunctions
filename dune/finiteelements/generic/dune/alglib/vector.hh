@@ -20,16 +20,15 @@ namespace Dune
 
 
     template< unsigned int precision, bool aligned >
-    class Vector< MultiPrecision< precision >, aligned >
+    class Vector< amp::ampf< precision >, aligned >
     {
-      typedef Vector< MultiPrecision< precision >, aligned > This;
+      typedef Vector< amp::ampf< precision >, aligned > This;
 
     public:
-      typedef MultiPrecision< precision > Field;
+      typedef amp::ampf< precision > Field;
 
     private:
-      typedef amp::ampf< precision > RealField;
-      typedef ap::template_1d_array< RealField, aligned > RealVector;
+      typedef ap::template_1d_array< Field, aligned > RealVector;
 
     public:
       Vector ()
@@ -52,12 +51,12 @@ namespace Dune
 
       const Field &operator[] ( const unsigned int i ) const
       {
-        return static_cast< const Field & >( vector_( i ) );
+        return vector_( i );
       }
 
       Field &operator[] ( const unsigned int i )
       {
-        return static_cast< Field & >( vector_( i ) );
+        return vector_( i );
       }
 
       unsigned int size () const
@@ -68,17 +67,17 @@ namespace Dune
       const Field *ptr ( const unsigned int row ) const
       {
         const int lastIndex = vector_.gethighbound();
-        ap::const_raw_vector< RealField > rawVector = vector_.getvector( 0, lastIndex );
+        ap::const_raw_vector< Field > rawVector = vector_.getvector( 0, lastIndex );
         assert( (rawVector.GetStep() == 1) && (rawVector.GetLength() == lastIndex+1) );
-        return static_cast< const Field * >( rawVector.GetData() );
+        return rawVector.GetData();
       }
 
       Field *ptr ( const unsigned int row )
       {
         const int lastIndex = vector_.gethighbound();
-        ap::raw_vector< RealField > rawVector = vector_.getvector( 0, lastIndex );
+        ap::raw_vector< Field > rawVector = vector_.getvector( 0, lastIndex );
         assert( (rawVector.GetStep() == 1) && (rawVector.GetLength() == lastIndex+1) );
-        return static_cast< Field * >( rawVector.GetData() );
+        return rawVector.GetData();
       }
 
       void resize ( const unsigned int size )

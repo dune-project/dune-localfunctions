@@ -55,9 +55,9 @@ struct SpecialBasis : public Pk3DLocalBasis<double,double,1>
 template <class Topology>
 bool test(unsigned int order, bool verbose = false) {
 
-  typedef AlgLib::MultiPrecision<128> StorageField;
+  typedef amp::ampf< 128 > StorageField;
   // typedef double StorageField;
-  typedef AlgLib::MultiPrecision<256> ComputeField;
+  typedef amp::ampf< 256 > ComputeField;
   // typedef double ComputeField;
 
   bool ret = true;

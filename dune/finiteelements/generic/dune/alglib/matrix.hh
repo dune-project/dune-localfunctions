@@ -11,8 +11,6 @@
 
 #include <alglib/ap.h>
 #include <alglib/inv.h>
-// #include <alglib/rcond.h>
-// #include <alglib/sevd.h>
 
 namespace Dune
 {
@@ -25,17 +23,16 @@ namespace Dune
 
 
     template< unsigned int precision, bool aligned >
-    class Matrix< MultiPrecision< precision >, aligned >
+    class Matrix< amp::ampf< precision >, aligned >
     {
-      typedef Matrix< MultiPrecision< precision >, aligned > This;
+      typedef Matrix< amp::ampf< precision >, aligned > This;
 
     public:
-      typedef MultiPrecision< precision > Field;
+      typedef amp::ampf< precision > Field;
       typedef AlgLib::Vector< Field > Vector;
 
     private:
-      typedef amp::ampf< precision > RealField;
-      typedef ap::template_2d_array< RealField, aligned > RealMatrix;
+      typedef ap::template_2d_array< Field, aligned > RealMatrix;
 
     public:
       operator const RealMatrix & () const
@@ -55,14 +52,14 @@ namespace Dune
 
       const Field &operator() ( const unsigned int row, const unsigned int col ) const
       {
-        return static_cast< const Field & >( matrix_( row, col ) );
+        return matrix_( row, col );
       }
 
       Field &operator() ( const unsigned int row, const unsigned int col )
       {
         assert(row<rows());
         assert(col<cols());
-        return static_cast< Field & >( matrix_( row, col ) );
+        return matrix_( row, col );
       }
 
       unsigned int rows () const
@@ -79,18 +76,18 @@ namespace Dune
       {
         assert(row<rows());
         const int lastCol = matrix_.gethighbound( 2 );
-        ap::const_raw_vector< RealField > rowVector = matrix_.getrow( row, 0, lastCol );
+        ap::const_raw_vector< Field > rowVector = matrix_.getrow( row, 0, lastCol );
         assert( (rowVector.GetStep() == 1) && (rowVector.GetLength() == lastCol+1) );
-        return static_cast< const Field * >( rowVector.GetData() );
+        return rowVector.GetData();
       }
 
       Field *rowPtr ( const unsigned int row )
       {
         assert(row<rows());
         const int lastCol = matrix_.gethighbound( 2 );
-        ap::raw_vector< RealField > rowVector = matrix_.getrow( row, 0, lastCol );
+        ap::raw_vector< Field > rowVector = matrix_.getrow( row, 0, lastCol );
         assert( (rowVector.GetStep() == 1) && (rowVector.GetLength() == lastCol+1) );
-        return static_cast< Field * >( rowVector.GetData() );
+        return rowVector.GetData();
       }
 
       void resize ( const unsigned int rows, const unsigned int cols )
@@ -103,51 +100,6 @@ namespace Dune
         assert( rows() == cols() );
         return inv::rmatrixinverse< precision >( matrix_, rows() );
       }
-
-#if 0
-      Field conditionOne () const
-      {
-        return Field( 1 ) / rcond::rmatrixrcond1( matrix_, rows() );
-      }
-
-      Field conditionTwo () const
-      {
-        const unsigned int n = rows();
-        Vector d( n );
-        This z;
-        if( !sevd::smatrixevd< precision >( (*this), n, 0, false, d, z ) )
-          DUNE_THROW( MathError, "Eigenvalue computation failed." );
-        return (d[ n-1 ] / d[ 0 ]);
-      }
-
-      Field conditionInfty () const
-      {
-        return Field( 1 ) / rcond::rmatrixrcondinf( matrix_, rows() );
-      }
-
-      // note that the sparse matrix is assumed quadratic, here
-      template< class SparseMatrix >
-      void fillFromSparseMatrix ( const SparseMatrix &sparseMatrix )
-      {
-        const unsigned int rows = sparseMatrix.rows();
-        resize( rows, rows );
-        for( unsigned int i = 0; i < rows; ++i )
-        {
-          for( unsigned int j = 0; j < rows; ++j )
-            (*this)( i, j ) = Field( 0 );
-
-          const unsigned int nonZero = sparseMatrix.nonZero( i );
-          for( unsigned int k = 0; k < nonZero; ++k )
-          {
-            if( !sparseMatrix.isZero( i, k ) )
-            {
-              const unsigned int j = sparseMatrix.column( i, k );
-              field_cast( sparseMatrix( i, k ), (*this)( i, j ) );
-            }
-          }
-        }
-      }
-#endif
 
     private:
       RealMatrix matrix_;
@@ -174,4 +126,4 @@ namespace Dune
 
 }
 
-#endif
+#endif // #ifndef DUNE_ALGLIB_MATRIX_HH

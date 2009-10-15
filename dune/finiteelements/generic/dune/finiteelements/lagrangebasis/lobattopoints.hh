@@ -20,16 +20,19 @@
 #include <dune/finiteelements/quadrature/lobattoquadrature.hh>
 #include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
 
-namespace Dune {
-  template <class Field>
+namespace Dune
+{
+
+  template< class Field >
   struct LobattoPoints
   {
-    LobattoPoints(unsigned int order) : points_(0)
+    LobattoPoints ( unsigned int order )
+      : points_( 0 )
     {
-      if (order<2)
+      if( order < 2 )
         return;
       points_.resize(order-1);
-      typedef AlgLib::MultiPrecision< Precision< Field >::value > MPField;
+      typedef amp::ampf< Precision< Field >::value > MPField;
       GenericGeometry::LobattoPoints<MPField> lobatto(order+1);
       for (unsigned int i=1; i<order; ++i) {
         points_[i-1] = field_cast<Field>(lobatto.point(i));
@@ -39,6 +42,7 @@ namespace Dune {
          points_[i-1] = Field(i)/Field(order);
        */
     }
+
     const unsigned int size()
     {
       return points_.size();

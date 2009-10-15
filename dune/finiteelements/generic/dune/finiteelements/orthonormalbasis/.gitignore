@@ -1,5 +1,9 @@
+test
+
 Makefile
 Makefile.in
+
+*.swp
+
 .deps
 .libs
-

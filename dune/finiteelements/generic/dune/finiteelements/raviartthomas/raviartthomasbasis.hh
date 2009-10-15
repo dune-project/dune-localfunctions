@@ -400,7 +400,8 @@ namespace Dune
   struct RaviartThomasBasisCreator
   {
     typedef SF StorageField;
-    typedef AlgLib::MultiPrecision< Precision<CF>::value > ComputeField;
+    //typedef amp::ampf< Precision<CF>::value > ComputeField;
+    typedef CF ComputeField;
     static const int dimension = dim;
     typedef VirtualMonomialBasis<dim,SF> MBasis;
     typedef PolynomialBasisWithMatrix<StandardEvaluator<MBasis>,SparseCoeffMatrix<StorageField,dim> > Basis;

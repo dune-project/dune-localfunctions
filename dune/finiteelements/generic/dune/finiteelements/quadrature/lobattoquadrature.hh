@@ -25,12 +25,12 @@ namespace Dune
     class LobattoPoints;
 
     template< unsigned int precision >
-    class LobattoPoints< AlgLib::MultiPrecision< precision > >
+    class LobattoPoints< amp::ampf< precision > >
     {
-      typedef LobattoPoints< AlgLib::MultiPrecision< precision > > This;
+      typedef LobattoPoints< amp::ampf< precision > > This;
 
     public:
-      typedef AlgLib::MultiPrecision< precision > Field;
+      typedef ampf::ampf< precision > Field;
       typedef AlgLib::Vector< Field > Vector;
 
       struct Iterator;
@@ -99,9 +99,9 @@ namespace Dune
     // ---------------------
 
     template< unsigned int precision >
-    struct LobattoPoints< AlgLib::MultiPrecision< precision > >::Iterator
+    struct LobattoPoints< amp::ampf< precision > >::Iterator
     {
-      typedef AlgLib::MultiPrecision< precision > Field;
+      typedef amp::ampf< precision > Field;
       typedef GenericGeometry::QuadraturePoint< Field, 1 > QuadraturePoint;
 
       Iterator ( const LobattoPoints< Field > &points, const unsigned int index )
@@ -144,7 +144,7 @@ namespace Dune
       explicit LobattoQuadrature ( unsigned int order )
         : Base( (unsigned int)(0) )
       {
-        typedef AlgLib::MultiPrecision< Precision< Field >::value > MPField;
+        typedef amp::ampf< Precision< Field >::value > MPField;
         LobattoPoints< MPField > gaussPoints( (order+1) / 2 );
         for( unsigned int i = 0; i < gaussPoints.size(); ++i )
         {

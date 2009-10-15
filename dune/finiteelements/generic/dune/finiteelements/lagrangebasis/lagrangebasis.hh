@@ -69,7 +69,7 @@ namespace Dune
             out << 0 << "\t\t" << std::flush;
           else
           {
-            Dune::AlgLib::MultiPrecision< 128 > v = matrix_( j, i );
+            amp::ampf< 128 > v = matrix_( j, i );
             out << v << "\t\t" << std::flush;
           }
         }
@@ -103,7 +103,8 @@ namespace Dune
     typedef unsigned int Key;
 
     typedef StandardEvaluator< MonomialBasis > Evaluator;
-    typedef AlgLib::MultiPrecision< Precision< CF >::value > ComputeField;
+    //typedef amp::ampf< Precision< CF >::value > ComputeField;
+    typedef CF ComputeField;
     typedef PolynomialBasisWithMatrix< Evaluator, SparseCoeffMatrix< StorageField, 1 > > Basis;
 
     typedef LPCreator<ComputeField,dim> LPointsCreator;

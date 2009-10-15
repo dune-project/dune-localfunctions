@@ -65,9 +65,9 @@ namespace Dune
     }
   };
   template< unsigned int precision >
-  struct Zero< Dune::AlgLib::MultiPrecision< precision > >
+  struct Zero< amp::ampf< precision > >
   {
-    typedef Dune::AlgLib::MultiPrecision< precision > Field;
+    typedef amp::ampf< precision > Field;
     operator Field () const
     {
       return Field( 0 );
@@ -139,7 +139,7 @@ namespace Dune
   };
 
   template< unsigned int precision >
-  struct Precision< AlgLib::MultiPrecision< precision > >
+  struct Precision< amp::ampf< precision > >
   {
     static const unsigned int value = precision;
   };
@@ -152,7 +152,7 @@ namespace Dune
   template <class Field,unsigned int sum>
   struct ComputeField
   {
-    typedef AlgLib::MultiPrecision<Precision<Field>::value+sum> Type;
+    typedef amp::ampf<Precision<Field>::value+sum> Type;
   };
 
 }
@@ -167,13 +167,13 @@ inline void field_cast ( const F1 &f1, F2 &f2 )
 }
 
 template< unsigned int precision >
-inline void field_cast ( const Dune::AlgLib::MultiPrecision< precision > &f1, double &f2 )
+inline void field_cast ( const amp::ampf< precision > &f1, double &f2 )
 {
   f2 = f1.toDouble();
 }
 
 template< unsigned int precision >
-inline void field_cast ( const Dune::AlgLib::MultiPrecision< precision > &f1, long double &f2 )
+inline void field_cast ( const amp::ampf< precision > &f1, long double &f2 )
 {
   f2 = f1.toDouble();
 }

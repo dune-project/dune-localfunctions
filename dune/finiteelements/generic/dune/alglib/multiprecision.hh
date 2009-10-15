@@ -5,6 +5,7 @@
 
 #include <alglib/amp.h>
 
+#if 0
 namespace Dune
 {
 
@@ -96,5 +97,25 @@ namespace std
   }
 
 }
+#endif
+
+namespace std
+{
+
+  template< unsigned int precision >
+  inline std::ostream &
+  operator<< ( std::ostream &out, const amp::ampf< precision > &value )
+  {
+    return out << value.toDec();
+  }
+
+  template< unsigned int precision >
+  inline amp::ampf< precision > sqrt ( const amp::ampf< precision > &a )
+  {
+    return amp::sqrt( a );
+  }
+
+}
+
 
 #endif // #ifndef DUNE_MULTIPRECISION_HH

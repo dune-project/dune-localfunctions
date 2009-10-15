@@ -32,7 +32,7 @@ int main ( int argc, char **argv )
   typedef TOPOLOGY Topology;
   const int dimension = Topology::dimension;
   typedef double StorageField;
-  typedef AlgLib::MultiPrecision<256> ComputeField;
+  typedef amp::ampf< 256 > ComputeField;
   typedef double Field;
 
 #if 0

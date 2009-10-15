@@ -11,8 +11,8 @@
 
 #include <alglib/ap.h>
 #include <alglib/inv.h>
-#include <alglib/rcond.h>
-#include <alglib/sevd.h>
+// #include <alglib/rcond.h>
+// #include <alglib/sevd.h>
 
 namespace Dune
 {
@@ -104,6 +104,7 @@ namespace Dune
         return inv::rmatrixinverse< precision >( matrix_, rows() );
       }
 
+#if 0
       Field conditionOne () const
       {
         return Field( 1 ) / rcond::rmatrixrcond1( matrix_, rows() );
@@ -146,6 +147,7 @@ namespace Dune
           }
         }
       }
+#endif
 
     private:
       RealMatrix matrix_;

@@ -62,8 +62,8 @@ namespace Dune
       explicit GaussPoints ( unsigned int n )
         : Base( n )
       {
-        Vector alpha( n );
-        Vector beta( n );
+        typename Base::Vector alpha( n );
+        typename Base::Vector beta( n );
         for( unsigned int i = 0; i < n; ++i )
         {
           alpha[ i ] = 0;

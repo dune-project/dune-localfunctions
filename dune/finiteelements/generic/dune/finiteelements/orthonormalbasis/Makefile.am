@@ -5,7 +5,7 @@ check_PROGRAMS = example test test-all
 LIBS = $(DUNE_LDFLAGS) $(DUNE_LIBS) -lgmpxx -lgmp -lmpfr
 
 TOPOLOGY = Prism< Pyramid< Pyramid< Point > > >
-SETTINGS = -DTOPOLOGY="$(TOPOLOGY)" -DHAVE_GMP=1
+SETTINGS = -DTOPOLOGY="$(TOPOLOGY)" -DHAVE_GMP=1 -DHAVE_ALGLIB=0
 
 AM_CPPFLAGS = -I$(top_srcdir)/alglib
 example_SOURCES = example.cc

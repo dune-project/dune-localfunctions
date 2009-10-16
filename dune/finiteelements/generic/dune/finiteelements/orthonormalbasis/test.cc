@@ -1,5 +1,6 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
+#include <dune/alglib/gmpfield.hh>
 #include <dune/finiteelements/orthonormalbasis/orthonormalbasis.hh>
 #include <dune/finiteelements/quadrature/genericquadrature.hh>
 
@@ -9,11 +10,18 @@ using namespace GenericGeometry;
 template <class Topology>
 bool test(unsigned int order)
 {
-  // typedef amp::ampf< 128 > StorageField;
+#if HAVE_ALGLIB
+  typedef amp::ampf< 128 > StorageField;
+  typedef amp::ampf< 512 > ComputeField;
+#else
+#if HAVE_GMP
+  typedef GMPField< 128 > StorageField;
+  typedef GMPField< 512 > ComputeField;
+#else
   typedef double StorageField;
-  // typedef amp::ampf< 512 > ComputeField;
   typedef double ComputeField;
-
+#endif
+#endif
 
   bool ret = true;
   for (unsigned int o=order; o<=order; --o)

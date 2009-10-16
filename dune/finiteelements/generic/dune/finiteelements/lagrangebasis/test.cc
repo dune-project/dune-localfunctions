@@ -57,12 +57,18 @@ struct SpecialBasis : public Pk3DLocalBasis<double,double,1>
 template <class Topology>
 bool test(unsigned int order, bool verbose = false) {
 
-  // typedef amp::ampf< 128 > StorageField;
-  // typedef GMPField<128> StorageField;
+#if HAVE_ALGLIB
+  typedef amp::ampf< 128 > StorageField;
+  typedef amp::ampf< 512 > ComputeField;
+#else
+#if HAVE_GMP
+  typedef GMPField< 128 > StorageField;
+  typedef GMPField< 512 > ComputeField;
+#else
   typedef double StorageField;
-  // typedef amp::ampf< 256 > ComputeField;
-  typedef GMPField< 256 > ComputeField;
-  // typedef double ComputeField;
+  typedef double ComputeField;
+#endif
+#endif
 
   bool ret = true;
 

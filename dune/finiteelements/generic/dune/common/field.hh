@@ -3,7 +3,13 @@
 #ifndef DUNE_FIELD_HH
 #define DUNE_FIELD_HH
 
-#include <dune/alglib/multiprecision.hh>
+#if HAVE_ALGLIB
+#include <alglib/amp.h>
+#endif
+#if HAVE_GMP
+#include <dune/alglib/gmpfield.hh>
+#endif
+
 #include <dune/common/fvector.hh>
 
 namespace Dune
@@ -64,6 +70,7 @@ namespace Dune
       return Field(1e-12);
     }
   };
+#if HAVE_ALGLIB
   template< unsigned int precision >
   struct Zero< amp::ampf< precision > >
   {
@@ -77,6 +84,7 @@ namespace Dune
       return Field(1e-20);
     }
   };
+#endif
 
   template< class Field >
   inline bool operator == ( const Zero< Field > &, const Field &f )
@@ -138,12 +146,13 @@ namespace Dune
     static const unsigned int value = 32;
   };
 
+#if HAVE_ALGLIB
   template< unsigned int precision >
   struct Precision< amp::ampf< precision > >
   {
     static const unsigned int value = precision;
   };
-
+#endif
 
 
   // ComputeField
@@ -152,8 +161,16 @@ namespace Dune
   template <class Field,unsigned int sum>
   struct ComputeField
   {
+    typedef Field Type;
+  };
+
+#if HAVE_ALGLIB
+  template <class Field,unsigned int sum>
+  struct ComputeField
+  {
     typedef amp::ampf<Precision<Field>::value+sum> Type;
   };
+#endif
 
 }
 
@@ -166,6 +183,7 @@ inline void field_cast ( const F1 &f1, F2 &f2 )
   f2 = f1;
 }
 
+#if HAVE_ALGLIB
 template< unsigned int precision >
 inline void field_cast ( const amp::ampf< precision > &f1, double &f2 )
 {
@@ -177,6 +195,7 @@ inline void field_cast ( const amp::ampf< precision > &f1, long double &f2 )
 {
   f2 = f1.toDouble();
 }
+#endif
 
 template< class F2, class F1, int dim >
 inline void field_cast ( const Dune::FieldVector< F1, dim > &f1, Dune::FieldVector< F2, dim > &f2 )

@@ -7,10 +7,10 @@
 #include <dune/finiteelements/common/matrix.hh>
 
 #include <dune/finiteelements/lagrangebasis/interpolation.hh>
-#include <dune/finiteelements/multiindex.hh>
+#include <dune/finiteelements/generic/multiindex.hh>
 #include <dune/finiteelements/generic/monomialbasis.hh>
 #include <dune/finiteelements/generic/basisprovider.hh>
-#include <dune/finiteelements/basisprint.hh>
+#include <dune/finiteelements/generic/basisprint.hh>
 #include <dune/finiteelements/generic/polynomialbasis.hh>
 
 namespace Dune

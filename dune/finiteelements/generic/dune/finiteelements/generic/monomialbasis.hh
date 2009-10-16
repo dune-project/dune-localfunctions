@@ -13,8 +13,8 @@
 #include <dune/finiteelements/common/field.hh>
 
 #include <dune/finiteelements/generic/basisprovider.hh>
-#include <dune/finiteelements/multiindex.hh>
-#include <dune/finiteelements/tensor.hh>
+#include <dune/finiteelements/generic/multiindex.hh>
+#include <dune/finiteelements/generic/tensor.hh>
 
 namespace Dune
 {

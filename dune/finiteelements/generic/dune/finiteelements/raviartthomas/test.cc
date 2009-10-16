@@ -2,7 +2,7 @@
 // vi: set et ts=4 sw=2 sts=2:
 #include <dune/finiteelements/common/gmpfield.hh>
 #include <dune/finiteelements/raviartthomas/raviartthomasbasis.hh>
-#include <dune/finiteelements/basisprint.hh>
+#include <dune/finiteelements/generic/basisprint.hh>
 using namespace Dune;
 using namespace GenericGeometry;
 

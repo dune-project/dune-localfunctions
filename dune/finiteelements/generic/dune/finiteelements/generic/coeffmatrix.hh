@@ -7,7 +7,7 @@
 #include <vector>
 #include <dune/common/fvector.hh>
 #include <dune/finiteelements/common/field.hh>
-#include <dune/finiteelements/tensor.hh>
+#include <dune/finiteelements/generic/tensor.hh>
 
 namespace Dune
 {

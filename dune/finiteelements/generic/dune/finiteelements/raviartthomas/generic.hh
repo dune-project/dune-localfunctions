@@ -12,7 +12,7 @@
 #include <dune/finiteelements/lagrangebasis/lobattopoints.hh>
 #include <dune/finiteelements/lagrangebasis/interpolation.hh>
 #include <dune/finiteelements/generic/basisprovider.hh>
-#include <dune/finiteelements/basisprint.hh>
+#include <dune/finiteelements/generic/basisprint.hh>
 #include <dune/finiteelements/generic/polynomialbasis.hh>
 #include <dune/finiteelements/quadrature/genericquadrature.hh>
 #include <dune/finiteelements/quadrature/subquadrature.hh>

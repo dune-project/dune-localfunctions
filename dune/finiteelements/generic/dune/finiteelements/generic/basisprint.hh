@@ -2,7 +2,7 @@
 // vi: set et ts=4 sw=2 sts=2:
 #ifndef BASISPRINT
 #define BASISPRINT
-#include <dune/finiteelements/multiindex.hh>
+#include <dune/finiteelements/generic/multiindex.hh>
 namespace Dune {
   template <int deriv,class Basis>
   void basisPrint(std::ostream &out, Basis &basis)

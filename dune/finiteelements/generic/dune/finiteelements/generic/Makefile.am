@@ -1,6 +1,8 @@
 genericdir = $(includedir)/dune/finiteelements/generic
+
 generic_HEADERS = basisevaluator.hh  basisprovider.hh  coeffmatrix.hh \
-                  monomialbasis.hh  polynomialbasis.hh
+                  monomialbasis.hh  polynomialbasis.hh \
+                  multiindex.hh basisprint.hh tensor.hh dglocalcoefficients.hh
 
 AM_CPPFLAGS += "-I$(top_srcdir)/alglib"
 

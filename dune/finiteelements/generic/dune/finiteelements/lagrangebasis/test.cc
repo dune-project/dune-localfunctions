@@ -1,5 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
+#include <dune/alglib/gmpfield.hh>
+
 #include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
 #include <dune/finiteelements/lagrangebasis/lobattopoints.hh>
 #include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
@@ -56,9 +58,11 @@ template <class Topology>
 bool test(unsigned int order, bool verbose = false) {
 
   // typedef amp::ampf< 128 > StorageField;
+  // typedef GMPField<128> StorageField;
   typedef double StorageField;
   // typedef amp::ampf< 256 > ComputeField;
-  typedef double ComputeField;
+  typedef GMPField< 256 > ComputeField;
+  // typedef double ComputeField;
 
   bool ret = true;
 
@@ -92,7 +96,7 @@ bool test(unsigned int order, bool verbose = false) {
           {
             if( fabs( y[ i ] - double( i == index ) ) > 1e-10 )
             {
-              if (first && verbose) {
+              if (first) {
                 std::cout << "ERROR: "
                           << index << " -> "
                           << "x = " << points[ index ].point()

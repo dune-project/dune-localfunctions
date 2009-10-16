@@ -1,126 +1,87 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_MULTIPRECISION_HH
-#define DUNE_MULTIPRECISION_HH
+#ifndef DUNE_GMPFIELD_HH
+#define DUNE_GMPFIELD_HH
 
-#include <alglib/amp.h>
+#if HAVE_GMP
 
-#if 0
+#include <gmpxx.h>
+
 namespace Dune
 {
 
-  namespace AlgLib
+  template< unsigned int precision >
+  class GMPField
+    : public mpf_class
   {
+    typedef mpf_class Base;
 
-    template< unsigned int precision >
-    class MultiPrecision
-      : public amp::ampf< precision >
-    {
-      typedef amp::ampf< precision > Base;
+  public:
+    GMPField ()
+      : Base(0,precision)
+    {}
 
-    public:
-      MultiPrecision ()
-        : Base()
-      {}
-
-      template< class T >
-      MultiPrecision ( const T &v )
-        : Base( v )
-      {}
-    };
+    template< class T >
+    GMPField ( const T &v )
+      : Base( v,precision )
+    {}
+  };
 
 
-
-    template< unsigned int precision >
-    inline MultiPrecision< precision >
-    operator+ ( const MultiPrecision< precision > &a, const MultiPrecision< precision > &b )
-    {
-      typedef amp::ampf< precision > F;
-      return ((const F &)a + (const F &)b);
-    }
-
-    template< unsigned int precision >
-    inline MultiPrecision< precision >
-    operator- ( const MultiPrecision< precision > &a, const MultiPrecision< precision > &b )
-    {
-      typedef amp::ampf< precision > F;
-      return ((const F &)a - (const F &)b);
-    }
-
-    template< unsigned int precision >
-    inline MultiPrecision< precision >
-    operator- ( const MultiPrecision< precision > &a )
-    {
-      typedef amp::ampf< precision > F;
-      return -((const F &)a);
-    }
-
-    template< unsigned int precision >
-    inline MultiPrecision< precision >
-    operator* ( const MultiPrecision< precision > &a, const MultiPrecision< precision > &b )
-    {
-      typedef amp::ampf< precision > F;
-      return ((const F &)a * (const F &)b);
-    }
-
-    template< unsigned int precision >
-    inline MultiPrecision< precision >
-    operator/ ( const MultiPrecision< precision > &a, const MultiPrecision< precision > &b )
-    {
-      typedef amp::ampf< precision > F;
-      return ((const F &)a / (const F &)b);
-    }
-
-
-
-    template< unsigned int precision >
-    inline std::ostream &
-    operator<< ( std::ostream &out, const MultiPrecision< precision > &value )
-    {
-      return out << value.toDec();
-    }
-
-  }
-
-}
-
-
-
-namespace std
-{
 
   template< unsigned int precision >
-  inline Dune::AlgLib::MultiPrecision< precision >
-  sqrt ( const Dune::AlgLib::MultiPrecision< precision > &a )
+  inline GMPField< precision >
+  operator+ ( const GMPField< precision > &a, const GMPField< precision > &b )
   {
-    return amp::sqrt( a );
+    typedef mpf_class F;
+    return ((const F &)a + (const F &)b);
   }
 
-}
-#endif
+  template< unsigned int precision >
+  inline GMPField< precision >
+  operator- ( const GMPField< precision > &a, const GMPField< precision > &b )
+  {
+    typedef mpf_class F;
+    return ((const F &)a - (const F &)b);
+  }
 
-namespace std
-{
+  template< unsigned int precision >
+  inline GMPField< precision >
+  operator- ( const GMPField< precision > &a )
+  {
+    typedef mpf_class F;
+    return -((const F &)a);
+  }
+
+  template< unsigned int precision >
+  inline GMPField< precision >
+  operator* ( const GMPField< precision > &a, const GMPField< precision > &b )
+  {
+    typedef mpf_class F;
+    return ((const F &)a * (const F &)b);
+  }
+
+  template< unsigned int precision >
+  inline GMPField< precision >
+  operator/ ( const GMPField< precision > &a, const GMPField< precision > &b )
+  {
+    typedef mpf_class F;
+    return ((const F &)a / (const F &)b);
+  }
+
+
 
   template< unsigned int precision >
   inline std::ostream &
-  operator<< ( std::ostream &out, const amp::ampf< precision > &value )
+  operator<< ( std::ostream &out, const GMPField< precision > &value )
   {
-    return out << value.toDec();
+    return out << value.get_d();
   }
 
-  template< unsigned int precision >
-  inline amp::ampf< precision > sqrt ( const amp::ampf< precision > &a )
-  {
-    return amp::sqrt( a );
-  }
 
-  template< unsigned int precision >
-  inline amp::ampf< precision > abs ( const amp::ampf< precision > &a )
-  {
-    return amp::abs( a );
-  }
 }
+
+#endif // HAVE_GMP
 
 
 #endif // #ifndef DUNE_MULTIPRECISION_HH

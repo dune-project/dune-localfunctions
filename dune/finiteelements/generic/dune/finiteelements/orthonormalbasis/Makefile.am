@@ -2,10 +2,10 @@ orthonormalbasisdir = $(includedir)/dune/finiteelements/orthonormalbasis
 orthonormalbasis_HEADERS = orthonormalbasis.hh orthonormalcompute.hh l2interpolation.hh
 check_PROGRAMS = example test test-all
 
-LIBS = $(DUNE_LDFLAGS) $(DUNE_LIBS) -lgmp -lmpfr
+LIBS = $(DUNE_LDFLAGS) $(DUNE_LIBS) -lgmpxx -lgmp -lmpfr
 
 TOPOLOGY = Prism< Pyramid< Pyramid< Point > > >
-SETTINGS = -DTOPOLOGY="$(TOPOLOGY)"
+SETTINGS = -DTOPOLOGY="$(TOPOLOGY)" -DHAVE_GMP=1
 
 AM_CPPFLAGS = -I$(top_srcdir)/alglib
 example_SOURCES = example.cc

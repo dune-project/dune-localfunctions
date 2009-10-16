@@ -4,10 +4,11 @@
 #define DUNE_ALGLIB_VECTOR_HH
 
 #include <cassert>
+#include <vector>
 
-#include <dune/alglib/multiprecision.hh>
-
-#include <alglib/ap.h>
+#if HAVE_ALGLIB
+#include <alglib/amp.h>
+#endif
 
 namespace Dune
 {
@@ -18,7 +19,71 @@ namespace Dune
     template< class F, bool aligned = false >
     class Vector;
 
+    template< class F, bool aligned >
+    class Vector
+    {
+      typedef Vector< F, aligned > This;
 
+    public:
+      typedef F Field;
+
+    private:
+      typedef std::vector< Field > RealVector;
+
+    public:
+      Vector ()
+      {}
+
+      Vector ( unsigned int size )
+      {
+        resize( size );
+      }
+
+      operator const RealVector & () const
+      {
+        return vector_;
+      }
+
+      operator RealVector & ()
+      {
+        return vector_;
+      }
+
+      const Field &operator[] ( const unsigned int i ) const
+      {
+        return vector_[ i ];
+      }
+
+      Field &operator[] ( const unsigned int i )
+      {
+        return vector_[ i ];
+      }
+
+      unsigned int size () const
+      {
+        return vector_.size();
+      }
+
+      const Field *ptr ( const unsigned int row ) const
+      {
+        return &(vector_[row]);
+      }
+
+      Field *ptr ( const unsigned int row )
+      {
+        return &(vector_[row]);
+      }
+
+      void resize ( const unsigned int size )
+      {
+        vector_.resize(size);
+      }
+
+    private:
+      RealVector vector_;
+    };
+
+#if HAVE_ALGLIB
     template< unsigned int precision, bool aligned >
     class Vector< amp::ampf< precision >, aligned >
     {
@@ -88,7 +153,7 @@ namespace Dune
     private:
       RealVector vector_;
     };
-
+#endif
   }
 
 }

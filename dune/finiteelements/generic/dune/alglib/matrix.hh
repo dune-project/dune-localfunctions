@@ -4,13 +4,15 @@
 #define DUNE_ALGLIB_MATRIX_HH
 
 #include <cassert>
+#include <vector>
 
-#include <dune/alglib/multiprecision.hh>
 #include <dune/alglib/vector.hh>
 #include <dune/common/field.hh>
 
-#include <alglib/ap.h>
+#if HAVE_ALGLIB
+#include <alglib/amp.h>
 #include <alglib/inv.h>
+#endif
 
 namespace Dune
 {
@@ -156,7 +158,7 @@ namespace Dune
       unsigned int cols_,rows_;
     };
 
-
+#if HAVE_ALGLIB
     template< unsigned int precision, bool aligned >
     class Matrix< amp::ampf< precision >, aligned >
     {
@@ -242,7 +244,7 @@ namespace Dune
     private:
       RealMatrix matrix_;
     };
-
+#endif
 
     template< class Field, bool aligned >
     inline std::ostream &operator<<(std::ostream &out, const Matrix<Field,aligned> &mat)
@@ -259,7 +261,6 @@ namespace Dune
       return out;
     }
   }
-
 }
 
 #endif // #ifndef DUNE_ALGLIB_MATRIX_HH

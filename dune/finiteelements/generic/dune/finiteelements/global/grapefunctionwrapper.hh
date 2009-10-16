@@ -3,7 +3,7 @@
 #ifndef DUNE_GRAPEFUNCTIONWRAPPER_HH
 #define DUNE_GRAPEFUNCTIONWRAPPER_HH
 
-#include <dune/common/field.hh>
+#include <dune/finiteelements/common/field.hh>
 
 #if HAVE_GRAPE
 #include <dune/grid/io/visual/grapedatadisplay.hh>

@@ -4,7 +4,7 @@
 #define DUNE_GENERIC_HH
 #include <fstream>
 #include <utility>
-#include <dune/alglib/matrix.hh>
+#include <dune/finiteelements/common/matrix.hh>
 #include <dune/grid/genericgeometry/referenceelements.hh>
 
 #include <dune/finiteelements/common/localcoefficients.hh>
@@ -191,7 +191,7 @@ namespace Dune
   struct MatrixBuilder {
     enum {dim = Topology::dimension};
     typedef typename PreMatrix::Field Field;
-    typedef Dune::AlgLib::Matrix< Field > mat_t;
+    typedef Dune::Matrix< Field > mat_t;
     template <class Interpolation,class Basis>
     MatrixBuilder(const Interpolation &interpolation,
                   const Basis &basis,

@@ -7,7 +7,7 @@
 
 #include <dune/common/forloop.hh>
 
-#include <dune/alglib/matrix.hh>
+#include <dune/finiteelements/common/matrix.hh>
 #include <dune/grid/genericgeometry/referenceelements.hh>
 
 #include <dune/finiteelements/common/localcoefficients.hh>
@@ -357,7 +357,7 @@ namespace Dune
   struct RaviartThomasMatrix {
     typedef typename RTInterpolation::Field Field;
     enum {dim = Topology::dimension};
-    typedef Dune::AlgLib::Matrix< Field > mat_t;
+    typedef Dune::Matrix< Field > mat_t;
     typedef MonomialBasis<Topology,Field> MBasis;
     RaviartThomasMatrix(const RTInterpolation &interpolation) :
       order_(interpolation.order()),

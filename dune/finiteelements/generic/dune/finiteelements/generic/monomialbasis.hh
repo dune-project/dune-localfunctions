@@ -10,7 +10,7 @@
 
 #include <dune/grid/genericgeometry/topologytypes.hh>
 
-#include <dune/common/field.hh>
+#include <dune/finiteelements/common/field.hh>
 
 #include <dune/finiteelements/generic/basisprovider.hh>
 #include <dune/finiteelements/multiindex.hh>

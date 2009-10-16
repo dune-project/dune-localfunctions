@@ -1,9 +1,11 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#include <dune/alglib/gmpfield.hh>
+#include <dune/finiteelements/common/gmpfield.hh>
 
 #include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
+#if HAVE_ALGLIB
 #include <dune/finiteelements/lagrangebasis/lobattopoints.hh>
+#endif
 #include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
 #include <dune/finiteelements/quadrature/genericquadrature.hh>
 // #include <dune/finiteelements/p13dlocalbasis.hh>

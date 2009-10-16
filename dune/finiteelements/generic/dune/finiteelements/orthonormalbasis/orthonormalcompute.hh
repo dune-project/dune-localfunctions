@@ -12,8 +12,8 @@
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
 
-#include <dune/alglib/vector.hh>
-#include <dune/alglib/matrix.hh>
+#include <dune/finiteelements/common/vector.hh>
+#include <dune/finiteelements/common/matrix.hh>
 
 #include <dune/grid/genericgeometry/topologytypes.hh>
 
@@ -72,8 +72,8 @@ namespace ONBCompute
   template <class scalar_t>
   struct Compute
   {
-    typedef Dune::AlgLib::Vector< scalar_t > vec_t;
-    typedef Dune::AlgLib::Matrix< scalar_t > mat_t;
+    typedef Dune::Vector< scalar_t > vec_t;
+    typedef Dune::Matrix< scalar_t > mat_t;
 
 
     /**************************************************/

@@ -4,8 +4,8 @@
 #define DUNE_LOBATTOBASIS_HH
 
 #include <fstream>
-#include <dune/alglib/matrix.hh>
-#include <dune/common/field.hh>
+#include <dune/finiteelements/common/matrix.hh>
+#include <dune/finiteelements/common/field.hh>
 #include <dune/common/forloop.hh>
 
 #include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>

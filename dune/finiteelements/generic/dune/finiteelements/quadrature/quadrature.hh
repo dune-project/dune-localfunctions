@@ -138,7 +138,7 @@ namespace Dune
     struct PointList
     {
       typedef F Field;
-      typedef AlgLib::Vector< Field > Vector;
+      typedef Vector< Field > Vec;
       struct Iterator;
 
       explicit PointList ( unsigned int n )
@@ -175,8 +175,8 @@ namespace Dune
       }
 
     protected:
-      Vector points_;
-      Vector weights_;
+      Vec points_;
+      Vec weights_;
     };
 
 

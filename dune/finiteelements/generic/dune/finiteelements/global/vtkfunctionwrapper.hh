@@ -3,7 +3,7 @@
 #ifndef DUNE_VTKFUNCTIONWRAPPER_HH
 #define DUNE_VTKFUNCTIONWRAPPER_HH
 
-#include <dune/common/field.hh>
+#include <dune/finiteelements/common/field.hh>
 
 #include <dune/grid/io/file/vtk/vtkwriter.hh>
 

@@ -7,11 +7,11 @@
 #include <alglib/gqgengauss.h>
 #endif
 
-#include <dune/common/field.hh>
+#include <dune/finiteelements/common/field.hh>
 
 #include <dune/grid/common/quadraturerules.hh>
 
-#include <dune/alglib/vector.hh>
+#include <dune/finiteelements/common/vector.hh>
 
 #include <dune/finiteelements/quadrature/quadrature.hh>
 
@@ -62,8 +62,8 @@ namespace Dune
       explicit GaussPoints ( unsigned int n )
         : Base( n )
       {
-        typename Base::Vector alpha( n );
-        typename Base::Vector beta( n );
+        typename Base::Vec alpha( n );
+        typename Base::Vec beta( n );
         for( unsigned int i = 0; i < n; ++i )
         {
           alpha[ i ] = 0;

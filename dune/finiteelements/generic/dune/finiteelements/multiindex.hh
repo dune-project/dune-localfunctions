@@ -5,7 +5,7 @@
 
 #include <dune/common/fvector.hh>
 
-#include <dune/common/field.hh>
+#include <dune/finiteelements/common/field.hh>
 
 namespace Dune
 {

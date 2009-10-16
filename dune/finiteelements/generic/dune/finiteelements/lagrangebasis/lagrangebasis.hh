@@ -4,7 +4,7 @@
 #define DUNE_LAGRANGEBASIS_HH
 
 #include <fstream>
-#include <dune/alglib/matrix.hh>
+#include <dune/finiteelements/common/matrix.hh>
 
 #include <dune/finiteelements/lagrangebasis/interpolation.hh>
 #include <dune/finiteelements/multiindex.hh>
@@ -26,7 +26,7 @@ namespace Dune
     static const unsigned int dimension = Topology::dimension;
 
     typedef LPCreator LagrangePointsCreator;
-    typedef Dune::AlgLib::Matrix< scalar_t > mat_t;
+    typedef Dune::Matrix< scalar_t > mat_t;
     // typedef Dune::LagrangePointsCreator< scalar_t, dimension > LagrangePointsCreator;
     typedef LocalLagrangeInterpolationCreator< LagrangePointsCreator > LocalInterpolationCreator;
     typedef typename LocalInterpolationCreator::LocalInterpolation LocalInterpolation;

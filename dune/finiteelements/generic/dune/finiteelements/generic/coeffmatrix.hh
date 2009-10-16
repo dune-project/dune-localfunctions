@@ -6,7 +6,7 @@
 #include <iostream>
 #include <vector>
 #include <dune/common/fvector.hh>
-#include <dune/common/field.hh>
+#include <dune/finiteelements/common/field.hh>
 #include <dune/finiteelements/tensor.hh>
 
 namespace Dune

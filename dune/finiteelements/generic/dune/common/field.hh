@@ -327,8 +327,8 @@ namespace std
 
 #if HAVE_ALGLIB
   template< unsigned int precision >
-  inline std::ostream &
-  operator<< ( std::ostream &out, const amp::ampf< precision > &value )
+  inline ostream &
+  operator<< ( ostream &out, const amp::ampf< precision > &value )
   {
     return out << value.toDec();
   }
@@ -344,22 +344,24 @@ namespace std
   {
     return amp::abs( a );
   }
+#endif
 
+#if HAVE_GMP
   template< unsigned int precision >
-  inline std::ostream &
-  operator<< ( std::ostream &out, const GMPField< precision > &value )
+  inline ostream &
+  operator<< ( ostream &out, const GMPField< precision > &value )
   {
     return out << value.get_d();
   }
 
   template< unsigned int precision >
-  inline amp::ampf< precision > sqrt ( const GMPField< precision > &a )
+  inline GMPField< precision > sqrt ( const GMPField< precision > &a )
   {
     return sqrt( a );
   }
 
   template< unsigned int precision >
-  inline amp::ampf< precision > abs ( const GMPField< precision > &a )
+  inline GMPField< precision > abs ( const GMPField< precision > &a )
   {
     return abs( a );
   }

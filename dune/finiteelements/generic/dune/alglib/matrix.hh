@@ -203,7 +203,6 @@ namespace Dune
 
       unsigned int rows () const
       {
-        matrix_.size();
         return matrix_.gethighbound( 1 )+1;
       }
 

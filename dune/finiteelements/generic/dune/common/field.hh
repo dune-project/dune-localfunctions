@@ -349,19 +349,19 @@ namespace std
 #if HAVE_GMP
   template< unsigned int precision >
   inline ostream &
-  operator<< ( ostream &out, const GMPField< precision > &value )
+  operator<< ( ostream &out, const Dune::GMPField< precision > &value )
   {
     return out << value.get_d();
   }
 
   template< unsigned int precision >
-  inline GMPField< precision > sqrt ( const GMPField< precision > &a )
+  inline Dune::GMPField< precision > sqrt ( const Dune::GMPField< precision > &a )
   {
     return sqrt( a );
   }
 
   template< unsigned int precision >
-  inline GMPField< precision > abs ( const GMPField< precision > &a )
+  inline Dune::GMPField< precision > abs ( const Dune::GMPField< precision > &a )
   {
     return abs( a );
   }

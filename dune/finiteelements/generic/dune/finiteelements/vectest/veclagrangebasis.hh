@@ -3,7 +3,6 @@
 #ifndef DUNE_LAGRANGEBASIS_HH
 #define DUNE_LAGRANGEBASIS_HH
 #include <fstream>
-#include <dune/alglib/multiprecision.hh>
 #include <dune/alglib/matrix.hh>
 
 #include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>

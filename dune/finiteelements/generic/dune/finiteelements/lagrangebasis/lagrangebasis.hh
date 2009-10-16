@@ -4,7 +4,6 @@
 #define DUNE_LAGRANGEBASIS_HH
 
 #include <fstream>
-#include <dune/alglib/multiprecision.hh>
 #include <dune/alglib/matrix.hh>
 
 #include <dune/finiteelements/lagrangebasis/interpolation.hh>
@@ -69,7 +68,7 @@ namespace Dune
             out << 0 << "\t\t" << std::flush;
           else
           {
-            amp::ampf< 128 > v = matrix_( j, i );
+            scalar_t v = matrix_( j, i );
             out << v << "\t\t" << std::flush;
           }
         }
@@ -103,7 +102,6 @@ namespace Dune
     typedef unsigned int Key;
 
     typedef StandardEvaluator< MonomialBasis > Evaluator;
-    //typedef amp::ampf< Precision< CF >::value > ComputeField;
     typedef CF ComputeField;
     typedef PolynomialBasisWithMatrix< Evaluator, SparseCoeffMatrix< StorageField, 1 > > Basis;
 

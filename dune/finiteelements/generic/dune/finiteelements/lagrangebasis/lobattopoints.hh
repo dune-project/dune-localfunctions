@@ -4,7 +4,6 @@
 #define DUNE_LOBATTOBASIS_HH
 
 #include <fstream>
-#include <dune/alglib/multiprecision.hh>
 #include <dune/alglib/matrix.hh>
 #include <dune/common/field.hh>
 #include <dune/common/forloop.hh>
@@ -32,8 +31,8 @@ namespace Dune
       if( order < 2 )
         return;
       points_.resize(order-1);
-      typedef amp::ampf< Precision< Field >::value > MPField;
-      GenericGeometry::LobattoPoints<MPField> lobatto(order+1);
+      // typedef amp::ampf< Precision< Field >::value > MPField;
+      GenericGeometry::LobattoPoints<Field> lobatto(order+1);
       for (unsigned int i=1; i<order; ++i) {
         points_[i-1] = field_cast<Field>(lobatto.point(i));
       }

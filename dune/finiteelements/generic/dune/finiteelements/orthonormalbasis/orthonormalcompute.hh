@@ -12,7 +12,6 @@
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
 
-#include <dune/alglib/multiprecision.hh>
 #include <dune/alglib/vector.hh>
 #include <dune/alglib/matrix.hh>
 
@@ -242,7 +241,7 @@ namespace ONBCompute
           if (fabs(v)<1e-20)
             out << 0 << "\t\t" << std::flush;
           else {
-            amp::ampf<128> v = calc.res(j,i);
+            scalar_t v = calc.res(j,i);
             out << v << "\t\t" << std::flush;
           }
         }

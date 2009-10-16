@@ -7,7 +7,6 @@
 #include <dune/finiteelements/lagrangepoints.hh>
 #include <dune/finiteelements/monomialbasis.hh>
 #include <dune/finiteelements/multiindex.hh>
-#include <dune/alglib/multiprecision.hh>
 
 #include <dune/finiteelements/lagrangebasis.hh>
 #include <dune/finiteelements/quadrature/genericquadrature.hh>

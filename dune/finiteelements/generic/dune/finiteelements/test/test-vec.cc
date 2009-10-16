@@ -5,7 +5,6 @@
 #include <iostream>
 #include <vector>
 
-#include <dune/alglib/multiprecision.hh>
 #include <dune/finiteelements/tensor.hh>
 
 #include <dune/finiteelements/monomialbasis.hh>

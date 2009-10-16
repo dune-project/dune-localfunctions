@@ -7,7 +7,6 @@
 
 #include <dune/common/forloop.hh>
 
-#include <dune/alglib/multiprecision.hh>
 #include <dune/alglib/matrix.hh>
 #include <dune/grid/genericgeometry/referenceelements.hh>
 

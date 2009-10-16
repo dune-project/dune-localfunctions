@@ -55,10 +55,10 @@ struct SpecialBasis : public Pk3DLocalBasis<double,double,1>
 template <class Topology>
 bool test(unsigned int order, bool verbose = false) {
 
-  typedef amp::ampf< 128 > StorageField;
-  // typedef double StorageField;
-  typedef amp::ampf< 256 > ComputeField;
-  // typedef double ComputeField;
+  // typedef amp::ampf< 128 > StorageField;
+  typedef double StorageField;
+  // typedef amp::ampf< 256 > ComputeField;
+  typedef double ComputeField;
 
   bool ret = true;
 
@@ -68,12 +68,12 @@ bool test(unsigned int order, bool verbose = false) {
 
     typedef Dune::LagrangePoints< double, Topology::dimension > LagrangePoints;
 
-    // typedef Dune::LagrangePointsCreator< double, Topology::dimension > LagrangePointsCreator;
-    typedef Dune::LobattoPointsCreator< double, Topology::dimension > LagrangePointsCreator;
+    typedef Dune::LagrangePointsCreator< double, Topology::dimension > LagrangePointsCreator;
+    // typedef Dune::LobattoPointsCreator< double, Topology::dimension > LagrangePointsCreator;
     const LagrangePoints &points = LagrangePointsCreator::template lagrangePoints< Topology >( o );
 #if USE_GENERIC
-    // typedef LagrangeBasisProvider<Topology::dimension,StorageField,ComputeField> BasisProvider;
-    typedef LobattoBasisProvider<Topology::dimension,StorageField,ComputeField> BasisProvider;
+    typedef LagrangeBasisProvider<Topology::dimension,StorageField,ComputeField> BasisProvider;
+    // typedef LobattoBasisProvider<Topology::dimension,StorageField,ComputeField> BasisProvider;
     const typename BasisProvider::Basis &basis = BasisProvider::basis(Topology::id,o);
     std::vector< Dune::FieldVector< double, 1 > > y( basis.size() );
     for (unsigned int count = 0; count < iterations; ++count)

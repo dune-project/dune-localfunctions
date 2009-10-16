@@ -4,7 +4,6 @@
 #define DUNE_GENERIC_HH
 #include <fstream>
 #include <utility>
-#include <dune/alglib/multiprecision.hh>
 #include <dune/alglib/matrix.hh>
 #include <dune/grid/genericgeometry/referenceelements.hh>
 

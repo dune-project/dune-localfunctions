@@ -111,7 +111,7 @@ bool test(unsigned int order, bool verbose = false) {
                           << "index = " << points[ index ].localKey().index() << "):" << std::endl;
                 first = false;
               }
-              if (verbose)
+              if (1)
                 std::cout << "         y[ " << i << " ] = " << y[ i ] << " "
                           << "         error : " << fabs( y[ i ] - double( i == index ) )
                           << std::endl;

@@ -31,8 +31,14 @@ namespace Dune
       if( order < 2 )
         return;
       points_.resize(order-1);
-      // typedef amp::ampf< Precision< Field >::value > MPField;
+#if HAVE_ALGLIB
+      typedef amp::ampf< Precision< Field >::value > MPField;
+      GenericGeometry::LobattoPoints<MPField> lobatto(order+1);
+#else
+#error LOBATTOPOINTS ONLY AVAILABLE WITH ALGLIB
       GenericGeometry::LobattoPoints<Field> lobatto(order+1);
+#endif
+
       for (unsigned int i=1; i<order; ++i) {
         points_[i-1] = field_cast<Field>(lobatto.point(i));
       }

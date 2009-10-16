@@ -29,7 +29,9 @@ namespace Dune
       typedef PointList< F > Base;
       explicit LobattoPoints ( unsigned int n )
         : Base( n )
-      {}
+      {
+        abort();
+      }
     };
 
 #if HAVE_ALGLIB

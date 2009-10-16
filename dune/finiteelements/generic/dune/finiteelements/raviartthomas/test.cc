@@ -8,10 +8,18 @@ using namespace GenericGeometry;
 template <class Topology>
 bool test(unsigned int order)
 {
-  // typedef amp::ampf< 128 > StorageField;
+#if HAVE_ALGLIB
+  typedef amp::ampf< 128 > StorageField;
+  typedef amp::ampf< 512 > ComputeField;
+#else
+#if HAVE_GMP
+  typedef GMPField< 128 > StorageField;
+  typedef GMPField< 512 > ComputeField;
+#else
   typedef double StorageField;
-  // typedef amp::ampf< 1024 > ComputeField;
   typedef double ComputeField;
+#endif
+#endif
 
   bool ret = true;
 

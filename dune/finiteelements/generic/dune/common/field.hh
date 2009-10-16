@@ -346,6 +346,7 @@ namespace std
   }
 #endif
 
+#if 0
 #if HAVE_GMP
   template< unsigned int precision >
   inline ostream &
@@ -365,6 +366,7 @@ namespace std
   {
     return abs( a );
   }
+#endif
 #endif
 
 }

@@ -22,6 +22,141 @@ namespace Dune
     class Matrix;
 
 
+    template< class F, bool aligned >
+    class Matrix
+    {
+      typedef Matrix< F, aligned > This;
+
+    public:
+      typedef F Field;
+      typedef std::vector< F > Vector;
+
+    private:
+      typedef std::vector<Vector> RealMatrix;
+
+    public:
+      operator const RealMatrix & () const
+      {
+        return matrix_;
+      }
+
+      operator RealMatrix & ()
+      {
+        return matrix_;
+      }
+
+      const RealMatrix &amp () const
+      {
+        return matrix_;
+      }
+
+      const Field &operator() ( const unsigned int row, const unsigned int col ) const
+      {
+        assert(row<rows());
+        assert(col<cols());
+        return matrix_[ row ][ col ];
+      }
+
+      Field &operator() ( const unsigned int row, const unsigned int col )
+      {
+        assert(row<rows());
+        assert(col<cols());
+        return matrix_[ row ][ col ];
+      }
+
+      unsigned int rows () const
+      {
+        return rows_;
+      }
+
+      unsigned int cols () const
+      {
+        return cols_;
+      }
+
+      const Field *rowPtr ( const unsigned int row ) const
+      {
+        assert(row<rows());
+        return &(matrix_[row][0]);
+      }
+
+      Field *rowPtr ( const unsigned int row )
+      {
+        assert(row<rows());
+        return &(matrix_[row][0]);
+      }
+
+      void resize ( const unsigned int rows, const unsigned int cols )
+      {
+        matrix_.resize(rows);
+        for (unsigned int i=0; i<rows; ++i)
+          matrix_[i].resize(cols);
+        rows_ = rows;
+        cols_ = cols;
+      }
+
+      bool invert ()
+      {
+        assert( rows() == cols() );
+        std::vector<unsigned int> p(rows());
+        for (unsigned int j=0; j<rows(); ++j)
+          p[j] = j;
+        for (unsigned int j=0; j<rows(); ++j)
+        {
+          // pivot search
+          unsigned int r = j;
+          Field max = std::abs( (*this)(j,j) );
+          for (unsigned int i=j+1; i<rows(); ++i)
+          {
+            if ( std::abs( (*this)(i,j) ) > max )
+            {
+              max = std::abs( (*this)(i,j) );
+              r = i;
+            }
+          }
+          if (max == 0)
+            abort(); // return false;
+          // row swap
+          if (r > j)
+          {
+            for (unsigned int k=0; k<rows(); ++k)
+              std::swap( (*this)(j,k), (*this)(r,k) );
+            std::swap( p[j], p[r] );
+          }
+          // transformation
+          Field hr = Unity<Field>()/(*this)(j,j);
+          for (unsigned int i=0; i<rows(); ++i)
+            (*this)(i,j) *= hr;
+          (*this)(j,j) = hr;
+          for (unsigned int k=0; k<rows(); ++k)
+          {
+            if (k==j) continue;
+            for (unsigned int i=0; i<rows(); ++i)
+            {
+              if (i==j) continue;
+              (*this)(i,k) -= (*this)(i,j)*(*this)(j,k);
+            }
+            (*this)(j,k) *= -hr;
+          }
+        }
+        // column exchange
+        Vector hv(rows());
+        for (unsigned int i=0; i<rows(); ++i)
+        {
+          for (unsigned int k=0; k<rows(); ++k)
+            hv[ p[k] ] = (*this)(i,k);
+          for (unsigned int k=0; k<rows(); ++k)
+            (*this)(i,k) = hv[k];
+        }
+        return true;
+      }
+
+    private:
+      RealMatrix matrix_;
+      unsigned int cols_,rows_;
+    };
+
+
     template< unsigned int precision, bool aligned >
     class Matrix< amp::ampf< precision >, aligned >
     {
@@ -52,6 +187,8 @@ namespace Dune
 
       const Field &operator() ( const unsigned int row, const unsigned int col ) const
       {
+        assert(row<rows());
+        assert(col<cols());
         return matrix_( row, col );
       }
 
@@ -64,6 +201,7 @@ namespace Dune
 
       unsigned int rows () const
       {
+        matrix_.size();
         return matrix_.gethighbound( 1 )+1;
       }
 
@@ -98,53 +236,12 @@ namespace Dune
       bool invert ()
       {
         assert( rows() == cols() );
-        // return inv::rmatrixinverse< precision >( matrix_, rows() );
-        std::vector<unsigned int> p(rows());
-        for (unsigned int j=0; j<rows(); ++j)
-          p[j] = j;
-        for (unsigned int j=0; j<rows(); ++j)
-        {
-          unsigned int r = j;
-          Field max = std::abs( (*this)(j,j) );
-          for (unsigned int i=j+1; i<rows(); ++i)
-            if ( std::abs( (*this)(i,j) ) > max )
-              r = i;
-          if (max == 0)
-            return false;
-          if (r > j)
-          {
-            for (unsigned int k=0; k<rows(); ++k)
-            {
-              std::swap( (*this)(j,k), (*this)(r,k) );
-            }
-            std::swap( p[j], p[r] );
-          }
-          Field hr = Unity<Field>()/(*this)(j,j);
-          for (unsigned int k=0; k<rows(); ++k)
-          {
-            if (k==j) continue;
-            for (unsigned int i=0; i<rows(); ++i)
-            {
-              if (i==j) continue;
-              (*this)(i,k) -= (*this)(i,j)*(*this)(j,k);
-            }
-            (*this)(j,k) *= -hr;
-          }
-        }
-        Vector hv(rows());
-        for (unsigned int i=0; i<rows(); ++i)
-        {
-          for (unsigned int k=0; k<rows(); ++k)
-            hv[ p[k] ] = (*this)(i,k);
-          for (unsigned int k=0; k<rows(); ++k)
-            (*this)(i,k) = hv[k];
-        }
+        return inv::rmatrixinverse< precision >( matrix_, rows() );
       }
 
     private:
       RealMatrix matrix_;
     };
-
 
 
     template< class Field, bool aligned >
@@ -161,7 +258,6 @@ namespace Dune
       }
       return out;
     }
-
   }
 
 }

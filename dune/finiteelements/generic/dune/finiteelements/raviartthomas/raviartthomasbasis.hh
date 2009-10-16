@@ -12,7 +12,6 @@
 
 #include <dune/finiteelements/common/localcoefficients.hh>
 #include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
-#include <dune/finiteelements/lagrangebasis/lobattopoints.hh>
 #include <dune/finiteelements/lagrangebasis/interpolation.hh>
 #include <dune/finiteelements/generic/basisprovider.hh>
 #include <dune/finiteelements/basisprint.hh>
@@ -21,7 +20,6 @@
 #include <dune/finiteelements/quadrature/subquadrature.hh>
 #include <dune/finiteelements/orthonormalbasis/orthonormalbasis.hh>
 #include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
-#include <dune/finiteelements/lagrangebasis/lobattopoints.hh>
 #include <dune/finiteelements/raviartthomas/raviartthomasprebasis.hh>
 
 namespace Dune

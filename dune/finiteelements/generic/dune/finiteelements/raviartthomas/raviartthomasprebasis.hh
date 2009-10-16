@@ -12,7 +12,9 @@
 
 #include <dune/finiteelements/common/localcoefficients.hh>
 #include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
+#if HAVE_ALGLIB
 #include <dune/finiteelements/lagrangebasis/lobattopoints.hh>
+#endif
 #include <dune/finiteelements/lagrangebasis/interpolation.hh>
 #include <dune/finiteelements/generic/basisprovider.hh>
 #include <dune/finiteelements/basisprint.hh>
@@ -21,7 +23,6 @@
 #include <dune/finiteelements/quadrature/subquadrature.hh>
 #include <dune/finiteelements/orthonormalbasis/orthonormalbasis.hh>
 #include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
-#include <dune/finiteelements/lagrangebasis/lobattopoints.hh>
 namespace Dune
 {
   template <class Topology, class Field>
@@ -142,8 +143,10 @@ namespace Dune
     typedef OrthonormalBasisProvider<dimension-1,Field> TestFaceBasisProvider;
     // typedef LagrangeBasisProvider<dimension,Field> TestBasisProvider;
     // typedef LagrangeBasisProvider<dimension-1,Field> TestFaceBasisProvider;
+#if HAVE_ALGLIB
     // typedef LobattoBasisProvider<dimension,Field> TestBasisProvider;
     // typedef LobattoBasisProvider<dimension-1,Field> TestFaceBasisProvider;
+#endif
 
     typedef typename TestBasisProvider::Basis TestBasis;
     typedef typename TestFaceBasisProvider::Basis TestFaceBasis;

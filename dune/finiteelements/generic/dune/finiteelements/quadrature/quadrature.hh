@@ -7,6 +7,7 @@
 
 #include <dune/common/fvector.hh>
 #include <dune/common/geometrytype.hh>
+#include <dune/finiteelements/common/vector.hh>
 
 namespace Dune
 {

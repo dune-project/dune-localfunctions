@@ -122,7 +122,7 @@ namespace Dune
         BasisMI basisMI(_mBasisMI);
         basisMI.fill(matrix);
         std::stringstream name;
-        name << "lagrange_" << Topology::name() << "_p" << order;
+        name << "lagrange_" << Topology::name() << "_p" << order << ".basis";
         std::ofstream out(name.str().c_str());
         basisPrint<0>(out,basisMI);
       }

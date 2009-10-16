@@ -24,7 +24,7 @@ bool test(unsigned int order)
 
   bool ret = true;
 
-  for (unsigned int o=1; o<=order; ++o)
+  for (unsigned int o=order; o>=1; --o)
   {
     std::cout << "Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
     typedef RaviartThomasBasisProvider<Topology::dimension,StorageField,ComputeField> BasisProvider;

@@ -7,3 +7,6 @@ Makefile.in
 
 .deps
 .libs
+
+orthonormal_p*_*.basis
+

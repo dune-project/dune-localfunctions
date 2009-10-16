@@ -22,15 +22,15 @@ namespace Dune
     static const unsigned int dimension = dim;
     typedef SF StorageField;
 
-    typedef Dune::MonomialBasisProvider< dimension, StorageField > MonomialBasisProvider;
-    typedef typename MonomialBasisProvider::Basis MonomialBasis;
+    typedef Dune::MonomialBasisProvider< dimension, StorageField > MonomialBasisProviderType;
+    typedef typename MonomialBasisProviderType::Basis MonomialBasisType;
 
     typedef unsigned int Key;
 
     // typedef amp::ampf< Precision< CF >::value > ComputeField;
     typedef CF ComputeField;
     typedef SparseCoeffMatrix< StorageField, 1 > CoefficientMatrix;
-    typedef StandardEvaluator< MonomialBasis > Evaluator;
+    typedef StandardEvaluator< MonomialBasisType > Evaluator;
     typedef PolynomialBasis< Evaluator, CoefficientMatrix > Basis;
 
     typedef typename GenericGeometry::SimplexTopology< dim >::type SimplexTopology;
@@ -38,13 +38,25 @@ namespace Dune
     template< class Topology >
     static const Basis &basis ( const unsigned int order )
     {
-      const MonomialBasis &monomialBasis = MonomialBasisProvider::template basis< SimplexTopology >( order );
+      const MonomialBasisType &monomialBasis = MonomialBasisProviderType::template basis< SimplexTopology >( order );
 
       static CoefficientMatrix _coeffs;
       if( _coeffs.size() <= monomialBasis.size() )
       {
         ONBCompute::ONBMatrix< Topology, ComputeField > matrix( order );
         _coeffs.fill( matrix );
+        {
+          typedef MultiIndex< dimension > MIField;
+          typedef VirtualMonomialBasis<dim,MIField> MBasisMI;
+          typedef PolynomialBasisWithMatrix<StandardEvaluator<MBasisMI>,SparseCoeffMatrix<StorageField,dimension> > BasisMI;
+          const MBasisMI &_mBasisMI = MonomialBasisProvider<dimension,MIField>::template basis<Topology>(order+1);
+          BasisMI basisMI(_mBasisMI);
+          basisMI.fill(matrix);
+          std::stringstream name;
+          name << "orthonormal_" << Topology::name() << "_p" << order << ".basis";
+          std::ofstream out(name.str().c_str());
+          basisPrint<0>(out,basisMI);
+        }
       }
 
       return *(new Basis( monomialBasis, _coeffs, monomialBasis.size() ));

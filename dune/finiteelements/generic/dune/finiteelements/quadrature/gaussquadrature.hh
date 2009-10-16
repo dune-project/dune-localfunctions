@@ -9,6 +9,8 @@
 
 #include <dune/common/field.hh>
 
+#include <dune/grid/common/quadraturerules.hh>
+
 #include <dune/alglib/vector.hh>
 
 #include <dune/finiteelements/quadrature/quadrature.hh>
@@ -23,13 +25,25 @@ namespace Dune
     // -----------
 
     template< class F>
-    struct GaussPoints
+    class GaussPoints
       : public PointList< F >
     {
       typedef PointList< F > Base;
+      typedef GaussPoints< F > This;
+
+      using Base::points_;
+      using Base::weights_;
+    public:
       explicit GaussPoints ( unsigned int n )
         : Base( n )
-      {}
+      {
+        const QuadratureRule<F,1>& points = QuadratureRules<F,1>::rule(GeometryType(GeometryType::cube,1), 2*n-1, QuadratureType::Gauss);
+        for( unsigned int i = 0; i < n; ++i )
+        {
+          points_[ i ] = points[i].position()[0];
+          weights_[ i ] = points[i].weight();
+        }
+      }
     };
 
 #if HAVE_ALGLIB

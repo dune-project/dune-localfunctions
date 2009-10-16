@@ -174,7 +174,7 @@ namespace Dune
         return points_.size();
       }
 
-    private:
+    protected:
       Vector points_;
       Vector weights_;
     };
@@ -206,7 +206,7 @@ namespace Dune
         return QuadraturePoint( points_->point( index_ ), points_->weight( index_ ) );
       }
 
-    private:
+    protected:
       PointList< Field > *points_;
       unsigned int index_;
     };

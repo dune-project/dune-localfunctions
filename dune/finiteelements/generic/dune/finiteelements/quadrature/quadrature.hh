@@ -134,6 +134,82 @@ namespace Dune
       unsigned int topologyId_;
     };
 
+    template< class F >
+    struct PointList
+    {
+      typedef F Field;
+      typedef AlgLib::Vector< Field > Vector;
+      struct Iterator;
+
+      explicit PointList ( unsigned int n )
+        : points_( n ),
+          weights_( n )
+      {}
+
+      Iterator begin () const
+      {
+        return Iterator( *this, 0 );
+      }
+
+      Iterator end () const
+      {
+        return Iterator( *this, size() );
+      }
+
+      Field point ( const unsigned int i ) const
+      {
+        assert( i < points_.size() );
+        return points_[ i ];
+      }
+
+      Field weight ( const unsigned int i ) const
+      {
+        assert( i < weights_.size() );
+        return weights_[ i ];
+      }
+
+      unsigned int size () const
+      {
+        assert( points_.size() == weights_.size() );
+        return points_.size();
+      }
+
+    private:
+      Vector points_;
+      Vector weights_;
+    };
+
+
+
+    // PointList::Iterator
+    // ---------------------
+
+    template< class F >
+    struct PointList< F >::Iterator
+    {
+      typedef F Field;
+      typedef GenericGeometry::QuadraturePoint< Field, 1 > QuadraturePoint;
+
+      Iterator ( const PointList< Field > &points, const unsigned int index )
+        : points_( &points ),
+          index_( index )
+      {}
+
+      Iterator &operator++ ()
+      {
+        ++index_;
+        return *this;
+      }
+
+      QuadraturePoint operator* () const
+      {
+        return QuadraturePoint( points_->point( index_ ), points_->weight( index_ ) );
+      }
+
+    private:
+      PointList< Field > *points_;
+      unsigned int index_;
+    };
   }
 
 }

@@ -3,11 +3,12 @@
 #ifndef DUNE_GAUSSQUADRATURE_HH
 #define DUNE_GAUSSQUADRATURE_HH
 
+#if HAVE_ALGLIB
 #include <alglib/gqgengauss.h>
+#endif
 
 #include <dune/common/field.hh>
 
-#include <dune/alglib/multiprecision.hh>
 #include <dune/alglib/vector.hh>
 
 #include <dune/finiteelements/quadrature/quadrature.hh>
@@ -21,23 +22,31 @@ namespace Dune
     // GaussPoints
     // -----------
 
-    template< class F >
-    class GaussPoints;
+    template< class F>
+    struct GaussPoints
+      : public PointList< F >
+    {
+      typedef PointList< F > Base;
+      explicit GaussPoints ( unsigned int n )
+        : Base( n )
+      {}
+    };
 
+#if HAVE_ALGLIB
     template< unsigned int precision >
     class GaussPoints< amp::ampf< precision > >
+      : public PointList< amp::ampf< precision > >
     {
+      typedef PointList< amp::ampf< precision > > Base;
       typedef GaussPoints< amp::ampf< precision > > This;
 
+      using Base::points_;
+      using Base::weights_;
     public:
       typedef amp::ampf< precision > Field;
-      typedef AlgLib::Vector< Field > Vector;
-
-      struct Iterator;
 
       explicit GaussPoints ( unsigned int n )
-        : points_( n ),
-          weights_( n )
+        : Base( n )
       {
         Vector alpha( n );
         Vector beta( n );
@@ -56,82 +65,18 @@ namespace Dune
           weights_[ i ] *= half;
         }
       }
-
-      Iterator begin () const
-      {
-        return Iterator( *this, 0 );
-      }
-
-      Iterator end () const
-      {
-        return Iterator( *this, size() );
-      }
-
-      Field point ( const unsigned int i ) const
-      {
-        assert( i < points_.size() );
-        return points_[ i ];
-      }
-
-      Field weight ( const unsigned int i ) const
-      {
-        assert( i < weights_.size() );
-        return weights_[ i ];
-      }
-
-      unsigned int size () const
-      {
-        assert( points_.size() == weights_.size() );
-        return points_.size();
-      }
-
-    private:
-      Vector points_;
-      Vector weights_;
     };
-
-
-
-    // GaussPoints::Iterator
-    // ---------------------
-
-    template< unsigned int precision >
-    struct GaussPoints< amp::ampf< precision > >::Iterator
-    {
-      typedef amp::ampf< precision > Field;
-      typedef GenericGeometry::QuadraturePoint< Field, 1 > QuadraturePoint;
-
-      Iterator ( const GaussPoints< Field > &points, const unsigned int index )
-        : points_( &points ),
-          index_( index )
-      {}
-
-      Iterator &operator++ ()
-      {
-        ++index_;
-        return *this;
-      }
-
-      QuadraturePoint operator* () const
-      {
-        return QuadraturePoint( points_->point( index_ ), points_->weight( index_ ) );
-      }
-
-    private:
-      GaussPoints< Field > *points_;
-      unsigned int index_;
-    };
-
-
+#endif
 
     // GaussQuadrature
     // ---------------
 
-    template< class F >
+    template< class F, class CF = F >
     class GaussQuadrature
       : public Quadrature< 1, F >
     {
-      typedef GaussQuadrature< F > This;
+      typedef CF ComputeField;
+      typedef GaussQuadrature< F,CF > This;
       typedef Quadrature< 1, F > Base;
 
     public:
@@ -141,12 +86,12 @@ namespace Dune
       explicit GaussQuadrature ( unsigned int order )
         : Base( (unsigned int)(0) )
       {
-        typedef amp::ampf< Precision< Field >::value > MPField;
-        GaussPoints< MPField > gaussPoints( (order+1) / 2 );
-        for( unsigned int i = 0; i < gaussPoints.size(); ++i )
+        // typedef amp::ampf< Precision< Field >::value > MPField;
+        GaussPoints< ComputeField > points( (order+1) / 2 );
+        for( unsigned int i = 0; i < points.size(); ++i )
         {
-          const Field point = field_cast< Field >( gaussPoints.point( i ) );
-          const Field weight = field_cast< Field >( gaussPoints.weight( i ) );
+          const Field point = field_cast< Field >( points.point( i ) );
+          const Field weight = field_cast< Field >( points.weight( i ) );
           Base::insert( point, weight );
         }
       }

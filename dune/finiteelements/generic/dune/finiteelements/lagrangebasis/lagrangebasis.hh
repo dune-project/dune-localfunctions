@@ -26,7 +26,7 @@ namespace Dune
     static const unsigned int dimension = Topology::dimension;
 
     typedef LPCreator LagrangePointsCreator;
-    typedef Dune::Matrix< scalar_t > mat_t;
+    typedef LFEMatrix< scalar_t > mat_t;
     // typedef Dune::LagrangePointsCreator< scalar_t, dimension > LagrangePointsCreator;
     typedef LocalLagrangeInterpolationCreator< LagrangePointsCreator > LocalInterpolationCreator;
     typedef typename LocalInterpolationCreator::LocalInterpolation LocalInterpolation;

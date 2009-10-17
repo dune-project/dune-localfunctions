@@ -139,7 +139,7 @@ namespace Dune
     struct PointList
     {
       typedef F Field;
-      typedef Vector< Field > Vec;
+      typedef LFEVector< Field > Vec;
       struct Iterator;
 
       explicit PointList ( unsigned int n )

@@ -14,12 +14,12 @@ namespace Dune
 {
 
   template< class F, bool aligned = false >
-  class Vector;
+  class LFEVector;
 
   template< class F, bool aligned >
-  class Vector
+  class LFEVector
   {
-    typedef Vector< F, aligned > This;
+    typedef LFEVector< F, aligned > This;
 
   public:
     typedef F Field;
@@ -28,10 +28,9 @@ namespace Dune
     typedef std::vector< Field > RealVector;
 
   public:
-    Vector ()
-    {}
+    LFEVector () {}
 
-    Vector ( unsigned int size )
+    LFEVector ( unsigned int size )
     {
       resize( size );
     }
@@ -82,9 +81,9 @@ namespace Dune
 
 #if HAVE_ALGLIB
   template< unsigned int precision, bool aligned >
-  class Vector< amp::ampf< precision >, aligned >
+  class LFEVector< amp::ampf< precision >, aligned >
   {
-    typedef Vector< amp::ampf< precision >, aligned > This;
+    typedef LFEVector< amp::ampf< precision >, aligned > This;
 
   public:
     typedef amp::ampf< precision > Field;
@@ -93,10 +92,10 @@ namespace Dune
     typedef ap::template_1d_array< Field, aligned > RealVector;
 
   public:
-    Vector ()
+    LFEVector ()
     {}
 
-    Vector ( unsigned int size )
+    LFEVector ( unsigned int size )
     {
       resize( size );
     }

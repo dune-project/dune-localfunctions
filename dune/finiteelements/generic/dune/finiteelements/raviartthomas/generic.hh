@@ -191,7 +191,7 @@ namespace Dune
   struct MatrixBuilder {
     enum {dim = Topology::dimension};
     typedef typename PreMatrix::Field Field;
-    typedef Dune::Matrix< Field > mat_t;
+    typedef Dune::LFEMatrix< Field > mat_t;
     template <class Interpolation,class Basis>
     MatrixBuilder(const Interpolation &interpolation,
                   const Basis &basis,

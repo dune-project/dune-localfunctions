@@ -7,6 +7,8 @@
 
 #include <dune/common/fmatrix.hh>
 
+#include <dune/finiteelements/common/localbasis.hh>
+
 #include <dune/finiteelements/generic/coeffmatrix.hh>
 #include <dune/finiteelements/generic/monomialbasis.hh>
 #include <dune/finiteelements/generic/multiindex.hh>
@@ -189,5 +191,65 @@ namespace Dune
     PolynomialBasisWithMatrix &operator=(const PolynomialBasisWithMatrix &);
     CoefficientMatrix coeffMatrix_;
   };
+
+  template< unsigned int dimDomain, class D, class R,
+      class PolynomialBasis >
+  class GenericLocalBasis :
+    public C1LocalBasisInterface<
+        C1LocalBasisTraits<D,dimDomain,FieldVector<D,dimDomain>,R,1,FieldVector<R,1>,
+            FieldVector<FieldVector<R,dimDomain>,1> >,
+        GenericLocalBasis<dimDomain,D,R,PolynomialBasis >
+        >
+  {
+  public:
+#if 0
+    /** \brief Export the number of degrees of freedom */
+    enum {N = (k+1)*(k+2)/2};
+    /** \brief Export the element order
+       OS: Surprising that we need to export this both statically and dynamically!
+     */
+    enum {O = k};
+#endif
+    typedef C1LocalBasisTraits<D,dimDomain,FieldVector<D,dimDomain>,R,1,FieldVector<R,1>,
+        FieldVector<FieldVector<R,dimDomain>,1> > Traits;
+
+    //! \brief Standard constructor
+    GenericLocalBasis (const PolynomialBasis &basis)
+      : basis_(basis)
+    {}
+
+    //! \brief number of shape functions
+    unsigned int size () const
+    {
+      return basis_.size();
+    }
+
+    //! \brief Evaluate all shape functions
+    inline void evaluateFunction (const typename Traits::DomainType& x,
+                                  std::vector<typename Traits::RangeType>& out) const
+    {
+      out.resize(size());
+      basis_.evaluate(x,out);
+    }
+
+    //! \brief Evaluate Jacobian of all shape functions
+    inline void
+    evaluateJacobian (const typename Traits::DomainType& x,       // position
+                      std::vector<typename Traits::JacobianType>& out) const                        // return value
+    {
+      out.resize(size());
+      basis_.jacobian(x,out);
+    }
+
+    //! \brief Polynomial order of the shape functions
+    unsigned int order () const
+    {
+      return basis_.order();
+    }
+
+  private:
+    const PolynomialBasis &basis_;
+  };
+
 }
 #endif // DUNE_POLYNOMIALBASIS_HH

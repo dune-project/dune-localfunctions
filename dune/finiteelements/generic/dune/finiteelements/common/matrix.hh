@@ -18,13 +18,13 @@ namespace Dune
 {
 
   template< class F, bool aligned = false >
-  class Matrix;
+  class LFEMatrix;
 
 
   template< class F, bool aligned >
-  class Matrix
+  class LFEMatrix
   {
-    typedef Matrix< F, aligned > This;
+    typedef LFEMatrix< F, aligned > This;
 
   public:
     typedef F Field;
@@ -157,13 +157,13 @@ namespace Dune
 
 #if HAVE_ALGLIB
   template< unsigned int precision, bool aligned >
-  class Matrix< amp::ampf< precision >, aligned >
+  class LFEMatrix< amp::ampf< precision >, aligned >
   {
-    typedef Matrix< amp::ampf< precision >, aligned > This;
+    typedef LFEMatrix< amp::ampf< precision >, aligned > This;
 
   public:
     typedef amp::ampf< precision > Field;
-    typedef Vector< Field > Vec;
+    typedef LFEVector< Field > Vec;
 
   private:
     typedef ap::template_2d_array< Field, aligned > RealMatrix;
@@ -243,7 +243,7 @@ namespace Dune
 #endif
 
   template< class Field, bool aligned >
-  inline std::ostream &operator<<(std::ostream &out, const Matrix<Field,aligned> &mat)
+  inline std::ostream &operator<<(std::ostream &out, const LFEMatrix<Field,aligned> &mat)
   {
     for (unsigned int r=0; r<mat.rows(); ++r)
     {

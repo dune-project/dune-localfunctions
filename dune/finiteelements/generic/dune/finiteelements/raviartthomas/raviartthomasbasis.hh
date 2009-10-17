@@ -355,7 +355,7 @@ namespace Dune
   struct RaviartThomasMatrix {
     typedef typename RTInterpolation::Field Field;
     enum {dim = Topology::dimension};
-    typedef Dune::Matrix< Field > mat_t;
+    typedef Dune::LFEMatrix< Field > mat_t;
     typedef MonomialBasis<Topology,Field> MBasis;
     RaviartThomasMatrix(const RTInterpolation &interpolation) :
       order_(interpolation.order()),

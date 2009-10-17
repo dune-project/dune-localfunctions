@@ -72,8 +72,8 @@ namespace ONBCompute
   template <class scalar_t>
   struct Compute
   {
-    typedef Dune::Vector< scalar_t > vec_t;
-    typedef Dune::Matrix< scalar_t > mat_t;
+    typedef Dune::LFEVector< scalar_t > vec_t;
+    typedef Dune::LFEMatrix< scalar_t > mat_t;
 
 
     /**************************************************/

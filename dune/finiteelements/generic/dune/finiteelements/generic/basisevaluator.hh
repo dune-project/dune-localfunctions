@@ -308,7 +308,7 @@ namespace Dune
     {
       apply<Field>(Int2Type<deriv-1>(),r1,x,block,b,vecIter);
       unsigned int bStart = b;
-      unsigned int bEnd = b+Tensor<Field,Domain::dimension,deriv>::size;
+      unsigned int bEnd = b+LFETensor<Field,Domain::dimension,deriv>::size;
       apply<Field>(r1,x,block,bStart,bEnd,vecIter);
       b=bEnd;
     }

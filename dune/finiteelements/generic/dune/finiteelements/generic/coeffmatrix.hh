@@ -201,7 +201,7 @@ namespace Dune
     {
       typedef typename Vector::value_type YDerivatives;
       typedef typename BasisIterator::Derivatives XDerivatives;
-      typedef FieldVector<typename XDerivatives::Field,YDerivatives::size> XTensor;
+      typedef FieldVector<typename XDerivatives::Field,YDerivatives::size> XLFETensor;
       size_t numLsg = y.size();
       assert( numLsg*blockSize <= (size_t)numRows_ );
       unsigned int row = 0;
@@ -209,14 +209,14 @@ namespace Dune
       unsigned int *skipIt = skip_;
       for( size_t i = 0; i < numLsg; ++i)
       {
-        XTensor val(typename XDerivatives::Field(0));
+        XLFETensor val(typename XDerivatives::Field(0));
         for( unsigned int r = 0; r < blockSize; ++r, ++row )
         {
           BasisIterator itx = x;
           for( ; pos != rows_[ row+1 ]; ++pos, ++skipIt )
           {
             itx += *skipIt;
-            TensorAxpy<XDerivatives,XTensor,deriv>::apply(r,*pos,*itx,val);
+            LFETensorAxpy<XDerivatives,XLFETensor,deriv>::apply(r,*pos,*itx,val);
           }
         }
         field_cast(val,y[i]);

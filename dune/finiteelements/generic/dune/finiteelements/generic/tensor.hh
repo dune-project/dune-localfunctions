@@ -11,11 +11,11 @@ namespace Dune
 {
   // Structure for scalar tensor of order deriv
   template <class F,int dimD,unsigned int deriv>
-  class Tensor
+  class LFETensor
   {
-    typedef Tensor<F,dimD,deriv> This;
-    typedef Tensor<F,dimD-1,deriv> BaseDim;
-    typedef Tensor<F,dimD,deriv-1> BaseDeriv;
+    typedef LFETensor<F,dimD,deriv> This;
+    typedef LFETensor<F,dimD-1,deriv> BaseDim;
+    typedef LFETensor<F,dimD,deriv-1> BaseDeriv;
 
   public:
     typedef F field_type;
@@ -64,7 +64,7 @@ namespace Dune
       block().axpy(a,y.block());
     }
     template <class Fy>
-    void assign(const Tensor<Fy,dimD,deriv> &y)
+    void assign(const LFETensor<Fy,dimD,deriv> &y)
     {
       field_cast(y.block(),block());
     }
@@ -73,21 +73,21 @@ namespace Dune
 
   // ******************************************
   template <class F,unsigned int deriv>
-  struct Tensor<F,0,deriv>
+  struct LFETensor<F,0,deriv>
   {
     static const int size = 0;
   };
 
   template <class F>
-  struct Tensor<F,0,0>
+  struct LFETensor<F,0,0>
   {
     static const int size = 1;
   };
 
   template <class F,int dimD>
-  class Tensor<F,dimD,0>
+  class LFETensor<F,dimD,0>
   {
-    typedef Tensor<F,dimD,0> This;
+    typedef LFETensor<F,dimD,0> This;
 
   public:
     typedef F field_type;
@@ -128,7 +128,7 @@ namespace Dune
       block().axpy(a,y.block());
     }
     template <class Fy>
-    void assign(const Tensor<Fy,dimD,0> &y)
+    void assign(const LFETensor<Fy,dimD,0> &y)
     {
       field_cast(y.block(),block());
     }
@@ -158,7 +158,7 @@ namespace Dune
   {
     typedef Derivatives<F,dimD,dimR,deriv,value> This;
     typedef Derivatives<F,dimD,dimR,deriv-1,value> Base;
-    typedef Tensor<F,dimD,deriv> ThisTensor;
+    typedef LFETensor<F,dimD,deriv> ThisLFETensor;
 
     typedef F Field;
     typedef F field_type;
@@ -166,7 +166,7 @@ namespace Dune
     static const DerivativeLayout layout = value;
     static const unsigned int dimDomain = dimD;
     static const unsigned int dimRange = dimR;
-    static const unsigned int size = Base::size+ThisTensor::size*dimR;
+    static const unsigned int size = Base::size+ThisLFETensor::size*dimR;
     typedef Dune::FieldVector<F,size> Block;
 
     This &operator=(const F& f)
@@ -174,13 +174,13 @@ namespace Dune
       block() = f;
       return *this;
     }
-    This &operator=(const Dune::FieldVector<ThisTensor,dimR> &t)
+    This &operator=(const Dune::FieldVector<ThisLFETensor,dimR> &t)
     {
       tensor_ = t;
       return *this;
     }
     template <unsigned int dorder>
-    This &operator=(const Dune::FieldVector<Tensor<F,dimD,dorder>,dimR> &t)
+    This &operator=(const Dune::FieldVector<LFETensor<F,dimD,dorder>,dimR> &t)
     {
       tensor<dorder>() = t;
       return *this;
@@ -244,32 +244,32 @@ namespace Dune
     }
 
     template <unsigned int dorder>
-    const Dune::FieldVector<Tensor<F,dimD,dorder>,dimR> &tensor() const
+    const Dune::FieldVector<LFETensor<F,dimD,dorder>,dimR> &tensor() const
     {
       const Int2Type<dorder> a = Int2Type<dorder>();
       return tensor(a);
     }
     template <unsigned int dorder>
-    Dune::FieldVector<Tensor<F,dimD,dorder>,dimR> &tensor()
+    Dune::FieldVector<LFETensor<F,dimD,dorder>,dimR> &tensor()
     {
       return tensor(Int2Type<dorder>());
     }
     template <unsigned int dorder>
-    const Dune::FieldVector<F,Tensor<F,dimD,dorder>::size*dimR> &block() const
+    const Dune::FieldVector<F,LFETensor<F,dimD,dorder>::size*dimR> &block() const
     {
       const Int2Type<dorder> a = Int2Type<dorder>();
-      return reinterpret_cast<const Dune::FieldVector<F,Tensor<F,dimD,dorder>::size*dimR>&>(tensor(a));
+      return reinterpret_cast<const Dune::FieldVector<F,LFETensor<F,dimD,dorder>::size*dimR>&>(tensor(a));
     }
     template <unsigned int dorder>
-    Dune::FieldVector<F,Tensor<F,dimD,dorder>::size*dimR> &block()
+    Dune::FieldVector<F,LFETensor<F,dimD,dorder>::size*dimR> &block()
     {
       const Int2Type<dorder> a = Int2Type<dorder>();
-      return reinterpret_cast<Dune::FieldVector<F,Tensor<F,dimD,dorder>::size*dimR>&>(tensor(a));
+      return reinterpret_cast<Dune::FieldVector<F,LFETensor<F,dimD,dorder>::size*dimR>&>(tensor(a));
     }
-    ThisTensor &operator[](int r) {
+    ThisLFETensor &operator[](int r) {
       return tensor_[r];
     }
-    const ThisTensor &operator[](int r) const {
+    const ThisLFETensor &operator[](int r) const {
       return tensor_[r];
     }
   protected:
@@ -277,13 +277,13 @@ namespace Dune
     void assign(const FieldVector<Fy,size*dimRy> &y,unsigned int r)
     {
       Base::template assign<Fy,dimRy>(reinterpret_cast<const FieldVector<Fy,Base::size*dimRy>&>(y),r);
-      tensor_[0] = reinterpret_cast<const FieldVector<Fy,ThisTensor::size>&>(y[Base::size*dimRy+r*ThisTensor::size]);
+      tensor_[0] = reinterpret_cast<const FieldVector<Fy,ThisLFETensor::size>&>(y[Base::size*dimRy+r*ThisLFETensor::size]);
     }
     template <class Fy>
     void assign(unsigned int r,const FieldVector<Fy,size/dimR> &y)
     {
       Base::assign(r,reinterpret_cast<const FieldVector<Fy,Base::size/dimR>&>(y));
-      tensor_[r] = reinterpret_cast<const FieldVector<Fy,ThisTensor::size>&>(y[Base::size/dimR]);
+      tensor_[r] = reinterpret_cast<const FieldVector<Fy,ThisLFETensor::size>&>(y[Base::size/dimR]);
     }
     // assign with diffrent layout (same dimRange)
     template <class Fy,unsigned int dy>
@@ -295,31 +295,31 @@ namespace Dune
     }
 
     template <int dorder>
-    const Dune::FieldVector<Tensor<F,dimD,dorder>,dimR> &tensor(const Int2Type<dorder> &dorderVar) const
+    const Dune::FieldVector<LFETensor<F,dimD,dorder>,dimR> &tensor(const Int2Type<dorder> &dorderVar) const
     {
       return Base::tensor(dorderVar);
     }
-    const Dune::FieldVector<Tensor<F,dimD,deriv>,dimR> &tensor(const Int2Type<deriv> &dorderVar) const
+    const Dune::FieldVector<LFETensor<F,dimD,deriv>,dimR> &tensor(const Int2Type<deriv> &dorderVar) const
     {
       return tensor_;
     }
     template <int dorder>
-    Dune::FieldVector<Tensor<F,dimD,dorder>,dimR> &tensor(const Int2Type<dorder> &dorderVar)
+    Dune::FieldVector<LFETensor<F,dimD,dorder>,dimR> &tensor(const Int2Type<dorder> &dorderVar)
     {
       return Base::tensor(dorderVar);
     }
-    Dune::FieldVector<Tensor<F,dimD,deriv>,dimR> &tensor(const Int2Type<deriv> &dorderVar)
+    Dune::FieldVector<LFETensor<F,dimD,deriv>,dimR> &tensor(const Int2Type<deriv> &dorderVar)
     {
       return tensor_;
     }
-    Dune::FieldVector<ThisTensor,dimR> tensor_;
+    Dune::FieldVector<ThisLFETensor,dimR> tensor_;
   };
 
   template <class F,int dimD,int dimR>
   struct Derivatives<F,dimD,dimR,0,value>
   {
     typedef Derivatives<F,dimD,dimR,0,value> This;
-    typedef Tensor<F,dimD,0> ThisTensor;
+    typedef LFETensor<F,dimD,0> ThisLFETensor;
 
     typedef F Field;
     typedef F field_type;
@@ -327,7 +327,7 @@ namespace Dune
     static const DerivativeLayout layout = value;
     static const unsigned int dimDomain = dimD;
     static const unsigned int dimRange = dimR;
-    static const unsigned int size = ThisTensor::size*dimR;
+    static const unsigned int size = ThisLFETensor::size*dimR;
     typedef Dune::FieldVector<F,size> Block;
 
     template <class FF>
@@ -337,7 +337,7 @@ namespace Dune
         tensor_[r] = field_cast<F>(f);
       return *this;
     }
-    This &operator=(const Dune::FieldVector<ThisTensor,dimR> &t)
+    This &operator=(const Dune::FieldVector<ThisLFETensor,dimR> &t)
     {
       tensor_ = t;
       return *this;
@@ -395,40 +395,40 @@ namespace Dune
       return reinterpret_cast<const Block&>(*this);
     }
 
-    ThisTensor &operator[](int r) {
+    ThisLFETensor &operator[](int r) {
       return tensor_[r];
     }
-    const ThisTensor &operator[](int r) const {
+    const ThisLFETensor &operator[](int r) const {
       return tensor_[r];
     }
     template <int dorder>
-    const Dune::FieldVector<Tensor<F,dimD,0>,dimR> &tensor() const
+    const Dune::FieldVector<LFETensor<F,dimD,0>,dimR> &tensor() const
     {
       return tensor_;
     }
-    Dune::FieldVector<Tensor<F,dimD,0>,dimR> &tensor()
+    Dune::FieldVector<LFETensor<F,dimD,0>,dimR> &tensor()
     {
       return tensor_;
     }
     template <unsigned int dorder>
-    const Dune::FieldVector<F,Tensor<F,dimD,dorder>::size*dimR> &block() const
+    const Dune::FieldVector<F,LFETensor<F,dimD,dorder>::size*dimR> &block() const
     {
       const Int2Type<dorder> a = Int2Type<dorder>();
-      return reinterpret_cast<const Dune::FieldVector<F,Tensor<F,dimD,dorder>::size*dimR>&>(tensor(a));
+      return reinterpret_cast<const Dune::FieldVector<F,LFETensor<F,dimD,dorder>::size*dimR>&>(tensor(a));
     }
     template <unsigned int dorder>
-    Dune::FieldVector<F,Tensor<F,dimD,dorder>::size*dimR> &block()
+    Dune::FieldVector<F,LFETensor<F,dimD,dorder>::size*dimR> &block()
     {
       const Int2Type<dorder> a = Int2Type<dorder>();
-      return reinterpret_cast<Dune::FieldVector<F,Tensor<F,dimD,dorder>::size*dimR>&>(tensor(a));
+      return reinterpret_cast<Dune::FieldVector<F,LFETensor<F,dimD,dorder>::size*dimR>&>(tensor(a));
     }
 
   protected:
-    const Dune::FieldVector<Tensor<F,dimD,0>,dimR> &tensor(const Int2Type<0> &dorderVar) const
+    const Dune::FieldVector<LFETensor<F,dimD,0>,dimR> &tensor(const Int2Type<0> &dorderVar) const
     {
       return tensor_;
     }
-    Dune::FieldVector<Tensor<F,dimD,0>,dimR> &tensor(const Int2Type<0> &dorderVar)
+    Dune::FieldVector<LFETensor<F,dimD,0>,dimR> &tensor(const Int2Type<0> &dorderVar)
     {
       return tensor_;
     }
@@ -441,14 +441,14 @@ namespace Dune
     template <class Fy,int dimRy>
     void assign(const FieldVector<Fy,size*dimRy> &y,unsigned int r)
     {
-      tensor_[0] = reinterpret_cast<const FieldVector<Fy,ThisTensor::size>&>(y[r*ThisTensor::size]);
+      tensor_[0] = reinterpret_cast<const FieldVector<Fy,ThisLFETensor::size>&>(y[r*ThisLFETensor::size]);
     }
     template <class Fy>
     void assign(unsigned int r,const FieldVector<Fy,size/dimR> &y)
     {
       tensor_[r] = y;
     }
-    Dune::FieldVector<ThisTensor,dimR> tensor_;
+    Dune::FieldVector<ThisLFETensor,dimR> tensor_;
   };
 
   // Implemnetation for derivative based layout
@@ -533,7 +533,7 @@ namespace Dune
   // AXPY *************************************
   // ******************************************
   template <class Vec1,class Vec2,unsigned int deriv>
-  struct TensorAxpy
+  struct LFETensorAxpy
   {
     template <class Field>
     static void apply(unsigned int r,const Field &a,
@@ -546,7 +546,7 @@ namespace Dune
       unsigned int d,
       class Vec2,
       unsigned int deriv>
-  struct TensorAxpy<Derivatives<F1,dimD,dimR,d,value>,Vec2,deriv>
+  struct LFETensorAxpy<Derivatives<F1,dimD,dimR,d,value>,Vec2,deriv>
   {
     typedef Derivatives<F1,dimD,dimR,d,value> Vec1;
     template <class Field>
@@ -562,7 +562,7 @@ namespace Dune
       unsigned int d,
       class Vec2,
       unsigned int deriv>
-  struct TensorAxpy<Derivatives<F1,dimD,dimR,d,derivative>,Vec2,deriv>
+  struct LFETensorAxpy<Derivatives<F1,dimD,dimR,d,derivative>,Vec2,deriv>
   {
     typedef Derivatives<F1,dimD,dimR,d,derivative> Vec1;
     template <class Field>
@@ -570,7 +570,7 @@ namespace Dune
                       const Vec1 &x, Vec2 &y)
     {
       for (int rr=0; rr<dimR; ++rr)
-        TensorAxpy<Derivatives<F1,dimD,1,d,value>,
+        LFETensorAxpy<Derivatives<F1,dimD,1,d,value>,
             Vec2,deriv>::apply(rr,a,x[rr],y);
     }
   };
@@ -578,14 +578,14 @@ namespace Dune
       unsigned int d,
       class Vec2,
       unsigned int deriv>
-  struct TensorAxpy<Derivatives<F1,dimD,1,d,derivative>,Vec2,deriv>
+  struct LFETensorAxpy<Derivatives<F1,dimD,1,d,derivative>,Vec2,deriv>
   {
     typedef Derivatives<F1,dimD,1,d,derivative> Vec1;
     template <class Field>
     static void apply(unsigned int r,const Field &a,
                       const Vec1 &x, Vec2 &y)
     {
-      TensorAxpy<Derivatives<F1,dimD,1,d,value>,
+      LFETensorAxpy<Derivatives<F1,dimD,1,d,value>,
           Vec2,deriv>::apply(r,a,x[0],y);
     }
   };
@@ -593,16 +593,16 @@ namespace Dune
       unsigned int d,
       class Vec2,
       unsigned int deriv>
-  struct TensorAxpy<Derivatives<F1,dimD,1,d,value>,Vec2,deriv>
+  struct LFETensorAxpy<Derivatives<F1,dimD,1,d,value>,Vec2,deriv>
   {
     typedef Derivatives<F1,dimD,1,d,value> Vec1;
     template <class Field>
     static void apply(unsigned int r,const Field &a,
                       const Vec1 &x, Vec2 &y)
     {
-      typedef Tensor<F1,dimD,deriv> TensorType;
-      const unsigned int rr = r*TensorType::size;
-      const FieldVector<F1,TensorType::size> &xx = x.template block<deriv>();
+      typedef LFETensor<F1,dimD,deriv> LFETensorType;
+      const unsigned int rr = r*LFETensorType::size;
+      const FieldVector<F1,LFETensorType::size> &xx = x.template block<deriv>();
       for (int i=0; i<xx.size; ++i)
         y[rr+i] += xx[i]*a;
     }
@@ -817,7 +817,7 @@ namespace Dune
   // IO ********************************************
   // ***********************************************
   template <class F,int dimD,unsigned int deriv>
-  std::ostream &operator<< ( std::ostream &out, const Tensor< F,dimD,deriv > &tensor )
+  std::ostream &operator<< ( std::ostream &out, const LFETensor< F,dimD,deriv > &tensor )
   {
     return out << tensor.block();
   }

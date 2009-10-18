@@ -114,7 +114,7 @@ namespace Dune
           }
         }
         if (max == 0)
-          abort(); // return false;
+          return false;
         // row swap
         if (r > j)
         {

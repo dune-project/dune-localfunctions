@@ -21,6 +21,7 @@
 #include <dune/finiteelements/raviartthomas/raviartthomasprebasis.hh>
 namespace Dune
 {
+#if 0
   // A lagrange based interpolation for Raviart Thomas
   // --------------------------------------------------
   template< class F, class PointsSetCreator >
@@ -138,7 +139,8 @@ namespace Dune
     unsigned int size_;
   };
 
-#if 0
+#else
+
   // A L2 based interpolation for Raviart Thomas
   // --------------------------------------------------
   template< class F, unsigned int dimension >

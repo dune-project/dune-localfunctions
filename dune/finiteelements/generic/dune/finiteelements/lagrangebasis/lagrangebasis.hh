@@ -4,6 +4,8 @@
 #define DUNE_LAGRANGEBASIS_HH
 
 #include <fstream>
+#include <dune/common/exceptions.hh>
+
 #include <dune/finiteelements/common/matrix.hh>
 
 #include <dune/finiteelements/lagrangebasis/interpolation.hh>
@@ -38,7 +40,10 @@ namespace Dune
         = LocalInterpolationCreator::template localInterpolation< Topology >( order );
       localInterpolation.interpolate( basis, matrix_ );
       LocalInterpolationCreator::release( localInterpolation );
-      matrix_.invert();
+      if ( !matrix_.invert() )
+      {
+        DUNE_THROW(MathError, "While computing LagrangeBasis a singular matrix was constructed!");
+      }
     }
 
     unsigned int colSize( const unsigned int row ) const
@@ -114,6 +119,7 @@ namespace Dune
       Basis *basis = new Basis( monomialBasis );
       LagrangeMatrix< Topology, ComputeField, LPointsCreator> matrix( order );
       basis->fill( matrix );
+#if GLFEM_BASIS_PRINT
       {
         typedef MultiIndex< dimension > MIField;
         typedef VirtualMonomialBasis<dim,MIField> MBasisMI;
@@ -126,6 +132,7 @@ namespace Dune
         std::ofstream out(name.str().c_str());
         basisPrint<0>(out,basisMI);
       }
+#endif
       return *basis;
     }
 

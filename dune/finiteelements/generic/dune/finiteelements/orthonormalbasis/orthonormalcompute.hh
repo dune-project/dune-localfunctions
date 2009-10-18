@@ -132,7 +132,7 @@ namespace ONBCompute
           }
         }
         compute();
-        assert(test());
+        // assert(test());
         return;
       }
     };

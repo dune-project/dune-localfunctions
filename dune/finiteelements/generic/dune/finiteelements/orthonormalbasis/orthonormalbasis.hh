@@ -45,6 +45,7 @@ namespace Dune
       {
         ONBCompute::ONBMatrix< Topology, ComputeField > matrix( order );
         _coeffs.fill( matrix );
+#if GLFEM_BASIS_PRINT
         {
           typedef MultiIndex< dimension > MIField;
           typedef VirtualMonomialBasis<dim,MIField> MBasisMI;
@@ -57,6 +58,7 @@ namespace Dune
           std::ofstream out(name.str().c_str());
           basisPrint<0>(out,basisMI);
         }
+#endif
       }
 
       return *(new Basis( monomialBasis, _coeffs, monomialBasis.size() ));

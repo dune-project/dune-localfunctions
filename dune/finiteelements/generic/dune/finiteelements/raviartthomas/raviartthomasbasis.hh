@@ -6,6 +6,7 @@
 #include <utility>
 
 #include <dune/common/forloop.hh>
+#include <dune/common/exceptions.hh>
 
 #include <dune/finiteelements/common/matrix.hh>
 #include <dune/grid/genericgeometry/referenceelements.hh>
@@ -368,7 +369,10 @@ namespace Dune
       TMBasis tmBasis(basis);
       tmBasis.fill(vecMatrix_);
       interpolation_.interpolate( tmBasis , matrix_ );
-      matrix_.invert();
+      if ( !matrix_.invert() )
+      {
+        DUNE_THROW(MathError, "While computing RaviartThomasBasis a singular matrix was constructed!");
+      }
     }
     unsigned int colSize(int row) const {
       return vecMatrix_.colSize(row);
@@ -433,6 +437,7 @@ namespace Dune
       RaviartThomasMatrix<Topology,LocalInterpolation> matrix(interpolation);
       release(interpolation);
       basis->fill(matrix);
+#if GLFEM_BASIS_PRINT
       {
         typedef MultiIndex< dimension > MIField;
         typedef VirtualMonomialBasis<dim,MIField> MBasisMI;
@@ -445,6 +450,7 @@ namespace Dune
         std::ofstream out(name.str().c_str());
         basisPrint<0>(out,basisMI);
       }
+#endif
       return *basis;
     }
     template< class Topology >

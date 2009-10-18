@@ -162,6 +162,7 @@ namespace Dune
     using Base::container_;
   };
 
+#if 0 // OLD OLD
   template< class B, class Fill >
   struct VecEvaluator
     : public StandardEvaluator< B >
@@ -348,6 +349,8 @@ namespace Dune
   private:
     Fill fill_;
   };
+#endif // OLD OLD
+
 }
 
 #endif

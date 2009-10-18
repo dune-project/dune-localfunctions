@@ -11,17 +11,19 @@
 namespace Dune
 {
 
-  template< unsigned int dimDomain, class D, class R, class CF=D >
+  template< unsigned int dimDomain, class D, class R,
+      class SF=D, class CF=D >
+
   class OrthonormalLocalFiniteElement
-    : public GenericLocalFiniteElement< OrthonormalBasisProvider< dimDomain, D, CF >,
-          DGLocalCoefficientsCreator< OrthonormalBasisProvider< dimDomain, D, CF > >,
-          LocalL2InterpolationCreator< OrthonormalBasisProvider< dimDomain, D, CF > >,
-          dimDomain,D,R,CF>
+    : public GenericLocalFiniteElement< OrthonormalBasisProvider< dimDomain, SF, CF >,
+          DGLocalCoefficientsCreator< OrthonormalBasisProvider< dimDomain, SF, CF > >,
+          LocalL2InterpolationCreator< OrthonormalBasisProvider< dimDomain, SF, CF > >,
+          dimDomain,D,R>
   {
-    typedef GenericLocalFiniteElement< OrthonormalBasisProvider< dimDomain, R, CF >,
-        DGLocalCoefficientsCreator< OrthonormalBasisProvider< dimDomain, R, CF > >,
-        LocalL2InterpolationCreator< OrthonormalBasisProvider< dimDomain, R, CF > >,
-        dimDomain,D,R,CF> Base;
+    typedef GenericLocalFiniteElement< OrthonormalBasisProvider< dimDomain, SF, CF >,
+        DGLocalCoefficientsCreator< OrthonormalBasisProvider< dimDomain, SF, CF > >,
+        LocalL2InterpolationCreator< OrthonormalBasisProvider< dimDomain, SF, CF > >,
+        dimDomain,D,R> Base;
     using Base::FECreator;
     using Base::FiniteElement;
   public:

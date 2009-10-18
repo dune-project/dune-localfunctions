@@ -10,17 +10,18 @@
 namespace Dune
 {
 
-  template< unsigned int dimDomain, class D, class R, class CF=D >
+  template< unsigned int dimDomain, class D, class R,
+      class SF=R, class CF=R >
   class LagrangeLocalFiniteElement
-    : public GenericLocalFiniteElement< LagrangeBasisProvider< dimDomain, R, CF >,
-          LagrangePointsCreator< R, dimDomain >,
-          LocalLagrangeInterpolationCreator< LagrangePointsCreator< R, dimDomain > >,
-          dimDomain,D,R,CF>
+    : public GenericLocalFiniteElement< LagrangeBasisProvider< dimDomain, SF, CF >,
+          LagrangePointsCreator< SF, dimDomain >,
+          LocalLagrangeInterpolationCreator< LagrangePointsCreator< SF, dimDomain > >,
+          dimDomain,D,R>
   {
-    typedef GenericLocalFiniteElement< LagrangeBasisProvider< dimDomain, D, CF >,
-        LagrangePointsCreator< D, dimDomain >,
-        LocalLagrangeInterpolationCreator< LagrangePointsCreator< D, dimDomain > >,
-        dimDomain,D,R,CF> Base;
+    typedef GenericLocalFiniteElement< LagrangeBasisProvider< dimDomain, SF, CF >,
+        LagrangePointsCreator< SF, dimDomain >,
+        LocalLagrangeInterpolationCreator< LagrangePointsCreator< SF, dimDomain > >,
+        dimDomain,D,R> Base;
     using Base::FECreator;
     using Base::FiniteElement;
   public:

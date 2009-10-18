@@ -20,13 +20,13 @@ namespace Dune
   class GenericLocalInterpolation;
 
   template< class BasisC, class CoeffC, class InterpolC,
-      unsigned int dimDomain, class D, class R, class CF >
+      unsigned int dimDomain, class D, class R >
   struct GenericLocalFiniteElement
     : LocalFiniteElementInterface<
           LocalFiniteElementTraits< GenericLocalBasis<dimDomain,D,R,typename BasisC::Basis>,
               typename CoeffC::LocalCoefficients,
               GenericLocalInterpolation<typename InterpolC::LocalInterpolation> >,
-          GenericLocalFiniteElement<BasisC, CoeffC, InterpolC, dimDomain,D,R,CF> >
+          GenericLocalFiniteElement<BasisC, CoeffC, InterpolC, dimDomain,D,R> >
   {
     typedef FiniteElementProvider<BasisC,CoeffC,InterpolC> FECreator;
     typedef typename FECreator::FiniteElement FiniteElement;

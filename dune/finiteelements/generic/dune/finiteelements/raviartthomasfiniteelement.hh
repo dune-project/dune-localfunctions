@@ -9,17 +9,18 @@
 namespace Dune
 {
 
-  template< unsigned int dimDomain, class D, class R, class CF=D >
+  template< unsigned int dimDomain, class D, class R,
+      class SF=D, class CF=D >
   class RaviartThomasLocalFiniteElement
-    : public GenericLocalFiniteElement< RaviartThomasBasisCreator< dimDomain, R, CF >,
-          RaviartThomasBasisCreator< dimDomain, R, CF >,
-          RaviartThomasBasisCreator< dimDomain, R, CF >,
-          dimDomain,D,R,CF>
+    : public GenericLocalFiniteElement< RaviartThomasBasisCreator< dimDomain, SF, CF >,
+          RaviartThomasBasisCreator< dimDomain, SF, CF >,
+          RaviartThomasBasisCreator< dimDomain, SF, CF >,
+          dimDomain,D,R>
   {
-    typedef GenericLocalFiniteElement< RaviartThomasBasisCreator< dimDomain, R, CF >,
-        RaviartThomasBasisCreator< dimDomain, R, CF >,
-        RaviartThomasBasisCreator< dimDomain, R, CF >,
-        dimDomain,D,R,CF> Base;
+    typedef GenericLocalFiniteElement< RaviartThomasBasisCreator< dimDomain, SF, CF >,
+        RaviartThomasBasisCreator< dimDomain, SF, CF >,
+        RaviartThomasBasisCreator< dimDomain, SF, CF >,
+        dimDomain,D,R> Base;
     using Base::FECreator;
     using Base::FiniteElement;
   public:

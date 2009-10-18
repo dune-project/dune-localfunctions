@@ -346,7 +346,7 @@ namespace std
   }
 #endif
 
-#if 0
+#if 1
 #if HAVE_GMP
   template< unsigned int precision >
   inline ostream &
@@ -358,13 +358,13 @@ namespace std
   template< unsigned int precision >
   inline Dune::GMPField< precision > sqrt ( const Dune::GMPField< precision > &a )
   {
-    return sqrt( a );
+    return ::sqrt( a );
   }
 
   template< unsigned int precision >
   inline Dune::GMPField< precision > abs ( const Dune::GMPField< precision > &a )
   {
-    return abs( a );
+    return ::abs( a );
   }
 #endif
 #endif

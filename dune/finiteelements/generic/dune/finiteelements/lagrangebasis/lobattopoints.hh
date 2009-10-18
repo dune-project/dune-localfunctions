@@ -2,6 +2,7 @@
 // vi: set et ts=4 sw=2 sts=2:
 #ifndef DUNE_LOBATTOBASIS_HH
 #define DUNE_LOBATTOBASIS_HH
+#if HAVE_ALGLIB
 
 #include <fstream>
 #include <dune/finiteelements/common/matrix.hh>
@@ -354,4 +355,7 @@ namespace Dune
           LagrangeBasisCreator< dim, LobattoPointsCreator, SF, CF > >
   {};
 }
+#else
+#warning LOBATTOPOINTS ONLY AVAILABLE WITH ALGLIB
+#endif
 #endif // DUNE_LOBATTOBASIS_HH

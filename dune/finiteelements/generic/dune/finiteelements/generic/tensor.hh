@@ -3,6 +3,9 @@
 #ifndef DUNE_TENSOR_HH
 #define DUNE_TENSOR_HH
 
+#include <vector>
+#include <ostream>
+
 #include <dune/finiteelements/common/field.hh>
 #include <dune/common/fvector.hh>
 #include <dune/common/misc.hh>

@@ -3,6 +3,9 @@
 #ifndef DUNE_MULTIINDEX_HH
 #define DUNE_MULTIINDEX_HH
 
+#include <vector>
+#include <ostream>
+
 #include <dune/common/fvector.hh>
 
 #include <dune/finiteelements/common/field.hh>

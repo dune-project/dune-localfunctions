@@ -112,24 +112,24 @@ namespace Dune
 
     typedef typename BasisCreator::Key Key;
     typedef typename BasisCreator::Basis Basis;
-    typedef typename CoefficientsCreator::LocalCoefficients Coefficients;
-    typedef typename InterpolationCreator::LocalInterpolation Interpolation;
+    typedef typename CoefficientsCreator::LocalCoefficients LocalCoefficients;
+    typedef typename InterpolationCreator::LocalInterpolation LocalInterpolation;
 
     struct FiniteElement
     {
       typedef typename BasisCreator::Basis Basis;
-      typedef typename CoefficientsCreator::LocalCoefficients Coefficients;
-      typedef typename InterpolationCreator::LocalInterpolation Interpolation;
+      typedef typename CoefficientsCreator::LocalCoefficients LocalCoefficients;
+      typedef typename InterpolationCreator::LocalInterpolation LocalInterpolation;
       FiniteElement() : basis_(0), coeff_(0), interpol_(0) {}
       const Basis &basis() const
       {
         return *basis_;
       }
-      const Coefficients &coefficients() const
+      const LocalCoefficients &coefficients() const
       {
         return *coeff_;
       }
-      const Interpolation &interpolation() const
+      const LocalInterpolation &interpolation() const
       {
         return *interpol_;
       }
@@ -137,11 +137,11 @@ namespace Dune
       {
         basis_ = basis;
       }
-      void setCoefficients( const Coefficients *coeff)
+      void setCoefficients( const LocalCoefficients *coeff)
       {
         coeff_ = coeff;
       }
-      void setInterpolation( const Interpolation *interpol)
+      void setInterpolation( const LocalInterpolation *interpol)
       {
         interpol_ = interpol;
       }
@@ -163,8 +163,8 @@ namespace Dune
       }
     private:
       const Basis *basis_;
-      const Coefficients *coeff_;
-      const Interpolation *interpol_;
+      const LocalCoefficients *coeff_;
+      const LocalInterpolation *interpol_;
     };
 
     template< class Topology >

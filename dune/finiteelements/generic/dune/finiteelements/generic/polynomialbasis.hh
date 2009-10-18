@@ -192,6 +192,7 @@ namespace Dune
     CoefficientMatrix coeffMatrix_;
   };
 
+#if 0
   template< unsigned int dimDomain, class D, class R,
       class PolynomialBasis >
   class GenericLocalBasis :
@@ -250,6 +251,7 @@ namespace Dune
   private:
     const PolynomialBasis &basis_;
   };
+#endif
 
 }
 #endif // DUNE_POLYNOMIALBASIS_HH

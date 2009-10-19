@@ -41,8 +41,14 @@ namespace Dune
    *           typedef const_iterator
    *           const_iterator begin()
    **/
-  template< class Eval, class CM >
-  class PolynomialBasis
+  template< class Eval, class CM, class D=double, class R=double >
+  class PolynomialBasis :
+    public C1LocalBasisInterface<
+        C1LocalBasisTraits<D,Eval::dimension,FieldVector<D,Eval::dimension>,
+            R,Eval::dimRange*CM::blockSize,FieldVector<R,Eval::dimRange*CM::blockSize>,
+            FieldVector<FieldVector<R,Eval::dimension>,Eval::dimRange*CM::blockSize> >,
+        PolynomialBasis<Eval,CM,D,R >
+        >
   {
     typedef PolynomialBasis< Eval, CM > This;
 
@@ -55,6 +61,9 @@ namespace Dune
 
     static const int dimension = Evaluator::dimension;
     static const int dimRange = Evaluator::dimRange*CoefficientMatrix::blockSize;
+    typedef C1LocalBasisTraits<D,dimension,FieldVector<D,dimension>,
+        R,dimRange,FieldVector<R,dimRange>,
+        FieldVector<FieldVector<R,dimension>,dimRange> > Traits;
     typedef typename Evaluator::Basis Basis;
     typedef typename Evaluator::DomainVector DomainVector;
 
@@ -77,6 +86,23 @@ namespace Dune
     const unsigned int size () const
     {
       return size_;
+    }
+
+    //! \brief Evaluate all shape functions
+    inline void evaluateFunction (const typename Traits::DomainType& x,
+                                  std::vector<typename Traits::RangeType>& out) const
+    {
+      out.resize(size());
+      evaluate(x,out);
+    }
+
+    //! \brief Evaluate Jacobian of all shape functions
+    inline void
+    evaluateJacobian (const typename Traits::DomainType& x,         // position
+                      std::vector<typename Traits::JacobianType>& out) const      // return value
+    {
+      out.resize(size());
+      jacobian(x,out);
     }
 
     template< unsigned int deriv, class Vector >

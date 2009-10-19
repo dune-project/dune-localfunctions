@@ -11,6 +11,7 @@
 #include <dune/finiteelements/common/matrix.hh>
 #include <dune/grid/genericgeometry/referenceelements.hh>
 
+#include <dune/finiteelements/common/localinterpolation.hh>
 #include <dune/finiteelements/common/localcoefficients.hh>
 #include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
 #include <dune/finiteelements/lagrangebasis/interpolation.hh>
@@ -62,6 +63,7 @@ namespace Dune
   // and once for a basis)
   template< class F, unsigned int dimension >
   struct RaviartThomasInterpolation
+    : public LocalInterpolationInterface< RaviartThomasInterpolation<F,dimension> >
   {
     template <class Func,class Container, bool type>
     struct Helper;

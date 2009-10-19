@@ -12,20 +12,13 @@
 namespace Dune
 {
   // forward declaration
-  template< unsigned int dimDomain, class D, class R,
-      class Basis >
-  class GenericLocalBasis;
-
-  template< class Interpolation >
-  class GenericLocalInterpolation;
-
   template< class BasisC, class CoeffC, class InterpolC,
       unsigned int dimDomain, class D, class R >
   struct GenericLocalFiniteElement
     : LocalFiniteElementInterface<
-          LocalFiniteElementTraits< GenericLocalBasis<dimDomain,D,R,typename BasisC::Basis>,
+          LocalFiniteElementTraits< typename BasisC::Basis,
               typename CoeffC::LocalCoefficients,
-              GenericLocalInterpolation<typename InterpolC::LocalInterpolation> >,
+              typename InterpolC::LocalInterpolation >,
           GenericLocalFiniteElement<BasisC, CoeffC, InterpolC, dimDomain,D,R> >
   {
     typedef FiniteElementProvider<BasisC,CoeffC,InterpolC> FECreator;
@@ -33,9 +26,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    typedef LocalFiniteElementTraits< GenericLocalBasis<dimDomain,D,R,typename FECreator::Basis>,
+    typedef LocalFiniteElementTraits< typename FECreator::Basis,
         typename FECreator::LocalCoefficients,
-        GenericLocalInterpolation<typename FECreator::LocalInterpolation> > Traits;
+        typename FECreator::LocalInterpolation > Traits;
 
     /** \todo Please doc me !
      */
@@ -43,9 +36,7 @@ namespace Dune
                                 unsigned int order )
       : topologyId_(topologyId),
         order_(order),
-        finiteElement_( FECreator::finiteElement(topologyId,order) ),
-        localBasis_(finiteElement_.basis()),
-        localInterpolation_(finiteElement_.interpolation())
+        finiteElement_( FECreator::finiteElement(topologyId,order) )
     {}
     ~GenericLocalFiniteElement()
     {
@@ -56,7 +47,7 @@ namespace Dune
      */
     const typename Traits::LocalBasisType& localBasis () const
     {
-      return localBasis_;
+      return finiteElement_.basis();
     }
 
     /** \todo Please doc me !
@@ -70,7 +61,7 @@ namespace Dune
      */
     const typename Traits::LocalInterpolationType& localInterpolation () const
     {
-      return localInterpolation_;
+      return finiteElement_.interpolation();
     }
 
     /** \todo Please doc me !
@@ -92,84 +83,8 @@ namespace Dune
     unsigned int topologyId_;
     unsigned int order_;
     const FiniteElement &finiteElement_;
-    typename Traits::LocalBasisType localBasis_;
-    typename Traits::LocalInterpolationType localInterpolation_;
   };
 
-  template< unsigned int dimDomain, class D, class R,
-      class Basis >
-  class GenericLocalBasis :
-    public C1LocalBasisInterface<
-        C1LocalBasisTraits<D,dimDomain,FieldVector<D,dimDomain>,R,1,FieldVector<R,1>,
-            FieldVector<FieldVector<R,dimDomain>,1> >,
-        GenericLocalBasis<dimDomain,D,R,Basis >
-        >
-  {
-  public:
-#if 0
-    /** \brief Export the number of degrees of freedom */
-    enum {N = (k+1)*(k+2)/2};
-    /** \brief Export the element order
-       OS: Surprising that we need to export this both statically and dynamically!
-     */
-    enum {O = k};
-#endif
-    typedef C1LocalBasisTraits<D,dimDomain,FieldVector<D,dimDomain>,R,1,FieldVector<R,1>,
-        FieldVector<FieldVector<R,dimDomain>,1> > Traits;
-
-    //! \brief Standard constructor
-    GenericLocalBasis (const Basis &basis)
-      : basis_(basis)
-    {}
-
-    //! \brief number of shape functions
-    unsigned int size () const
-    {
-      return basis_.size();
-    }
-
-    //! \brief Evaluate all shape functions
-    inline void evaluateFunction (const typename Traits::DomainType& x,
-                                  std::vector<typename Traits::RangeType>& out) const
-    {
-      out.resize(size());
-      basis_.evaluate(x,out);
-    }
-
-    //! \brief Evaluate Jacobian of all shape functions
-    inline void
-    evaluateJacobian (const typename Traits::DomainType& x,         // position
-                      std::vector<typename Traits::JacobianType>& out) const                          // return value
-    {
-      out.resize(size());
-      basis_.jacobian(x,out);
-    }
-
-    //! \brief Polynomial order of the shape functions
-    unsigned int order () const
-    {
-      return basis_.order();
-    }
-
-  private:
-    const Basis &basis_;
-  };
-
-  template< class Interpolation >
-  struct GenericLocalInterpolation
-    : public LocalInterpolationInterface< Interpolation >
-  {
-    GenericLocalInterpolation( const Interpolation &interpol)
-      : interpol_(interpol)
-    {}
-    template<typename F, typename C>
-    void interpolate (const F& f, std::vector<C>& out) const
-    {
-      interpol_.interpolate(f,out);
-    }
-  private:
-    const Interpolation &interpol_;
-  };
 }
 
 #endif

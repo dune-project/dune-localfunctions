@@ -4,6 +4,7 @@
 #define DUNE_LAGRANGEBASIS_INTERPOLATION_HH
 
 #include <vector>
+#include <dune/finiteelements/common/localinterpolation.hh>
 
 namespace Dune
 {
@@ -16,6 +17,7 @@ namespace Dune
 
   template< class LPCreator >
   class LocalLagrangeInterpolation
+    : public LocalInterpolationInterface< LocalLagrangeInterpolation<LPCreator> >
   {
     typedef LocalLagrangeInterpolation< LPCreator > This;
 

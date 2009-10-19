@@ -3,6 +3,7 @@
 #ifndef DUNE_L2INTERPOLATION_HH
 #define DUNE_L2INTERPOLATION_HH
 
+#include <dune/finiteelements/common/localinterpolation.hh>
 #include <dune/finiteelements/quadrature/genericquadrature.hh>
 
 namespace Dune
@@ -10,6 +11,7 @@ namespace Dune
 
   template< class B, class Q >
   class LocalL2Interpolation
+    : public LocalInterpolationInterface< LocalL2Interpolation< B, Q > >
   {
     typedef LocalL2Interpolation< B, Q > This;
 

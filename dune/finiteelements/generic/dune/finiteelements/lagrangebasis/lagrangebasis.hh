@@ -11,9 +11,9 @@
 #include <dune/finiteelements/lagrangebasis/interpolation.hh>
 #include <dune/finiteelements/generic/multiindex.hh>
 #include <dune/finiteelements/generic/monomialbasis.hh>
-#include <dune/finiteelements/generic/basisprovider.hh>
 #include <dune/finiteelements/generic/basisprint.hh>
 #include <dune/finiteelements/generic/polynomialbasis.hh>
+#include <dune/finiteelements/generic/topologyfactory.hh>
 
 namespace Dune
 {
@@ -22,24 +22,23 @@ namespace Dune
   // --------------
 
   template< class Topology, class scalar_t,
-      class LPCreator >
+      class LPFactory >
   struct LagrangeMatrix
   {
     static const unsigned int dimension = Topology::dimension;
 
-    typedef LPCreator LagrangePointsCreator;
+    typedef LPFactory LagrangeCoefficientsFactory;
     typedef LFEMatrix< scalar_t > mat_t;
-    // typedef Dune::LagrangePointsCreator< scalar_t, dimension > LagrangePointsCreator;
-    typedef LocalLagrangeInterpolationCreator< LagrangePointsCreator > LocalInterpolationCreator;
-    typedef typename LocalInterpolationCreator::LocalInterpolation LocalInterpolation;
+    typedef LagrangeInterpolationFactory< LagrangeCoefficientsFactory > LocalInterpolationFactory;
+    typedef typename LocalInterpolationFactory::Object LocalInterpolation;
 
     explicit LagrangeMatrix( const unsigned int order )
     {
       Dune::MonomialBasis< Topology, scalar_t > basis( order );
-      const LocalInterpolation &localInterpolation
-        = LocalInterpolationCreator::template localInterpolation< Topology >( order );
-      localInterpolation.interpolate( basis, matrix_ );
-      LocalInterpolationCreator::release( localInterpolation );
+      const LocalInterpolation *localInterpolation
+        = LocalInterpolationFactory::template create< Topology >( order );
+      localInterpolation->interpolate( basis, matrix_ );
+      LocalInterpolationFactory::release( localInterpolation );
       if ( !matrix_.invert() )
       {
         DUNE_THROW(MathError, "While computing LagrangeBasis a singular matrix was constructed!");
@@ -87,44 +86,58 @@ namespace Dune
 
 
 
-  // LagrangeBasisCreator
+  // LagrangeBasisFactory
   // --------------------
 
+
   template< unsigned int dim,
-      template <class Field,unsigned int> class LPCreator,
+      template <class Field,unsigned int> class LPFactory,
       class SF, class CF = typename ComputeField< SF, 512 >::Type >
-  struct LagrangeBasisCreator
+  struct LagrangeBasisFactory;
+  template< unsigned int dim,
+      template <class Field,unsigned int> class LPFactory,
+      class SF, class CF >
+  struct LagrangeBasisTraits
   {
-    static const unsigned int dimension = dim;
-
-    typedef SF StorageField;
-
-    typedef StorageField BasisField;
-
-    typedef Dune::MonomialBasisProvider< dimension, BasisField > MonomialBasisProvider;
-    typedef typename MonomialBasisProvider::Basis MonomialBasis;
-
-    typedef unsigned int Key;
-
+    typedef Dune::MonomialBasisProvider< dim, SF > MonomialBasisProvider;
+    typedef typename MonomialBasisProvider::Object MonomialBasis;
     typedef StandardEvaluator< MonomialBasis > Evaluator;
-    typedef CF ComputeField;
-    typedef PolynomialBasisWithMatrix< Evaluator, SparseCoeffMatrix< StorageField, 1 > > Basis;
+    typedef PolynomialBasisWithMatrix< Evaluator, SparseCoeffMatrix< SF, 1 > > Basis;
 
-    typedef LPCreator<ComputeField,dim> LPointsCreator;
+    static const unsigned int dimension = dim;
+    typedef const Basis Object;
+    typedef unsigned int Key;
+    typedef LagrangeBasisFactory<dim,LPFactory,SF,CF> Factory;
+  };
+
+  template< unsigned int dim,
+      template <class Field,unsigned int> class LPFactory,
+      class SF, class CF >
+  struct LagrangeBasisFactory
+    : public TopologyFactory< LagrangeBasisTraits< dim,LPFactory,SF,CF > >
+  {
+    typedef LagrangeBasisTraits<dim,LPFactory,SF,CF> Traits;
+    static const unsigned int dimension = dim;
+    typedef SF StorageField;
+    typedef CF ComputeField;
+    typedef typename Traits::Basis Basis;
+
+    typedef typename Traits::Object Object;
+    typedef typename Traits::Key Key;
 
     template< class Topology >
-    static const Basis &basis ( const Key &order )
+    static Object *createObject ( const Key &order )
     {
-      const MonomialBasis &monomialBasis = MonomialBasisProvider::template basis< Topology >( order );
-      Basis *basis = new Basis( monomialBasis );
-      LagrangeMatrix< Topology, ComputeField, LPointsCreator> matrix( order );
+      const typename Traits::MonomialBasis *monomialBasis = Traits::MonomialBasisProvider::template create< Topology >( order );
+      Basis *basis = new Basis( *monomialBasis );
+      LagrangeMatrix< Topology, ComputeField, LPFactory<ComputeField,dim> > matrix( order );
       basis->fill( matrix );
 #if GLFEM_BASIS_PRINT
       {
         typedef MultiIndex< dimension > MIField;
         typedef VirtualMonomialBasis<dim,MIField> MBasisMI;
         typedef PolynomialBasisWithMatrix<StandardEvaluator<MBasisMI>,SparseCoeffMatrix<StorageField,1> > BasisMI;
-        const MBasisMI &_mBasisMI = Dune::MonomialBasisProvider<dimension,MIField>::template basis<Topology>(order);
+        const MBasisMI &_mBasisMI = Dune::MonomialBasisProvider<dimension,MIField>::template create<Topology>(order);
         BasisMI basisMI(_mBasisMI);
         basisMI.fill(matrix);
         std::stringstream name;
@@ -133,17 +146,9 @@ namespace Dune
         basisPrint<0>(out,basisMI);
       }
 #endif
-      return *basis;
-    }
-
-    static void release ( const Basis &basis )
-    {
-      delete &basis;
+      return basis;
     }
   };
-
-
-
 }
 
-#endif // #ifndef DUNE_ORTHONORMALBASIS_HH
+#endif // #ifndef DUNE_LAGRANGEBASIS_HH

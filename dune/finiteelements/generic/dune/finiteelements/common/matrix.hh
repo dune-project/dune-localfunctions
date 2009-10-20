@@ -6,8 +6,8 @@
 #include <cassert>
 #include <vector>
 
-#include <dune/finiteelements/common/vector.hh>
 #include <dune/finiteelements/common/field.hh>
+#include <dune/finiteelements/common/vector.hh>
 
 #if HAVE_ALGLIB
 #include <alglib/amp.h>

@@ -11,7 +11,7 @@ namespace Dune
 {
 
   template< unsigned int dimDomain, class D, class R,
-      class SF=R, class CF=R >
+      class SF=R, class CF=SF >
   class LagrangeLocalFiniteElement
     : public GenericLocalFiniteElement< LagrangeBasisProvider< dimDomain, SF, CF >,
           LagrangePointsCreator< SF, dimDomain >,

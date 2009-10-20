@@ -12,7 +12,7 @@ namespace Dune
 {
 
   template< unsigned int dimDomain, class D, class R,
-      class SF=D, class CF=D >
+      class SF=R, class CF=SF >
 
   class OrthonormalLocalFiniteElement
     : public GenericLocalFiniteElement< OrthonormalBasisProvider< dimDomain, SF, CF >,

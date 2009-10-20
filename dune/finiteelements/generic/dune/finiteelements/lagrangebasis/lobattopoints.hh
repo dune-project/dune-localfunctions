@@ -227,16 +227,45 @@ namespace Dune
   };
 
   template <class Field,unsigned int dim>
-  struct LobattoPointsCreator
+  struct LobattoCoefficientsFactory;
+
+  template <class Field,unsigned int dim>
+  struct LobattoCoefficientsFactoryTraits
   {
-  public:
     static const unsigned int dimension = dim;
-
     typedef Dune::LagrangePoints< Field, dimension > LagrangePoints;
-    typedef LagrangePoints LocalCoefficients;
-
+    typedef const LagrangePoints Object;
     typedef unsigned int Key;
+    typedef LobattoCoefficientsFactory<Field,dim> Factory;
+  };
 
+  template <class Field,unsigned int dim>
+  struct LobattoCoefficientsFactory :
+    public TopologyFactory< LobattoCoefficientsFactoryTraits<Field,dim> >
+  {
+    static const unsigned int dimension = dim;
+    typedef LobattoCoefficientsFactoryTraits<Field,dim> Traits;
+
+    typedef typename Traits::Object Object;
+    typedef typename Traits::Key Key;
+    typedef typename Traits::LagrangePoints LagrangePoints;
+
+    template< class Topology >
+    static const LagrangePoints *lagrangePoints ( const Key &order )
+    {
+      LagrangePoints *lagrangePoints = new LagrangePoints( order, 0 );
+      LobattoPoints<Field> points1D(order);
+      ForLoop<Setup<Topology>::template InitCodim,0,dimension>::apply(order,points1D.points_,*lagrangePoints);
+      return lagrangePoints;
+    }
+
+    template< class T >
+    static Object *createObject ( const Key &order )
+    {
+      return lagrangePoints< T >( order );
+    }
+
+  private:
     template <class Topology>
     struct Setup
     {
@@ -316,44 +345,7 @@ namespace Dune
       };
     };
 
-    template< class Topology >
-    static const LagrangePoints &lagrangePoints ( const Key &order )
-    {
-      LagrangePoints *lagrangePoints = new LagrangePoints( order, 0 );
-      LobattoPoints<Field> points1D(order);
-      ForLoop<Setup<Topology>::template InitCodim,0,dimension>::apply(order,points1D.points_,*lagrangePoints);
-      return *lagrangePoints;
-    }
-
-    template< class T >
-    static const LocalCoefficients &localCoefficients ( const Key &order )
-    {
-      return lagrangePoints< T >( order );
-    }
-
-    static void release ( const LagrangePoints &lagrangePoints )
-    {
-      delete &lagrangePoints;
-    }
-
-    template< class Topology >
-    static bool supports ( const Key &order )
-    {
-      const bool isSimplex = GenericGeometry::IsSimplex< Topology >::value;
-      const bool isGeneralizedPrism = GenericGeometry::IsGeneralizedPrism< Topology >::value;
-      return ( isSimplex || isGeneralizedPrism);
-    }
   };
-
-  //
-  // LobattoBasisProvider
-  // ---------------------
-
-  template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
-  struct LobattoBasisProvider
-    : public BasisProvider<
-          LagrangeBasisCreator< dim, LobattoPointsCreator, SF, CF > >
-  {};
 }
 #else
 #warning LOBATTOPOINTS ONLY AVAILABLE WITH ALGLIB

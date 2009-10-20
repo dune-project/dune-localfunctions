@@ -4,28 +4,29 @@
 #define DUNE_LAGRANGEBASIS_INTERPOLATION_HH
 
 #include <vector>
+#include <dune/finiteelements/generic/topologyfactory.hh>
 #include <dune/finiteelements/common/localinterpolation.hh>
 
 namespace Dune
 {
 
-  template< class LPCreator >
-  struct LocalLagrangeInterpolationCreator;
+  template< class LPFactory >
+  struct LagrangeInterpolationFactory;
 
   // LocalLagrangeInterpolation
   // --------------------------
 
-  template< class LPCreator >
+  template< class LPFactory >
   class LocalLagrangeInterpolation
-    : public LocalInterpolationInterface< LocalLagrangeInterpolation<LPCreator> >
+    : public LocalInterpolationInterface< LocalLagrangeInterpolation<LPFactory> >
   {
-    typedef LocalLagrangeInterpolation< LPCreator > This;
+    typedef LocalLagrangeInterpolation< LPFactory > This;
 
-    // template< class LPCreator >
-    friend class LocalLagrangeInterpolationCreator< LPCreator >;
+    // template< class LPFactory >
+    friend class LagrangeInterpolationFactory< LPFactory >;
 
   public:
-    typedef typename LPCreator::LagrangePoints LagrangePoints;
+    typedef typename LPFactory::LagrangePoints LagrangePoints;
     typedef typename LagrangePoints::Field Field;
 
     static const unsigned int dimension = LagrangePoints::dimension;
@@ -72,31 +73,31 @@ namespace Dune
 
 
 
-  // LocalLagrangeInterpolationCreator
+  // LocalLagrangeInterpolationFactory
   // ---------------------------------
-
-  template< class LPCreator >
-  struct LocalLagrangeInterpolationCreator
+  template< class LPFactory >
+  struct LagrangeInterpolationFactoryTraits
   {
-    typedef LPCreator LagrangePointsCreator;
-    typedef typename LagrangePointsCreator::Key Key;
-    typedef typename LagrangePointsCreator::LagrangePoints LagrangePoints;
+    typedef typename LPFactory::Key Key;
+    typedef const LocalLagrangeInterpolation< LPFactory > Object;
+    typedef LagrangeInterpolationFactory<LPFactory> Factory;
+  };
 
-    typedef LocalLagrangeInterpolation< LagrangePointsCreator > LocalInterpolation;
+  template< class LPFactory >
+  struct LagrangeInterpolationFactory :
+    public TopologyFactory< LagrangeInterpolationFactoryTraits< LPFactory > >
+  {
+    typedef LagrangeInterpolationFactoryTraits< LPFactory > Traits;
+    typedef typename Traits::Key Key;
+    typedef typename Traits::Object Object;
+    typedef typename LPFactory::LagrangePoints LagrangePoints;
 
     template< class Topology >
-    static const LocalInterpolation &localInterpolation ( const Key &key )
+    static Object *createObject ( const Key &key )
     {
       const LagrangePoints &lagrangePoints
-        = LagrangePointsCreator::template lagrangePoints< Topology >( key );
-      return *(new LocalInterpolation( lagrangePoints ));
-    }
-
-    static void release ( const LocalInterpolation &localInterpolation )
-    {
-      const LagrangePoints &lagrangePoints = localInterpolation.lagrangePoints();
-      delete &localInterpolation;
-      LagrangePointsCreator::release( lagrangePoints );
+        = *LPFactory::template lagrangePoints< Topology >( key );
+      return new Object( lagrangePoints );
     }
   };
 

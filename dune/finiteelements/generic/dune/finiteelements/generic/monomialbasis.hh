@@ -12,7 +12,7 @@
 
 #include <dune/finiteelements/common/field.hh>
 
-#include <dune/finiteelements/generic/basisprovider.hh>
+#include <dune/finiteelements/generic/topologyfactory.hh>
 #include <dune/finiteelements/generic/multiindex.hh>
 #include <dune/finiteelements/generic/tensor.hh>
 
@@ -876,37 +876,45 @@ namespace Dune
     using Base::order_;
   };
 
-
-
-  // MonomialBasisCreator
+  // MonomialBasisFactory
   // --------------------
 
   template< int dim, class F >
-  struct MonomialBasisCreator
+  struct MonomialBasisFactory;
+
+  template< int dim, class F >
+  struct MonomialBasisFactoryTraits
   {
     static const unsigned int dimension = dim;
-
-    typedef F StorageField;
-
     typedef unsigned int Key;
-    typedef VirtualMonomialBasis< dimension, StorageField > Basis;
+    typedef const VirtualMonomialBasis< dimension, F > Object;
+    typedef MonomialBasisFactory<dim,F> Factory;
+  };
+
+  template< int dim, class F >
+  struct MonomialBasisFactory :
+    public TopologyFactory< MonomialBasisFactoryTraits<dim,F> >
+  {
+    static const unsigned int dimension = dim;
+    typedef F StorageField;
+    typedef MonomialBasisFactoryTraits<dim,F> Traits;
+
+    typedef typename Traits::Key Key;
+    typedef typename Traits::Object Object;
 
     template< class Topology >
-    static const Basis &basis ( const Key &order )
+    static Object* createObject ( const Key &order )
     {
-      return *(new VirtualMonomialBasisImpl< Topology, StorageField >( order ));
+      return new VirtualMonomialBasisImpl< Topology, StorageField >( order );
     }
 
-    static void release ( const Basis &basis )
-    {
-      delete &basis;
-    }
-
-    template< class Topology >
-    static void basis(unsigned int order,Basis* &basis)
-    {
-      basis = new VirtualMonomialBasisImpl<Topology,StorageField>(order);
-    }
+    /*
+       template< class Topology >
+       static void basis(unsigned int order,Basis* &basis)
+       {
+       basis = new VirtualMonomialBasisImpl<Topology,StorageField>(order);
+       }
+     */
   };
 
 
@@ -916,7 +924,7 @@ namespace Dune
 
   template< int dim, class SF >
   struct MonomialBasisProvider
-    : public BasisProvider< MonomialBasisCreator< dim, SF > >
+    : public TopologySingletonFactory< MonomialBasisFactory< dim, SF > >
   {};
 
 }

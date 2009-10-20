@@ -21,22 +21,30 @@ namespace Dune
               typename InterpolC::LocalInterpolation >,
           GenericLocalFiniteElement<BasisC, CoeffC, InterpolC, dimDomain,D,R> >
   {
+    typedef GenericLocalFiniteElement<BasisC, CoeffC, InterpolC, dimDomain,D,R> This;
+    typedef LocalFiniteElementInterface<
+        LocalFiniteElementTraits<
+            typename BasisC::Basis,
+            typename CoeffC::LocalCoefficients,
+            typename InterpolC::LocalInterpolation >, This > Base;
+    using Base::Traits;
+
+    typedef typename BasisC::Key Key;
+
+    static_assert( (Conversion<Key,typename CoeffC::Key>::sameType),
+                   "incompatible keys between BasisCreator and CoefficientsCreator" );
+    static_assert( (Conversion<Key,typename InterpolC::Key>::sameType),
+                   "incompatible keys between BasisCreator and InterpolationCreator" );
+
     typedef FiniteElementProvider<BasisC,CoeffC,InterpolC> FECreator;
     typedef typename FECreator::FiniteElement FiniteElement;
 
     /** \todo Please doc me !
      */
-    typedef LocalFiniteElementTraits< typename FECreator::Basis,
-        typename FECreator::LocalCoefficients,
-        typename FECreator::LocalInterpolation > Traits;
-
-    /** \todo Please doc me !
-     */
     GenericLocalFiniteElement ( unsigned int topologyId,
-                                unsigned int order )
+                                const Key &key )
       : topologyId_(topologyId),
-        order_(order),
-        finiteElement_( FECreator::finiteElement(topologyId,order) )
+        finiteElement_( FECreator::finiteElement(topologyId,key) )
     {}
     ~GenericLocalFiniteElement()
     {
@@ -81,7 +89,6 @@ namespace Dune
     }
   private:
     unsigned int topologyId_;
-    unsigned int order_;
     const FiniteElement &finiteElement_;
   };
 

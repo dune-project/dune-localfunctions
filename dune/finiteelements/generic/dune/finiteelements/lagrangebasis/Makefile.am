@@ -4,7 +4,7 @@ check_PROGRAMS = test test-all
 
 
 TOPOLOGY = Pyramid< Pyramid< Pyramid< Point > > >
-SETTINGS = -DTOPOLOGY="$(TOPOLOGY)" -DHAVE_GMP=1 -DHAVE_ALGLIB=0
+SETTINGS = -DTOPOLOGY="$(TOPOLOGY)" -DHAVE_GMP=0 -DHAVE_ALGLIB=1
 
 AM_CPPFLAGS = -I$(top_srcdir)/alglib
 test_SOURCES = test.cc

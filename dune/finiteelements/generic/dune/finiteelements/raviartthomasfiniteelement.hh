@@ -10,7 +10,7 @@ namespace Dune
 {
 
   template< unsigned int dimDomain, class D, class R,
-      class SF=D, class CF=D >
+      class SF=R, class CF=SF >
   class RaviartThomasLocalFiniteElement
     : public GenericLocalFiniteElement< RaviartThomasBasisCreator< dimDomain, SF, CF >,
           RaviartThomasBasisCreator< dimDomain, SF, CF >,

@@ -13,7 +13,6 @@
 #include <dune/grid/genericgeometry/subtopologies.hh>
 
 #include <dune/finiteelements/common/localcoefficients.hh>
-#include <dune/finiteelements/generic/basisprovider.hh>
 #include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
 
 namespace Dune
@@ -29,8 +28,7 @@ namespace Dune
   class LagrangePoints;
 
   template< class F, unsigned int dim >
-  class LagrangePointsCreator;
-
+  class LagrangeCoefficientsFactory;
 
 
   // LagrangePoint
@@ -81,7 +79,7 @@ namespace Dune
 
     typedef GenericGeometry::Point Topology;
 
-    friend class LagrangePointsCreator< F, Topology::dimension >;
+    friend class LagrangeCoefficientsFactory< F, Topology::dimension >;
     friend class LagrangePointsImpl< GenericGeometry::Prism< Topology >, F >;
     friend class LagrangePointsImpl< GenericGeometry::Pyramid< Topology >, F >;
 
@@ -115,7 +113,7 @@ namespace Dune
 
     typedef GenericGeometry::Prism< BaseTopology > Topology;
 
-    friend class LagrangePointsCreator< F, Topology::dimension >;
+    friend class LagrangeCoefficientsFactory< F, Topology::dimension >;
     friend class LagrangePointsImpl< GenericGeometry::Prism< Topology >, F >;
     friend class LagrangePointsImpl< GenericGeometry::Pyramid< Topology >, F >;
 
@@ -185,7 +183,7 @@ namespace Dune
 
     typedef GenericGeometry::Pyramid< BaseTopology > Topology;
 
-    friend class LagrangePointsCreator< F, Topology::dimension >;
+    friend class LagrangeCoefficientsFactory< F, Topology::dimension >;
     friend class LagrangePointsImpl< GenericGeometry::Prism< Topology >, F >;
     friend class LagrangePointsImpl< GenericGeometry::Pyramid< Topology >, F >;
 
@@ -267,7 +265,7 @@ namespace Dune
   {
     typedef LagrangePoints< F, dim > This;
 
-    friend class LagrangePointsCreator< F, dim >;
+    friend class LagrangeCoefficientsFactory< F, dim >;
 
   public:
     typedef F Field;
@@ -328,48 +326,49 @@ namespace Dune
 
 
 
-  // LagrangePointsCreator
+  // LagrangeCoefficientsFactory
   // ---------------------
+  template <class F, unsigned int dim >
+  struct LagrangeCoefficientsFactoryTraits
+  {
+    static const unsigned int dimension = dim;
+    typedef LagrangePoints<F,dim> PointSet;
+    typedef const PointSet Object;
+    typedef unsigned int Key;
+    typedef LagrangeCoefficientsFactory< F,dim > Factory;
+  };
 
   template< class F, unsigned int dim >
-  class LagrangePointsCreator
+  class LagrangeCoefficientsFactory :
+    public TopologyFactory< LagrangeCoefficientsFactoryTraits< F,dim> >
   {
     template< class T >
     struct Topology;
 
   public:
+    typedef LagrangeCoefficientsFactoryTraits<F,dim> Traits;
     static const unsigned int dimension = dim;
+    typedef typename Traits::Object Object;
+    typedef typename Traits::Key Key;
 
-    typedef Dune::LagrangePoints< F, dimension > LagrangePoints;
-    typedef LagrangePoints LocalCoefficients;
+    typedef typename Traits::PointSet PointSet;
 
-    typedef unsigned int Key;
-
-    template< class T >
-    static const LagrangePoints &lagrangePoints ( const Key &order );
+    typedef Object LagrangePoints;
 
     template< class T >
-    static const LocalCoefficients &localCoefficients ( const Key &order )
+    static const LagrangePoints *lagrangePoints ( const Key &order );
+
+    template< class T >
+    static Object *createObject ( const Key &order )
     {
       return lagrangePoints< T >( order );
-    }
-
-    static void release ( const LagrangePoints &lagrangePoints )
-    {
-      delete &lagrangePoints;
-    }
-
-    template< class Topology >
-    static bool supports ( const Key &order )
-    {
-      return true;
     }
   };
 
 
   template< class F, unsigned int dim >
   template< class T >
-  struct LagrangePointsCreator< F, dim >::Topology
+  struct LagrangeCoefficientsFactory< F, dim >::Topology
   {
     typedef LagrangePointsImpl< T, F > Impl;
     typedef Dune::LagrangePoint< F, dim > LagrangePoint;
@@ -391,28 +390,17 @@ namespace Dune
 
   template< class F, unsigned int dim >
   template< class T >
-  inline const typename LagrangePointsCreator< F, dim >::LagrangePoints &
-  LagrangePointsCreator< F, dim >::lagrangePoints ( const Key &order )
+  inline const typename LagrangeCoefficientsFactory< F, dim >::LagrangePoints *
+  LagrangeCoefficientsFactory< F, dim >::lagrangePoints ( const Key &order )
   {
     typedef Dune::LagrangePoint< F, dimension > LagrangePoint;
     typedef typename Topology< T >::Impl Impl;
 
-    LagrangePoints *lagrangePoints = new LagrangePoints( order, Impl::size( order ) );
+    PointSet *lagrangePoints = new PointSet( order, Impl::size( order ) );
     LagrangePoint *p = &(lagrangePoints->points_[ 0 ]);
     ForLoop< Topology< T >::template Init, 0, dimension >::apply( order, p );
-    return *lagrangePoints;
+    return lagrangePoints;
   }
-
-
-
-  // LagrangeBasisProvider
-  // ---------------------
-
-  template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
-  struct LagrangeBasisProvider
-    : public BasisProvider<
-          LagrangeBasisCreator< dim, LagrangePointsCreator, SF, CF > >
-  {};
 
 
 }

@@ -3,6 +3,7 @@
 #ifndef DUNE_BASISPROVIDER_HH
 #define DUNE_BASISPROVIDER_HH
 
+#if 0
 #include <map>
 #include <dune/common/fvector.hh>
 #include <dune/grid/genericgeometry/topologytypes.hh>
@@ -249,5 +250,6 @@ namespace Dune
   };
 
 }
+#endif
 
 #endif // DUNE_BASISPROVIDER_HH

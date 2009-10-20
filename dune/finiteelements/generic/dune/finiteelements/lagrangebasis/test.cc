@@ -31,14 +31,16 @@ bool test(unsigned int order, bool verbose = false) {
   {
     std::cout << "# Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
 
-    typedef Dune::LagrangeCoefficientsFactory< double, Topology::dimension > LagrangePointsFactory;
-    // typedef Dune::LobattoCoefficientsFactory< double, Topology::dimension > LagrangePointsFactory;
-    const typename LagrangePointsFactory::LagrangePoints &points = *LagrangePointsFactory::template lagrangePoints< Topology >( o );
+    // typedef Dune::LagrangeCoefficientsFactory< double, Topology::dimension > LagrangePointsFactory;
+    typedef Dune::LobattoCoefficientsFactory< double, Topology::dimension > LagrangePointsFactory;
+    const typename LagrangePointsFactory::LagrangePoints *pointsPtr = LagrangePointsFactory::template lagrangePoints< Topology >( o );
 
-    if ( points == 0)
+    if ( pointsPtr == 0)
       continue;
+    const typename LagrangePointsFactory::LagrangePoints &points = *pointsPtr;
 
-    typedef Dune::LagrangeBasisFactory<Topology::dimension,Dune::LagrangeCoefficientsFactory,StorageField,ComputeField> BasisFactory;
+    // typedef Dune::LagrangeBasisFactory<Topology::dimension,Dune::LagrangeCoefficientsFactory,StorageField,ComputeField> BasisFactory;
+    typedef Dune::LagrangeBasisFactory<Topology::dimension,Dune::LobattoCoefficientsFactory,StorageField,ComputeField> BasisFactory;
     typename BasisFactory::Object &basis = *BasisFactory::template create<Topology>(o);
 
     std::vector< Dune::FieldVector< double, 1 > > y( basis.size() );
@@ -91,14 +93,16 @@ bool test(unsigned int topologyId, unsigned int order, bool verbose = false) {
   {
     std::cout << "# Testing " << topologyId << " in dimension " << dimension << " with order " << o << std::endl;
 
-    typedef Dune::LagrangeCoefficientsFactory< double, dimension > LagrangePointsFactory;
-    // typedef Dune::LobattoCoefficientsFactory< double, dimension > LagrangePointsFactory;
-    const typename LagrangePointsFactory::LagrangePoints &points = *LagrangePointsFactory::create( topologyId, o );
+    // typedef Dune::LagrangeCoefficientsFactory< double, dimension > LagrangePointsFactory;
+    typedef Dune::LobattoCoefficientsFactory< double, dimension > LagrangePointsFactory;
+    const typename LagrangePointsFactory::LagrangePoints *pointsPtr = LagrangePointsFactory::create( topologyId, o );
 
-    if ( points == 0)
+    if ( pointsPtr == 0)
       continue;
+    const typename LagrangePointsFactory::LagrangePoints &points = *pointsPtr;
 
-    typedef Dune::LagrangeBasisFactory<dimension,Dune::LagrangeCoefficientsFactory,StorageField,ComputeField> BasisFactory;
+    // typedef Dune::LagrangeBasisFactory<dimension,Dune::LagrangeCoefficientsFactory,StorageField,ComputeField> BasisFactory;
+    typedef Dune::LagrangeBasisFactory<dimension,Dune::LobattoCoefficientsFactory,StorageField,ComputeField> BasisFactory;
     typename BasisFactory::Object &basis = *BasisFactory::create(topologyId,o);
 
     std::vector< Dune::FieldVector< double, 1 > > y( basis.size() );

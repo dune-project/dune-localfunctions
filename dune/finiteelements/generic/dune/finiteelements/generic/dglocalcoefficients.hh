@@ -46,7 +46,7 @@ namespace Dune
 
 
 
-  // DGLocalCoefficientsCreator
+  // DGLocalCoefficientsFactory
   // --------------------------
   template< class BasisCreator >
   struct DGLocalCoefficientsFactory;
@@ -57,7 +57,7 @@ namespace Dune
     typedef typename BasisFactory::Key Key;
     typedef DGLocalCoefficients LocalCoefficients;
     typedef const DGLocalCoefficients Object;
-    typedef DGLocalCoefficientsCreator<BasisFactory> Factory;
+    typedef DGLocalCoefficientsFactory<BasisFactory> Factory;
   };
 
   template< class BasisFactory >
@@ -73,11 +73,11 @@ namespace Dune
     template< class Topology >
     static Object *createObject ( const Key &key )
     {
-      const typename BasisFactory::Basis &basis
+      const typename BasisFactory::Basis *basis
         = BasisFactory::template create< Topology >( key );
-      Object *coefficients = new LocalCoefficients( basis.size() );
+      Object *coefficients = new Object( basis->size() );
       BasisFactory::release( basis );
-      return *coefficients;
+      return coefficients;
     }
   };
 

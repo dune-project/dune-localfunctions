@@ -483,6 +483,7 @@ namespace Dune
   template < unsigned int dim, class SF, class CF >
   struct RaviartThomasBasisFactoryTraits
   {
+    static const unsigned int dimension = dim;
     typedef RaviartThomasFECreator<dim,SF,CF> Creator;
     typedef typename Creator::Key Key;
     typedef const typename Creator::Basis Object;
@@ -506,10 +507,11 @@ namespace Dune
   template < unsigned int dim, class SF, class CF >
   struct RaviartThomasInterpolationFactoryTraits
   {
+    static const unsigned int dimension = dim;
     typedef RaviartThomasFECreator<dim,SF,CF> Creator;
     typedef typename Creator::Key Key;
     typedef const typename Creator::LocalInterpolation Object;
-    typedef RaviartThomasBasisFactory<dim,SF,CF> Factory;
+    typedef RaviartThomasInterpolationFactory<dim,SF,CF> Factory;
   };
   template < unsigned int dim, class SF, class CF >
   struct RaviartThomasInterpolationFactory :
@@ -529,10 +531,11 @@ namespace Dune
   template < unsigned int dim, class SF, class CF >
   struct RaviartThomasCoefficientsFactoryTraits
   {
+    static const unsigned int dimension = dim;
     typedef RaviartThomasFECreator<dim,SF,CF> Creator;
     typedef typename Creator::Key Key;
     typedef const typename Creator::LocalCoefficients Object;
-    typedef RaviartThomasBasisFactory<dim,SF,CF> Factory;
+    typedef RaviartThomasCoefficientsFactory<dim,SF,CF> Factory;
   };
   template < unsigned int dim, class SF, class CF >
   struct RaviartThomasCoefficientsFactory :

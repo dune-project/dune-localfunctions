@@ -11,7 +11,6 @@
 
 namespace Dune
 {
-  // inherit 1
   template <class Traits>
   struct TopologyFactory
   {
@@ -120,45 +119,6 @@ namespace Dune
     }
     Storage storage_;
   };
-
-
-  // *************************************************************
-
-
-#if 0
-
-  // Local Finite Element Factory
-  template < class BFactory, class CFactory, class IFactory >
-  struct TopologyLocalFiniteElementFactory
-  {
-    typedef Tuple< BFactory::Key, CFactory::Key, IFactory::Key > Key;
-    typedef Tuple< BFactory::Object, CFactory::Object, IFactory::Object > Object;
-    template <class Topology>
-    static const Object &create(const Key &key)
-    {
-      return Creator<Topology>::create( key );
-    }
-    static const Object &create(unsigned int topologyId, const Key &key)
-    {
-      Object *object = 0;
-      GenericGeometry::IfTopology< Maker, dimension >::apply( topologyId, key, object );
-      return *object;
-    }
-    static void release ( const Object &object )
-    {
-      return Creator::release( object );
-    }
-  private:
-    template< class Topology >
-    struct Maker
-    {
-      static void apply ( const Key &key, const Object *&object )
-      {
-        object = &Creator<Topology>::create( key );
-      };
-    };
-  };
-#endif
 
 }
 #endif

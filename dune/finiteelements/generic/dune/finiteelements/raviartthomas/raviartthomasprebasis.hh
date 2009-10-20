@@ -11,18 +11,17 @@
 #include <dune/grid/genericgeometry/referenceelements.hh>
 
 #include <dune/finiteelements/common/localcoefficients.hh>
-#include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
-#if HAVE_ALGLIB
-#include <dune/finiteelements/lagrangebasis/lobattopoints.hh>
-#endif
 #include <dune/finiteelements/lagrangebasis/interpolation.hh>
-#include <dune/finiteelements/generic/basisprovider.hh>
 #include <dune/finiteelements/generic/basisprint.hh>
 #include <dune/finiteelements/generic/polynomialbasis.hh>
 #include <dune/finiteelements/quadrature/genericquadrature.hh>
 #include <dune/finiteelements/quadrature/subquadrature.hh>
 #include <dune/finiteelements/orthonormalbasis/orthonormalbasis.hh>
 #include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
+#include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
+#if HAVE_ALGLIB
+#include <dune/finiteelements/lagrangebasis/lobattopoints.hh>
+#endif
 namespace Dune
 {
   template <class Topology, class Field>
@@ -120,6 +119,7 @@ namespace Dune
     static Basis &basis(unsigned int order)
     {
       RTVecMatrix vecMatrix(order);
+      // ????
       MBasis basis(order+1);
       Basis *tmBasis = new Basis(basis);
       tmBasis.fill(vecMatrix);
@@ -137,22 +137,21 @@ namespace Dune
   struct RaviartThomasInitialBasis
   {
     static const unsigned int dimension = dim;
-    // typedef MonomialBasisProvider<dimension,Field> TestBasisProvider;
-    // typedef MonomialBasisProvider<dimension-1,Field> TestFaceBasisProvider;
-    typedef OrthonormalBasisProvider<dimension,Field> TestBasisProvider;
-    typedef OrthonormalBasisProvider<dimension-1,Field> TestFaceBasisProvider;
-    // typedef LagrangeBasisProvider<dimension,Field> TestBasisProvider;
-    // typedef LagrangeBasisProvider<dimension-1,Field> TestFaceBasisProvider;
+    // typedef MonomialBasisFactory<dimension,Field> TestBasisFactory;
+    // typedef MonomialBasisFactory<dimension-1,Field> TestFaceBasisFactory;
+    typedef OrthonormalBasisFactory<dimension,Field> TestBasisFactory;
+    typedef OrthonormalBasisFactory<dimension-1,Field> TestFaceBasisFactory;
+    // typedef LagrangeBasisFactory<dimension,Field> TestBasisFactory;
+    // typedef LagrangeBasisFactory<dimension-1,Field> TestFaceBasisFactory;
 #if HAVE_ALGLIB
-    // typedef LobattoBasisProvider<dimension,Field> TestBasisProvider;
-    // typedef LobattoBasisProvider<dimension-1,Field> TestFaceBasisProvider;
+    // typedef LobattoBasisFactory<dimension,Field> TestBasisFactory;
+    // typedef LobattoBasisFactory<dimension-1,Field> TestFaceBasisFactory;
 #endif
 
-    typedef typename TestBasisProvider::Basis TestBasis;
-    typedef typename TestFaceBasisProvider::Basis TestFaceBasis;
-
-    typedef MonomialBasisProvider<dimension,Field> MBasisProvider;
-    typedef typename MBasisProvider::Basis MBasis;
+    typedef typename TestBasisFactory::Object TestBasis;
+    typedef typename TestFaceBasisFactory::Object TestFaceBasis;
+    typedef MonomialBasisFactory<dimension,Field> MBasisFactory;
+    typedef typename MBasisFactory::Object MBasis;
 
     struct FaceStructure
     {
@@ -172,7 +171,7 @@ namespace Dune
                              std::vector<FaceStructure*> &faceStructure )
           {
             faceStructure.push_back( new FaceStructure (
-                                       TestFaceBasisProvider::template basis<FaceTopology>(order),
+                                       *TestFaceBasisFactory::template create<FaceTopology>(order),
                                        GenericGeometry::ReferenceElement<Topology,Field>::integrationOuterNormal(face) ) );
           }
         };
@@ -186,11 +185,11 @@ namespace Dune
 
       static const TestBasis &testBasis(unsigned int order)
       {
-        return TestBasisProvider::template basis<Topology>(order-1);
+        return *TestBasisFactory::template create<Topology>(order-1);
       }
       static const MBasis &mBasis(unsigned int order)
       {
-        return MBasisProvider::template basis<Topology>(order+1);
+        return *MBasisFactory::template create<Topology>(order+1);
       }
       static const PreBasis &preBasis(unsigned int order)
       {

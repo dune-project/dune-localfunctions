@@ -6,6 +6,7 @@
 #include <cassert>
 #include <vector>
 
+#include <dune/finiteelements/generic/topologyfactory.hh>
 #include <dune/finiteelements/common/localcoefficients.hh>
 
 namespace Dune
@@ -47,35 +48,36 @@ namespace Dune
 
   // DGLocalCoefficientsCreator
   // --------------------------
-
   template< class BasisCreator >
-  struct DGLocalCoefficientsCreator
+  struct DGLocalCoefficientsFactory;
+  template< class BasisFactory >
+  struct DGLocalCoefficientsFactoryTraits
   {
-    static const unsigned int dimension = BasisCreator::dimension;
-
-    typedef typename BasisCreator::Key Key;
-
+    static const unsigned int dimension = BasisFactory::dimension;
+    typedef typename BasisFactory::Key Key;
     typedef DGLocalCoefficients LocalCoefficients;
+    typedef const DGLocalCoefficients Object;
+    typedef DGLocalCoefficientsCreator<BasisFactory> Factory;
+  };
+
+  template< class BasisFactory >
+  struct DGLocalCoefficientsFactory :
+    public TopologyFactory< DGLocalCoefficientsFactoryTraits<BasisFactory> >
+  {
+    typedef DGLocalCoefficientsFactoryTraits<BasisFactory> Traits;
+
+    static const unsigned int dimension = Traits::dimension;
+    typedef typename Traits::Key Key;
+    typedef typename Traits::Object Object;
 
     template< class Topology >
-    static const LocalCoefficients &localCoefficients ( const Key &key )
+    static Object *createObject ( const Key &key )
     {
-      const typename BasisCreator::Basis &basis
-        = BasisCreator::template basis< Topology >( key );
-      const LocalCoefficients *coefficients = new LocalCoefficients( basis.size() );
-      BasisCreator::release( basis );
+      const typename BasisFactory::Basis &basis
+        = BasisFactory::template create< Topology >( key );
+      Object *coefficients = new LocalCoefficients( basis.size() );
+      BasisFactory::release( basis );
       return *coefficients;
-    }
-
-    static void release ( const LocalCoefficients &localCoefficients )
-    {
-      delete &localCoefficients;
-    }
-
-    template< class Topology >
-    static bool supports ( const Key &key )
-    {
-      return true;
     }
   };
 

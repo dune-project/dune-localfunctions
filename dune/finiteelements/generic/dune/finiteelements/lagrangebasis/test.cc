@@ -1,6 +1,6 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#include <dune/finiteelements/common/gmpfield.hh>
+#include <dune/finiteelements/common/field.hh>
 
 #include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
 #if HAVE_ALGLIB
@@ -14,8 +14,8 @@ typedef amp::ampf< 128 > StorageField;
 typedef amp::ampf< 512 > ComputeField;
 #else
 #if HAVE_GMP
-typedef GMPField< 128 > StorageField;
-typedef GMPField< 512 > ComputeField;
+typedef Dune::GMPField< 128 > StorageField;
+typedef Dune::GMPField< 512 > ComputeField;
 #else
 typedef double StorageField;
 typedef double ComputeField;
@@ -31,9 +31,12 @@ bool test(unsigned int order, bool verbose = false) {
   {
     std::cout << "# Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
 
-    // typedef Dune::LagrangeCoefficientsFactory< double, Topology::dimension > LagrangePointsFactory;
-    typedef Dune::LobattoCoefficientsFactory< double, Topology::dimension > LagrangePointsFactory;
+    typedef Dune::LagrangeCoefficientsFactory< double, Topology::dimension > LagrangePointsFactory;
+    // typedef Dune::LobattoCoefficientsFactory< double, Topology::dimension > LagrangePointsFactory;
     const typename LagrangePointsFactory::LagrangePoints &points = *LagrangePointsFactory::template lagrangePoints< Topology >( o );
+
+    if ( points == 0)
+      continue;
 
     typedef Dune::LagrangeBasisFactory<Topology::dimension,Dune::LagrangeCoefficientsFactory,StorageField,ComputeField> BasisFactory;
     typename BasisFactory::Object &basis = *BasisFactory::template create<Topology>(o);
@@ -88,9 +91,12 @@ bool test(unsigned int topologyId, unsigned int order, bool verbose = false) {
   {
     std::cout << "# Testing " << topologyId << " in dimension " << dimension << " with order " << o << std::endl;
 
-    // typedef Dune::LagrangeCoefficientsFactory< double, dimension > LagrangePointsFactory;
-    typedef Dune::LobattoCoefficientsFactory< double, dimension > LagrangePointsFactory;
+    typedef Dune::LagrangeCoefficientsFactory< double, dimension > LagrangePointsFactory;
+    // typedef Dune::LobattoCoefficientsFactory< double, dimension > LagrangePointsFactory;
     const typename LagrangePointsFactory::LagrangePoints &points = *LagrangePointsFactory::create( topologyId, o );
+
+    if ( points == 0)
+      continue;
 
     typedef Dune::LagrangeBasisFactory<dimension,Dune::LagrangeCoefficientsFactory,StorageField,ComputeField> BasisFactory;
     typename BasisFactory::Object &basis = *BasisFactory::create(topologyId,o);

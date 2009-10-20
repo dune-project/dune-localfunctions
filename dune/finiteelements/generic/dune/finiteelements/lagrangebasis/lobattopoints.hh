@@ -8,10 +8,10 @@
 #include <dune/finiteelements/common/matrix.hh>
 #include <dune/finiteelements/common/field.hh>
 #include <dune/common/forloop.hh>
+#include <dune/finiteelements/generic/topologyfactory.hh>
 
 #include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
 #include <dune/finiteelements/lagrangebasis/interpolation.hh>
-#include <dune/finiteelements/generic/basisprovider.hh>
 #include <dune/finiteelements/generic/basisprint.hh>
 #include <dune/finiteelements/generic/polynomialbasis.hh>
 
@@ -253,10 +253,19 @@ namespace Dune
     template< class Topology >
     static const LagrangePoints *lagrangePoints ( const Key &order )
     {
+      if ( !supports<Topology>(order) )
+        return 0;
       LagrangePoints *lagrangePoints = new LagrangePoints( order, 0 );
       LobattoPoints<Field> points1D(order);
       ForLoop<Setup<Topology>::template InitCodim,0,dimension>::apply(order,points1D.points_,*lagrangePoints);
       return lagrangePoints;
+    }
+
+    template< class Topology >
+    static bool supports ( const Key &order )
+    {
+      return GenericGeometry::IsSimplex< Topology >::value ||
+             GenericGeometry::IsGeneralizedPrism< Topology >::value;
     }
 
     template< class T >

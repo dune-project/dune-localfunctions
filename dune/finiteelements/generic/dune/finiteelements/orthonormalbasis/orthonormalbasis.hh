@@ -5,30 +5,50 @@
 
 #include <sstream>
 
+#include <dune/finiteelements/generic/topologyfactory.hh>
+
 #include <dune/finiteelements/generic/polynomialbasis.hh>
-#include <dune/finiteelements/generic/basisprovider.hh>
 #include <dune/finiteelements/generic/basisprint.hh>
 #include <dune/finiteelements/orthonormalbasis/orthonormalcompute.hh>
 
 namespace Dune
 {
 
-  // OrthonormalBasisCreator
+  // OrthonormalBasisFactory
   // -----------------------
-
   template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
-  struct OrthonormalBasisCreator
+  struct OrthonormalBasisFactory;
+  template< int dim, class SF, class CF >
+  struct OrthonormalBasisFactoryTraits
+  {
+    typedef Dune::MonomialBasisProvider< dim, SF > MonomialBasisProviderType;
+    typedef typename MonomialBasisProviderType::Object MonomialBasisType;
+    typedef SparseCoeffMatrix< SF, 1 > CoefficientMatrix;
+    typedef StandardEvaluator< MonomialBasisType > Evaluator;
+    typedef PolynomialBasis< Evaluator, CoefficientMatrix > Basis;
+
+    static const unsigned int dimension = dim;
+    typedef unsigned int Key;
+    typedef const Basis Object;
+    typedef OrthonormalBasisFactory<dim,SF,CF> Factory;
+  };
+
+  template< int dim, class SF, class CF >
+  struct OrthonormalBasisFactory :
+    public TopologyFactory< OrthonormalBasisFactoryTraits<dim,SF,CF> >
   {
     static const unsigned int dimension = dim;
     typedef SF StorageField;
+    typedef CF ComputeField;
+    typedef OrthonormalBasisFactoryTraits<dim,SF,CF> Traits;
+
+    typedef typename Traits::Key Key;
+    typedef typename Traits::Object Object;
 
     typedef Dune::MonomialBasisProvider< dimension, StorageField > MonomialBasisProviderType;
-    typedef typename MonomialBasisProviderType::Basis MonomialBasisType;
+    typedef typename MonomialBasisProviderType::Object MonomialBasisType;
 
-    typedef unsigned int Key;
 
-    // typedef amp::ampf< Precision< CF >::value > ComputeField;
-    typedef CF ComputeField;
     typedef SparseCoeffMatrix< StorageField, 1 > CoefficientMatrix;
     typedef StandardEvaluator< MonomialBasisType > Evaluator;
     typedef PolynomialBasis< Evaluator, CoefficientMatrix > Basis;
@@ -36,11 +56,11 @@ namespace Dune
     typedef typename GenericGeometry::SimplexTopology< dim >::type SimplexTopology;
 
     template< class Topology >
-    static const Basis &basis ( const unsigned int order )
+    static Object *createObject ( const unsigned int order )
     {
-      const MonomialBasisType &monomialBasis = MonomialBasisProviderType::template basis< SimplexTopology >( order );
+      const typename Traits::MonomialBasisType &monomialBasis = *Traits::MonomialBasisProviderType::template create< SimplexTopology >( order );
 
-      static CoefficientMatrix _coeffs;
+      static typename Traits::CoefficientMatrix _coeffs;
       if( _coeffs.size() <= monomialBasis.size() )
       {
         ONBCompute::ONBMatrix< Topology, ComputeField > matrix( order );
@@ -61,24 +81,9 @@ namespace Dune
 #endif
       }
 
-      return *(new Basis( monomialBasis, _coeffs, monomialBasis.size() ));
-    }
-
-    static void release ( const Basis &basis )
-    {
-      delete &basis;
+      return new Basis( monomialBasis, _coeffs, monomialBasis.size() );
     }
   };
-
-
-
-  // OrthonormalBasisProvider
-  // ------------------------
-
-  template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
-  struct OrthonormalBasisProvider
-    : public BasisProvider< OrthonormalBasisCreator< dim, SF, CF > >
-  {};
 
 }
 

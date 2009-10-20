@@ -7,6 +7,7 @@
 
 #include <dune/common/forloop.hh>
 #include <dune/common/exceptions.hh>
+#include <dune/finiteelements/generic/topologyfactory.hh>
 
 #include <dune/finiteelements/common/matrix.hh>
 #include <dune/grid/genericgeometry/referenceelements.hh>
@@ -14,14 +15,13 @@
 #include <dune/finiteelements/common/localinterpolation.hh>
 #include <dune/finiteelements/common/localcoefficients.hh>
 #include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
+#include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
 #include <dune/finiteelements/lagrangebasis/interpolation.hh>
-#include <dune/finiteelements/generic/basisprovider.hh>
 #include <dune/finiteelements/generic/basisprint.hh>
 #include <dune/finiteelements/generic/polynomialbasis.hh>
 #include <dune/finiteelements/quadrature/genericquadrature.hh>
 #include <dune/finiteelements/quadrature/subquadrature.hh>
 #include <dune/finiteelements/orthonormalbasis/orthonormalbasis.hh>
-#include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
 #include <dune/finiteelements/raviartthomas/raviartthomasprebasis.hh>
 
 namespace Dune
@@ -179,9 +179,9 @@ namespace Dune
     typedef MonomialBasisProvider<dimension,Field> TestMBasisProvider;
     typedef MonomialBasisProvider<dimension-1,Field> TestFaceMBasisProvider;
     typedef SparseCoeffMatrix< Field, 1 > CoefficientMatrix;
-    typedef StandardEvaluator< typename TestMBasisProvider::Basis > Evaluator;
+    typedef StandardEvaluator< typename TestMBasisProvider::Object > Evaluator;
     typedef PolynomialBasis< Evaluator, CoefficientMatrix > TestBasis;
-    typedef StandardEvaluator< typename TestFaceMBasisProvider::Basis > FaceEvaluator;
+    typedef StandardEvaluator< typename TestFaceMBasisProvider::Object > FaceEvaluator;
     typedef PolynomialBasis< FaceEvaluator, CoefficientMatrix > TestFaceBasis;
     typedef typename RaviartThomasInitialBasis<Field,dimension> :: FaceStructure FaceStructure;
     RaviartThomasL2Interpolation
@@ -399,11 +399,10 @@ namespace Dune
   };
 
 
-  template< int dim, class SF, class CF >
-  struct RaviartThomasBasisCreator
+  template< unsigned int dim, class SF, class CF >
+  struct RaviartThomasFECreator
   {
     typedef SF StorageField;
-    //typedef amp::ampf< Precision<CF>::value > ComputeField;
     typedef CF ComputeField;
     static const int dimension = dim;
     typedef VirtualMonomialBasis<dim,SF> MBasis;
@@ -415,7 +414,7 @@ namespace Dune
     typedef RaviartThomasL2Interpolation< ComputeField, dimension > LocalInterpolation;
 
     template< class Topology >
-    static const LocalInterpolation &localInterpolation ( const Key &order )
+    static LocalInterpolation *localInterpolation ( const Key &order )
     {
       typedef RaviartThomasInitialBasis<ComputeField,dimension> InitialBasis;
       typedef typename InitialBasis::template Creator<Topology> BasisGet;
@@ -423,21 +422,21 @@ namespace Dune
       const unsigned int size = GenericGeometry::Size<Topology,1>::value;
       std::vector< typename InitialBasis::FaceStructure* > faceStructure;
       ForLoop< FaceBasisGet::template GetCodim,0,size-1>::apply(order, faceStructure );
-
+      // ???
       const typename InitialBasis::TestBasis &testBasis( BasisGet::testBasis(order) );
       LocalInterpolation *interpolation = new LocalInterpolation( Topology::id,order,testBasis,faceStructure );
-      return *interpolation;
+      return interpolation;
     }
     template <class Topology>
-    static Basis &basis(unsigned int order)
+    static Basis *basis(unsigned int order)
     {
       typedef RaviartThomasInitialBasis<StorageField,dimension> InitialBasis;
+      // ???
       const typename InitialBasis::MBasis &mBasis( InitialBasis::template Creator<Topology>::mBasis(order) );
-      // const MBasis &_mBasis = MonomialBasisProvider<dimension,StorageField>::template basis<Topology>(order+1);
       Basis *basis = new Basis(mBasis);
-      const LocalInterpolation &interpolation = localInterpolation<Topology>(order);
-      RaviartThomasMatrix<Topology,LocalInterpolation> matrix(interpolation);
-      release(interpolation);
+      const LocalInterpolation *interpolation = localInterpolation<Topology>(order);
+      RaviartThomasMatrix<Topology,LocalInterpolation> matrix(*interpolation);
+      delete interpolation;
       basis->fill(matrix);
 #if GLFEM_BASIS_PRINT
       {
@@ -453,29 +452,17 @@ namespace Dune
         basisPrint<0>(out,basisMI);
       }
 #endif
-      return *basis;
+      return basis;
     }
     template< class Topology >
-    static const LocalCoefficients &localCoefficients ( const Key &order )
+    static LocalCoefficients *localCoefficients ( const Key &order )
     {
-      const LocalInterpolation &interpolation = localInterpolation<Topology>(order);
-      LocalCoefficientsContainer *localKeys = new LocalCoefficientsContainer(interpolation);
-      release(interpolation);
-      return *localKeys;
+      const LocalInterpolation *interpolation = localInterpolation<Topology>(order);
+      LocalCoefficientsContainer *localKeys = new LocalCoefficientsContainer(*interpolation);
+      delete interpolation;
+      return localKeys;
     }
 
-    static void release ( const LocalInterpolation &localInterpolation )
-    {
-      delete &localInterpolation;
-    }
-    static void release ( const Basis &basis )
-    {
-      delete &basis;
-    }
-    static void release ( const LocalCoefficients &localCoefficients )
-    {
-      delete &localCoefficients;
-    }
     template< class Topology >
     static bool supports ( const Key &key )
     {
@@ -483,10 +470,85 @@ namespace Dune
     }
   };
 
-  template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
-  struct RaviartThomasBasisProvider
-    : public BasisProvider<RaviartThomasBasisCreator<dim,SF,CF> >
-  {};
+  // ----
+  // Factories
+  // ---
+  template < unsigned int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
+  struct RaviartThomasBasisFactory;
+  template < unsigned int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
+  struct RaviartThomasInterpolationFactory;
+  template < unsigned int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
+  struct RaviartThomasCoefficientsFactory;
+
+  template < unsigned int dim, class SF, class CF >
+  struct RaviartThomasBasisFactoryTraits
+  {
+    typedef RaviartThomasFECreator<dim,SF,CF> Creator;
+    typedef typename Creator::Key Key;
+    typedef const typename Creator::Basis Object;
+    typedef RaviartThomasBasisFactory<dim,SF,CF> Factory;
+  };
+  template < unsigned int dim, class SF, class CF >
+  struct RaviartThomasBasisFactory :
+    public TopologyFactory< RaviartThomasBasisFactoryTraits<dim,SF,CF> >
+  {
+    typedef RaviartThomasBasisFactoryTraits<dim,SF,CF> Traits;
+    typedef typename Traits::Creator Creator;
+    template <class Topology>
+    static typename Traits::Object *createObject( const typename Traits::Key &key )
+    {
+      if (Creator::template supports<Topology>(key))
+        return Creator::template basis<Topology>(key);
+      else
+        return 0;
+    }
+  };
+  template < unsigned int dim, class SF, class CF >
+  struct RaviartThomasInterpolationFactoryTraits
+  {
+    typedef RaviartThomasFECreator<dim,SF,CF> Creator;
+    typedef typename Creator::Key Key;
+    typedef const typename Creator::LocalInterpolation Object;
+    typedef RaviartThomasBasisFactory<dim,SF,CF> Factory;
+  };
+  template < unsigned int dim, class SF, class CF >
+  struct RaviartThomasInterpolationFactory :
+    public TopologyFactory< RaviartThomasInterpolationFactoryTraits<dim,SF,CF> >
+  {
+    typedef RaviartThomasInterpolationFactoryTraits<dim,SF,CF> Traits;
+    typedef typename Traits::Creator Creator;
+    template <class Topology>
+    static typename Traits::Object *createObject( const typename Traits::Key &key )
+    {
+      if (Creator::template supports<Topology>(key))
+        return Creator::template localInterpolation<Topology>(key);
+      else
+        return 0;
+    }
+  };
+  template < unsigned int dim, class SF, class CF >
+  struct RaviartThomasCoefficientsFactoryTraits
+  {
+    typedef RaviartThomasFECreator<dim,SF,CF> Creator;
+    typedef typename Creator::Key Key;
+    typedef const typename Creator::LocalCoefficients Object;
+    typedef RaviartThomasBasisFactory<dim,SF,CF> Factory;
+  };
+  template < unsigned int dim, class SF, class CF >
+  struct RaviartThomasCoefficientsFactory :
+    public TopologyFactory< RaviartThomasCoefficientsFactoryTraits<dim,SF,CF> >
+  {
+    typedef RaviartThomasCoefficientsFactoryTraits<dim,SF,CF> Traits;
+    typedef typename Traits::Creator Creator;
+    template <class Topology>
+    static typename Traits::Object *createObject( const typename Traits::Key &key )
+    {
+      if (Creator::template supports<Topology>(key))
+        return Creator::template localCoefficients<Topology>(key);
+      else
+        return 0;
+    }
+  };
 
 }
 #endif // DUNE_RAVIARTTHOMASBASIS_HH

@@ -95,9 +95,12 @@ namespace Dune
     template< class Topology >
     static Object *createObject ( const Key &key )
     {
-      const LagrangePoints &lagrangePoints
-        = *LPFactory::template lagrangePoints< Topology >( key );
-      return new Object( lagrangePoints );
+      const LagrangePoints *lagrangePoints
+        = LPFactory::template lagrangePoints< Topology >( key );
+      if ( lagrangePoints == 0 )
+        return 0;
+      else
+        return new Object( *lagrangePoints );
     }
   };
 

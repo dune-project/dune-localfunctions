@@ -8,6 +8,7 @@
 #include <dune/common/fvector.hh>
 #include <dune/finiteelements/common/field.hh>
 #include <dune/common/forloop.hh>
+#include <dune/finiteelements/generic/topologyfactory.hh>
 
 #include <dune/grid/genericgeometry/topologytypes.hh>
 #include <dune/grid/genericgeometry/subtopologies.hh>

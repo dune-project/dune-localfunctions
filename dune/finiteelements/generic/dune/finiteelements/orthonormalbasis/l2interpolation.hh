@@ -3,6 +3,8 @@
 #ifndef DUNE_L2INTERPOLATION_HH
 #define DUNE_L2INTERPOLATION_HH
 
+#include <dune/finiteelements/generic/topologyfactory.hh>
+
 #include <dune/finiteelements/common/localinterpolation.hh>
 #include <dune/finiteelements/quadrature/genericquadrature.hh>
 
@@ -68,37 +70,50 @@ namespace Dune
     const Quadrature &quadrature_;
   };
 
-
-
-  template< class BasisCreator >
-  struct LocalL2InterpolationCreator
+  template< class BasisFactory >
+  struct LocalL2InterpolationFactory;
+  template< class BasisFactory >
+  struct LocalL2InterpolationFactoryTraits
   {
-    typedef typename BasisCreator::Key Key;
-    typedef typename BasisCreator::Basis Basis;
-
-    typedef typename BasisCreator::StorageField Field;
     static const unsigned int dimension = BasisCreator::dimension;
+    typedef typename BasisFactory::StorageField Field;
+    typedef GenericGeometry::Quadrature< dimension, Field > Quadrature;
+
+    typedef typename BasisFactory::Key Key;
+    typedef typename BasisFactory::Basis Basis;
+    typedef LocalL2Interpolation< Basis, Quadrature > LocalInterpolation;
+    typedef const LocalInterpolation Object;
+  };
+
+  template< class BasisFactory >
+  struct LocalL2InterpolationFactory :
+    public TopologyFactory< LocalL2InterpolationFactoryTraits<BasisFactory> >
+  {
+    typedef LocalL2InterpolationFactoryTraits<BasisFactory> Traits;
+    static const unsigned int dimension = Traits::dimension;
+    typedef typename Traits::Key Key;
+    typedef typename Traits::Basis Basis;
+    typedef Traits::Object Object;;
+
+    typedef typename Traits::Field Field;
 
     typedef GenericGeometry::Quadrature< dimension, Field > Quadrature;
 
-    typedef LocalL2Interpolation< Basis, Quadrature > LocalInterpolation;
-
     template< class Topology >
-    static const LocalInterpolation &localInterpolation ( const Key &key )
+    static Object *createObject ( const Key &key )
     {
       typedef GenericGeometry::GenericQuadrature< Topology, Field > GenericQuadrature;
-      const Basis &basis = BasisCreator::template basis< Topology >( key );
+      const Basis &basis = BasisFactory::template create< Topology >( key );
       const Quadrature *quadrature = new GenericQuadrature( 2*basis.order()+1 );
-      return *(new LocalInterpolation( basis, *quadrature ));
+      return new LocalInterpolation( basis, *quadrature );
     }
-
-    static void release ( const LocalInterpolation &localInterpolation )
+    static void release ( Object *object )
     {
       const Basis &basis = localInterpolation.basis();
       const Quadrature &quadrature = localInterpolation.quadrature();
-      delete &localInterpolation;
+      BasisFactory::release( basis );
       delete &quadrature;
-      BasisCreator::release( basis );
+      delete &localInterpolation;
     }
   };
 

@@ -1,51 +1,32 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#include <dune/finiteelements/common/gmpfield.hh>
+#include <dune/finiteelements/common/field.hh>
 #include <dune/finiteelements/raviartthomas/raviartthomasbasis.hh>
 #include <dune/finiteelements/generic/basisprint.hh>
-using namespace Dune;
-using namespace GenericGeometry;
+
+#if HAVE_ALGLIB
+typedef amp::ampf< 128 > StorageField;
+typedef amp::ampf< 512 > ComputeField;
+#else
+#if HAVE_GMP
+typedef Dune::GMPField< 128 > StorageField;
+typedef Dune::GMPField< 512 > ComputeField;
+#else
+typedef double StorageField;
+typedef double ComputeField;
+#endif
+#endif
 
 template <class Topology>
 bool test(unsigned int order)
 {
-#if HAVE_ALGLIB
-  typedef amp::ampf< 128 > StorageField;
-  typedef amp::ampf< 512 > ComputeField;
-#else
-#if HAVE_GMP
-  typedef GMPField< 128 > StorageField;
-  typedef GMPField< 512 > ComputeField;
-#else
-  typedef double StorageField;
-  typedef double ComputeField;
-#endif
-#endif
-
   bool ret = true;
 
   for (unsigned int o=order; o>=1; --o)
   {
     std::cout << "Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
-    typedef RaviartThomasBasisProvider<Topology::dimension,StorageField,ComputeField> BasisProvider;
-    const typename BasisProvider::Basis &basis = BasisProvider::basis(Topology::id,o);
-    /*
-       typedef Dune::LagrangePoints< Topology, StorageField > LagrangePoints;
-       LagrangePoints points( 1 );
-
-       std::vector< Dune::FieldVector< double, Topology::dimension > > y( basis.size() );
-       for( unsigned int index = 0; index < points.size(); ++index )
-       {
-       basis.evaluate( points[ index ].point(), y );
-       bool first = true;
-       std::cout << "At point points[ " << index << " ] = " << points[ index ].point() << std::endl;
-       for( unsigned int i = 0; i < y.size(); ++i)
-       {
-        std::cout << "  y [ " << i << " ] = " << y[i] << std::endl;
-        first = false;
-       }
-       }
-     */
+    typedef Dune::RaviartThomasBasisFactory<Topology::dimension,StorageField,ComputeField> BasisProvider;
+    const typename BasisProvider::Object &basis = *BasisProvider::template create<Topology>(o);
   }
   if (!ret) {
     std::cout << "   FAILED !" << std::endl;
@@ -54,6 +35,9 @@ bool test(unsigned int order)
 }
 int main ( int argc, char **argv )
 {
+  using namespace Dune;
+  using namespace GenericGeometry;
+
   if( argc < 2 )
   {
     std::cerr << "Usage: " << argv[ 0 ] << " <p>" << std::endl;

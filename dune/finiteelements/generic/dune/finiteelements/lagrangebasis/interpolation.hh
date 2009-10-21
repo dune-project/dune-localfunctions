@@ -78,6 +78,7 @@ namespace Dune
   template< class LPFactory >
   struct LagrangeInterpolationFactoryTraits
   {
+    static const int dimension = LPFactory::LagrangePoints::dimension;
     typedef typename LPFactory::Key Key;
     typedef const LocalLagrangeInterpolation< LPFactory > Object;
     typedef LagrangeInterpolationFactory<LPFactory> Factory;

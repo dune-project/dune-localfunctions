@@ -10,31 +10,25 @@
 namespace Dune
 {
 
-  template< unsigned int dimDomain, class D, class R,
-      class SF=R, class CF=SF >
+  template< unsigned int dimD, class D, class R, class SF=R, class CF=SF >
   class LagrangeLocalFiniteElement
-    : public GenericLocalFiniteElement< LagrangeBasisProvider< dimDomain, SF, CF >,
-          LagrangePointsCreator< SF, dimDomain >,
-          LocalLagrangeInterpolationCreator< LagrangePointsCreator< SF, dimDomain > >,
-          dimDomain,D,R>
+    : public GenericLocalFiniteElement< LagrangeBasisFactory< dimD, LagrangeCoefficientsFactory, SF, CF >,
+          LagrangeCoefficientsFactory< SF, dimD >,
+          LagrangeInterpolationFactory< LagrangeCoefficientsFactory< SF, dimD > >, dimD, D, R >
   {
-    typedef GenericLocalFiniteElement< LagrangeBasisProvider< dimDomain, SF, CF >,
-        LagrangePointsCreator< SF, dimDomain >,
-        LocalLagrangeInterpolationCreator< LagrangePointsCreator< SF, dimDomain > >,
-        dimDomain,D,R> Base;
-    using Base::FECreator;
-    using Base::FiniteElement;
-  public:
-    using Base::Traits;
+    typedef GenericLocalFiniteElement< LagrangeBasisFactory< dimD, LagrangeCoefficientsFactory, SF, CF >,
+        LagrangeCoefficientsFactory< SF, dimD >,
+        LagrangeInterpolationFactory< LagrangeCoefficientsFactory< SF, dimD > >, dimD, D, R >
+    Base;
 
+  public:
     /** \todo Please doc me !
      */
-    LagrangeLocalFiniteElement ( unsigned int topologyId,
-                                 unsigned int order )
-      : Base(topologyId,order)
+    LagrangeLocalFiniteElement ( unsigned int topologyId, unsigned int order )
+      : Base( topologyId, order )
     {}
   };
 
 }
 
-#endif
+#endif // #ifndef DUNE_LAGRANGEFINITEELEMENT_HH

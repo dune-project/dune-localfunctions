@@ -59,14 +59,14 @@ namespace Dune
      */
     const typename Traits::LocalCoefficientsType& localCoefficients () const
     {
-      return *(finiteElement_.coefficients_);
+      return *(finiteElement_.coeff_);
     }
 
     /** \todo Please doc me !
      */
     const typename Traits::LocalInterpolationType& localInterpolation () const
     {
-      return *(finiteElement_.interpolation_);
+      return *(finiteElement_.interpol_);
     }
 
     /** \todo Please doc me !
@@ -116,13 +116,12 @@ namespace Dune
           finiteElement.template create<Topology>(key);
         };
       };
-    private:
-      const typename Traits::LocalBasisType *basis_;
-      const typename Traits::LocalCoefficientsType *coeff_;
-      const typename Traits::LocalInterpolationType *interpol_;
+      typename Traits::LocalBasisType *basis_;
+      typename Traits::LocalCoefficientsType *coeff_;
+      typename Traits::LocalInterpolationType *interpol_;
     };
     unsigned int topologyId_;
-    const FiniteElement &finiteElement_;
+    FiniteElement finiteElement_;
   };
 
 }

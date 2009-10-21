@@ -756,14 +756,16 @@ namespace Dune
 
   public:
     typedef F Field;
+    typedef F StorageField;
     static const int dimension = dim;
     static const unsigned int dimRange = 1;
 
     typedef FieldVector<Field,dimension> DomainVector;
     typedef FieldVector<Field,dimRange> RangeVector;
 
-    explicit VirtualMonomialBasis(unsigned int order)
-      : order_(order) {}
+    explicit VirtualMonomialBasis(unsigned int topologyId,
+                                  unsigned int order)
+      : order_(order), topologyId_(topologyId) {}
 
     virtual ~VirtualMonomialBasis() {}
 
@@ -838,6 +840,7 @@ namespace Dune
     }
   protected:
     unsigned int order_;
+    unsigned int topologyId_;
   };
 
   template< class Topology, class F >
@@ -852,7 +855,7 @@ namespace Dune
     typedef typename Base::DomainVector DomainVector;
 
     VirtualMonomialBasisImpl(unsigned int order)
-      : Base(order), basis_(order)
+      : Base(Topology::id,order), basis_(order)
     {}
 
     const unsigned int *sizes ( ) const
@@ -925,7 +928,10 @@ namespace Dune
   template< int dim, class SF >
   struct MonomialBasisProvider
     : public TopologySingletonFactory< MonomialBasisFactory< dim, SF > >
-  {};
+  {
+    static const unsigned int dimension = dim;
+    typedef SF StorageField;
+  };
 
 }
 

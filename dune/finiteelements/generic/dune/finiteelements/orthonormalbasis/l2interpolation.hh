@@ -97,14 +97,14 @@ namespace Dune
     void interpolate ( const Function &function, std::vector< DofField > &coefficients ) const
     {
       const unsigned size = Base::basis().size();
-      assert( coefficients.size() == size );
       Base::interpolate(function,val_);
+      coefficients.resize( size );
       for (unsigned int i=0; i<size; ++i)
       {
         coefficients[i] = 0;
         for (unsigned int j=0; j<size; ++j)
         {
-          coefficients[i] += massMatrix_(i,j)*val_[i];
+          coefficients[i] += field_cast<DofField>(massMatrix_(i,j)*val_[j]);
         }
       }
     }
@@ -114,26 +114,33 @@ namespace Dune
         val_(basis.size()),
         massMatrix_()
     {
+      typedef FieldVector< Field, Base::Basis::dimRange > RangeVector;
       typedef typename Base::Quadrature::Iterator Iterator;
       const unsigned size = basis.size();
+      std::vector< RangeVector > basisValues( size );
+
       massMatrix_.resize( size,size );
       for (unsigned int i=0; i<size; ++i)
         for (unsigned int j=0; j<size; ++j)
-          massMatrix_(i,j) = 0; // (i==j)?1:0;
-      const Iterator end = quadrature().end();
-      for( Iterator it = quadrature().begin(); it != end; ++it )
+          massMatrix_(i,j) = 0;
+      const Iterator end = Base::quadrature().end();
+      for( Iterator it = Base::quadrature().begin(); it != end; ++it )
       {
-        basis().evaluate( it->point(), val_ );
+        Base::basis().evaluate( it->point(), basisValues );
         for (unsigned int i=0; i<size; ++i)
           for (unsigned int j=0; j<size; ++j)
-            massMatrix_(i,j) += (val_[i]*val_[j])*it->weight(); // (i==j)?1:0;
+            massMatrix_(i,j) += (basisValues[i]*basisValues[j])*it->weight();
       }
-      massMatrix_.invert();
+      if ( !massMatrix_.invert() )
+      {
+        DUNE_THROW(MathError, "Mass matrix singular in LocalL2Interpolation");
+      }
+
     }
-    typedef typename Base::Basis::Field Field;
+    typedef typename Base::Basis::StorageField Field;
     typedef FieldVector< Field, Base::Basis::dimRange > RangeVector;
     typedef LFEMatrix<Field> MassMatrix;
-    std::vector<RangeVector> val_;
+    mutable std::vector<Field> val_;
     MassMatrix massMatrix_;
   };
 
@@ -147,7 +154,7 @@ namespace Dune
     typedef GenericGeometry::Quadrature< dimension, Field > Quadrature;
 
     typedef typename BasisFactory::Key Key;
-    typedef typename BasisFactory::Basis Basis;
+    typedef typename BasisFactory::Object Basis;
     typedef LocalL2Interpolation< Basis, Quadrature, onb > LocalInterpolation;
     typedef const LocalInterpolation Object;
     typedef LocalL2InterpolationFactory<BasisFactory,onb> Factory;

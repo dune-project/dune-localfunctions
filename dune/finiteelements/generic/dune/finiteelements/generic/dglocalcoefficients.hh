@@ -73,7 +73,7 @@ namespace Dune
     template< class Topology >
     static Object *createObject ( const Key &key )
     {
-      const typename BasisFactory::Basis *basis
+      const typename BasisFactory::Object *basis
         = BasisFactory::template create< Topology >( key );
       Object *coefficients = new Object( basis->size() );
       BasisFactory::release( basis );

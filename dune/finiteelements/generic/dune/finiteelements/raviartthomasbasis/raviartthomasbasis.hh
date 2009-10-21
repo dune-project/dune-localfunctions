@@ -22,7 +22,7 @@
 #include <dune/finiteelements/quadrature/genericquadrature.hh>
 #include <dune/finiteelements/quadrature/subquadrature.hh>
 #include <dune/finiteelements/orthonormalbasis/orthonormalbasis.hh>
-#include <dune/finiteelements/raviartthomas/raviartthomasprebasis.hh>
+#include <dune/finiteelements/raviartthomasbasis/raviartthomasprebasis.hh>
 
 namespace Dune
 {

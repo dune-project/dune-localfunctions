@@ -1,7 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
 #include <dune/finiteelements/common/field.hh>
-#include <dune/finiteelements/raviartthomas/raviartthomasbasis.hh>
+#include <dune/finiteelements/raviartthomasbasis/raviartthomasbasis.hh>
 #include <dune/finiteelements/generic/basisprint.hh>
 
 #if HAVE_ALGLIB

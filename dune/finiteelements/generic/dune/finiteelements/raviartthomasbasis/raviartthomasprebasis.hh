@@ -6,19 +6,17 @@
 #include <utility>
 
 #include <dune/common/forloop.hh>
-
 #include <dune/finiteelements/common/matrix.hh>
 #include <dune/grid/genericgeometry/referenceelements.hh>
 
-#include <dune/finiteelements/common/localcoefficients.hh>
-#include <dune/finiteelements/lagrangebasis/interpolation.hh>
 #include <dune/finiteelements/generic/basisprint.hh>
 #include <dune/finiteelements/generic/polynomialbasis.hh>
-#include <dune/finiteelements/quadrature/genericquadrature.hh>
-#include <dune/finiteelements/quadrature/subquadrature.hh>
+
 #include <dune/finiteelements/orthonormalbasis/orthonormalbasis.hh>
+#include <dune/finiteelements/lagrangebasis/interpolation.hh>
 #include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
-#include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
+#include <dune/finiteelements/lagrangebasis/lagrangecoefficients.hh>
+#include <dune/finiteelements/lagrangebasis/equidistantpoints.hh>
 #if HAVE_ALGLIB
 #include <dune/finiteelements/lagrangebasis/lobattopoints.hh>
 #endif

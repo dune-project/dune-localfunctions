@@ -9,16 +9,11 @@
 #include <dune/finiteelements/common/field.hh>
 #include <dune/common/forloop.hh>
 #include <dune/finiteelements/generic/topologyfactory.hh>
-
-#include <dune/finiteelements/lagrangebasis/lagrangepoints.hh>
-#include <dune/finiteelements/lagrangebasis/interpolation.hh>
-#include <dune/finiteelements/generic/basisprint.hh>
-#include <dune/finiteelements/generic/polynomialbasis.hh>
-
 #include <dune/grid/genericgeometry/referenceelements.hh>
 #include <dune/grid/genericgeometry/referencemappings.hh>
+
 #include <dune/finiteelements/quadrature/lobattoquadrature.hh>
-#include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
+#include <dune/finiteelements/lagrangebasis/lagrangecoefficients.hh>
 
 namespace Dune
 {
@@ -32,21 +27,12 @@ namespace Dune
       if( order < 2 )
         return;
       points_.resize(order-1);
-#if HAVE_ALGLIB
       typedef amp::ampf< Precision< Field >::value > MPField;
       GenericGeometry::LobattoPoints<MPField> lobatto(order+1);
-#else
-#error LOBATTOPOINTS ONLY AVAILABLE WITH ALGLIB
-      GenericGeometry::LobattoPoints<Field> lobatto(order+1);
-#endif
 
       for (unsigned int i=1; i<order; ++i) {
         points_[i-1] = field_cast<Field>(lobatto.point(i));
       }
-      /*
-         for (unsigned int i=1;i<order;++i)
-         points_[i-1] = Field(i)/Field(order);
-       */
     }
 
     const unsigned int size()
@@ -81,7 +67,7 @@ namespace Dune
       const unsigned int dimStart,
       unsigned int startPos,
       const std::vector<Field> &points1D,
-      LagrangePoint< Field, dim > *points )
+      LagrangeCoefficient< Field, dim > *points )
     {
       const unsigned int order = points1D.size()+1;
       unsigned int i = order+1-iup;
@@ -98,7 +84,7 @@ namespace Dune
     }
     template <unsigned int dim>
     static void setup(const std::vector<Field> &points1D,
-                      LagrangePoint< Field, dim > *points )
+                      LagrangeCoefficient< Field, dim > *points )
     {
       points->point_[0] = Zero<Field>();
     }
@@ -122,7 +108,7 @@ namespace Dune
       const unsigned int dimStart,
       unsigned int startPos,
       const std::vector<Field> &points1D,
-      LagrangePoint< Field, dim > *points )
+      LagrangeCoefficient< Field, dim > *points )
     {
       const unsigned int order = points1D.size()+1;
       unsigned int endPos = startPos;
@@ -145,7 +131,7 @@ namespace Dune
     }
     template <unsigned int dim>
     static void setup(const std::vector<Field> &points1D,
-                      LagrangePoint< Field, dim > *points )
+                      LagrangeCoefficient< Field, dim > *points )
     {
       const unsigned int order = points1D.size()+1;
       unsigned int startPos=0,endPos=0;
@@ -183,7 +169,7 @@ namespace Dune
       const unsigned int dimStart,
       unsigned int startPos,
       const std::vector<Field> &points1D,
-      LagrangePoint< Field, dim > *points )
+      LagrangeCoefficient< Field, dim > *points )
     {
       const unsigned int order = points1D.size()+1;
       unsigned int endPos = startPos;
@@ -206,7 +192,7 @@ namespace Dune
     }
     template <unsigned int dim>
     static void setup(const std::vector<Field> &points1D,
-                      LagrangePoint< Field, dim > *points )
+                      LagrangeCoefficient< Field, dim > *points )
     {
       const unsigned int order = points1D.size()+1;
       assert(dim>=dimension);
@@ -226,55 +212,37 @@ namespace Dune
     }
   };
 
-  template <class Field,unsigned int dim>
-  struct LobattoCoefficientsFactory;
-
-  template <class Field,unsigned int dim>
-  struct LobattoCoefficientsFactoryTraits
+  template< class F, unsigned int dim >
+  struct LobattoCoefficients : public LagrangeCoefficientsBase<F,dim>
   {
     static const unsigned int dimension = dim;
-    typedef Dune::LagrangePoints< Field, dimension > LagrangePoints;
-    typedef const LagrangePoints Object;
-    typedef unsigned int Key;
-    typedef LobattoCoefficientsFactory<Field,dim> Factory;
-  };
-
-  template <class Field,unsigned int dim>
-  struct LobattoCoefficientsFactory :
-    public TopologyFactory< LobattoCoefficientsFactoryTraits<Field,dim> >
-  {
-    static const unsigned int dimension = dim;
-    typedef LobattoCoefficientsFactoryTraits<Field,dim> Traits;
-
-    typedef typename Traits::Object Object;
-    typedef typename Traits::Key Key;
-    typedef typename Traits::LagrangePoints LagrangePoints;
+    typedef F Field;
+    typedef LagrangeCoefficientsBase<F,dim> Base;
+    LobattoCoefficients(unsigned int order)
+      : Base(order)
+    {}
 
     template< class Topology >
-    static const LagrangePoints *lagrangePoints ( const Key &order )
+    bool build ( )
     {
-      if ( !supports<Topology>(order) )
-        return 0;
-      LagrangePoints *lagrangePoints = new LagrangePoints( order, 0 );
+      unsigned int order = Base::order();
       LobattoPoints<Field> points1D(order);
-      ForLoop<Setup<Topology>::template InitCodim,0,dimension>::apply(order,points1D.points_,*lagrangePoints);
-      return lagrangePoints;
+      ForLoop<Setup<Topology>::template InitCodim,0,dimension>::
+      apply(order,points1D.points_,*this);
+      return true;
     }
-
     template< class Topology >
-    static bool supports ( const Key &order )
+    static bool supports ( unsigned int order )
     {
-      return GenericGeometry::IsSimplex< Topology >::value ||
-             GenericGeometry::IsGeneralizedPrism< Topology >::value;
-    }
-
-    template< class T >
-    static Object *createObject ( const Key &order )
-    {
-      return lagrangePoints< T >( order );
+      if ( GenericGeometry::IsSimplex< Topology >::value ||
+           GenericGeometry::IsGeneralizedPrism< Topology >::value )
+        return false;
+      else
+        return true;
     }
 
   private:
+    using Base::points_;
     template <class Topology>
     struct Setup
     {
@@ -284,7 +252,7 @@ namespace Dune
         static const unsigned int codim = dimension-pdim;
         static void apply(const unsigned int order,
                           const std::vector<Field> &points1D,
-                          LagrangePoints &points)
+                          Base &points)
         {
           const unsigned int size = GenericGeometry::Size<Topology,codim>::value;
           ForLoop<InitSub,0,size-1>::apply(order,points1D,points);
@@ -295,7 +263,7 @@ namespace Dune
           typedef typename GenericGeometry::SubTopology<Topology,codim,i>::type SubTopology;
           static void apply(const unsigned int order,
                             const std::vector<Field> &points1D,
-                            LagrangePoints &points)
+                            Base &points)
           {
             Setup<Topology>::template Init<SubTopology>::template apply<i>(order,points1D,points);
           }
@@ -312,42 +280,29 @@ namespace Dune
         template <unsigned int subEntity>
         static void apply(const unsigned int order,
                           const std::vector<Field> &points1D,
-                          LagrangePoints &points)
+                          Base &points)
         {
           unsigned int oldSize = points.size();
           unsigned int size = InnerPoints::size(order);
           if (size==0)
             return;
           points.resize(oldSize+size);
-          std::vector< LagrangePoint<Field,dimension-codimension> > subPoints(size);
-
-          /*
-             std::cout << Topology::name() << " " << SubTopology::name() << " : "
-                    << " ( " << codimension <<  " , " << subEntity << " ) "
-                    << oldSize << " " << size << std::endl;
-           */
+          std::vector< LagrangeCoefficient<Field,dimension-codimension> > subPoints(size);
 
           InnerPoints::template setup<dimension-codimension>( points1D,&(subPoints[0]) );
 
           const RefMappingsContainer &refMappings = RefMappings::container( Topology::id );
           const Mapping &mapping = refMappings.template mapping< codimension >( subEntity );
 
-          LagrangePoint<Field,dimension> *p = &(points.points_[oldSize]);
+          LagrangeCoefficient<Field,dimension> *p = &(points.points_[oldSize]);
           for ( unsigned int nr = 0; nr<size; ++nr, ++p)
           {
-            /*
-               std::cout << "   " << nr << " : "
-                      << subPoints[nr].point_ << " -> "
-                      << mapping.global( subPoints[nr].point_ )
-                      << std::endl;
-             */
             p->point_ = mapping.global( subPoints[nr].point_ );
             p->localKey_ = LocalKey( subEntity, codimension, nr );
             #ifndef NDEBUG
             bool test = GenericGeometry::ReferenceElement<Topology,Field>::checkInside(p->point_);
             if (!test)
               std::cout << "not inside" << std::endl;
-            // assert( test );
             #endif
           }
         }

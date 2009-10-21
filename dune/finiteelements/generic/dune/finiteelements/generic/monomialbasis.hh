@@ -910,14 +910,6 @@ namespace Dune
     {
       return new VirtualMonomialBasisImpl< Topology, StorageField >( order );
     }
-
-    /*
-       template< class Topology >
-       static void basis(unsigned int order,Basis* &basis)
-       {
-       basis = new VirtualMonomialBasisImpl<Topology,StorageField>(order);
-       }
-     */
   };
 
 

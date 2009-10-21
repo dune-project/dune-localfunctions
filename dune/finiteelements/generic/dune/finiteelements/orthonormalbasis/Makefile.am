@@ -1,5 +1,5 @@
 orthonormalbasisdir = $(includedir)/dune/finiteelements/orthonormalbasis
-orthonormalbasis_HEADERS = orthonormalbasis.hh orthonormalcompute.hh l2interpolation.hh
+orthonormalbasis_HEADERS = orthonormalbasis.hh orthonormalcompute.hh
 check_PROGRAMS = example test test-all
 
 LIBS = $(DUNE_LDFLAGS) $(DUNE_LIBS) -lgmpxx -lgmp -lmpfr

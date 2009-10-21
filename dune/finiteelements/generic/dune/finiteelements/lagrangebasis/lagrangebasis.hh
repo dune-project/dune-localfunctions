@@ -21,15 +21,14 @@ namespace Dune
   // LagrangeMatrix
   // --------------
 
-  template< class Topology, class scalar_t,
-      class LPFactory >
+  template< template <class,unsigned int> class LC,
+      class Topology, class scalar_t >
   struct LagrangeMatrix
   {
     static const unsigned int dimension = Topology::dimension;
 
-    typedef LPFactory LagrangeCoefficientsFactory;
     typedef LFEMatrix< scalar_t > mat_t;
-    typedef LagrangeInterpolationFactory< LagrangeCoefficientsFactory > LocalInterpolationFactory;
+    typedef LagrangeInterpolationFactory< LC,dimension,scalar_t > LocalInterpolationFactory;
     typedef typename LocalInterpolationFactory::Object LocalInterpolation;
 
     explicit LagrangeMatrix( const unsigned int order )
@@ -89,14 +88,11 @@ namespace Dune
   // LagrangeBasisFactory
   // --------------------
 
-
-  template< unsigned int dim,
-      template <class Field,unsigned int> class LPFactory,
-      class SF, class CF = typename ComputeField< SF, 512 >::Type >
+  template< template <class,unsigned int> class LC,
+      unsigned int dim, class SF, class CF >
   struct LagrangeBasisFactory;
-  template< unsigned int dim,
-      template <class Field,unsigned int> class LPFactory,
-      class SF, class CF >
+  template< template <class,unsigned int> class LC,
+      unsigned int dim, class SF, class CF >
   struct LagrangeBasisTraits
   {
     typedef Dune::MonomialBasisProvider< dim, SF > MonomialBasisProvider;
@@ -107,16 +103,15 @@ namespace Dune
     static const unsigned int dimension = dim;
     typedef const Basis Object;
     typedef unsigned int Key;
-    typedef LagrangeBasisFactory<dim,LPFactory,SF,CF> Factory;
+    typedef LagrangeBasisFactory<LC,dim,SF,CF> Factory;
   };
 
-  template< unsigned int dim,
-      template <class Field,unsigned int> class LPFactory,
-      class SF, class CF >
+  template< template <class,unsigned int> class LC,
+      unsigned int dim, class SF, class CF >
   struct LagrangeBasisFactory
-    : public TopologyFactory< LagrangeBasisTraits< dim,LPFactory,SF,CF > >
+    : public TopologyFactory< LagrangeBasisTraits< LC,dim,SF,CF > >
   {
-    typedef LagrangeBasisTraits<dim,LPFactory,SF,CF> Traits;
+    typedef LagrangeBasisTraits<LC,dim,SF,CF> Traits;
     static const unsigned int dimension = dim;
     typedef SF StorageField;
     typedef CF ComputeField;
@@ -130,7 +125,7 @@ namespace Dune
     {
       const typename Traits::MonomialBasis *monomialBasis = Traits::MonomialBasisProvider::template create< Topology >( order );
       Basis *basis = new Basis( *monomialBasis );
-      LagrangeMatrix< Topology, ComputeField, LPFactory<ComputeField,dim> > matrix( order );
+      LagrangeMatrix< LC, Topology, ComputeField > matrix( order );
       basis->fill( matrix );
 #if GLFEM_BASIS_PRINT
       {

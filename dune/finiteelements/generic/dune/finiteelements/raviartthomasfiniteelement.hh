@@ -4,7 +4,7 @@
 #define DUNE_RAVIARTTHOMASFINITEELEMENT_HH
 
 #include <dune/finiteelements/generic/localfiniteelement.hh>
-#include <dune/finiteelements/raviartthomas/raviartthomasbasis.hh>
+#include <dune/finiteelements/raviartthomasbasis/raviartthomasbasis.hh>
 
 namespace Dune
 {
@@ -12,17 +12,15 @@ namespace Dune
   template< unsigned int dimDomain, class D, class R,
       class SF=R, class CF=SF >
   class RaviartThomasLocalFiniteElement
-    : public GenericLocalFiniteElement< RaviartThomasBasisCreator< dimDomain, SF, CF >,
-          RaviartThomasBasisCreator< dimDomain, SF, CF >,
-          RaviartThomasBasisCreator< dimDomain, SF, CF >,
+    : public GenericLocalFiniteElement< RaviartThomasBasisFactory< dimDomain, SF, CF >,
+          RaviartThomasBasisFactory< dimDomain, SF, CF >,
+          RaviartThomasBasisFactory< dimDomain, SF, CF >,
           dimDomain,D,R>
   {
-    typedef GenericLocalFiniteElement< RaviartThomasBasisCreator< dimDomain, SF, CF >,
-        RaviartThomasBasisCreator< dimDomain, SF, CF >,
-        RaviartThomasBasisCreator< dimDomain, SF, CF >,
+    typedef GenericLocalFiniteElement< RaviartThomasBasisFactory< dimDomain, SF, CF >,
+        RaviartThomasBasisFactory< dimDomain, SF, CF >,
+        RaviartThomasBasisFactory< dimDomain, SF, CF >,
         dimDomain,D,R> Base;
-    using Base::FECreator;
-    using Base::FiniteElement;
   public:
     using Base::Traits;
 

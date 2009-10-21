@@ -6,43 +6,48 @@
 #include <vector>
 #include <dune/finiteelements/generic/topologyfactory.hh>
 #include <dune/finiteelements/common/localinterpolation.hh>
+#include <dune/finiteelements/lagrangebasis/lagrangecoefficients.hh>
 
 namespace Dune
 {
 
-  template< class LPFactory >
+  template< template <class,unsigned int> class LC,
+      unsigned int dim, class F >
   struct LagrangeInterpolationFactory;
 
   // LocalLagrangeInterpolation
   // --------------------------
 
-  template< class LPFactory >
+  template< template <class,unsigned int> class LC,
+      unsigned int dim, class F >
   class LocalLagrangeInterpolation
-    : public LocalInterpolationInterface< LocalLagrangeInterpolation<LPFactory> >
+    : public LocalInterpolationInterface< LocalLagrangeInterpolation<LC,dim,F> >
   {
-    typedef LocalLagrangeInterpolation< LPFactory > This;
-
-    // template< class LPFactory >
-    friend class LagrangeInterpolationFactory< LPFactory >;
+    typedef LocalLagrangeInterpolation< LC,dim,F > This;
 
   public:
-    typedef typename LPFactory::LagrangePoints LagrangePoints;
-    typedef typename LagrangePoints::Field Field;
+    typedef LC<F,dim> LagrangeCoefficients;
+    typedef typename LagrangeCoefficients::Field Field;
 
-    static const unsigned int dimension = LagrangePoints::dimension;
+    static const unsigned int dimension = LagrangeCoefficients::dimension;
 
   private:
-    const LagrangePoints &lagrangePoints_;
+    friend class LagrangeInterpolationFactory<LC,dim,F>;
+    const LagrangeCoefficients &lagrangePoints_;
 
-    explicit LocalLagrangeInterpolation ( const LagrangePoints &lagrangePoints )
+    explicit LocalLagrangeInterpolation ( const LagrangeCoefficients &lagrangePoints )
       : lagrangePoints_( lagrangePoints )
     {}
+    const LagrangeCoefficients *points () const
+    {
+      return &lagrangePoints_;
+    }
 
   public:
     template< class Function, class Fy >
     void interpolate ( const Function &function, std::vector< Fy > &coefficients ) const
     {
-      typedef typename LagrangePoints::iterator Iterator;
+      typedef typename LagrangeCoefficients::iterator Iterator;
 
       coefficients.resize( lagrangePoints_.size() );
 
@@ -55,7 +60,7 @@ namespace Dune
     template< class Matrix, class Basis >
     void interpolate ( const Basis &basis, Matrix &coefficients ) const
     {
-      typedef typename LagrangePoints::iterator Iterator;
+      typedef typename LagrangeCoefficients::iterator Iterator;
 
       coefficients.resize( lagrangePoints_.size(), basis.size( ) );
 
@@ -65,7 +70,7 @@ namespace Dune
         basis.template evaluate<0>( it->point(), coefficients.rowPtr( index++ ) );
     }
 
-    const LagrangePoints &lagrangePoints () const
+    const LagrangeCoefficients &lagrangePoints () const
     {
       return lagrangePoints_;
     }
@@ -75,33 +80,41 @@ namespace Dune
 
   // LocalLagrangeInterpolationFactory
   // ---------------------------------
-  template< class LPFactory >
+  template< template <class,unsigned int> class LC,
+      unsigned int dim, class F >
   struct LagrangeInterpolationFactoryTraits
   {
-    static const int dimension = LPFactory::LagrangePoints::dimension;
-    typedef typename LPFactory::Key Key;
-    typedef const LocalLagrangeInterpolation< LPFactory > Object;
-    typedef LagrangeInterpolationFactory<LPFactory> Factory;
+    typedef Dune::LagrangeCoefficientsFactory<LC,dim,F> LagrangeCoefficientsFactory;
+    typedef typename LagrangeCoefficientsFactory::Object LagrangeCoefficients;
+
+    typedef typename LagrangeCoefficientsFactory::Key Key;
+    typedef const LocalLagrangeInterpolation< LC,dim,F > Object;
+    typedef LagrangeInterpolationFactory<LC,dim,F> Factory;
   };
 
-  template< class LPFactory >
+  template< template <class,unsigned int> class LC,
+      unsigned int dim, class F >
   struct LagrangeInterpolationFactory :
-    public TopologyFactory< LagrangeInterpolationFactoryTraits< LPFactory > >
+    public TopologyFactory< LagrangeInterpolationFactoryTraits< LC,dim,F > >
   {
-    typedef LagrangeInterpolationFactoryTraits< LPFactory > Traits;
+    typedef LagrangeInterpolationFactoryTraits< LC,dim,F > Traits;
     typedef typename Traits::Key Key;
     typedef typename Traits::Object Object;
-    typedef typename LPFactory::LagrangePoints LagrangePoints;
 
     template< class Topology >
     static Object *createObject ( const Key &key )
     {
-      const LagrangePoints *lagrangePoints
-        = LPFactory::template lagrangePoints< Topology >( key );
-      if ( lagrangePoints == 0 )
+      const typename Traits::LagrangeCoefficients *lagrangeCoeff
+        = Traits::LagrangeCoefficientsFactory::template create< Topology >( key );
+      if ( lagrangeCoeff == 0 )
         return 0;
       else
-        return new Object( *lagrangePoints );
+        return new Object( *lagrangeCoeff );
+    }
+    static void release( Object *object)
+    {
+      Traits::LagrangeCoefficientsFactory::release( object->points() );
+      delete object;
     }
   };
 

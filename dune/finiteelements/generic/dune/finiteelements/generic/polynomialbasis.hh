@@ -89,17 +89,16 @@ namespace Dune
     }
 
     //! \brief Evaluate all shape functions
-    inline void evaluateFunction (const typename Traits::DomainType& x,
-                                  std::vector<typename Traits::RangeType>& out) const
+    void evaluateFunction (const typename Traits::DomainType& x,
+                           std::vector<typename Traits::RangeType>& out) const
     {
       out.resize(size());
       evaluate(x,out);
     }
 
     //! \brief Evaluate Jacobian of all shape functions
-    inline void
-    evaluateJacobian (const typename Traits::DomainType& x,         // position
-                      std::vector<typename Traits::JacobianType>& out) const      // return value
+    void evaluateJacobian (const typename Traits::DomainType& x,         // position
+                           std::vector<typename Traits::JacobianType>& out) const      // return value
     {
       out.resize(size());
       jacobian(x,out);

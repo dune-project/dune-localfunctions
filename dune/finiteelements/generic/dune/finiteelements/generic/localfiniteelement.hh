@@ -3,7 +3,6 @@
 #ifndef DUNE_GENERIC_LOCALFINITEELEMENT_HH
 #define DUNE_GENERIC_LOCALFINITEELEMENT_HH
 
-#include <dune/common/typetraits.hh>
 #include <dune/common/geometrytype.hh>
 #include <dune/grid/genericgeometry/conversion.hh>
 
@@ -11,99 +10,72 @@
 
 namespace Dune
 {
-
-  // GenericLocalFiniteElementTraits
-  // -------------------------------
-
-  template< class BF, class CF, class IF >
-  struct GenericLocalFiniteElementTraits
+  template< class BasisF, class CoeffF, class InterpolF,
+      unsigned int dimDomain, class D, class R >
+  struct GenericLocalFiniteElement
+    : LocalFiniteElementInterface<
+          LocalFiniteElementTraits< typename BasisF::Object,
+              typename CoeffF::Object,
+              typename InterpolF::Object >,
+          GenericLocalFiniteElement<BasisF, CoeffF, InterpolF, dimDomain,D,R> >
   {
-    typedef typename remove_const< typename BF::Object >::type LocalBasisType;
-    typedef typename remove_const< typename CF::Object >::type LocalCoefficientsType;
-    typedef typename remove_const< typename IF::Object >::type LocalInterpolationType;
-  };
-
-
-
-  // GenericLocalFiniteElement
-  // -------------------------
-
-  template< class BF, class CF, class IF,
-      unsigned int dimD, class D, class R >
-  class GenericLocalFiniteElement
-    : LocalFiniteElementInterface< GenericLocalFiniteElementTraits< BF, CF, IF >,
-          GenericLocalFiniteElement< BF, CF, IF, dimD, D, R > >
-  {
-    typedef GenericLocalFiniteElement< BF, CF, IF, dimD, D, R > This;
-    typedef LocalFiniteElementInterface< GenericLocalFiniteElementTraits< BF, CF, IF >, This > Base;
-
-  public:
+    typedef GenericLocalFiniteElement<BasisF, CoeffF, InterpolF, dimDomain,D,R> This;
+    typedef LocalFiniteElementInterface<
+        LocalFiniteElementTraits<
+            typename BasisF::Object,
+            typename CoeffF::Object,
+            typename InterpolF::Object >, This > Base;
     typedef typename Base::Traits Traits;
 
-    typedef BF BasisFactory;
-    typedef CF CoefficientsFactory;
-    typedef IF InterpolationFactory;
+    typedef typename BasisF::Key Key;
 
-    static const int dimDomain = dimD;
-
-    typedef typename BasisFactory::Key Key;
-
-    static_assert( (Conversion< Key, typename CoefficientsFactory::Key >::sameType),
-                   "incompatible keys between BasisFactory and CoefficientsFactory" );
-    static_assert( (Conversion< Key, typename InterpolationFactory::Key >::sameType),
-                   "incompatible keys between BasisFactory and InterpolationFactory" );
+    static_assert( (Conversion<Key,typename CoeffF::Key>::sameType),
+                   "incompatible keys between BasisCreator and CoefficientsCreator" );
+    static_assert( (Conversion<Key,typename InterpolF::Key>::sameType),
+                   "incompatible keys between BasisCreator and InterpolationCreator" );
 
     /** \todo Please doc me !
      */
-    GenericLocalFiniteElement ( unsigned int topologyId, const Key &key )
-      : topologyId_( topologyId ),
-        basis_( BasisFactory::create( topologyId, key ) ),
-        coefficients_( CoefficientsFactory::create( topologyId, key ) ),
-        interpolation_( InterpolationFactory::create( topologyId, key ) )
-    {}
-
+    GenericLocalFiniteElement ( unsigned int topologyId,
+                                const Key &key )
+      : topologyId_(topologyId),
+        finiteElement_( )
+    {
+      GenericGeometry::IfTopology< FiniteElement::template Maker, dimDomain >::apply( topologyId, key, finiteElement_ );
+    }
     ~GenericLocalFiniteElement()
     {
-      BasisFactory::release( basis_ );
-      CoefficientsFactory::release( coefficients_ );
-      InterpolationFactory::release( interpolation_ );
+      finiteElement_.release();
     }
 
     /** \todo Please doc me !
      */
-    const typename Traits::LocalBasisType &localBasis () const
+    const typename Traits::LocalBasisType& localBasis () const
     {
-      if( basis_ == 0 )
-        DUNE_THROW( NotImplemented, "LocalBasis not implemented." );
-      return *basis_;
+      return *(finiteElement_.basis_);
     }
 
     /** \todo Please doc me !
      */
-    const typename Traits::LocalCoefficientsType &localCoefficients () const
+    const typename Traits::LocalCoefficientsType& localCoefficients () const
     {
-      if( coefficients_ == 0 )
-        DUNE_THROW( NotImplemented, "LocalCoefficients not implemented." );
-      return *coefficients_;
+      return *(finiteElement_.coefficients_);
     }
 
     /** \todo Please doc me !
      */
-    const typename Traits::LocalInterpolationType &localInterpolation () const
+    const typename Traits::LocalInterpolationType& localInterpolation () const
     {
-      if( interpolation_ == 0 )
-        DUNE_THROW( NotImplemented, "LocalInterpolation not implemented." );
-      return *interpolation_;
+      return *(finiteElement_.interpolation_);
     }
 
     /** \todo Please doc me !
      */
     GeometryType type () const
     {
-      if( GenericGeometry::hasGeometryType( topologyId_, dimDomain ) )
+      if ( GenericGeometry::hasGeometryType( topologyId_, dimDomain ) )
         return GenericGeometry::geometryType( topologyId_, dimDomain );
-      else
-        return GeometryType();
+      return GeometryType();
     }
 
     /** \todo Please doc me !
@@ -112,14 +84,47 @@ namespace Dune
     {
       return topologyId_;
     }
-
   private:
+    struct FiniteElement
+    {
+      FiniteElement() : basis_(0), coeff_(0), interpol_(0) {}
+      template <class Topology>
+      void create( const Key &key )
+      {
+        release();
+        basis_ = BasisF::template create<Topology>(key);
+        coeff_ = CoeffF::template create<Topology>(key);
+        interpol_ = InterpolF::template create<Topology>(key);
+      }
+      void release()
+      {
+        if (basis_)
+          BasisF::release(basis_);
+        if (coeff_)
+          CoeffF::release(coeff_);
+        if (interpol_)
+          InterpolF::release(interpol_);
+        basis_=0;
+        coeff_=0;
+        interpol_=0;
+      }
+      template< class Topology >
+      struct Maker
+      {
+        static void apply ( const Key &key, FiniteElement &finiteElement )
+        {
+          finiteElement.template create<Topology>(key);
+        };
+      };
+    private:
+      const typename Traits::LocalBasisType *basis_;
+      const typename Traits::LocalCoefficientsType *coeff_;
+      const typename Traits::LocalInterpolationType *interpol_;
+    };
     unsigned int topologyId_;
-    const typename Traits::LocalBasisType *basis_;
-    const typename Traits::LocalCoefficientsType *coefficients_;
-    const typename Traits::LocalInterpolationType *interpolation_;
+    const FiniteElement &finiteElement_;
   };
 
 }
 
-#endif // #ifndef DUNE_GENERIC_LOCALFINITEELEMENT_HH
+#endif

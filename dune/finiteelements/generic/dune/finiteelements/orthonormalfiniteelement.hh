@@ -5,7 +5,7 @@
 
 #include <dune/finiteelements/generic/localfiniteelement.hh>
 #include <dune/finiteelements/generic/dglocalcoefficients.hh>
-#include <dune/finiteelements/orthonormalbasis/l2interpolation.hh>
+#include <dune/finiteelements/generic/l2interpolation.hh>
 #include <dune/finiteelements/orthonormalbasis/orthonormalbasis.hh>
 
 namespace Dune
@@ -15,17 +15,15 @@ namespace Dune
       class SF=R, class CF=SF >
 
   class OrthonormalLocalFiniteElement
-    : public GenericLocalFiniteElement< OrthonormalBasisProvider< dimDomain, SF, CF >,
-          DGLocalCoefficientsCreator< OrthonormalBasisProvider< dimDomain, SF, CF > >,
-          LocalL2InterpolationCreator< OrthonormalBasisProvider< dimDomain, SF, CF > >,
+    : public GenericLocalFiniteElement< OrthonormalBasisFactory< dimDomain, SF, CF >,
+          DGLocalCoefficientsFactory< OrthonormalBasisFactory< dimDomain, SF, CF > >,
+          LocalL2InterpolationFactory< OrthonormalBasisFactory< dimDomain, SF, CF >,true >,
           dimDomain,D,R>
   {
-    typedef GenericLocalFiniteElement< OrthonormalBasisProvider< dimDomain, SF, CF >,
-        DGLocalCoefficientsCreator< OrthonormalBasisProvider< dimDomain, SF, CF > >,
-        LocalL2InterpolationCreator< OrthonormalBasisProvider< dimDomain, SF, CF > >,
+    typedef GenericLocalFiniteElement< OrthonormalBasisFactory< dimDomain, SF, CF >,
+        DGLocalCoefficientsFactory< OrthonormalBasisFactory< dimDomain, SF, CF > >,
+        LocalL2InterpolationFactory< OrthonormalBasisFactory< dimDomain, SF, CF >,true >,
         dimDomain,D,R> Base;
-    using Base::FECreator;
-    using Base::FiniteElement;
   public:
     using Base::Traits;
 

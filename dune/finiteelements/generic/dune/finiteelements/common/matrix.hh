@@ -25,15 +25,12 @@ namespace Dune
   class LFEMatrix
   {
     typedef LFEMatrix< F, aligned > This;
+    typedef LFEVector< F > Row;
+    typedef std::vector<Row> RealMatrix;
 
   public:
     typedef F Field;
-    typedef std::vector< F > Vec;
 
-  private:
-    typedef std::vector<Vec> RealMatrix;
-
-  public:
     operator const RealMatrix & () const
     {
       return matrix_;
@@ -44,9 +41,12 @@ namespace Dune
       return matrix_;
     }
 
-    const RealMatrix &amp () const
+    template <class Vector>
+    void row( const unsigned int row, Vector &vec ) const
     {
-      return matrix_;
+      assert(row<rows());
+      for (int i=0; i<cols(); ++i)
+        field_cast(matrix_[row][i], vec[i]);
     }
 
     const Field &operator() ( const unsigned int row, const unsigned int col ) const
@@ -139,7 +139,7 @@ namespace Dune
         }
       }
       // column exchange
-      Vec hv(rows());
+      Row hv(rows());
       for (unsigned int i=0; i<rows(); ++i)
       {
         for (unsigned int k=0; k<rows(); ++k)
@@ -159,13 +159,10 @@ namespace Dune
   template< unsigned int precision, bool aligned >
   class LFEMatrix< amp::ampf< precision >, aligned >
   {
-    typedef LFEMatrix< amp::ampf< precision >, aligned > This;
-
   public:
     typedef amp::ampf< precision > Field;
-    typedef LFEVector< Field > Vec;
-
   private:
+    typedef LFEMatrix< amp::ampf< precision >, aligned > This;
     typedef ap::template_2d_array< Field, aligned > RealMatrix;
 
   public:
@@ -179,9 +176,12 @@ namespace Dune
       return matrix_;
     }
 
-    const RealMatrix &amp () const
+    template <class Vector>
+    void row( const unsigned int row, Vector &vec ) const
     {
-      return matrix_;
+      assert(row<rows());
+      for (unsigned int i=0; i<cols(); ++i)
+        field_cast(matrix_(row,i), vec[i]);
     }
 
     const Field &operator() ( const unsigned int row, const unsigned int col ) const

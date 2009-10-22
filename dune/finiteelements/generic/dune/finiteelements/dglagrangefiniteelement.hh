@@ -4,6 +4,7 @@
 #define DUNE_LAGRANGEFINITEELEMENT_HH
 
 #include <dune/finiteelements/generic/localfiniteelement.hh>
+#include <dune/finiteelements/generic/dglocalcoefficients.hh>
 #include <dune/finiteelements/lagrangebasis/lagrangecoefficients.hh>
 #include <dune/finiteelements/lagrangebasis/interpolation.hh>
 #include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
@@ -15,12 +16,12 @@ namespace Dune
       class SF=R, class CF=SF >
   class LagrangeLocalFiniteElement
     : public GenericLocalFiniteElement< LagrangeBasisFactory< LP, dimDomain, SF, CF >,
-          LagrangeCoefficientsFactory<LP, dimDomain, SF >,
+          DGLocalCoefficientsFactory< LagrangeBasisFactory< LP, dimDomain, SF, CF > >,
           LagrangeInterpolationFactory< LP, dimDomain, SF >,
           dimDomain,D,R>
   {
     typedef GenericLocalFiniteElement< LagrangeBasisFactory< LP, dimDomain, SF, CF >,
-        LagrangeCoefficientsFactory<LP, dimDomain, SF >,
+        DGLocalCoefficientsFactory< LagrangeBasisFactory< LP, dimDomain, SF, CF > >,
         LagrangeInterpolationFactory< LP, dimDomain, SF >,
         dimDomain,D,R> Base;
   public:

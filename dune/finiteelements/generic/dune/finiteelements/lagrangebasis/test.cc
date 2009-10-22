@@ -22,63 +22,72 @@ typedef double ComputeField;
 #endif
 #endif
 
+template <class Basis,class Points>
+bool test(const Basis &basis, const Points &points, bool verbose)
+{
+  bool ret = true;
+  std::vector< Dune::FieldVector< double, 1 > > y( basis.size() );
+  for( unsigned int index = 0; index < points.size(); ++index )
+  {
+    if (verbose)
+      std::cout << index << "   " << points[ index ].point() << " "
+                << points[ index ].localKey()
+                << std::endl;
+    basis.evaluate( points[ index ].point(), y );
+    bool first = true;
+    for( unsigned int i = 0; i < y.size(); ++i )
+    {
+      if( fabs( y[ i ] - double( i == index ) ) > 1e-10 )
+      {
+        if (first) {
+          std::cout << "ERROR: "
+                    << index << " -> "
+                    << "x = " << points[ index ].point()
+                    << " (codim = " << points[ index ].localKey().codim() << ", "
+                    << "subentity = " << points[ index ].localKey().subEntity() << ", "
+                    << "index = " << points[ index ].localKey().index() << "):" << std::endl;
+          first = false;
+        }
+        if (1)
+          std::cout << "         y[ " << i << " ] = " << y[ i ] << " "
+                    << "         error : " << fabs( y[ i ] - double( i == index ) )
+                    << std::endl;
+        ret = false;
+      }
+    }
+  }
+  return ret;
+}
+
 template <class Topology>
-bool test(unsigned int order, bool verbose = false) {
+bool test(unsigned int order, bool verbose = false)
+{
+  typedef Dune::LagrangeBasisFactory<Dune::EquidistantPointSet,Topology::dimension,StorageField,ComputeField> BasisFactory;
+  typedef Dune::LagrangeCoefficientsFactory< Dune::EquidistantPointSet,  Topology::dimension,double > LagrangeCoefficientsFactory;
+  // typedef Dune::LagrangeBasisFactory<Dune::LobattoPointSet,Topology::dimension,StorageField,ComputeField> BasisFactory;
+  // typedef Dune::LagrangeCoefficientsFactory< Dune::LobattoPointSet, Topology::dimension, double > LagrangeCoefficientsFactory;
 
   bool ret = true;
 
   for (unsigned int o=1; o<=order; ++o)
   {
-    std::cout << "# Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
-
-    // typedef Dune::LagrangeCoefficientsFactory< Dune::EquidistantCoefficients,  Topology::dimension,double > LagrangeCoefficientsFactory;
-    typedef Dune::LagrangeCoefficientsFactory< Dune::LobattoCoefficients, Topology::dimension, double > LagrangeCoefficientsFactory;
     const typename LagrangeCoefficientsFactory::Object *pointsPtr = LagrangeCoefficientsFactory::template create< Topology >( o );
 
     if ( pointsPtr == 0)
       continue;
-    const typename LagrangeCoefficientsFactory::Object &points = *pointsPtr;
 
-    // typedef Dune::LagrangeBasisFactory<Dune::EquidistantCoefficients,Topology::dimension,StorageField,ComputeField> BasisFactory;
-    typedef Dune::LagrangeBasisFactory<Dune::LobattoCoefficients,Topology::dimension,StorageField,ComputeField> BasisFactory;
+    std::cout << "# Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
+
     typename BasisFactory::Object &basis = *BasisFactory::template create<Topology>(o);
 
-    std::vector< Dune::FieldVector< double, 1 > > y( basis.size() );
-    for( unsigned int index = 0; index < points.size(); ++index )
-    {
-      if (verbose)
-        std::cout << index << "   " << points[ index ].point() << " "
-                  << points[ index ].localKey()
-                  << std::endl;
-      basis.evaluate( points[ index ].point(), y );
-      bool first = true;
-      for( unsigned int i = 0; i < y.size(); ++i )
-      {
-        if( fabs( y[ i ] - double( i == index ) ) > 1e-10 )
-        {
-          if (first) {
-            std::cout << "ERROR: "
-                      << index << " -> "
-                      << "x = " << points[ index ].point()
-                      << " (codim = " << points[ index ].localKey().codim() << ", "
-                      << "subentity = " << points[ index ].localKey().subEntity() << ", "
-                      << "index = " << points[ index ].localKey().index() << "):" << std::endl;
-            first = false;
-          }
-          if (1)
-            std::cout << "         y[ " << i << " ] = " << y[ i ] << " "
-                      << "         error : " << fabs( y[ i ] - double( i == index ) )
-                      << std::endl;
-          ret = false;
-        }
-      }
-    }
+    ret |= test(basis,*pointsPtr,verbose);
 
-    // add release(basis), release(points)
-
-    if (verbose)
-      std::cout << std::endl << std::endl << std::endl;
+    LagrangeCoefficientsFactory::release( pointsPtr );
+    BasisFactory::release( &basis );
   }
+
+  if (verbose)
+    std::cout << std::endl << std::endl << std::endl;
   if (!ret) {
     std::cout << "   FAILED !" << std::endl;
   }
@@ -87,67 +96,36 @@ bool test(unsigned int order, bool verbose = false) {
 template <unsigned int dimension>
 bool test(unsigned int topologyId, unsigned int order, bool verbose = false)
 {
-#if 0
+  typedef Dune::LagrangeBasisFactory<Dune::EquidistantPointSet,dimension,StorageField,ComputeField> BasisFactory;
+  typedef Dune::LagrangeCoefficientsFactory< Dune::EquidistantPointSet,  dimension,double > LagrangeCoefficientsFactory;
+  // typedef Dune::LagrangeBasisFactory<Dune::LobattoPointSet,Topology::dimension,StorageField,ComputeField> BasisFactory;
+  // typedef Dune::LagrangeCoefficientsFactory< Dune::LobattoPointSet, Topology::dimension, double > LagrangeCoefficientsFactory;
+
   bool ret = true;
 
   for (unsigned int o=1; o<=order; ++o)
   {
-    std::cout << "# Testing " << topologyId << " in dimension " << dimension << " with order " << o << std::endl;
-
-    // typedef Dune::LagrangeCoefficientsFactory< double, dimension > LagrangeCoefficientsFactory;
-    typedef Dune::LobattoCoefficientsFactory< double, dimension > LagrangeCoefficientsFactory;
-    const typename LagrangeCoefficientsFactory::LagrangeCoefficients *pointsPtr = LagrangeCoefficientsFactory::create( topologyId, o );
+    const typename LagrangeCoefficientsFactory::Object *pointsPtr = LagrangeCoefficientsFactory::create( topologyId, o );
 
     if ( pointsPtr == 0)
       continue;
-    const typename LagrangeCoefficientsFactory::LagrangeCoefficients &points = *pointsPtr;
 
-    // typedef Dune::LagrangeBasisFactory<dimension,Dune::LagrangeCoefficientsFactory,StorageField,ComputeField> BasisFactory;
-    typedef Dune::LagrangeBasisFactory<dimension,Dune::LobattoCoefficientsFactory,StorageField,ComputeField> BasisFactory;
-    typename BasisFactory::Object &basis = *BasisFactory::create(topologyId,o);
+    std::cout << "# Testing " << topologyId << " in dimension " << dimension << " with order " << o << std::endl;
 
-    std::vector< Dune::FieldVector< double, 1 > > y( basis.size() );
-    for( unsigned int index = 0; index < points.size(); ++index )
-    {
-      if (verbose)
-        std::cout << index << "   " << points[ index ].point() << " "
-                  << points[ index ].localKey()
-                  << std::endl;
-      basis.evaluate( points[ index ].point(), y );
-      bool first = true;
-      for( unsigned int i = 0; i < y.size(); ++i )
-      {
-        if( fabs( y[ i ] - double( i == index ) ) > 1e-10 )
-        {
-          if (first) {
-            std::cout << "ERROR: "
-                      << index << " -> "
-                      << "x = " << points[ index ].point()
-                      << " (codim = " << points[ index ].localKey().codim() << ", "
-                      << "subentity = " << points[ index ].localKey().subEntity() << ", "
-                      << "index = " << points[ index ].localKey().index() << "):" << std::endl;
-            first = false;
-          }
-          if (1)
-            std::cout << "         y[ " << i << " ] = " << y[ i ] << " "
-                      << "         error : " << fabs( y[ i ] - double( i == index ) )
-                      << std::endl;
-          ret = false;
-        }
-      }
-    }
+    typename BasisFactory::Object &basis = *BasisFactory::create( topologyId, o );
 
-    // add release(basis), release(points)
+    ret |= test(basis,*pointsPtr,verbose);
 
-    if (verbose)
-      std::cout << std::endl << std::endl << std::endl;
+    LagrangeCoefficientsFactory::release( pointsPtr );
+    BasisFactory::release( &basis );
   }
+
+  if (verbose)
+    std::cout << std::endl << std::endl << std::endl;
   if (!ret) {
     std::cout << "   FAILED !" << std::endl;
   }
   return ret;
-#endif
-  return 1;
 }
 
 int main ( int argc, char **argv )

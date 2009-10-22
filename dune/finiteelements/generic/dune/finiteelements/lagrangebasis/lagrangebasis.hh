@@ -7,6 +7,7 @@
 #include <dune/common/exceptions.hh>
 
 #include <dune/finiteelements/common/matrix.hh>
+#include <dune/finiteelements/generic/basismatrix.hh>
 
 #include <dune/finiteelements/lagrangebasis/interpolation.hh>
 #include <dune/finiteelements/generic/multiindex.hh>
@@ -21,14 +22,15 @@ namespace Dune
   // LagrangeMatrix
   // --------------
 
-  template< template <class,unsigned int> class LC,
+#if 0
+  template< template <class,unsigned int> class LP,
       class Topology, class scalar_t >
   struct LagrangeMatrix
   {
     static const unsigned int dimension = Topology::dimension;
 
     typedef LFEMatrix< scalar_t > mat_t;
-    typedef LagrangeInterpolationFactory< LC,dimension,scalar_t > LocalInterpolationFactory;
+    typedef LagrangeInterpolationFactory< LP,dimension,scalar_t > LocalInterpolationFactory;
     typedef typename LocalInterpolationFactory::Object LocalInterpolation;
 
     explicit LagrangeMatrix( const unsigned int order )
@@ -44,27 +46,36 @@ namespace Dune
       }
     }
 
-    unsigned int colSize( const unsigned int row ) const
+    unsigned int cols () const
     {
       return matrix_.cols();
     }
 
-    unsigned int rowSize () const
+    unsigned int rows () const
     {
       return matrix_.rows();
     }
 
-    Dune::FieldMatrix< scalar_t, 1, 1 > operator() ( int r, int c ) const
+    template <class Vector>
+    void row( const unsigned int row, Vector &vec ) const
     {
-      return Dune::FieldMatrix< scalar_t, 1, 1 >( matrix_( c, r ) );
+      for (unsigned int i=0; i<cols(); ++i)
+        field_cast(matrix_(i,row),vec[i]);
     }
 
-    void print ( std::ostream &out, const unsigned int N = rowSize() ) const
+    /*
+       scalar_t& operator() ( int r, int c ) const
+       {
+       return Dune::FieldMatrix< scalar_t, 1, 1 >( matrix_( c, r ) );
+       }
+     */
+
+    void print ( std::ostream &out, const unsigned int N = rows() ) const
     {
       for( unsigned int i = 0; i < N; ++i )
       {
         out << "Polynomial : " << i << std::endl;
-        for( unsigned int j = 0; j <colSize( i ); ++j )
+        for( unsigned int j = 0; j <cols(); ++j )
         {
           double v = matrix_( j, i ).toDouble();
           if( fabs( v ) < 1e-20 )
@@ -82,16 +93,16 @@ namespace Dune
   private:
     mat_t matrix_;
   };
-
+#endif
 
 
   // LagrangeBasisFactory
   // --------------------
 
-  template< template <class,unsigned int> class LC,
+  template< template <class,unsigned int> class LP,
       unsigned int dim, class SF, class CF >
   struct LagrangeBasisFactory;
-  template< template <class,unsigned int> class LC,
+  template< template <class,unsigned int> class LP,
       unsigned int dim, class SF, class CF >
   struct LagrangeBasisTraits
   {
@@ -100,18 +111,23 @@ namespace Dune
     typedef StandardEvaluator< MonomialBasis > Evaluator;
     typedef PolynomialBasisWithMatrix< Evaluator, SparseCoeffMatrix< SF, 1 > > Basis;
 
+    typedef Dune::MonomialBasisProvider< dim, CF > PreBasisFactory;
+    typedef typename PreBasisFactory::Object PreBasis;
+    typedef LagrangeInterpolationFactory< LP, dim, CF > InterpolationFactory;
+    typedef typename InterpolationFactory::Object Interpolation;
+
     static const unsigned int dimension = dim;
     typedef const Basis Object;
     typedef unsigned int Key;
-    typedef LagrangeBasisFactory<LC,dim,SF,CF> Factory;
+    typedef LagrangeBasisFactory<LP,dim,SF,CF> Factory;
   };
 
-  template< template <class,unsigned int> class LC,
+  template< template <class,unsigned int> class LP,
       unsigned int dim, class SF, class CF >
   struct LagrangeBasisFactory
-    : public TopologyFactory< LagrangeBasisTraits< LC,dim,SF,CF > >
+    : public TopologyFactory< LagrangeBasisTraits< LP,dim,SF,CF > >
   {
-    typedef LagrangeBasisTraits<LC,dim,SF,CF> Traits;
+    typedef LagrangeBasisTraits<LP,dim,SF,CF> Traits;
     static const unsigned int dimension = dim;
     typedef SF StorageField;
     typedef CF ComputeField;
@@ -125,8 +141,16 @@ namespace Dune
     {
       const typename Traits::MonomialBasis *monomialBasis = Traits::MonomialBasisProvider::template create< Topology >( order );
       Basis *basis = new Basis( *monomialBasis );
-      LagrangeMatrix< LC, Topology, ComputeField > matrix( order );
+
+      const typename Traits::PreBasis *preBasis = Traits::PreBasisFactory::template create<Topology>( order );
+      const typename Traits::Interpolation *interpol = Traits::InterpolationFactory::template create<Topology>( order );
+      BasisMatrix< typename Traits::PreBasis,
+          typename Traits::Interpolation,
+          ComputeField > matrix( *preBasis, *interpol );
       basis->fill( matrix );
+      Traits::PreBasisFactory::release(preBasis);
+      Traits::InterpolationFactory::release(interpol);
+
 #if GLFEM_BASIS_PRINT
       {
         typedef MultiIndex< dimension > MIField;

@@ -1,5 +1,6 @@
 finiteelementsdir = $(includedir)/dune/finiteelements
 finiteelements_HEADERS = lagrangefiniteelement.hh \
+                         dglagrangefiniteelement.hh \
                          orthonormalfiniteelement.hh \
                          raviartthomasfiniteelement.hh
 SUBDIRS = generic orthonormalbasis lagrangebasis raviartthomasbasis common quadrature

@@ -12,7 +12,7 @@
 #include <dune/grid/genericgeometry/topologytypes.hh>
 #include <dune/grid/genericgeometry/subtopologies.hh>
 
-#include <dune/finiteelements/lagrangebasis/lagrangecoefficients.hh>
+#include <dune/finiteelements/lagrangebasis/emptypoints.hh>
 
 namespace Dune
 {
@@ -21,24 +21,24 @@ namespace Dune
   // -----------------------------
 
   template< class F, unsigned int dim >
-  class EquidistantCoefficients;
+  class EquidistantPointSet;
 
-  // EquidistantCoefficientsImpl
+  // EquidistantPointSetImpl
   // ----------------------------
 
   template< class Topology, class F >
-  class EquidistantCoefficientsImpl;
+  class EquidistantPointSetImpl;
 
   template< class F >
-  class EquidistantCoefficientsImpl< GenericGeometry::Point, F >
+  class EquidistantPointSetImpl< GenericGeometry::Point, F >
   {
-    typedef EquidistantCoefficientsImpl< GenericGeometry::Point, F > This;
+    typedef EquidistantPointSetImpl< GenericGeometry::Point, F > This;
 
     typedef GenericGeometry::Point Topology;
 
-    friend class EquidistantCoefficients< F, Topology::dimension >;
-    friend class EquidistantCoefficientsImpl< GenericGeometry::Prism< Topology >, F >;
-    friend class EquidistantCoefficientsImpl< GenericGeometry::Pyramid< Topology >, F >;
+    friend class EquidistantPointSet< F, Topology::dimension >;
+    friend class EquidistantPointSetImpl< GenericGeometry::Prism< Topology >, F >;
+    friend class EquidistantPointSetImpl< GenericGeometry::Pyramid< Topology >, F >;
 
   public:
     typedef F Field;
@@ -54,7 +54,7 @@ namespace Dune
     template< unsigned int codim, unsigned int dim >
     static unsigned int setup ( const unsigned int order,
                                 unsigned int *count,
-                                LagrangeCoefficient< Field, dim > *points )
+                                LagrangePoint< Field, dim > *points )
     {
       assert( codim == 0 );
       points->localKey_ = LocalKey( 0, 0, count[ 0 ]++ );
@@ -64,17 +64,17 @@ namespace Dune
   };
 
   template< class BaseTopology, class F >
-  class EquidistantCoefficientsImpl< GenericGeometry::Prism< BaseTopology >, F >
+  class EquidistantPointSetImpl< GenericGeometry::Prism< BaseTopology >, F >
   {
-    typedef EquidistantCoefficientsImpl< GenericGeometry::Prism< BaseTopology >, F > This;
+    typedef EquidistantPointSetImpl< GenericGeometry::Prism< BaseTopology >, F > This;
 
     typedef GenericGeometry::Prism< BaseTopology > Topology;
 
-    friend class EquidistantCoefficients< F, Topology::dimension >;
-    friend class EquidistantCoefficientsImpl< GenericGeometry::Prism< Topology >, F >;
-    friend class EquidistantCoefficientsImpl< GenericGeometry::Pyramid< Topology >, F >;
+    friend class EquidistantPointSet< F, Topology::dimension >;
+    friend class EquidistantPointSetImpl< GenericGeometry::Prism< Topology >, F >;
+    friend class EquidistantPointSetImpl< GenericGeometry::Pyramid< Topology >, F >;
 
-    typedef EquidistantCoefficientsImpl< BaseTopology, F > BaseImpl;
+    typedef EquidistantPointSetImpl< BaseTopology, F > BaseImpl;
 
   public:
     typedef F Field;
@@ -90,7 +90,7 @@ namespace Dune
     template< unsigned int codim, unsigned int dim >
     static unsigned int setup ( const unsigned int order,
                                 unsigned int *count,
-                                LagrangeCoefficient< Field, dim > *points )
+                                LagrangePoint< Field, dim > *points )
     {
       unsigned int size = 0;
       unsigned int numBaseN = 0;
@@ -134,17 +134,17 @@ namespace Dune
   };
 
   template< class BaseTopology, class F >
-  class EquidistantCoefficientsImpl< GenericGeometry::Pyramid< BaseTopology >, F >
+  class EquidistantPointSetImpl< GenericGeometry::Pyramid< BaseTopology >, F >
   {
-    typedef EquidistantCoefficientsImpl< GenericGeometry::Pyramid< BaseTopology >, F > This;
+    typedef EquidistantPointSetImpl< GenericGeometry::Pyramid< BaseTopology >, F > This;
 
     typedef GenericGeometry::Pyramid< BaseTopology > Topology;
 
-    friend class EquidistantCoefficients< F, Topology::dimension >;
-    friend class EquidistantCoefficientsImpl< GenericGeometry::Prism< Topology >, F >;
-    friend class EquidistantCoefficientsImpl< GenericGeometry::Pyramid< Topology >, F >;
+    friend class EquidistantPointSet< F, Topology::dimension >;
+    friend class EquidistantPointSetImpl< GenericGeometry::Prism< Topology >, F >;
+    friend class EquidistantPointSetImpl< GenericGeometry::Pyramid< Topology >, F >;
 
-    typedef EquidistantCoefficientsImpl< BaseTopology, F > BaseImpl;
+    typedef EquidistantPointSetImpl< BaseTopology, F > BaseImpl;
 
   public:
     typedef F Field;
@@ -163,7 +163,7 @@ namespace Dune
     template< unsigned int codim, unsigned int dim >
     static unsigned int setup ( const unsigned int order,
                                 unsigned int *count,
-                                LagrangeCoefficient< Field, dim > *points )
+                                LagrangePoint< Field, dim > *points )
     {
       unsigned int size = 0;
       unsigned int numBaseM = 0;
@@ -173,7 +173,7 @@ namespace Dune
         const unsigned int vcodim = (codim > 0 ? codim : 1);
         numBaseM = GenericGeometry::Size< BaseTopology, vcodim-1 >::value;
         size = BaseImpl::template setup< vcodim-1, dim >( order, count, points );
-        LagrangeCoefficient< Field, dim > *const end = points + size;
+        LagrangePoint< Field, dim > *const end = points + size;
         for( ; points != end; ++points )
         {
           LocalKey &key = points->localKey_;
@@ -187,7 +187,7 @@ namespace Dune
         for( unsigned int i = order-1; i > 0; --i )
         {
           const unsigned int n = BaseImpl::template setup< vcodim, dim >( i, count+numBaseM, points );
-          LagrangeCoefficient< Field, dim > *const end = points + n;
+          LagrangePoint< Field, dim > *const end = points + n;
           for( ; points != end; ++points )
           {
             LocalKey &key = points->localKey_;
@@ -217,15 +217,15 @@ namespace Dune
   // --------------
 
   template< class F, unsigned int dim >
-  class EquidistantCoefficients : public LagrangeCoefficientsBase<F,dim>
+  class EquidistantPointSet : public EmptyPointSet<F,dim>
   {
     template< class T >
     struct Topology;
-    typedef LagrangeCoefficientsBase<F,dim> Base;
+    typedef EmptyPointSet<F,dim> Base;
   public:
     static const unsigned int dimension = dim;
 
-    EquidistantCoefficients( unsigned int order )
+    EquidistantPointSet( unsigned int order )
       : Base(order)
     {}
 
@@ -243,15 +243,15 @@ namespace Dune
 
   template< class F, unsigned int dim >
   template< class T >
-  struct EquidistantCoefficients< F, dim >::Topology
+  struct EquidistantPointSet< F, dim >::Topology
   {
-    typedef EquidistantCoefficientsImpl< T, F > Impl;
-    typedef Dune::LagrangeCoefficient< F, dim > LagrangeCoefficient;
+    typedef EquidistantPointSetImpl< T, F > Impl;
+    typedef Dune::LagrangePoint< F, dim > LagrangePoint;
 
     template< int pdim >
     struct Init
     {
-      static void apply ( const unsigned int order, LagrangeCoefficient *&p )
+      static void apply ( const unsigned int order, LagrangePoint *&p )
       {
         const unsigned int size = GenericGeometry::Size< T, dimension-pdim >::value;
         unsigned int count[ size ];
@@ -264,13 +264,13 @@ namespace Dune
 
   template< class F, unsigned int dim >
   template< class T >
-  inline bool EquidistantCoefficients< F, dim >::build ( )
+  inline bool EquidistantPointSet< F, dim >::build ( )
   {
     unsigned int order = Base::order();
-    typedef Dune::LagrangeCoefficient< F, dimension > LagrangeCoefficient;
+    typedef Dune::LagrangePoint< F, dimension > LagrangePoint;
     typedef typename Topology< T >::Impl Impl;
     points_.resize( Impl::size( order ) );
-    LagrangeCoefficient *p = &(points_[ 0 ]);
+    LagrangePoint *p = &(points_[ 0 ]);
     ForLoop< Topology< T >::template Init, 0, dimension >::apply( order, p );
     return true;
   }

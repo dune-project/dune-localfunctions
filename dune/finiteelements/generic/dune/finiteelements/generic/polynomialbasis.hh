@@ -70,12 +70,23 @@ namespace Dune
     PolynomialBasis (const Basis &basis,
                      const CoefficientMatrix &coeffMatrix,
                      unsigned int size)
-      : coeffMatrix_(&coeffMatrix),
+      : basis_(basis),
+        coeffMatrix_(&coeffMatrix),
         eval_(basis),
         order_(basis.order()),
         size_(size)
     {
       assert(size_ <= coeffMatrix.size());
+    }
+
+    const Basis &basis () const
+    {
+      return basis_;
+    }
+
+    const CoefficientMatrix &matrix () const
+    {
+      return coeffMatrix_;
     }
 
     const unsigned int order () const
@@ -169,6 +180,7 @@ namespace Dune
   protected:
     PolynomialBasis(const PolynomialBasis &);
     PolynomialBasis &operator=(const PolynomialBasis&);
+    const Basis &basis_;
     const CoefficientMatrix* coeffMatrix_;
     mutable Evaluator eval_;
     unsigned int order_,size_;

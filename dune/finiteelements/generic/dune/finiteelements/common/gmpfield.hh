@@ -25,6 +25,14 @@ namespace Dune
     GMPField ( const T &v )
       : Base( v,precision )
     {}
+
+    /*
+       GMPField &operator=(const GMPField &other)
+       {
+       Base(*this) = Base(other);
+       return *this;
+       }
+     */
   };
 
 

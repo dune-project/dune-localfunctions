@@ -33,109 +33,6 @@ namespace Dune
     }
   };
 
-#if 0
-  template< class F >
-  class CoeffMatrix
-  {
-  public:
-    typedef CoeffMatrix<F> This;
-    typedef F Field;
-
-    CoeffMatrix()
-      : coeff_(0),
-        rows_(0),
-        numRows_(0),
-        numCols_(0)
-    {}
-
-    ~CoeffMatrix()
-    {
-      delete [] coeff_;
-      delete [] rows_;
-    }
-
-    const unsigned int size () const
-    {
-      return numRows_;
-    }
-    const unsigned int baseSize () const
-    {
-      return numCols_;
-    }
-
-    template< class BasisVector, class RangeVector >
-    void mult ( const BasisVector &x,
-                std::vector< RangeVector > &y ) const
-    {}
-    template< class BasisVector, class F, int dimD, int dimR, DerivativeLayout layout >
-    void mult ( const BasisVector &x,
-                std::vector< RangeVector > &y ) const
-    {
-      typedef typename BasisVector::Block DomainVector;
-      typedef Mult<Field,DomainVector> Multiply;
-      size_t numLsg = y.size();
-      assert( numLsg <= (size_t)numRows_ );
-      Field *row = rows_[ 0 ];
-      for( size_t r = 0; r < numLsg; ++r )
-      {
-        DomainVector val(0.);
-        // typename BasisVector::Iterator itx = x.begin();
-        BasisVector itx = x;
-        for( ; row != rows_[ r+1 ]; ++row, ++itx )
-        {
-          Multiply::add(*row,itx->block(),val);
-        }
-        field_cast(val,y[r]);
-      }
-    }
-
-    template< class FullMatrix >
-    void fill ( const FullMatrix &mat, bool verbose = false )
-    {
-      unsigned int zeros = 0;
-      numRows_ = mat.rowSize();
-      numCols_ = 0;
-      int size = 0;
-      for( int r = 0; r < numRows_; ++r ) {
-        size += mat.colSize( r );
-        numCols_ = std::max( numCols_ , mat.colSize( r ) );
-      }
-
-      delete [] coeff_;
-      delete [] rows_;
-
-      coeff_ = new Field[size ];
-      rows_ = new Field*[ numRows_+1 ];
-      rows_[ 0 ] = coeff_;
-      for( int r = 0; r < numRows_; ++r )
-      {
-        rows_[ r+1 ] = rows_[ r ] + mat.colSize( r );
-        int c = 0;
-        for( Field *it = rows_[ r ]; it != rows_[ r+1 ]; ++it, ++c )
-        {
-          Field val;
-          field_cast(mat(r,c),val);
-          if (std::abs(val)<1e-10)
-            ++zeros;
-          *it = val;
-        }
-      }
-      if (verbose)
-        std::cout << "Entries: " << (rows_[numRows_]-rows_[0]) << " "
-                  << "Zeros: " << zeros << " "
-                  << "Precentage: " << 100.*double(zeros)/double(rows_[numRows_]-rows_[0])
-                  << std::endl;
-    }
-
-  private:
-    CoeffMatrix(const CoeffMatrix&);
-    CoeffMatrix &operator= (const CoeffMatrix&);
-    Field *coeff_;
-    Field **rows_;
-    int numRows_,numCols_;
-  };
-#endif
-
   template< class F , unsigned int bSize >
   class SparseCoeffMatrix
   {
@@ -223,34 +120,32 @@ namespace Dune
       }
     }
 
-    template< class FullMatrix >
-    void fill ( const FullMatrix &mat, bool verbose=false )
+    template< class RowMatrix >
+    void fill ( const RowMatrix &mat, bool verbose=false )
     {
-      numRows_ = mat.rowSize();
-      numCols_ = 0;
-      unsigned int size = 0;
-      for( unsigned int r = 0; r < numRows_; ++r ) {
-        size += mat.colSize( r );
-        numCols_ = std::max( numCols_, mat.colSize( r ) );
-      }
+      numRows_ = mat.rows();
+      numCols_ = mat.cols();
+      unsigned int size = numRows_*numCols_;
 
       delete [] coeff_;
       delete [] rows_;
       delete [] skip_;
 
-      coeff_ = new Field[ size ];
+      Field* coeff = new Field[ size ];
+      unsigned int *skip = new unsigned int[ size+1 ];
       rows_ = new Field*[ numRows_+1 ];
-      skip_ = new unsigned int[ size+1 ];
-      rows_[ 0 ] = coeff_;
-      Field *cit = coeff_;
-      unsigned int *sit = skip_;
+      std::vector<Field> row( numCols_ );
+
+      rows_[ 0 ] = coeff;
+      Field *cit = coeff;
+      unsigned int *sit = skip;
       for( unsigned int r = 0; r < numRows_; ++r )
       {
         *sit = 0;
-        for( unsigned int c = 0; c < mat.colSize( r ); ++c )
+        mat.row( r, row );
+        for( unsigned int c = 0; c < numCols_; ++c )
         {
-          Field val;
-          field_cast(mat(r,c),val);
+          const Field &val = row[c];
           if (val < Zero<Field>() || Zero<Field>() < val)
           {
             *cit = val;
@@ -264,12 +159,41 @@ namespace Dune
         }
         rows_[ r+1 ] = cit;
       }
+      assert( rows_[numRows_]-rows_[0] < size );
+      size = rows_[numRows_]-rows_[0];
+      coeff_ = new Field[ size ];
+      skip_ = new unsigned int[ size+1 ];
+      for (unsigned int i=0; i<size; ++i)
+      {
+        coeff_[i] = coeff[i];
+        skip_[i] = skip[i];
+      }
+      for (unsigned int i=0; i<numRows_+1; ++i)
+        rows_[i] += (coeff_-coeff);
+
+      delete [] coeff;
+      delete [] skip;
+
       if (verbose)
         std::cout << "Entries: " << (rows_[numRows_]-rows_[0])
                   << " full: " << numCols_*numRows_
                   << std::endl;
     }
-
+    // b += a*C[k]
+    template <class Vector>
+    void addRow( unsigned int k, const Field &a, Vector &b)
+    {
+      unsigned int j=0;
+      unsigned int *skipIt = skip_ + (rows_[ k ]-rows_[ 0 ]);
+      for( Field *pos = rows_[ k ], j=0;
+           pos != rows_[ k+1 ];
+           ++pos, ++skipIt )
+      {
+        j += *skipIt;
+        assert( j < b.size() );
+        b[j] += (*pos)*a;  // field_cast
+      }
+    }
   private:
     SparseCoeffMatrix(const This&);
     This &operator= (const This&);

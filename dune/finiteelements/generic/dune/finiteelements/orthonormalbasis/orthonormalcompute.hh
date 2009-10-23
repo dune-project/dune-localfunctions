@@ -112,7 +112,7 @@ namespace ONBCompute
     void row( const unsigned int row, Vector &vec ) const
     {
       // transposed matrix is required
-      assert(row<cols());
+      assert(row<Base::cols());
       for (unsigned int i=0; i<Base::rows(); ++i)
         field_cast(Base::operator()(i,row), vec[i]);
     }

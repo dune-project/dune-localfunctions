@@ -51,31 +51,36 @@ namespace Dune
   struct BasisMatrix
     : public BasisMatrixBase< PreBasis, Interpolation, Field >
   {
-    typedef BasisMatrixBase<PreBasis,Interpolation,Field> Base;
-    typedef typename Base::Matrix Matrix;
+    typedef typename PreBasis::Hallo Hallo;
+  };
+  /*
+     typedef BasisMatrixBase<PreBasis,Interpolation,Field> Base;
+     typedef typename Base::Matrix Matrix;
 
-    BasisMatrix( const PreBasis& preBasis,
+     BasisMatrix( const PreBasis& preBasis,
                  const Interpolation& localInterpolation )
       : Base(preBasis, localInterpolation)
-    {}
-    template <class Vector>
-    void row( const unsigned int row, Vector &vec ) const
-    {
+     {
+     }
+     template <class Vector>
+     void row( const unsigned int row, Vector &vec ) const
+     {
       const unsigned int N = Matrix::rows();
       assert( cols() == N && b.size() == N );
       // note: that the transposed matrix is computed,
       //       and is square
-      for (unsigned int i=0; i<N; ++i)
+      for (unsigned int i=0;i<N;++i)
         field_cast(Matrix::operator()(i,row),vec[i]);
-    }
-  };
-  template< unsigned int dim, class F,
+     }
+     };
+   */
+  template< int dim, class F,
       class Interpolation,
       class Field >
-  struct BasisMatrix< VirtualMonomialBasis<dim,F>, Interpolation, Field >
-    : public BasisMatrixBase< VirtualMonomialBasis<dim,F>, Interpolation, Field >
+  struct BasisMatrix< const Dune::VirtualMonomialBasis< dim, F >, Interpolation, Field >
+    : public BasisMatrixBase< const VirtualMonomialBasis< dim, F >, Interpolation, Field >
   {
-    typedef VirtualMonomialBasis<dim,F> PreBasis;
+    typedef const VirtualMonomialBasis< dim, F > PreBasis;
     typedef BasisMatrixBase<PreBasis,Interpolation,Field> Base;
     typedef typename Base::Matrix Matrix;
 
@@ -87,7 +92,7 @@ namespace Dune
     void row( const unsigned int row, Vector &vec ) const
     {
       const unsigned int N = Matrix::rows();
-      assert( cols() == N && b.size() == N );
+      assert( Matrix::cols() == N && vec.size() == N );
       // note: that the transposed matrix is computed,
       //       and is square
       for (unsigned int i=0; i<N; ++i)
@@ -97,10 +102,10 @@ namespace Dune
   template< class Eval, class CM, class D, class R,
       class Interpolation,
       class Field >
-  class BasisMatrix< PolynomialBasis<Eval,CM,D,R>, Interpolation, Field >
-    : public BasisMatrixBase< PolynomialBasis<Eval,CM,D,R>, Interpolation, Field >
+  struct BasisMatrix< const PolynomialBasis<Eval,CM,D,R>, Interpolation, Field >
+    : public BasisMatrixBase< const PolynomialBasis<Eval,CM,D,R>, Interpolation, Field >
   {
-    typedef PolynomialBasis<Eval,CM,D,R> PreBasis;
+    typedef const PolynomialBasis<Eval,CM,D,R> PreBasis;
     typedef BasisMatrixBase<PreBasis,Interpolation,Field> Base;
     typedef typename Base::Matrix Matrix;
 
@@ -112,11 +117,11 @@ namespace Dune
     template <class Vector>
     void row( const unsigned int row, Vector &vec ) const
     {
-      assert( Matrix::cols() == b.size() );
+      assert( Matrix::cols() == vec.size() );
       for (unsigned int j=0; j<Matrix::cols(); ++j)
         vec[j] = 0;
       for (unsigned int i=0; i<Matrix::rows(); ++i)
-        preBasis_.coefficientMatrix().
+        preBasis_.matrix().
         addRow(i,Base::Matrix::operator()(i,row),vec);
     }
   private:

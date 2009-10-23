@@ -373,11 +373,11 @@ namespace Dune
         DUNE_THROW(MathError, "While computing RaviartThomasBasis a singular matrix was constructed!");
       }
     }
-    unsigned int colSize(int row) const {
-      return vecMatrix_.colSize(row);
+    unsigned int cols() const {
+      return vecMatrix_.cols();
     }
-    unsigned int rowSize() const {
-      return vecMatrix_.rowSize();
+    unsigned int rowse() const {
+      return vecMatrix_.rows();
     }
     const Field operator() ( int r, int c ) const
     {

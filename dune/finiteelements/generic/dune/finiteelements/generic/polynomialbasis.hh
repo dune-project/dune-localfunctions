@@ -86,7 +86,7 @@ namespace Dune
 
     const CoefficientMatrix &matrix () const
     {
-      return coeffMatrix_;
+      return *coeffMatrix_;
     }
 
     const unsigned int order () const
@@ -115,6 +115,12 @@ namespace Dune
       jacobian(x,out);
     }
 
+    template< unsigned int deriv, class F >
+    void evaluate ( const DomainVector &x, F *values ) const
+    {
+      coeffMatrix_->mult( eval_.template evaluate<deriv>( x ),
+                          size(), values);
+    }
     template< unsigned int deriv, class Vector >
     void evaluate ( const DomainVector &x, Vector &values ) const
     {
@@ -159,6 +165,15 @@ namespace Dune
       for( int d = 0; d < dimension; ++d )
         field_cast( x[ d ], bx[ d ] );
       evaluate<0>( bx, values );
+    }
+    template< unsigned int deriv, class DVector, class F >
+    void evaluate ( const DVector &x, F *values ) const
+    {
+      assert( DVector::size == dimension);
+      DomainVector bx;
+      for( int d = 0; d < dimension; ++d )
+        field_cast( x[ d ], bx[ d ] );
+      evaluate<deriv>( bx, values );
     }
     template< unsigned int deriv, class DVector, class RVector >
     void evaluate ( const DVector &x, RVector &values ) const

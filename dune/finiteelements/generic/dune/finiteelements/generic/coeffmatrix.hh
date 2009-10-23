@@ -65,6 +65,32 @@ namespace Dune
       return numCols_;
     }
 
+    template< class BasisIterator, class FF>
+    void mult ( const BasisIterator &x,
+                unsigned int numLsg,
+                FF *y ) const
+    {
+      typedef typename BasisIterator::Derivatives XDerivatives;
+      assert( numLsg*blockSize <= (size_t)numRows_ );
+      unsigned int row = 0;
+      Field *pos = rows_[ 0 ];
+      unsigned int *skipIt = skip_;
+      XDerivatives val;
+      for( size_t i = 0; i < numLsg; ++i)
+      {
+        for( unsigned int r = 0; r < blockSize; ++r, ++row )
+        {
+          val = 0;
+          BasisIterator itx = x;
+          for( ; pos != rows_[ row+1 ]; ++pos, ++skipIt )
+          {
+            itx += *skipIt;
+            val.axpy(*pos,*itx);
+          }
+          DerivativeAssign<XDerivatives,FF>::apply(r,val,*(y+i*XDerivatives::size*blockSize));
+        }
+      }
+    }
     template< class BasisIterator, class Vector>
     void mult ( const BasisIterator &x,
                 Vector &y ) const
@@ -181,17 +207,17 @@ namespace Dune
     }
     // b += a*C[k]
     template <class Vector>
-    void addRow( unsigned int k, const Field &a, Vector &b)
+    void addRow( unsigned int k, const Field &a, Vector &b) const
     {
       unsigned int j=0;
       unsigned int *skipIt = skip_ + (rows_[ k ]-rows_[ 0 ]);
-      for( Field *pos = rows_[ k ], j=0;
+      for( Field *pos = rows_[ k ];
            pos != rows_[ k+1 ];
            ++pos, ++skipIt )
       {
         j += *skipIt;
         assert( j < b.size() );
-        b[j] += (*pos)*a;  // field_cast
+        b[int(j)] += (*pos)*a;  // field_cast
       }
     }
   private:

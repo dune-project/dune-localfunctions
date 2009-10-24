@@ -637,6 +637,11 @@ namespace Dune
       return order_ ;
     }
 
+    const unsigned int topologyId ( ) const
+    {
+      return Topology::id;
+    }
+
     void evaluate ( const unsigned int deriv, const DomainVector &x,
                     Field *const values ) const
     {
@@ -781,6 +786,11 @@ namespace Dune
       return order_;
     }
 
+    const unsigned int topologyId ( ) const
+    {
+      return topologyId_;
+    }
+
     virtual void evaluate ( const unsigned int deriv, const DomainVector &x,
                             Field *const values ) const = 0;
     template < unsigned int deriv >
@@ -905,6 +915,12 @@ namespace Dune
     typedef typename Traits::Key Key;
     typedef typename Traits::Object Object;
 
+    template < int dd, class FF >
+    struct EvaluationBasisFactory
+    {
+      typedef MonomialBasisFactory<dd,FF> Type;
+    };
+
     template< class Topology >
     static Object* createObject ( const Key &order )
     {
@@ -923,6 +939,11 @@ namespace Dune
   {
     static const unsigned int dimension = dim;
     typedef SF StorageField;
+    template < int dd, class FF >
+    struct EvaluationBasisFactory
+    {
+      typedef MonomialBasisProvider<dd,FF> Type;
+    };
   };
 
 }

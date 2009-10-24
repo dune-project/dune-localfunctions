@@ -51,11 +51,10 @@ namespace Dune
         >
   {
     typedef PolynomialBasis< Eval, CM > This;
-
-    typedef CM CoefficientMatrix;
     typedef Eval Evaluator;
 
   public:
+    typedef CM CoefficientMatrix;
 
     typedef typename CoefficientMatrix::Field StorageField;
 
@@ -211,27 +210,30 @@ namespace Dune
   class PolynomialBasisWithMatrix
     : public PolynomialBasis< Eval, CM >
   {
-    typedef Eval Evaluator;
+  public:
     typedef CM CoefficientMatrix;
+
+  private:
+    typedef Eval Evaluator;
 
     typedef PolynomialBasisWithMatrix< Evaluator, CM > This;
     typedef PolynomialBasis<Evaluator,CM> Base;
 
-    typedef typename Base::Basis Basis;
   public:
+    typedef typename Base::Basis Basis;
 
     PolynomialBasisWithMatrix (const Basis &basis)
       : Base(basis,coeffMatrix_,0)
     {}
 
-    template <class FullMatrix>
-    void fill(const FullMatrix& matrix)
+    template <class Matrix>
+    void fill(const Matrix& matrix)
     {
       coeffMatrix_.fill(matrix);
       this->size_ = coeffMatrix_.size();
     }
-    template <class FullMatrix>
-    void fill(const FullMatrix& matrix,int size)
+    template <class Matrix>
+    void fill(const Matrix& matrix,int size)
     {
       coeffMatrix_.fill(matrix);
       assert(size<=coeffMatrix_.size());

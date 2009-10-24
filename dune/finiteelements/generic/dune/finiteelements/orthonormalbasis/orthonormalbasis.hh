@@ -45,9 +45,14 @@ namespace Dune
     typedef typename Traits::Key Key;
     typedef typename Traits::Object Object;
 
-    typedef Dune::MonomialBasisProvider< dimension, StorageField > MonomialBasisProviderType;
-    typedef typename MonomialBasisProviderType::Object MonomialBasisType;
+    template <unsigned int dd, class FF>
+    struct EvaluationBasisFactory
+    {
+      typedef MonomialBasisProvider<dd,FF> Type;
+    };
 
+    typedef typename EvaluationBasisFactory< dimension, StorageField >::Type MonomialBasisProviderType;
+    typedef typename MonomialBasisProviderType::Object MonomialBasisType;
 
     typedef SparseCoeffMatrix< StorageField, 1 > CoefficientMatrix;
     typedef StandardEvaluator< MonomialBasisType > Evaluator;

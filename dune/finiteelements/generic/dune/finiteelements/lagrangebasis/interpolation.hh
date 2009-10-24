@@ -84,7 +84,7 @@ namespace Dune
       unsigned int dim, class F >
   struct LagrangeInterpolationFactoryTraits
   {
-    typedef Dune::LagrangeCoefficientsFactory<LP,dim,F> LagrangePointSetFactory;
+    typedef LagrangeCoefficientsFactory<LP,dim,F> LagrangePointSetFactory;
     typedef typename LagrangePointSetFactory::Object LagrangePointSet;
 
     typedef typename LagrangePointSetFactory::Key Key;

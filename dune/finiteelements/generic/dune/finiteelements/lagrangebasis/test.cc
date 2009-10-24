@@ -8,7 +8,12 @@
 #endif
 #include <dune/finiteelements/lagrangebasis/lagrangebasis.hh>
 #include <dune/finiteelements/quadrature/genericquadrature.hh>
+#include <dune/finiteelements/generic/basisprint.hh>
 
+#if 1
+typedef double StorageField;
+typedef double ComputeField;
+#else
 #if HAVE_ALGLIB
 typedef amp::ampf< 128 > StorageField;
 typedef amp::ampf< 512 > ComputeField;
@@ -19,6 +24,7 @@ typedef Dune::GMPField< 512 > ComputeField;
 #else
 typedef double StorageField;
 typedef double ComputeField;
+#endif
 #endif
 #endif
 
@@ -69,7 +75,7 @@ bool test(unsigned int order, bool verbose = false)
 
   bool ret = true;
 
-  for (unsigned int o=1; o<=order; ++o)
+  for (unsigned int o=order; o<=order; --o)
   {
     const typename LagrangeCoefficientsFactory::Object *pointsPtr = LagrangeCoefficientsFactory::template create< Topology >( o );
 
@@ -81,6 +87,11 @@ bool test(unsigned int order, bool verbose = false)
     typename BasisFactory::Object &basis = *BasisFactory::template create<Topology>(o);
 
     ret |= test(basis,*pointsPtr,verbose);
+
+    std::stringstream name;
+    name << "lagrange_" << Topology::name() << "_p" << o << ".basis";
+    std::ofstream out(name.str().c_str());
+    Dune::basisPrint<0,BasisFactory>(out,basis);
 
     LagrangeCoefficientsFactory::release( pointsPtr );
     BasisFactory::release( &basis );

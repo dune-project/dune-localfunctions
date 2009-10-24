@@ -36,7 +36,6 @@ namespace Dune
       return localKey_;
     }
 
-    // private:
     Vector point_;
     LocalKey localKey_;
   };
@@ -63,13 +62,6 @@ namespace Dune
     EmptyPointSet ( const unsigned int order )
       : order_( order )
     {}
-
-    /*
-       void resize( const unsigned int size )
-       {
-       points_.resize(size);
-       }
-     */
 
   public:
     const LagrangePoint &operator[] ( const unsigned int i ) const

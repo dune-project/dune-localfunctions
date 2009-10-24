@@ -1,5 +1,8 @@
 lagrangebasisdir = $(includedir)/dune/finiteelements/lagrangebasis
-lagrangebasis_HEADERS = interpolation.hh  lagrangebasis.hh  lagrangecoefficients.hh equidistantpoints.hh lobattopoints.hh
+lagrangebasis_HEADERS = emptypoints.hh        lagrangebasis.hh         \
+                        equidistantpoints.hh  lagrangecoefficients.hh  \
+                        interpolation.hh      lobattopoints.hh
+
 check_PROGRAMS = test test-all
 
 

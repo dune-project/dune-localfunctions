@@ -44,7 +44,7 @@ namespace Dune
     template< class T >
     static Object *createObject ( const Key &order )
     {
-      if (!Object::template supports<T>(order))
+      if (order == 0 || !Object::template supports<T>(order))
         return 0;
       typedef typename remove_const<Object>::type LagrangeCoefficients;
       LagrangeCoefficients *object = new LagrangeCoefficients(order);

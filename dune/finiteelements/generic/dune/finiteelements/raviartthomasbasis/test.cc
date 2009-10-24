@@ -22,11 +22,16 @@ bool test(unsigned int order)
 {
   bool ret = true;
 
-  for (unsigned int o=order; o>=1; --o)
+  for (unsigned int o=order; o>=0; --o)
   {
     std::cout << "Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
-    typedef Dune::RaviartThomasBasisFactory<Topology::dimension,StorageField,ComputeField> BasisProvider;
-    const typename BasisProvider::Object &basis = *BasisProvider::template create<Topology>(o);
+    typedef Dune::RaviartThomasBasisFactory<Topology::dimension,StorageField,ComputeField> BasisFactory;
+    const typename BasisFactory::Object &basis = *BasisFactory::template create<Topology>(o);
+    std::stringstream name;
+    name << "rt_" << Topology::name() << "_p" << o << ".basis";
+    std::ofstream out(name.str().c_str());
+    Dune::basisPrint<0,BasisFactory>(out,basis);
+    BasisFactory::release(&basis);
   }
   if (!ret) {
     std::cout << "   FAILED !" << std::endl;

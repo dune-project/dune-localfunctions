@@ -228,6 +228,7 @@ namespace Dune
     template< class Topology >
     bool build ( )
     {
+      std::cout << "in build" << std::endl;
       unsigned int order = Base::order();
       LobattoPoints<Field> points1D(order);
       ForLoop<Setup<Topology>::template InitCodim,0,dimension>::

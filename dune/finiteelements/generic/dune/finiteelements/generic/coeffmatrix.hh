@@ -217,7 +217,7 @@ namespace Dune
       {
         j += *skipIt;
         assert( j < b.size() );
-        b[int(j)] += (*pos)*a;  // field_cast
+        b[j] += field_cast<typename Vector::value_type>( (*pos)*a );  // field_cast
       }
     }
   private:

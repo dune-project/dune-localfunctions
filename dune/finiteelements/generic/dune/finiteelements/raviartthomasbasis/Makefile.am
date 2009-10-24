@@ -1,5 +1,5 @@
 ravtombasisdir = $(includedir)/dune/finiteelements/vectest
-ravtombasis_HEADERS = raviartthomasbasis.hh
+ravtombasis_HEADERS = interpolation.hh  raviartthomasbasis.hh  raviartthomasprebasis.hh
 check_PROGRAMS = test test-all
 
 TOPOLOGY = Pyramid< Pyramid< Point > >

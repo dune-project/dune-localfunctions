@@ -14,7 +14,10 @@ namespace Dune
 {
   template< class PreBasis, class Interpolation,
       class Field >
-  struct BasisMatrix;
+  struct BasisMatrix
+  {
+    typedef typename PreBasis::HALLO HALLO;
+  };
 
   template< class PreBasis, class Interpolation,
       class Field >
@@ -44,36 +47,31 @@ namespace Dune
     unsigned int cols_;
   };
 
-  // Wrong!
-  template< class PreBasis,
+  template< class Topology, class F,
       class Interpolation,
       class Field >
-  struct BasisMatrix
-    : public BasisMatrixBase< PreBasis, Interpolation, Field >
+  struct BasisMatrix< const MonomialBasis< Topology, F >, Interpolation, Field >
+    : public BasisMatrixBase< const MonomialBasis< Topology, F >, Interpolation, Field >
   {
-    typedef typename PreBasis::Hallo Hallo;
-  };
-  /*
-     typedef BasisMatrixBase<PreBasis,Interpolation,Field> Base;
-     typedef typename Base::Matrix Matrix;
+    typedef const MonomialBasis< Topology, F > PreBasis;
+    typedef BasisMatrixBase<PreBasis,Interpolation,Field> Base;
+    typedef typename Base::Matrix Matrix;
 
-     BasisMatrix( const PreBasis& preBasis,
+    BasisMatrix( const PreBasis& preBasis,
                  const Interpolation& localInterpolation )
       : Base(preBasis, localInterpolation)
-     {
-     }
-     template <class Vector>
-     void row( const unsigned int row, Vector &vec ) const
-     {
+    {}
+    template <class Vector>
+    void row( const unsigned int row, Vector &vec ) const
+    {
       const unsigned int N = Matrix::rows();
-      assert( cols() == N && b.size() == N );
+      assert( Matrix::cols() == N && vec.size() == N );
       // note: that the transposed matrix is computed,
       //       and is square
-      for (unsigned int i=0;i<N;++i)
+      for (unsigned int i=0; i<N; ++i)
         field_cast(Matrix::operator()(i,row),vec[i]);
-     }
-     };
-   */
+    }
+  };
   template< int dim, class F,
       class Interpolation,
       class Field >
@@ -114,11 +112,51 @@ namespace Dune
       : Base(preBasis, localInterpolation),
         preBasis_(preBasis)
     {}
+    unsigned int cols() const
+    {
+      return preBasis_.matrix().baseSize() ;
+    }
     template <class Vector>
     void row( const unsigned int row, Vector &vec ) const
     {
-      assert( Matrix::cols() == vec.size() );
+      assert( Matrix::rows() == Matrix::cols() );
+      assert( vec.size() == preBasis_.matrix().baseSize() );
+      assert( Matrix::cols() == preBasis_.size() );
       for (unsigned int j=0; j<Matrix::cols(); ++j)
+        vec[j] = 0;
+      for (unsigned int i=0; i<Matrix::rows(); ++i)
+        preBasis_.matrix().
+        addRow(i,Base::Matrix::operator()(i,row),vec);
+    }
+  private:
+    const PreBasis& preBasis_;
+  };
+  template< class Eval, class CM,
+      class Interpolation,
+      class Field >
+  struct BasisMatrix< const PolynomialBasisWithMatrix<Eval,CM>, Interpolation, Field >
+    : public BasisMatrixBase< const PolynomialBasisWithMatrix<Eval,CM>, Interpolation, Field >
+  {
+    typedef const PolynomialBasisWithMatrix<Eval,CM> PreBasis;
+    typedef BasisMatrixBase<PreBasis,Interpolation,Field> Base;
+    typedef typename Base::Matrix Matrix;
+
+    BasisMatrix( const PreBasis& preBasis,
+                 const Interpolation& localInterpolation )
+      : Base(preBasis, localInterpolation),
+        preBasis_(preBasis)
+    {}
+    unsigned int cols() const
+    {
+      return preBasis_.matrix().baseSize() ;
+    }
+    template <class Vector>
+    void row( const unsigned int row, Vector &vec ) const
+    {
+      assert( Matrix::rows() == Matrix::cols() );
+      assert( vec.size() == preBasis_.matrix().baseSize() );
+      assert( Matrix::cols() == preBasis_.size() );
+      for (unsigned int j=0; j<vec.size(); ++j)
         vec[j] = 0;
       for (unsigned int i=0; i<Matrix::rows(); ++i)
         preBasis_.matrix().

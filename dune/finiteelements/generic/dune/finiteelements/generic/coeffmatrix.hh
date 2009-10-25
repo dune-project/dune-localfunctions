@@ -109,8 +109,10 @@ namespace Dune
         {
           val = 0;
           BasisIterator itx = x;
+          unsigned int c = 0;
           for( ; pos != rows_[ row+1 ]; ++pos, ++skipIt )
           {
+            c += *skipIt;
             itx += *skipIt;
             val.axpy(*pos,*itx);
           }
@@ -185,7 +187,7 @@ namespace Dune
         }
         rows_[ r+1 ] = cit;
       }
-      assert( rows_[numRows_]-rows_[0] < size );
+      assert( rows_[numRows_]-rows_[0] <= size );
       size = rows_[numRows_]-rows_[0];
       coeff_ = new Field[ size ];
       skip_ = new unsigned int[ size+1 ];
@@ -209,6 +211,7 @@ namespace Dune
     template <class Vector>
     void addRow( unsigned int k, const Field &a, Vector &b) const
     {
+      assert(k<numRows_);
       unsigned int j=0;
       unsigned int *skipIt = skip_ + (rows_[ k ]-rows_[ 0 ]);
       for( Field *pos = rows_[ k ];

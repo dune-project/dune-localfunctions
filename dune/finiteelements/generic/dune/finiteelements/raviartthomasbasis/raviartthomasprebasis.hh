@@ -142,10 +142,6 @@ namespace Dune
       assert( vec.size() == N );
       for (unsigned int i=0; i<N; ++i)
         field_cast(mat_[row][i],vec[i]);
-      std::cout << "Zeile: " << row << std::endl;
-      for (unsigned int i=0; i<N; ++i)
-        std::cout << field_cast<double>(vec[i]) << " , ";
-      std::cout << std::endl;
     }
     unsigned int row_,col_,row1_;
     Field **mat_;

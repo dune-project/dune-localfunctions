@@ -22,7 +22,7 @@ bool test(unsigned int order)
 {
   bool ret = true;
 
-  for (unsigned int o=order; o>=0; --o)
+  for (unsigned int o=order; o<=order; --o)
   {
     std::cout << "Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
     typedef Dune::RaviartThomasBasisFactory<Topology::dimension,StorageField,ComputeField> BasisFactory;
@@ -31,6 +31,20 @@ bool test(unsigned int order)
     name << "rt_" << Topology::name() << "_p" << o << ".basis";
     std::ofstream out(name.str().c_str());
     Dune::basisPrint<0,BasisFactory>(out,basis);
+    typedef Dune::RaviartThomasL2InterpolationFactory<Topology::dimension,StorageField> InterpolationFactory;
+    const typename InterpolationFactory::Object &interpol = *InterpolationFactory::template create<Topology>(o);
+    Dune::LFEMatrix<StorageField> matrix;
+    interpol.interpolate(basis,matrix);
+    for (unsigned int i=0; i<matrix.rows(); ++i)
+      matrix(i,i)-=1;
+    for (unsigned int i=0; i<matrix.rows(); ++i)
+      for (unsigned int j=0; j<matrix.cols(); ++j)
+        if (matrix(i,j)<Dune::Zero<StorageField>() ||
+            Dune::Zero<StorageField>()<matrix(i,j))
+          std::cout << "  non-zero entry in interpolation matrix: "
+                    << "(" << i << "," << ") = " << field_cast<double>(matrix(i,j))
+                    << std::endl;
+
     BasisFactory::release(&basis);
   }
   if (!ret) {

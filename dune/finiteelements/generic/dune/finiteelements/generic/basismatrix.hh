@@ -150,9 +150,16 @@ namespace Dune
     {
       return preBasis_.matrix().baseSize() ;
     }
+    unsigned int rows () const
+    {
+      assert( Matrix::rows() == preBasis_.matrix().size() );
+      return preBasis_.matrix().size()*CM::blockSize ;
+    }
     template <class Vector>
     void row( const unsigned int row, Vector &vec ) const
     {
+      unsigned int r = row / CM::blockSize;
+      assert( r < Matrix::rows() );
       assert( Matrix::rows() == Matrix::cols() );
       assert( vec.size() == preBasis_.matrix().baseSize() );
       assert( Matrix::cols() == preBasis_.size() );
@@ -160,7 +167,7 @@ namespace Dune
         vec[j] = 0;
       for (unsigned int i=0; i<Matrix::rows(); ++i)
         preBasis_.matrix().
-        addRow(i,Base::Matrix::operator()(i,row),vec);
+        addRow(i*CM::blockSize+row%CM::blockSize,Base::Matrix::operator()(i,r),vec);
     }
   private:
     const PreBasis& preBasis_;

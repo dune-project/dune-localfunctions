@@ -66,16 +66,18 @@ namespace Dune
     };
 
     template< class Topology >
-    static Object *createObject ( const Key &order )
+    static Object *createObject ( const Key &key )
     {
-      const typename Traits::PreBasis *preBasis = Traits::PreBasisFactory::template create<Topology>( order );
-      const typename Traits::Interpolation *interpol = Traits::InterpolationFactory::template create<Topology>( order );
+      const typename Traits::PreBasis *preBasis = Traits::PreBasisFactory::template create<Topology>( key );
+      const typename Traits::Interpolation *interpol = Traits::InterpolationFactory::template create<Topology>( key );
       BasisMatrix< typename Traits::PreBasis,
           typename Traits::Interpolation,
           ComputeField > matrix( *preBasis, *interpol );
 
-      const typename Traits::MonomialBasis *monomialBasis = Traits::MonomialBasisProvider::template create< Topology >( order );
+      const typename Traits::MonomialBasis *monomialBasis = Traits::MonomialBasisProvider::template create< Topology >( preBasis->order() );
+
       Basis *basis = new Basis( *monomialBasis );
+
       basis->fill( matrix );
 
       Traits::PreBasisFactory::release(preBasis);

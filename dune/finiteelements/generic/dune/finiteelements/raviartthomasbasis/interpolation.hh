@@ -128,14 +128,14 @@ namespace Dune
     {
       return faceSize_;
     }
-    TestBasis &testBasis() const
+    TestBasis *testBasis() const
     {
-      return *testBasis_;
+      return testBasis_;
     }
-    TestFaceBasis &testFaceBasis( unsigned int f ) const
+    TestFaceBasis *testFaceBasis( unsigned int f ) const
     {
       assert( f < faceSize() );
-      return *(faceStructure_[f].basis_);
+      return faceStructure_[f].basis_;
     }
     const Normal &normal( unsigned int f ) const
     {
@@ -147,7 +147,10 @@ namespace Dune
     {
       order_ = order;
       topologyId_ = Topology::id;
-      testBasis_ = TestBasisFactory::template create<Topology>(order-1);
+      if (order>0)
+        testBasis_ = TestBasisFactory::template create<Topology>(order-1);
+      else
+        testBasis_ = 0;
       const unsigned int size = GenericGeometry::Size<Topology,1>::value;
       faceSize_ = size;
       faceStructure_.reserve( faceSize_ );
@@ -230,11 +233,14 @@ namespace Dune
     template <class Topology>
     void build( unsigned int order )
     {
+      size_ = 0;
       order_ = order;
       builder_.template build<Topology>(order_);
-      size_ = dimension*builder_.testBasis().size();
+      if (builder_.testBasis())
+        size_ += dimension*builder_.testBasis()->size();
       for ( unsigned int f=0; f<builder_.faceSize(); ++f )
-        size_ += builder_.testFaceBasis(f).size();
+        if (builder_.testFaceBasis(f))
+          size_ += builder_.testFaceBasis(f)->size();
     }
 
     void setLocalKeys(std::vector< LocalKey > &keys) const
@@ -242,10 +248,14 @@ namespace Dune
       keys.resize(size());
       unsigned int row = 0;
       for (unsigned int f=0; f<builder_.faceSize(); ++f)
-        for (unsigned int i=0; i<builder_.testFaceBasis(f).size(); ++i,++row)
-          keys[row] = LocalKey(f,1,i);
-      for (unsigned int i=0; i<builder_.testBasis().size()*dimension; ++i,++row)
-        keys[row] = LocalKey(0,0,i);
+      {
+        if (builder_.faceSize())
+          for (unsigned int i=0; i<builder_.testFaceBasis(f)->size(); ++i,++row)
+            keys[row] = LocalKey(f,1,i);
+      }
+      if (builder_.testBasis())
+        for (unsigned int i=0; i<builder_.testBasis()->size()*dimension; ++i,++row)
+          keys[row] = LocalKey(0,0,i);
       assert( row == size() );
     }
 
@@ -269,38 +279,40 @@ namespace Dune
 
       for (unsigned int f=0; f<builder_.faceSize(); ++f)
       {
-        testBasisVal.resize(builder_.testFaceBasis(f).size());
+        if (!builder_.testFaceBasis(f))
+          continue;
+        testBasisVal.resize(builder_.testFaceBasis(f)->size());
         const typename SubQuadratureProvider::Quadrature &faceQuad = SubQuadratureProvider::quadrature( topologyId, std::make_pair(f,2*order_+2) );
         const typename SubQuadratureProvider::SubQuadrature &faceSubQuad = SubQuadratureProvider::subQuadrature( topologyId, std::make_pair(f,2*order_+2) );
 
         const unsigned int quadratureSize = faceQuad.size();
         for( unsigned int qi = 0; qi < quadratureSize; ++qi )
         {
-          builder_.testFaceBasis(f).template evaluate<0>(faceSubQuad.point(qi),testBasisVal);
+          builder_.testFaceBasis(f)->template evaluate<0>(faceSubQuad.point(qi),testBasisVal);
           fillBnd( row, testBasisVal,
                    func.evaluate(faceQuad.point(qi)),
                    builder_.normal(f), faceQuad.weight(qi),
                    func);
         }
-        row += builder_.testFaceBasis(f).size();
+        row += builder_.testFaceBasis(f)->size();
       }
       // element dofs
-      if (row<size())
+      if (builder_.testBasis())
       {
-        testBasisVal.resize(builder_.testBasis().size());
+        testBasisVal.resize(builder_.testBasis()->size());
 
         typedef Dune::GenericGeometry::GenericQuadratureProvider< dimension, Field > QuadratureProvider;
         const typename QuadratureProvider::Quadrature &elemQuad = QuadratureProvider::template quadrature(topologyId,2*order_+1);
         const unsigned int quadratureSize = elemQuad.size();
         for( unsigned int qi = 0; qi < quadratureSize; ++qi )
         {
-          builder_.testBasis().template evaluate<0>(elemQuad.point(qi),testBasisVal);
+          builder_.testBasis()->template evaluate<0>(elemQuad.point(qi),testBasisVal);
           fillInterior( row, testBasisVal,
                         func.evaluate(elemQuad.point(qi)),
                         elemQuad.weight(qi),
                         func );
         }
-        row += builder_.testBasis().size()*dimension;
+        row += builder_.testBasis()->size()*dimension;
       }
       assert(row==size());
     }

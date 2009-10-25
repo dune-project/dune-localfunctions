@@ -606,7 +606,9 @@ namespace Dune
       : Base(),
         order_(order),
         size_(Size::instance())
-    {}
+    {
+      assert(order<=1024); // avoid wrapping of unsigned int (0-1) order=1024 is quite hight...)
+    }
 
     const unsigned int *sizes ( unsigned int order ) const
     {

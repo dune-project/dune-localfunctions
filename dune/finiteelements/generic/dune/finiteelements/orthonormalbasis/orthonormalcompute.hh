@@ -36,7 +36,7 @@ namespace ONBCompute
   struct Integral<Dune::GenericGeometry::Pyramid<Base> > {
     enum {d = Base::dimension+1};
     template <int dim,class scalar_t>
-    static int compute(const Dune::MultiIndex<dim>& alpha,
+    static int compute(const Dune::MultiIndex<dim, scalar_t>& alpha,
                        scalar_t& p,scalar_t& q) {
       int i = alpha.z(d-1);
       int ord = Integral<Base>::compute(alpha,p,q);
@@ -49,7 +49,7 @@ namespace ONBCompute
   struct Integral<Dune::GenericGeometry::Prism<Base> > {
     enum {d = Base::dimension+1};
     template <int dim,class scalar_t>
-    static int compute(const Dune::MultiIndex<dim>& alpha,
+    static int compute(const Dune::MultiIndex<dim,scalar_t>& alpha,
                        scalar_t& p,scalar_t& q) {
       int i = alpha.z(d-1);
       int ord = Integral<Base>::compute(alpha,p,q);
@@ -62,7 +62,7 @@ namespace ONBCompute
   template <>
   struct Integral<Dune::GenericGeometry::Point> {
     template <int dim,class scalar_t>
-    static int compute(const Dune::MultiIndex<dim>& alpha,
+    static int compute(const Dune::MultiIndex<dim,scalar_t>& alpha,
                        scalar_t& p,scalar_t& q) {
       p = 1.;
       q = 1.;
@@ -81,7 +81,7 @@ namespace ONBCompute
     explicit ONBMatrix( const unsigned int order )
     {
       // get all multiindecies for monomial basis
-      typedef Dune::MultiIndex<dim> MI;
+      typedef Dune::MultiIndex<dim,scalar_t> MI;
       typedef Dune::StandardMonomialBasis< dim, MI  > Basis;
       Basis basis( order );
       const unsigned int size = basis.size( );

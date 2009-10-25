@@ -70,20 +70,6 @@ namespace Dune
       {
         ONBCompute::ONBMatrix< Topology, ComputeField > matrix( order );
         _coeffs.fill( matrix );
-#if GLFEM_BASIS_PRINT
-        {
-          typedef MultiIndex< dimension > MIField;
-          typedef VirtualMonomialBasis<dim,MIField> MBasisMI;
-          typedef PolynomialBasisWithMatrix<StandardEvaluator<MBasisMI>,SparseCoeffMatrix<StorageField,dimension> > BasisMI;
-          const MBasisMI &_mBasisMI = MonomialBasisProvider<dimension,MIField>::template basis<Topology>(order+1);
-          BasisMI basisMI(_mBasisMI);
-          basisMI.fill(matrix);
-          std::stringstream name;
-          name << "orthonormal_" << Topology::name() << "_p" << order << ".basis";
-          std::ofstream out(name.str().c_str());
-          basisPrint<0>(out,basisMI);
-        }
-#endif
       }
 
       return new Basis( monomialBasis, _coeffs, monomialBasis.size() );

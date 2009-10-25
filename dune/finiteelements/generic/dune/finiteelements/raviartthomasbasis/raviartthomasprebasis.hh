@@ -60,7 +60,7 @@ namespace Dune
   struct RTVecMatrix
   {
     static const unsigned int dim = Topology::dimension;
-    typedef MultiIndex<dim> MI;
+    typedef MultiIndex<dim,Field> MI;
     typedef MonomialBasis<Topology,MI> MIBasis;
     RTVecMatrix(unsigned int order)
     {

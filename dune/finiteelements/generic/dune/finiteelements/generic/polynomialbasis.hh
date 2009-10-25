@@ -58,8 +58,8 @@ namespace Dune
 
     typedef typename CoefficientMatrix::Field StorageField;
 
-    static const int dimension = Evaluator::dimension;
-    static const int dimRange = Evaluator::dimRange*CoefficientMatrix::blockSize;
+    static const unsigned int dimension = Evaluator::dimension;
+    static const unsigned int dimRange = Evaluator::dimRange*CoefficientMatrix::blockSize;
     typedef C1LocalBasisTraits<D,dimension,FieldVector<D,dimension>,
         R,dimRange,FieldVector<R,dimRange>,
         FieldVector<FieldVector<R,dimension>,dimRange> > Traits;

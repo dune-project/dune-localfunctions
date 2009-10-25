@@ -16,21 +16,21 @@ namespace Dune
   // Internal Forward Declarations
   // -----------------------------
 
-  template< int dim >
+  template< int dim, class Field >
   class MultiIndex;
 
-  template< int dim >
-  std::ostream &operator<< ( std::ostream &, const MultiIndex< dim > & );
+  template< int dim, class Field >
+  std::ostream &operator<< ( std::ostream &, const MultiIndex< dim,Field > & );
 
 
 
   // MultiIndex
   // ----------
 
-  template< int dim >
+  template< int dim,class Field >
   class MultiIndex
   {
-    typedef MultiIndex< dim > This;
+    typedef MultiIndex< dim, Field > This;
 
     friend std::ostream &operator<<<> ( std::ostream &, const This & );
 
@@ -43,15 +43,15 @@ namespace Dune
         factor_( 1. ),
         next_( 0 )
     {}
-    template <class Field>
-    explicit MultiIndex (Field f)
+    template <class F>
+    explicit MultiIndex (const F &f)
       : vecZ_( 0 ),
         vecOMZ_( 0 ),
-        factor_( field_cast<double>(f) ),
+        factor_( field_cast<Field>(f) ),
         next_( 0 )
     {}
 
-    MultiIndex ( int, const MultiIndex &other )
+    MultiIndex ( int, const This &other )
       : vecZ_( other.vecOMZ_ ),
         vecOMZ_( other.vecZ_ ),
         factor_( other.factor_ )
@@ -59,7 +59,7 @@ namespace Dune
       assert(!other.next_);
       if (other.next_)
       {
-        next_ = new MultiIndex( *(other.next_) );
+        next_ = new This( *(other.next_) );
       }
       else
         next_ = 0;
@@ -72,7 +72,7 @@ namespace Dune
     {
       if (other.next_)
       {
-        next_ = new MultiIndex( *(other.next_) );
+        next_ = new This( *(other.next_) );
       }
       else
         next_ = 0;
@@ -91,7 +91,7 @@ namespace Dune
     {
       return vecOMZ_[i];
     }
-    double factor() const
+    const Field &factor() const
     {
       return factor_;
     }
@@ -103,7 +103,7 @@ namespace Dune
       vecOMZ_ = other.vecOMZ_;
       factor_ = other.factor_;
       if (other.next_)
-        next_ = new MultiIndex(*(other.next_));
+        next_ = new This(*(other.next_));
       return *this;
     }
     This &operator= ( const Zero<This> &f )
@@ -128,7 +128,7 @@ namespace Dune
       remove();
       vecZ_ = 0;
       vecOMZ_ = 0;
-      factor_ = field_cast<double>(f);
+      factor_ = field_cast<Field>(f);
       return *this;
     }
 
@@ -138,16 +138,18 @@ namespace Dune
       return (vecZ_==other.vecZ_ && vecOMZ_==other.vecOMZ_ && factor_==other.factor_);
     }
 
-    This &operator*= ( const double f )
+    template <class F>
+    This &operator*= ( const F &f )
     {
-      factor_ *= f;
+      factor_ *= field_cast<Field>(f);
       if (next_)
         (*next_) *= f;
       return *this;
     }
-    This &operator/= ( const double f )
+    template <class F>
+    This &operator/= ( const F &f )
     {
-      factor_ /= f;
+      factor_ /= field_cast<Field>(f);
       if (next_)
         (*next_) /= f;
       return *this;
@@ -214,12 +216,14 @@ namespace Dune
       return *this;
     }
 
-    This operator* ( const double f ) const
+    template <class F>
+    This operator* ( const F &f ) const
     {
       This z = *this;
       return (z *= f);
     }
-    This operator/ ( const double f ) const
+    template <class F>
+    This operator/ ( const F &f ) const
     {
       This z = *this;
       return (z /= f);
@@ -268,7 +272,7 @@ namespace Dune
       return ret;
     }
 
-    bool sameMultiIndex(const MultiIndex &ind)
+    bool sameMultiIndex(const This &ind)
     {
       for( int i = 0; i < dimension; ++i )
       {
@@ -294,28 +298,28 @@ namespace Dune
 
     Vector vecZ_;
     Vector vecOMZ_;
-    double factor_;
+    Field factor_;
 
     This *next_;
   };
 
-  template <int dim>
-  MultiIndex<dim> operator* ( const double f,
-                              const MultiIndex<dim> &m)
+  template <int dim, class Field, class F>
+  MultiIndex<dim,Field> operator* ( const F &f,
+                                    const MultiIndex<dim,Field> &m)
   {
-    MultiIndex<dim> z = m;
+    MultiIndex<dim,Field> z = m;
     return (z *= f);
   }
-  template <int dim>
-  MultiIndex<dim> operator/ ( const double f,
-                              const MultiIndex<dim> &m)
+  template <int dim, class Field, class F>
+  MultiIndex<dim,Field> operator/ ( const F &f,
+                                    const MultiIndex<dim,Field> &m)
   {
-    MultiIndex<dim> z = m;
+    MultiIndex<dim,Field> z = m;
     return (z /= f);
   }
 
-  template <int d>
-  std::ostream &operator<<(std::ostream& out,const std::vector<MultiIndex<d> >& y) {
+  template <int d, class F>
+  std::ostream &operator<<(std::ostream& out,const std::vector<MultiIndex<d,F> >& y) {
     for (unsigned int r=0; r<y.size(); ++r) {
       out << "f_{" << r << "}(" << char('a');
       for (int i=1; i<d; ++i)
@@ -325,9 +329,9 @@ namespace Dune
     }
     return out;
   }
-  template <int d,int dimR>
+  template <int d,class F,int dimR>
   std::ostream &operator<<(std::ostream& out,
-                           const std::vector<Dune::FieldVector<MultiIndex<d>,dimR> >& y) {
+                           const std::vector<Dune::FieldVector<MultiIndex<d,F>,dimR> >& y) {
     out << "\\begin{eqnarray*}" << std::endl;
     for (unsigned int k=0; k<y.size(); ++k) {
       out << "f_{" << k << "}(" << char('a');
@@ -343,9 +347,9 @@ namespace Dune
     out << "\\end{eqnarray*}" << std::endl;
     return out;
   }
-  template <int d,int dimR1,int dimR2>
+  template <int d,class F,int dimR1,int dimR2>
   std::ostream &operator<<(std::ostream& out,
-                           const std::vector<Dune::FieldMatrix<MultiIndex<d>,dimR1,dimR2> >& y) {
+                           const std::vector<Dune::FieldMatrix<MultiIndex<d,F>,dimR1,dimR2> >& y) {
     out << "\\begin{eqnarray*}" << std::endl;
     for (unsigned int k=0; k<y.size(); ++k) {
       for (int q=0; q<dimR2; q++) {
@@ -363,11 +367,11 @@ namespace Dune
     out << "\\end{eqnarray*}" << std::endl;
     return out;
   }
-  template <int d>
-  std::ostream &operator<<(std::ostream& out,const MultiIndex<d>& val)
+  template <int d, class F>
+  std::ostream &operator<<(std::ostream& out,const MultiIndex<d,F>& val)
   {
     bool first = true;
-    const MultiIndex<d> *m = &val;
+    const MultiIndex<d,F> *m = &val;
     do {
       if (m->absZ()==0 && std::abs(m->factor())<1e-10)
       {
@@ -391,7 +395,7 @@ namespace Dune
       else
         out << "  ";
       first = false;
-      double f = std::abs(m->factor());
+      F f = std::abs(m->factor());
       if (m->absZ()==0)
         out << f;
       else {
@@ -436,10 +440,10 @@ namespace Dune
     return out;
   }
 
-  template< int dim >
-  struct Unity< MultiIndex< dim > >
+  template< int dim, class F>
+  struct Unity< MultiIndex< dim, F > >
   {
-    typedef MultiIndex< dim > Field;
+    typedef MultiIndex< dim, F > Field;
 
     operator Field () const
     {
@@ -459,10 +463,10 @@ namespace Dune
 
 
 
-  template< int dim >
-  struct Zero< MultiIndex< dim > >
+  template< int dim, class F >
+  struct Zero< MultiIndex< dim,F > >
   {
-    typedef MultiIndex< dim > Field;
+    typedef MultiIndex< dim,F > Field;
 
     // zero does not acutally exist
     operator Field ()
@@ -471,14 +475,14 @@ namespace Dune
     }
   };
 
-  template< int dim >
-  bool operator< ( const Zero< MultiIndex< dim > > &, const MultiIndex< dim > & )
+  template< int dim, class Field >
+  bool operator< ( const Zero< MultiIndex< dim,Field > > &, const MultiIndex< dim,Field > & )
   {
     return true;
   }
 
-  template< int dim >
-  bool operator< ( const MultiIndex< dim > &f, const Zero< MultiIndex< dim > > & )
+  template< int dim, class Field >
+  bool operator< ( const MultiIndex< dim, Field > &f, const Zero< MultiIndex< dim,Field > > & )
   {
     return true;
   }

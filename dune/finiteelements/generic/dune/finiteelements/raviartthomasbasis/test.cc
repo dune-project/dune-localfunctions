@@ -27,10 +27,15 @@ bool test(unsigned int order)
     std::cout << "Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
     typedef Dune::RaviartThomasBasisFactory<Topology::dimension,StorageField,ComputeField> BasisFactory;
     const typename BasisFactory::Object &basis = *BasisFactory::template create<Topology>(o);
+
+    // print function and derivatives
     std::stringstream name;
     name << "rt_" << Topology::name() << "_p" << o << ".basis";
     std::ofstream out(name.str().c_str());
-    Dune::basisPrint<0,BasisFactory>(out,basis);
+    Dune::basisPrint<0,double,BasisFactory>(out,basis);
+    Dune::basisPrint<1,double,BasisFactory>(out,basis);
+
+    // test interpolation
     typedef Dune::RaviartThomasL2InterpolationFactory<Topology::dimension,StorageField> InterpolationFactory;
     const typename InterpolationFactory::Object &interpol = *InterpolationFactory::template create<Topology>(o);
     Dune::LFEMatrix<StorageField> matrix;

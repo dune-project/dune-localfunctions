@@ -8,7 +8,7 @@
 #include <dune/common/exceptions.hh>
 #include <dune/common/forloop.hh>
 #include <dune/finiteelements/generic/topologyfactory.hh>
-#include <dune/finiteelements/generic/interpolhelper.hh>
+#include <dune/finiteelements/generic/interpolationhelper.hh>
 #include <dune/finiteelements/common/matrix.hh>
 #include <dune/finiteelements/common/localinterpolation.hh>
 #include <dune/finiteelements/common/localcoefficients.hh>

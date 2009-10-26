@@ -5,7 +5,7 @@
 #include <dune/finiteelements/generic/multiindex.hh>
 #include <dune/finiteelements/generic/polynomialbasis.hh>
 namespace Dune {
-  template <int deriv,class PrintField,class BasisFactory>
+  template <int deriv,class BasisFactory,class PrintField=typename BasisFactory::StorageField>
   void basisPrint(std::ostream &out,
                   typename BasisFactory::Object &basis)
   {
@@ -50,7 +50,15 @@ namespace Dune {
     }
     MIBasisFactory::release(miBasis);
   }
-};
+  template <int deriv,class BasisFactory,class PrintField=typename BasisFactory::StorageField>
+  void basisPrint(std::ostream &out,
+                  typename BasisFactory::Key &key)
+  {
+    typename BasisFactory::Object *basis = BasisFactory::create(key);
+    basisPrint<deriv,BasisFactory,PrintField>(out,*basis);
+    BasisFactory::release(basis);
+  }
+}
 
 
 #endif // BASISPRINT

@@ -554,7 +554,7 @@ namespace Dune
 
       Field *const col0End = values + baseSizes[ 0 ];
       for( Field *it = values; it != col0End; ++it )
-        *it *= Field( 1 ) /  Field( double(dimDomain) );  // ??? double cast due to error in Linker
+        *it *= Field( 1 ) /  Field( int(dimDomain) );
       Field *row0 = values;
 
       for( unsigned int k = 1; k <= order; ++k )

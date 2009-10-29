@@ -1,7 +1,0 @@
-Makefile
-Makefile.in
-.deps
-.libs
-lagrange_p*_*.basis
-test
-

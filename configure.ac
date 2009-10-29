@@ -48,6 +48,13 @@ AC_CONFIG_FILES([
                 dune/finiteelements/rt0q2d/Makefile
                 dune/finiteelements/rt0q3d/Makefile
                 dune/finiteelements/test/Makefile
+                dune/finiteelements/generic/Makefile
+                dune/finiteelements/generic/common/Makefile
+                dune/finiteelements/generic/math/Makefile
+                dune/finiteelements/generic/quadrature/Makefile
+                dune/finiteelements/generic/orthonormalbasis/Makefile
+                dune/finiteelements/generic/lagrangebasis/Makefile
+                dune/finiteelements/generic/raviartthomasbasis/Makefile
                 doc/doxygen/Makefile
                 doc/doxygen/Doxyfile
                 doc/Makefile

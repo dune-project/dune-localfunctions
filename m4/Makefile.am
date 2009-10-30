@@ -1,0 +1,8 @@
+ALLM4S = dune-localfunctions.m4  gmp.m4  virtual-basis.m4
+
+aclocaldir = $(datadir)/aclocal
+aclocal_DATA = $(ALLM4S)
+
+EXTRA_DIST = $(ALLM4S)
+
+include $(top_srcdir)/am/global-rules

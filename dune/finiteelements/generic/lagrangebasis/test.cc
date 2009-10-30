@@ -1,5 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
+#include <config.h>
+
 #include <dune/finiteelements/generic/math/field.hh>
 
 #include <dune/finiteelements/generic/lagrangebasis/equidistantpoints.hh>
@@ -10,7 +12,7 @@
 #include <dune/finiteelements/generic/quadrature/genericquadrature.hh>
 #include <dune/finiteelements/generic/common/basisprint.hh>
 
-#if 1
+#if 0
 typedef double StorageField;
 typedef double ComputeField;
 #else

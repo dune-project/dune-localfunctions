@@ -60,6 +60,7 @@ AC_CONFIG_FILES([
                 doc/Makefile
                 doc/Makefile.dist
                 debug/Makefile
+                m4/Makefile
                 dune-localfunctions.pc
 		])
 AC_OUTPUT

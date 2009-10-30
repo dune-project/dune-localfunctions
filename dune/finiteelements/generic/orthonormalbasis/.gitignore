@@ -1,0 +1,13 @@
+test
+test-all
+
+Makefile
+Makefile.in
+
+*.swp
+
+.deps
+.libs
+
+orthonormal_p*_*.basis
+

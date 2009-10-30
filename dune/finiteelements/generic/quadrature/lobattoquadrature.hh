@@ -26,12 +26,11 @@ namespace Dune
     struct LobattoPoints
       : public PointList< F >
     {
+      dune_static_assert(sizeof(F)==0,"Lobatto Points only implemented for ALGLib ampf type");
       typedef PointList< F > Base;
       explicit LobattoPoints ( unsigned int n )
         : Base( n )
-      {
-        abort();
-      }
+      {}
     };
 
 #if HAVE_ALGLIB
@@ -106,5 +105,4 @@ namespace Dune
   }
 
 }
-
 #endif // #ifndef DUNE_GAUSSQUADRATURE_HH

@@ -2,7 +2,6 @@
 // vi: set et ts=4 sw=2 sts=2:
 #ifndef DUNE_LOBATTOBASIS_HH
 #define DUNE_LOBATTOBASIS_HH
-#if HAVE_ALGLIB
 
 #include <fstream>
 #include <dune/finiteelements/generic/math/matrix.hh>
@@ -28,7 +27,11 @@ namespace Dune
       if( order < 2 )
         return;
       points_.resize(order-1);
+#if HAVE_ALGLIB
       typedef amp::ampf< Precision< Field >::value > MPField;
+#else
+      typedef Field MPField;
+#endif
       GenericGeometry::LobattoPoints<MPField> lobatto(order+1);
 
       for (unsigned int i=1; i<order; ++i) {
@@ -228,7 +231,6 @@ namespace Dune
     template< class Topology >
     bool build ( )
     {
-      std::cout << "in build" << std::endl;
       unsigned int order = Base::order();
       LobattoPoints<Field> points1D(order);
       ForLoop<Setup<Topology>::template InitCodim,0,dimension>::
@@ -315,7 +317,4 @@ namespace Dune
 
   };
 }
-#else
-#warning LOBATTOPOINTS ONLY AVAILABLE WITH ALGLIB
-#endif
 #endif // DUNE_LOBATTOBASIS_HH

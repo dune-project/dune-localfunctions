@@ -5,29 +5,22 @@
 #include <dune/finiteelements/generic/math/field.hh>
 
 #include <dune/finiteelements/generic/lagrangebasis/equidistantpoints.hh>
-#if HAVE_ALGLIB
+
 #include <dune/finiteelements/generic/lagrangebasis/lobattopoints.hh>
-#endif
+
 #include <dune/finiteelements/generic/lagrangebasis/lagrangebasis.hh>
 #include <dune/finiteelements/generic/quadrature/genericquadrature.hh>
 #include <dune/finiteelements/generic/common/basisprint.hh>
 
-#if 0
-typedef double StorageField;
-typedef double ComputeField;
-#else
 #if HAVE_ALGLIB
 typedef amp::ampf< 128 > StorageField;
 typedef amp::ampf< 512 > ComputeField;
-#else
-#if HAVE_GMP
+#elif HAVE_GMP
 typedef Dune::GMPField< 128 > StorageField;
 typedef Dune::GMPField< 512 > ComputeField;
 #else
 typedef double StorageField;
 typedef double ComputeField;
-#endif
-#endif
 #endif
 
 template <class Basis,class Points>
@@ -88,6 +81,8 @@ bool test(unsigned int order, bool verbose = false)
 
     typename BasisFactory::Object &basis = *BasisFactory::template create<Topology>(o);
 
+    std::cout << "# Basis construction complete ... testing interpolation property" << std::endl;
+
     ret |= test(basis,*pointsPtr,verbose);
 
     std::stringstream name;
@@ -126,6 +121,8 @@ bool test(unsigned int topologyId, unsigned int order, bool verbose = false)
     std::cout << "# Testing " << topologyId << " in dimension " << dimension << " with order " << o << std::endl;
 
     typename BasisFactory::Object &basis = *BasisFactory::create( topologyId, o );
+
+    std::cout << "# Basis construction complete ... testing interpolation property" << std::endl;
 
     ret |= test(basis,*pointsPtr,verbose);
 

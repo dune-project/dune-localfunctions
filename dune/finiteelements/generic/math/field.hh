@@ -348,13 +348,6 @@ namespace std
 
 #if HAVE_GMP
   template< unsigned int precision >
-  inline ostream &
-  operator<< ( ostream &out, const Dune::GMPField< precision > &value )
-  {
-    return out << value.get_d();
-  }
-
-  template< unsigned int precision >
   inline Dune::GMPField< precision > sqrt ( const Dune::GMPField< precision > &a )
   {
     return ::sqrt( a );

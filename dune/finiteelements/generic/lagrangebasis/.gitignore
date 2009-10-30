@@ -1,7 +1,11 @@
-Makefile
-Makefile.in
-.deps
-.libs
-lagrange_p*_*.basis
 test
 test-all
+
+Makefile
+Makefile.in
+
+lagrange_p*_*.basis
+*.swp
+
+.deps
+.libs

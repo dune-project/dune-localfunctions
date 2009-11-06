@@ -3,9 +3,13 @@
 #ifndef DUNE_LABATTOQUADRATURE_HH
 #define DUNE_LABATTOQUADRATURE_HH
 
+#include <iostream>
+
 #if HAVE_ALGLIB
 #include <alglib/gqgenlobatto.h>
 #endif
+
+#include <dune/common/static_assert.hh>
 
 #include <dune/finiteelements/generic/math/field.hh>
 

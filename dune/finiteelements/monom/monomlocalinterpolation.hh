@@ -17,7 +17,11 @@ namespace Dune
 
   template<class LB, unsigned int size>
   class MonomLocalInterpolation
+#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalInterpolationInterface<MonomLocalInterpolation<LB, size> >
+#else
+    : public LocalInterpolationInterface<typename LB::Traits::DomainType, typename LB::Traits::RangeType>
+#endif
   {
     typedef typename LB::Traits::DomainType D;
     typedef typename LB::Traits::DomainFieldType DF;

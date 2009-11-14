@@ -14,17 +14,24 @@ namespace Dune
 {
 
   /** Monom basis for discontinuous Galerkin
+
+     \tparam D Type used for coordinates
+     \tparam R Type used for shape function values
+     \tparam d Dimension of the element
+     \tparam p Order of the basis
    */
   template<class D, class R, int d, int p>
-  class MonomLocalFiniteElement : LocalFiniteElementInterface<
-                                      LocalFiniteElementTraits<
-                                          MonomLocalBasis<D,R,d,p>,
-                                          MonomLocalCoefficients<MonomImp::Size<d,p>::val>,
-                                          MonomLocalInterpolation<MonomLocalBasis<D,R,d,p>,MonomImp::Size<d,p>::val> >
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-                                      , MonomLocalFiniteElement<D,R,d,p>
+  class MonomLocalFiniteElement
+#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
+    : public LocalFiniteElementInterface<D,R,d>
+#else
+    : LocalFiniteElementInterface<
+          LocalFiniteElementTraits<
+              MonomLocalBasis<D,R,d,p>,
+              MonomLocalCoefficients<MonomImp::Size<d,p>::val>,
+              MonomLocalInterpolation<MonomLocalBasis<D,R,d,p>,MonomImp::Size<d,p>::val> >,
+          MonomLocalFiniteElement<D,R,d,p> >
 #endif
-                                      >
   {
     enum { static_size = MonomImp::Size<d,p>::val };
 

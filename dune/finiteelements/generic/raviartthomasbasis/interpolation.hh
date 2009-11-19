@@ -17,7 +17,6 @@
 #include <dune/finiteelements/generic/quadrature/genericquadrature.hh>
 #include <dune/finiteelements/generic/quadrature/subquadrature.hh>
 
-#include <dune/finiteelements/generic/common/basisprint.hh>
 #include <dune/finiteelements/generic/common/polynomialbasis.hh>
 #include <dune/finiteelements/generic/orthonormalbasis/orthonormalbasis.hh>
 
@@ -179,8 +178,10 @@ namespace Dune
                            std::vector<FaceStructure> &faceStructure )
         {
           faceStructure.push_back(
-            TestFaceBasisFactory::template create<FaceTopology>(order),
-            GenericGeometry::ReferenceElement<Topology,Field>::integrationOuterNormal(face) );
+            FaceStructure(
+              TestFaceBasisFactory::template create<FaceTopology>(order),
+              GenericGeometry::ReferenceElement<Topology,Field>::integrationOuterNormal(face)
+              ) );
         }
       };
     };

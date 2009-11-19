@@ -55,8 +55,8 @@ namespace Dune
     template< class Topology >
     static Object *create ( const Key &key )
     {
-      static_assert( (Topology::dimension == dimension),
-                     "Topology with incompatible dimension used" );
+      dune_static_assert( (Topology::dimension == dimension),
+                          "Topology with incompatible dimension used" );
       return instance().template getObject< Topology >( key );
     }
     static Object *create ( const unsigned int topologyId, const Key &key )

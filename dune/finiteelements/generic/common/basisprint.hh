@@ -5,7 +5,9 @@
 #include <dune/finiteelements/generic/common/multiindex.hh>
 #include <dune/finiteelements/generic/common/polynomialbasis.hh>
 namespace Dune {
-  template <int deriv,class BasisFactory,class PrintField=typename BasisFactory::StorageField>
+  // default argument does not work for gcc 4.1.2
+  // template <int deriv,class BasisFactory,class PrintField=typename BasisFactory::StorageField>
+  template <int deriv,class BasisFactory,class PrintField>
   void basisPrint(std::ostream &out,
                   typename BasisFactory::Object &basis)
   {
@@ -50,7 +52,8 @@ namespace Dune {
     }
     MIBasisFactory::release(miBasis);
   }
-  template <int deriv,class BasisFactory,class PrintField=typename BasisFactory::StorageField>
+  // template <int deriv,class BasisFactory,class PrintField=typename BasisFactory::StorageField>
+  template <int deriv,class BasisFactory,class PrintField>
   void basisPrint(std::ostream &out,
                   typename BasisFactory::Key &key)
   {

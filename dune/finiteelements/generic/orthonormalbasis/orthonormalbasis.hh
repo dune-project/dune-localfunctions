@@ -8,7 +8,6 @@
 #include <dune/finiteelements/generic/common/topologyfactory.hh>
 
 #include <dune/finiteelements/generic/common/polynomialbasis.hh>
-#include <dune/finiteelements/generic/common/basisprint.hh>
 #include <dune/finiteelements/generic/orthonormalbasis/orthonormalcompute.hh>
 
 namespace Dune

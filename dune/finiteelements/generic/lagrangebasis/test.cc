@@ -88,7 +88,7 @@ bool test(unsigned int order, bool verbose = false)
     std::stringstream name;
     name << "lagrange_" << Topology::name() << "_p" << o << ".basis";
     std::ofstream out(name.str().c_str());
-    Dune::basisPrint<0,BasisFactory>(out,basis);
+    Dune::basisPrint<0,BasisFactory,typename BasisFactory::StorageField>(out,basis);
 
     LagrangeCoefficientsFactory::release( pointsPtr );
     BasisFactory::release( &basis );

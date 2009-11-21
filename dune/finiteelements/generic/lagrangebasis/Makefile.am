@@ -3,7 +3,8 @@ lagrangebasis_HEADERS = emptypoints.hh        lagrangebasis.hh         \
                         equidistantpoints.hh  lagrangecoefficients.hh  \
                         interpolation.hh      lobattopoints.hh
 
-check_PROGRAMS = test test-all
+check_PROGRAMS = test-all
+EXTRA_PROGRMAS = test
 
 
 TOPOLOGY = Pyramid< Pyramid< Pyramid< Point > > >

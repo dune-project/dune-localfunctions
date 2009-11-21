@@ -1,6 +1,7 @@
 orthonormalbasisdir = $(includedir)/dune/finiteelements/generic/orthonormalbasis
 orthonormalbasis_HEADERS = orthonormalbasis.hh orthonormalcompute.hh
-check_PROGRAMS = test test-all
+check_PROGRAMS = test
+EXTRA_PROGRAMS = test-all
 
 LIBS = $(DUNE_LDFLAGS) $(DUNE_LIBS)
 

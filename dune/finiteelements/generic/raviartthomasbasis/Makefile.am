@@ -1,6 +1,7 @@
 raviartthomasbasisdir = $(includedir)/dune/finiteelements/generic/raviartthomasbasis
 raviartthomasbasis_HEADERS = interpolation.hh  raviartthomasbasis.hh  raviartthomasprebasis.hh
-check_PROGRAMS = test test-all
+check_PROGRAMS = test
+EXTRA_PROGRMAS = test-all
 
 TOPOLOGY = Pyramid< Pyramid< Point > >
 SETTINGS = -DTOPOLOGY="$(TOPOLOGY)"

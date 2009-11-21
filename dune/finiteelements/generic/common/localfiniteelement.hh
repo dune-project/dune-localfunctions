@@ -29,10 +29,10 @@ namespace Dune
 
     typedef typename BasisF::Key Key;
 
-    static_assert( (Conversion<Key,typename CoeffF::Key>::sameType),
-                   "incompatible keys between BasisCreator and CoefficientsCreator" );
-    static_assert( (Conversion<Key,typename InterpolF::Key>::sameType),
-                   "incompatible keys between BasisCreator and InterpolationCreator" );
+    dune_static_assert( (Conversion<Key,typename CoeffF::Key>::sameType),
+                        "incompatible keys between BasisCreator and CoefficientsCreator" );
+    dune_static_assert( (Conversion<Key,typename InterpolF::Key>::sameType),
+                        "incompatible keys between BasisCreator and InterpolationCreator" );
 
     /** \todo Please doc me !
      */

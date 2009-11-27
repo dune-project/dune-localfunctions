@@ -286,115 +286,112 @@ namespace Dune
     return f2;
   }
 
+  // Precision
+  // this is not a perfect solution to obtain the
+  // precision of a field - definition is not clear
+  // to be removed
+  // ---------
 
-  // to be moved to different location...
-  namespace std
+  template <class Field>
+  struct Precision;
+
+  template<>
+  struct Precision< double >
   {
+    static const unsigned int value = 64;
+  };
+
+  template<>
+  struct Precision< long double >
+  {
+    static const unsigned int value = 80;
+  };
+
+  template<>
+  struct Precision< float >
+  {
+    static const unsigned int value = 32;
+  };
 
 #if HAVE_ALGLIB
-    template< unsigned int precision >
-    inline ostream &
-    operator<< ( ostream &out, const amp::ampf< precision > &value )
-    {
-      return out << value.toDec();
-    }
-
-    template< unsigned int precision >
-    inline amp::ampf< precision > sqrt ( const amp::ampf< precision > &a )
-    {
-      return amp::sqrt( a );
-    }
-
-    template< unsigned int precision >
-    inline amp::ampf< precision > abs ( const amp::ampf< precision > &a )
-    {
-      return amp::abs( a );
-    }
+  template< unsigned int precision >
+  struct Precision< amp::ampf< precision > >
+  {
+    static const unsigned int value = precision;
+  };
 #endif
-
 #if HAVE_GMP
-    template< unsigned int precision >
-    inline Dune::GMPField< precision > sqrt ( const Dune::GMPField< precision > &a )
-    {
-      return ::sqrt( a );
-    }
-
-    template< unsigned int precision >
-    inline Dune::GMPField< precision > abs ( const Dune::GMPField< precision > &a )
-    {
-      return ::abs( a );
-    }
+  template< unsigned int precision >
+  struct Precision< GMPField< precision > >
+  {
+    static const unsigned int value = precision;
+  };
 #endif
 
-    // Precision
-    // this is not a perfect solution to obtain the
-    // precision of a field - definition is not clear
-    // to be removed
-    // ---------
+  // ComputeField
+  // ------------
 
-    template <class Field>
-    struct Precision;
-
-    template<>
-    struct Precision< double >
-    {
-      static const unsigned int value = 64;
-    };
-
-    template<>
-    struct Precision< long double >
-    {
-      static const unsigned int value = 80;
-    };
-
-    template<>
-    struct Precision< float >
-    {
-      static const unsigned int value = 32;
-    };
+  template <class Field,unsigned int sum>
+  struct ComputeField
+  {
+    typedef Field Type;
+  };
 
 #if HAVE_ALGLIB
-    template< unsigned int precision >
-    struct Precision< amp::ampf< precision > >
-    {
-      static const unsigned int value = precision;
-    };
+  template< unsigned int precision, unsigned int sum >
+  struct ComputeField< amp::ampf< precision >, sum >
+  {
+    typedef amp::ampf<precision+sum> Type;
+  };
 #endif
 #if HAVE_GMP
-    template< unsigned int precision >
-    struct Precision< GMPField< precision > >
-    {
-      static const unsigned int value = precision;
-    };
+  template< unsigned int precision, unsigned int sum >
+  struct ComputeField< GMPField< precision >, sum >
+  {
+    typedef GMPField<precision+sum> Type;
+  };
 #endif
+}
 
-
-
-    // ComputeField
-    // ------------
-
-    template <class Field,unsigned int sum>
-    struct ComputeField
-    {
-      typedef Field Type;
-    };
+// to be moved to different location...
+namespace std
+{
 
 #if HAVE_ALGLIB
-    template< unsigned int precision, unsigned int sum >
-    struct ComputeField< amp::ampf< precision >, sum >
-    {
-      typedef amp::ampf<precision+sum> Type;
-    };
-#endif
-#if HAVE_GMP
-    template< unsigned int precision, unsigned int sum >
-    struct ComputeField< GMPField< precision >, sum >
-    {
-      typedef GMPField<precision+sum> Type;
-    };
-#endif
-
+  template< unsigned int precision >
+  inline ostream &
+  operator<< ( ostream &out,
+               const amp::ampf< precision > &value )
+  {
+    return out << value.toDec();
   }
 
+  template< unsigned int precision >
+  inline amp::ampf< precision > sqrt ( const amp::ampf< precision > &a )
+  {
+    return amp::sqrt( a );
+  }
+
+  template< unsigned int precision >
+  inline amp::ampf< precision > abs ( const amp::ampf< precision > &a )
+  {
+    return amp::abs( a );
+  }
+#endif
+
+#if HAVE_GMP
+  template< unsigned int precision >
+  inline Dune::GMPField< precision > sqrt ( const Dune::GMPField< precision > &a )
+  {
+    return ::sqrt( a );
+  }
+
+  template< unsigned int precision >
+  inline Dune::GMPField< precision > abs ( const Dune::GMPField< precision > &a )
+  {
+    return ::abs( a );
+  }
+#endif
 }
+
 #endif // #ifndef DUNE_FIELD_HH

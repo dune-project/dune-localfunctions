@@ -11,6 +11,7 @@
 
 #include <dune/common/fmatrix.hh>
 
+#include <dune/finiteelements/generic/math/field.hh>
 #include <dune/finiteelements/generic/math/matrix.hh>
 
 #include <dune/grid/genericgeometry/topologytypes.hh>
@@ -112,7 +113,7 @@ namespace ONBCompute
       // transposed matrix is required
       assert(row<Base::cols());
       for (unsigned int i=0; i<Base::rows(); ++i)
-        field_cast(Base::operator()(i,row), vec[i]);
+        Dune::field_cast(Base::operator()(i,row), vec[i]);
     }
     bool test() {
       bool ret = true;
@@ -127,7 +128,7 @@ namespace ONBCompute
               prod += Base::operator()(l,i)*S(l,k)*Base::operator()(k,j);
             }
           }
-          assert((i==j) ? 1 : fabs( field_cast<double>(prod) )<1e-10);
+          assert((i==j) ? 1 : fabs( Dune::field_cast<double>(prod) )<1e-10);
         }
       }
       return ret;

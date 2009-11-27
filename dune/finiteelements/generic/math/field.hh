@@ -156,6 +156,7 @@ namespace Dune
     return z < f;
   }
 
+
   // field_cast
   // ----------
 
@@ -171,7 +172,6 @@ namespace Dune
    * other direction can be more easily handled by
    * the special field type implementation.
    **/
-
   template< class F2, class F1 >
   inline void field_cast ( const F1 &f1, F2 &f2 )
   {

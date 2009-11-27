@@ -18,6 +18,12 @@
 
 namespace Dune
 {
+  /*******************************************
+  * Should be removed as soon as the Tensor
+  * classes have been revisited. See remarks
+  * in tensor.hh (also hold true here).
+  *******************************************/
+
 
   template <class B>
   struct MonomialEvaluator

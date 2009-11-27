@@ -12,7 +12,10 @@
 
 namespace Dune
 {
-
+  /****************************************************************
+  * Provide a Field class which can be used in evaluation methods
+  * to produce MultiIndex presentation of polynomials.
+  ****************************************************************/
   // Internal Forward Declarations
   // -----------------------------
 
@@ -403,7 +406,9 @@ namespace Dune
           out << 0;
         else
         {
-          if ( std::abs(f-1.)>1e-10)
+          F f_1(f);
+          f_1 -= 1.; // better Unity<F>();
+          if ( std::abs(f_1)>1e-10)
             out << f;
           int absVal = 0;
           for (int i=0; i<d; ++i) {

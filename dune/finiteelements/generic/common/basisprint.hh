@@ -5,6 +5,16 @@
 #include <dune/finiteelements/generic/common/multiindex.hh>
 #include <dune/finiteelements/generic/common/polynomialbasis.hh>
 namespace Dune {
+  /**********************************************
+  * Methods for printing a PolynomialBasis.
+  * Is achieved by using the MultiIndex class as
+  * Field type and printing the results.
+  * The basis and higher order derivatives can be
+  * printed. This could be the basis for printing
+  * routings providing C++ or matlab methods
+  * for computing the basisfunctions for given
+  * orders or reference elements.
+  **********************************************/
   // default argument does not work for gcc 4.1.2
   // template <int deriv,class BasisFactory,class PrintField=typename BasisFactory::StorageField>
   template <int deriv,class BasisFactory,class PrintField>

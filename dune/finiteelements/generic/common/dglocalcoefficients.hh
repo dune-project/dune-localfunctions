@@ -15,6 +15,9 @@ namespace Dune
   // DGLocalCoefficients
   // -------------------
 
+  /**
+   * @brief A class providing local coefficients for dg spaces
+   **/
   class DGLocalCoefficients
     : public LocalCoefficientsInterface< DGLocalCoefficients >
   {
@@ -22,6 +25,7 @@ namespace Dune
     typedef LocalCoefficientsInterface< This > Base;
 
   public:
+    //! construct local keys for n basis functions
     DGLocalCoefficients ( const unsigned int n )
       : localKey_( n )
     {
@@ -48,6 +52,9 @@ namespace Dune
 
   // DGLocalCoefficientsFactory
   // --------------------------
+  /**
+   * @brief A factory class for the dg local coefficients.
+   **/
   template< class BasisCreator >
   struct DGLocalCoefficientsFactory;
   template< class BasisFactory >

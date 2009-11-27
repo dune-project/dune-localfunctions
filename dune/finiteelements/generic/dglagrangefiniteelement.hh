@@ -1,7 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_LAGRANGEFINITEELEMENT_HH
-#define DUNE_LAGRANGEFINITEELEMENT_HH
+#ifndef DUNE_DGLAGRANGEFINITEELEMENT_HH
+#define DUNE_DGLAGRANGEFINITEELEMENT_HH
 
 #include <dune/finiteelements/generic/common/localfiniteelement.hh>
 #include <dune/finiteelements/generic/common/dglocalcoefficients.hh>
@@ -11,10 +11,28 @@
 
 namespace Dune
 {
+  /**
+   * @brief a dg space using lagrange basis functions
+   *
+   * Simular to the Dune::LagrangeLocalFiniteElement class
+   * but this class uses the Dune::DGLocalCoefficients factory
+   * to build a discontinuous space from the lagrange basis functions.
+   * The point set used to define the lagrange points is given
+   * as first template argument; examples are
+   * - Dune::EquidistantPointSet
+   * - Dune::LobattoPointSet
+   *
+   * \tparam LP a template class defining the points for the lagrange interpolation
+   * \tparam dimDomain dimension of reference elements
+   * \tparam D domain for basis functions
+   * \tparam R range for basis functions
+   * \tparam SF storage field for basis matrix
+   * \tparam CF compute field for basis matrix
+   **/
   template< template <class,unsigned int> class LP,
       unsigned int dimDomain, class D, class R,
       class SF=R, class CF=SF >
-  class LagrangeLocalFiniteElement
+  class DGLagrangeLocalFiniteElement
     : public GenericLocalFiniteElement< LagrangeBasisFactory< LP, dimDomain, SF, CF >,
           DGLocalCoefficientsFactory< LagrangeBasisFactory< LP, dimDomain, SF, CF > >,
           LagrangeInterpolationFactory< LP, dimDomain, SF >,
@@ -29,11 +47,11 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    LagrangeLocalFiniteElement ( unsigned int topologyId, unsigned int order )
+    DGLagrangeLocalFiniteElement ( unsigned int topologyId, unsigned int order )
       : Base( topologyId, order )
     {}
   };
 
 }
 
-#endif // #ifndef DUNE_LAGRANGEFINITEELEMENT_HH
+#endif // #ifndef DUNE_DGLAGRANGEFINITEELEMENT_HH

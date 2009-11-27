@@ -10,6 +10,33 @@
 
 namespace Dune
 {
+  /**
+   * @brief Lagrange local finite elements for a given set of interpolation
+   *        points.
+   *
+   * The class LP provides the points for the interpolation.
+   * It has two template arguments, the first is the Field type to
+   * use for evaluating the points the second the dimension
+   * of the reference elements on which to construct the points.
+   * It is instantiated with the desired order and has a template
+   * method build taking a Topology to construct the points
+   * (a std::vector of FieldVectors).
+   * It also provides a static template method supports to indicate
+   * if the point set can be build for a specified Topology.
+   *
+   * Examples include:
+   * - EqualdistantPointSet: standard point set for lagrange points
+   * - LobattoPointSet:      a approximate Freget type point set
+   *                         (provided for simplex and generalized prism
+   *                         topologies (i.e. not for a 3d pyramid)
+   *
+   * \tparam LP a template class defining the points for the lagrange interpolation
+   * \tparam dimDomain dimension of reference elements
+   * \tparam D domain for basis functions
+   * \tparam R range for basis functions
+   * \tparam SF storage field for basis matrix
+   * \tparam CF compute field for basis matrix
+   **/
   template< template <class,unsigned int> class LP,
       unsigned int dimDomain, class D, class R,
       class SF=R, class CF=SF >

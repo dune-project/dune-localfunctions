@@ -10,10 +10,23 @@
 
 namespace Dune
 {
-
+  /**
+   * @brief A class providing orthonromal basis functions
+   *
+   * These basis functions are constructed by l2 orthonormalizing
+   * of monomials over a reference element. Thus the span is
+   * always Pk. The coefficients and the interpolation are given
+   * by the Dune::DGLocalCoefficientsFactory and the
+   * Dune::LocalL2InterpolationFactory.
+   *
+   * \tparam dimDomain dimension of reference elements
+   * \tparam D domain for basis functions
+   * \tparam R range for basis functions
+   * \tparam SF storage field for basis matrix
+   * \tparam CF compute field for basis matrix
+   **/
   template< unsigned int dimDomain, class D, class R,
       class SF=R, class CF=SF >
-
   class OrthonormalLocalFiniteElement
     : public GenericLocalFiniteElement< OrthonormalBasisFactory< dimDomain, SF, CF >,
           DGLocalCoefficientsFactory< OrthonormalBasisFactory< dimDomain, SF, CF > >,

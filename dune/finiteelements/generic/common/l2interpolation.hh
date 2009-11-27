@@ -8,10 +8,25 @@
 
 #include <dune/finiteelements/common/localinterpolation.hh>
 
-#include <dune/finiteelements/generic/quadrature/genericquadrature.hh>
+#include <dune/finiteelements/generic/quadrature/gaussquadrature.hh>
 
 namespace Dune
 {
+  /**
+   * @brief A local L2 interpolation taking a test basis and a quadrature
+   *        rule.
+   *
+   * This class computes a local interpolation where the coefficients
+   * are of the form:
+   *     c = M^{-1}b
+   * - M is the mass matrix with respect to the given basis and
+   * - b = int f phi (where phi are the basis functions).
+   * Thus the resulting local function u=c.varphi is defined through
+   * the l2 interpolation int u phi = in f phi for all phi in the
+   * base function set.
+   * The third template argument can be used to specify that the
+   * mass matrix is the unit matrix (onb=true).
+   **/
   template< class B, class Q, bool onb >
   struct LocalL2Interpolation;
 
@@ -145,6 +160,11 @@ namespace Dune
     MassMatrix massMatrix_;
   };
 
+  /**
+   * @brief A factory class for the local l2 interpolations
+   *        taking a basis factory and using GenericGeometry::Quadrature
+   *        class.
+   **/
   template< class BasisFactory, bool onb >
   struct LocalL2InterpolationFactory;
   template< class BasisFactory, bool onb >
@@ -152,7 +172,8 @@ namespace Dune
   {
     static const unsigned int dimension = BasisFactory::dimension;
     typedef typename BasisFactory::StorageField Field;
-    typedef GenericGeometry::Quadrature< dimension, Field > Quadrature;
+    typedef GenericGeometry::GaussQuadratureProvider<dimension,Field> QuadratureProvider;
+    typedef typename QuadratureProvider::Object Quadrature;
 
     typedef typename BasisFactory::Key Key;
     typedef typename BasisFactory::Object Basis;
@@ -170,25 +191,23 @@ namespace Dune
     typedef typename Traits::Key Key;
     typedef typename Traits::Basis Basis;
     typedef typename Traits::Object Object;;
-
     typedef typename Traits::Field Field;
-
-    typedef GenericGeometry::Quadrature< dimension, Field > Quadrature;
+    typedef typename Traits::Quadrature Quadrature;
 
     template< class Topology >
     static Object *createObject ( const Key &key )
     {
       typedef GenericGeometry::GenericQuadrature< Topology, Field > GenericQuadrature;
-      const Basis &basis = *BasisFactory::template create< Topology >( key );
-      const Quadrature *quadrature = new GenericQuadrature( 2*basis.order()+1 );
-      return new Object( basis, *quadrature );
+      const Basis *basis = BasisFactory::template create< Topology >( key );
+      const Quadrature *quadrature = Traits::QuadratureProvider::template create< Topology >( 2*basis.order()+1 );
+      return new Object( *basis, *quadrature );
     }
     static void release ( Object *object )
     {
       const Basis &basis = object->basis();
       const Quadrature &quadrature = object->quadrature();
       BasisFactory::release( &basis );
-      delete &quadrature;
+      Traits::QuadratureProvider::release( &quadrature );
       delete object;
     }
   };

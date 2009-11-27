@@ -7,15 +7,17 @@
 
 #include <dune/common/exceptions.hh>
 #include <dune/common/forloop.hh>
+
+#include <dune/grid/genericgeometry/referencemappings.hh>
+#include <dune/grid/genericgeometry/referenceelements.hh>
+
 #include <dune/finiteelements/generic/common/topologyfactory.hh>
 #include <dune/finiteelements/generic/common/interpolationhelper.hh>
 #include <dune/finiteelements/generic/math/matrix.hh>
 #include <dune/finiteelements/common/localinterpolation.hh>
 #include <dune/finiteelements/common/localcoefficients.hh>
 
-#include <dune/grid/genericgeometry/referenceelements.hh>
-#include <dune/finiteelements/generic/quadrature/genericquadrature.hh>
-#include <dune/finiteelements/generic/quadrature/subquadrature.hh>
+#include <dune/finiteelements/generic/quadrature/gaussquadrature.hh>
 
 #include <dune/finiteelements/generic/common/polynomialbasis.hh>
 #include <dune/finiteelements/generic/orthonormalbasis/orthonormalbasis.hh>
@@ -114,6 +116,13 @@ namespace Dune
 
     RTL2InterpolationBuilder()
     {}
+
+    ~RTL2InterpolationBuilder()
+    {
+      TestBasisFactory::release(testBasis_);
+      for (int i=0; i<faceStructure_.size(); ++i)
+        TestFaceBasisFactory::release(faceStructure_[i].basis_);
+    }
 
     unsigned int topologyId() const
     {
@@ -275,26 +284,35 @@ namespace Dune
       unsigned int row = 0;
 
       // boundary dofs:
-      typedef Dune::GenericGeometry::GenericQuadratureProvider< dimension-1, Field > FaceQuadratureProvider;
-      typedef Dune::GenericGeometry::SubQuadratureProvider< dimension, FaceQuadratureProvider> SubQuadratureProvider;
+      typedef Dune::GenericGeometry::GaussQuadratureProvider< dimension-1, Field >
+      FaceQuadratureProvider;
+      typedef Dune::GenericGeometry::ReferenceMappings< Field, dimension > RefMappings;
+      typedef typename RefMappings::Container::
+      template Codim< dimension-1 >::Mapping Mapping;
 
       for (unsigned int f=0; f<builder_.faceSize(); ++f)
       {
         if (!builder_.testFaceBasis(f))
           continue;
         testBasisVal.resize(builder_.testFaceBasis(f)->size());
-        const typename SubQuadratureProvider::Quadrature &faceQuad = SubQuadratureProvider::quadrature( topologyId, std::make_pair(f,2*order_+2) );
-        const typename SubQuadratureProvider::SubQuadrature &faceSubQuad = SubQuadratureProvider::subQuadrature( topologyId, std::make_pair(f,2*order_+2) );
 
-        const unsigned int quadratureSize = faceQuad.size();
+        const Mapping& mapping = RefMappings::container( topologyId ).
+                                 template mapping< dimension-1 >( f );
+        const unsigned int subTopologyId = mapping.topologyId();
+        const typename FaceQuadratureProvider::Object *faceQuad = FaceQuadratureProvider::create( subTopologyId, 2*order_+2 );
+
+        const unsigned int quadratureSize = faceQuad->size();
         for( unsigned int qi = 0; qi < quadratureSize; ++qi )
         {
-          builder_.testFaceBasis(f)->template evaluate<0>(faceSubQuad.point(qi),testBasisVal);
+          builder_.testFaceBasis(f)->template evaluate<0>(faceQuad->point(qi),testBasisVal);
           fillBnd( row, testBasisVal,
-                   func.evaluate(faceQuad.point(qi)),
-                   builder_.normal(f), faceQuad.weight(qi),
+                   func.evaluate( mapping.global( faceQuad->point(qi) ) ),
+                   builder_.normal(f), faceQuad->weight(qi),
                    func);
         }
+
+        FaceQuadratureProvider::release( faceQuad );
+
         row += builder_.testFaceBasis(f)->size();
       }
       // element dofs
@@ -302,17 +320,21 @@ namespace Dune
       {
         testBasisVal.resize(builder_.testBasis()->size());
 
-        typedef Dune::GenericGeometry::GenericQuadratureProvider< dimension, Field > QuadratureProvider;
-        const typename QuadratureProvider::Quadrature &elemQuad = QuadratureProvider::template quadrature(topologyId,2*order_+1);
-        const unsigned int quadratureSize = elemQuad.size();
+        typedef Dune::GenericGeometry::GaussQuadratureProvider< dimension, Field > QuadratureProvider;
+        const typename QuadratureProvider::Object *elemQuad = QuadratureProvider::create(topologyId,2*order_+1);
+
+        const unsigned int quadratureSize = elemQuad->size();
         for( unsigned int qi = 0; qi < quadratureSize; ++qi )
         {
-          builder_.testBasis()->template evaluate<0>(elemQuad.point(qi),testBasisVal);
+          builder_.testBasis()->template evaluate<0>(elemQuad->point(qi),testBasisVal);
           fillInterior( row, testBasisVal,
-                        func.evaluate(elemQuad.point(qi)),
-                        elemQuad.weight(qi),
+                        func.evaluate(elemQuad->point(qi)),
+                        elemQuad->weight(qi),
                         func );
         }
+
+        QuadratureProvider::release( elemQuad );
+
         row += builder_.testBasis()->size()*dimension;
       }
       assert(row==size());

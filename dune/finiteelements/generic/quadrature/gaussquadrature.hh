@@ -11,9 +11,7 @@
 
 #include <dune/grid/common/quadraturerules.hh>
 
-#include <dune/finiteelements/generic/math/vector.hh>
-
-#include <dune/finiteelements/generic/quadrature/quadrature.hh>
+#include <dune/finiteelements/generic/quadrature/genericquadrature.hh>
 
 namespace Dune
 {
@@ -24,24 +22,32 @@ namespace Dune
     // GaussPoints
     // -----------
 
+    /**
+     * @brief Gauss quadrature points and weights in 1d.
+     *
+     * if ALGLib is found higher precision Gauss points can be used by
+     * prescribing the amp::ampf field type; otherwise
+     * the dune-grid quadrature is used.
+     **/
     template< class F>
     class GaussPoints
-      : public PointList< F >
+      : public std::vector< QuadraturePoint<F,1> >
     {
-      typedef PointList< F > Base;
+      typedef std::vector< QuadraturePoint<F,1> > Base;
       typedef GaussPoints< F > This;
 
-      using Base::points_;
-      using Base::weights_;
     public:
+      typedef F Field;
       explicit GaussPoints ( unsigned int n )
-        : Base( n )
       {
-        const QuadratureRule<double,1>& points = QuadratureRules<double,1>::rule(GeometryType(GeometryType::cube,1), 2*n-1, QuadratureType::Gauss);
+        Base::reserve( n );
+        const QuadratureRule<Field,1>& points =
+          QuadratureRules<Field,1>::rule(GeometryType(GeometryType::cube,1),
+                                         2*n-1, QuadratureType::Gauss);
         for( unsigned int i = 0; i < n; ++i )
         {
-          points_[ i ] = points[i].position()[0];
-          weights_[ i ] = points[i].weight();
+          QuadraturePoint<Field,1> q( points[i].position()[0], points[i].weight() );
+          Base::push_back( q );
         }
       }
     };
@@ -49,67 +55,55 @@ namespace Dune
 #if HAVE_ALGLIB
     template< unsigned int precision >
     class GaussPoints< amp::ampf< precision > >
-      : public PointList< amp::ampf< precision > >
+      : public std::vector< QuadraturePoint<amp::ampf< precision>,1> >
     {
-      typedef PointList< amp::ampf< precision > > Base;
-      typedef GaussPoints< amp::ampf< precision > > This;
+      typedef amp::ampf< precision > F;
+      typedef std::vector< QuadraturePoint<F,1> > Base;
+      typedef GaussPoints< F > This;
 
-      using Base::points_;
-      using Base::weights_;
     public:
-      typedef amp::ampf< precision > Field;
+      typedef F Field;
 
       explicit GaussPoints ( unsigned int n )
-        : Base( n )
       {
-        typename Base::Vec alpha( n );
-        typename Base::Vec beta( n );
+        Base::reserve( n );
+
+        typedef ap::template_1d_array< Field > AlgLibVector;
+        AlgLibVector p,w;
+        p.setbounds( 0, n-1 );
+        w.setbounds( 0, n-1 );
+        AlgLibVector alpha,beta;
+        alpha.setbounds( 0, n-1 );
+        beta.setbounds( 0, n-1 );
         for( unsigned int i = 0; i < n; ++i )
         {
-          alpha[ i ] = 0;
-          beta[ i ] = Field( i*i ) / Field( 4*(i*i)-1 );
+          alpha( i ) = 0;
+          beta( i ) = Field( i*i ) / Field( 4*(i*i)-1 );
         }
 
-        gqgengauss::generategaussquadrature< precision >( alpha, beta, Field( 2 ), n, points_, weights_ );
+        gqgengauss::generategaussquadrature< precision >( alpha, beta, Field( 2 ), n, p, w );
 
         const Field half = Field( 1 ) / Field( 2 );
         for( unsigned int i = 0; i < n; ++i )
         {
-          points_[ i ] = (points_[ i ] + Field( 1 )) * half;
-          weights_[ i ] *= half;
+          QuadraturePoint<Field,1> q( (p( i ) + Field( 1 )) * half, w( i )*half );
+          Base::push_back( q );
         }
       }
     };
 #endif
 
-    // GaussQuadrature
-    // ---------------
-
-    template< class F, class CF = F >
-    class GaussQuadrature
-      : public Quadrature< 1, F >
-    {
-      typedef CF ComputeField;
-      typedef GaussQuadrature< F,CF > This;
-      typedef Quadrature< 1, F > Base;
-
-    public:
-      typedef typename Base::Field Field;
-      static const unsigned int dimension = Base::dimension;
-
-      explicit GaussQuadrature ( unsigned int order )
-        : Base( (unsigned int)(0) )
-      {
-        // typedef amp::ampf< Precision< Field >::value > MPField;
-        GaussPoints< ComputeField > points( (order+1) / 2 );
-        for( unsigned int i = 0; i < points.size(); ++i )
-        {
-          const Field point = field_cast< Field >( points.point( i ) );
-          const Field weight = field_cast< Field >( points.weight( i ) );
-          Base::insert( point, weight );
-        }
-      }
-    };
+    /**
+     * @brief Singleton provider for Gauss quadratures
+     *
+     * \tparam dim dimension of the reference elements contained in the factory
+     * \tparam F field in which weight and point of the quadrature are stored
+     * \tparam CF the compute field for the points and weights
+     **/
+    template< int dim, class F, class CF=F >
+    struct GaussQuadratureProvider
+      : public TopologySingletonFactory< GenericQuadratureFactory< dim, F, GaussPoints<CF> > >
+    {};
 
   }
 

@@ -7,7 +7,7 @@
 
 #include <dune/common/fvector.hh>
 #include <dune/common/geometrytype.hh>
-#include <dune/finiteelements/generic/math/vector.hh>
+#include <dune/finiteelements/generic/math/field.hh>
 
 namespace Dune
 {
@@ -18,6 +18,10 @@ namespace Dune
     // QuadraturePoint
     // ---------------
 
+    /**
+     * @brief Base class for a single quadrature point (point and weight)
+     *        with template field type and dimension
+     **/
     template< class F, unsigned int dim >
     class QuadraturePoint
     {
@@ -40,6 +44,12 @@ namespace Dune
           weight_( weight )
       {}
 
+      template <class FF>
+      QuadraturePoint ( const QuadraturePoint<FF,dim>& other )
+        : point_( field_cast<F>(other.point() ) ),
+          weight_( field_cast<F>(other.weight() ) )
+      {}
+
       const Vector &point () const
       {
         return point_;
@@ -49,17 +59,22 @@ namespace Dune
       {
         return weight_;
       }
-    };
 
+    };
 
 
     // Quadrature
     // ----------
 
-    template< unsigned int dim, class F >
+    /**
+     * @brief Base class for the generic quadrature implementations.
+     *        Field type and dimension are
+     *        template argument construction is through a topology id.
+     **/
+    template< class F, unsigned int dim >
     class Quadrature
     {
-      typedef Quadrature< dim, F > This;
+      typedef Quadrature< F, dim > This;
 
     public:
       typedef F Field;
@@ -71,10 +86,12 @@ namespace Dune
       typedef typename std::vector< QuadraturePoint >::const_iterator Iterator;
 
     public:
+      //! Constructor taking topology id
       explicit Quadrature ( const unsigned int topologyId )
         : topologyId_( topologyId )
       {}
 
+      //! Copy constructor
       template< class Q >
       Quadrature ( const Q &q )
         : topologyId_( q.topologyId() )
@@ -85,41 +102,49 @@ namespace Dune
           points_.push_back( *it );
       }
 
+      //! Access a quadrature point
       const QuadraturePoint &operator[] ( const unsigned int i ) const
       {
         return points_[ i ];
       }
 
+      //! start iterator over the quadrature points
       Iterator begin () const
       {
         return points_.begin();
       }
 
+      //! end iterator over the quadrature points
       Iterator end () const
       {
         return points_.end();
       }
 
+      //! access the coordinates of a quadrature point
       const Vector &point ( const unsigned int i ) const
       {
         return (*this)[ i ].point();
       }
 
+      //! access the weight of a quadrature point
       const Field &weight ( const unsigned int i ) const
       {
         return (*this)[ i ].weight();
       }
 
+      //! topology id of the quadrature
       unsigned int topologyId () const
       {
         return topologyId_;
       }
 
+      //! number of quadrature points
       size_t size () const
       {
         return points_.size();
       }
 
+    protected:
       void insert ( const QuadraturePoint &point )
       {
         points_.push_back( point );
@@ -130,89 +155,15 @@ namespace Dune
         insert( QuadraturePoint( position, weight ) );
       }
 
+      template< unsigned int d, class QC >
+      friend struct SubQuadratureCreator;
+
     private:
       std::vector< QuadraturePoint > points_;
       unsigned int topologyId_;
     };
 
-    template< class F >
-    struct PointList
-    {
-      typedef F Field;
-      typedef LFEVector< Field > Vec;
-      struct Iterator;
-
-      explicit PointList ( unsigned int n )
-        : points_( n ),
-          weights_( n )
-      {}
-
-      Iterator begin () const
-      {
-        return Iterator( *this, 0 );
-      }
-
-      Iterator end () const
-      {
-        return Iterator( *this, size() );
-      }
-
-      Field point ( const unsigned int i ) const
-      {
-        assert( i < points_.size() );
-        return points_[ i ];
-      }
-
-      Field weight ( const unsigned int i ) const
-      {
-        assert( i < weights_.size() );
-        return weights_[ i ];
-      }
-
-      unsigned int size () const
-      {
-        assert( points_.size() == weights_.size() );
-        return points_.size();
-      }
-
-    protected:
-      Vec points_;
-      Vec weights_;
-    };
-
-
-
-    // PointList::Iterator
-    // ---------------------
-
-    template< class F >
-    struct PointList< F >::Iterator
-    {
-      typedef F Field;
-      typedef GenericGeometry::QuadraturePoint< Field, 1 > QuadraturePoint;
-
-      Iterator ( const PointList< Field > &points, const unsigned int index )
-        : points_( &points ),
-          index_( index )
-      {}
-
-      Iterator &operator++ ()
-      {
-        ++index_;
-        return *this;
-      }
-
-      QuadraturePoint operator* () const
-      {
-        return QuadraturePoint( points_->point( index_ ), points_->weight( index_ ) );
-      }
-
-    protected:
-      PointList< Field > *points_;
-      unsigned int index_;
-    };
   }
-
 }
 
 #endif

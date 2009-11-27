@@ -13,9 +13,7 @@
 
 #include <dune/finiteelements/generic/math/field.hh>
 
-#include <dune/finiteelements/generic/math/vector.hh>
-
-#include <dune/finiteelements/generic/quadrature/quadrature.hh>
+#include <dune/finiteelements/generic/quadrature/genericquadrature.hh>
 
 namespace Dune
 {
@@ -26,87 +24,75 @@ namespace Dune
     // LobattoPoints
     // -----------
 
+    /**
+     * @brief Lobatto quadrature points and weights in 1d -  only available if ALGLib is used
+     **/
     template< class F>
     struct LobattoPoints
-      : public PointList< F >
     {
       dune_static_assert(sizeof(F)==0,"Lobatto Points only implemented for ALGLib ampf type");
-      typedef PointList< F > Base;
       explicit LobattoPoints ( unsigned int n )
-        : Base( n )
       {}
     };
 
 #if HAVE_ALGLIB
     template< unsigned int precision >
     class LobattoPoints< amp::ampf< precision > >
-      : public PointList< amp::ampf< precision > >
+      : public std::vector< QuadraturePoint<amp::ampf< precision>,1> >
     {
-      typedef PointList< amp::ampf< precision > > Base;
-      typedef LobattoPoints< amp::ampf< precision > > This;
+      typedef amp::ampf< precision > F;
+      typedef std::vector< QuadraturePoint<F,1> > Base;
+      typedef LobattoPoints< F > This;
 
-      using Base::points_;
-      using Base::weights_;
     public:
-      typedef amp::ampf< precision > Field;
+      typedef F Field;
 
       explicit LobattoPoints ( unsigned int n )
-        : Base( n )
       {
-        typename Base::Vec alpha( n );
-        typename Base::Vec beta( n );
+        Base::reserve( n );
+
+        typedef ap::template_1d_array< Field > AlgLibVector;
+        AlgLibVector p,w;
+        p.setbounds( 0, n-1 );
+        w.setbounds( 0, n-1 );
+        AlgLibVector alpha,beta;
+        alpha.setbounds( 0, n-1 );
+        beta.setbounds( 0, n-1 );
+
         for( unsigned int i = 0; i < n; ++i )
         {
           alpha[ i ] = 0;
           beta[ i ] = Field( i*i ) / Field( 4*(i*i)-1 );
         }
 
-        bool succ = gqgenlobatto::generategausslobattoquadrature< precision >( alpha, beta, Field( 2 ), Field(-1),Field(1), n, points_, weights_ );
-
+        bool succ = gqgenlobatto::generategausslobattoquadrature< precision >( alpha, beta, Field( 2 ), Field(-1),Field(1), n, p, w );
         if (!succ)
         {
           std::cout << "Problem with computing Lobatto points!" << std::endl;
         }
+
         const Field half = Field( 1 ) / Field( 2 );
         for( unsigned int i = 0; i < n; ++i )
         {
-          points_[ i ] = (points_[ i ] + Field( 1 )) * half;
-          weights_[ i ] *= half;
+          QuadraturePoint<Field,1> q( (p( i ) + Field( 1 )) * half, w( i )*half );
+          Base::push_back( q );
         }
       }
     };
 #endif
 
-    // LobattoQuadrature
-    // ---------------
-
-    template< class F, class CF = F >
-    class LobattoQuadrature
-      : public Quadrature< 1, F >
-    {
-      typedef CF ComputeField;
-      typedef LobattoQuadrature< F,CF > This;
-      typedef Quadrature< 1, F > Base;
-
-    public:
-      typedef typename Base::Field Field;
-      static const unsigned int dimension = Base::dimension;
-
-      explicit LobattoQuadrature ( unsigned int order )
-        : Base( (unsigned int)(0) )
-      {
-        // typedef amp::ampf< Precision< Field >::value > MPField;
-        LobattoPoints< ComputeField > points( (order+1) / 2 );
-        for( unsigned int i = 0; i < points.size(); ++i )
-        {
-          const Field point = field_cast< Field >( points.point( i ) );
-          const Field weight = field_cast< Field >( points.weight( i ) );
-          Base::insert( point, weight );
-        }
-      }
-    };
-
+    /**
+     * @brief Singleton provider for Lobatto quadratures
+     *
+     * \tparam dim dimension of the reference elements contained in the factory
+     * \tparam F field in which weight and point of the quadrature are stored
+     * \tparam CF the compute field for the points and weights
+     **/
+    template< int dim, class F, class CF=F >
+    struct LobattoQuadratureProvider
+      : public TopologySingletonFactory< GenericQuadratureFactory< dim, F, LobattoPoints<CF> > >
+    {};
   }
 
 }
-#endif // #ifndef DUNE_GAUSSQUADRATURE_HH
+#endif // #ifndef DUNE_LOBATTOQUADRATURE_HH

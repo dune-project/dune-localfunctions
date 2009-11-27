@@ -7,7 +7,7 @@
 #include <vector>
 
 #include <dune/finiteelements/generic/math/field.hh>
-#include <dune/finiteelements/generic/math/vector.hh>
+// #include <dune/finiteelements/generic/math/vector.hh>
 
 #if HAVE_ALGLIB
 #include <alglib/amp.h>
@@ -25,7 +25,8 @@ namespace Dune
   class LFEMatrix
   {
     typedef LFEMatrix< F, aligned > This;
-    typedef LFEVector< F > Row;
+    // typedef LFEVector< F > Row;
+    typedef std::vector< F > Row;
     typedef std::vector<Row> RealMatrix;
 
   public:

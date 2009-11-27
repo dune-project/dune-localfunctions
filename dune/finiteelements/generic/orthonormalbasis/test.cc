@@ -1,8 +1,10 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
+#include <config.h>
+
 #include <dune/finiteelements/generic/math/field.hh>
 #include <dune/finiteelements/generic/orthonormalbasis/orthonormalbasis.hh>
-#include <dune/finiteelements/generic/quadrature/genericquadrature.hh>
+#include <dune/finiteelements/generic/quadrature/gaussquadrature.hh>
 
 #if HAVE_ALGLIB
 typedef amp::ampf< 128 > StorageField;
@@ -35,7 +37,9 @@ bool test(unsigned int order)
     for( unsigned int i = 0; i < size * size; ++i )
       m[ i ] = 0;
 
-    Dune::GenericGeometry::GenericQuadrature< Topology, double > quadrature( 2*order+1 );
+    typedef typename Dune::GenericGeometry::GaussQuadratureProvider<Topology::dimension,double,ComputeField> QuadratureProvider;
+    typedef typename QuadratureProvider::Object Quadrature;
+    const Quadrature &quadrature = *QuadratureProvider::template create<Topology>(2*order+1);
     const unsigned int quadratureSize = quadrature.size();
     for( unsigned int qi = 0; qi < quadratureSize; ++qi )
     {
@@ -58,6 +62,9 @@ bool test(unsigned int order)
         }
       }
     }
+
+    QuadratureProvider::release(&quadrature);
+    BasisFactory::release(&basis);
   }
   if (!ret) {
     std::cout << "   FAILED !" << std::endl;
@@ -83,9 +90,9 @@ bool test(unsigned int topologyId, unsigned int order)
     for( unsigned int i = 0; i < size * size; ++i )
       m[ i ] = 0;
 
-    typedef typename Dune::GenericGeometry::GenericQuadratureProvider<dimension,double> QuadratureProvider;
-    typedef typename QuadratureProvider::Quadrature Quadrature;
-    const Quadrature &quadrature = QuadratureProvider::quadrature(topologyId,2*order+1);
+    typedef typename Dune::GenericGeometry::GaussQuadratureProvider<dimension,double,ComputeField> QuadratureProvider;
+    typedef typename QuadratureProvider::Object Quadrature;
+    const Quadrature &quadrature = *QuadratureProvider::create(topologyId,2*order+1);
     const unsigned int quadratureSize = quadrature.size();
     for( unsigned int qi = 0; qi < quadratureSize; ++qi )
     {
@@ -108,6 +115,9 @@ bool test(unsigned int topologyId, unsigned int order)
         }
       }
     }
+
+    QuadratureProvider::release(&quadrature);
+    BasisFactory::release(&basis);
   }
   if (!ret) {
     std::cout << "   FAILED !" << std::endl;

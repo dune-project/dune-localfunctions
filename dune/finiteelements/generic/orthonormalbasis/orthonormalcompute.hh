@@ -9,10 +9,8 @@
 #include <iomanip>
 #include <map>
 
-#include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
 
-#include <dune/finiteelements/generic/math/vector.hh>
 #include <dune/finiteelements/generic/math/matrix.hh>
 
 #include <dune/grid/genericgeometry/topologytypes.hh>
@@ -74,7 +72,7 @@ namespace ONBCompute
   {
     typedef Dune::LFEMatrix<scalar_t> Base;
 
-    typedef Dune::LFEVector< scalar_t > vec_t;
+    typedef std::vector< scalar_t > vec_t;
     typedef Dune::LFEMatrix< scalar_t > mat_t;
     static const unsigned int dim=Topology::dimension;
 

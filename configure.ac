@@ -3,7 +3,7 @@
 # Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.50)
 DUNE_AC_INIT # gets module version from dune.module file
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE(tar-ustar)
 AC_CONFIG_SRCDIR([dune/finiteelements/common/localbasis.hh])
 AM_CONFIG_HEADER([config.h])
 

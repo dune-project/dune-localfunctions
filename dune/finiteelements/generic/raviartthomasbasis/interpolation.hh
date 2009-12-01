@@ -120,7 +120,7 @@ namespace Dune
     ~RTL2InterpolationBuilder()
     {
       TestBasisFactory::release(testBasis_);
-      for (int i=0; i<faceStructure_.size(); ++i)
+      for (unsigned int i=0; i<faceStructure_.size(); ++i)
         TestFaceBasisFactory::release(faceStructure_[i].basis_);
     }
 

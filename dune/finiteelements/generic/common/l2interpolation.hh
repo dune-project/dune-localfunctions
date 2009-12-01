@@ -199,7 +199,7 @@ namespace Dune
     {
       typedef GenericGeometry::GenericQuadrature< Topology, Field > GenericQuadrature;
       const Basis *basis = BasisFactory::template create< Topology >( key );
-      const Quadrature *quadrature = Traits::QuadratureProvider::template create< Topology >( 2*basis.order()+1 );
+      const Quadrature *quadrature = Traits::QuadratureProvider::template create< Topology >( 2*basis->order()+1 );
       return new Object( *basis, *quadrature );
     }
     static void release ( Object *object )

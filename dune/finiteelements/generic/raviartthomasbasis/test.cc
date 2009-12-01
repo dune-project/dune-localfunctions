@@ -6,16 +6,13 @@
 #include <dune/finiteelements/generic/common/basisprint.hh>
 
 #if HAVE_ALGLIB
-#warning using ALGLIB field
 typedef amp::ampf< 128 > StorageField;
 typedef amp::ampf< 512 > ComputeField;
 #else
 #if HAVE_GMP
-#warning using GMP field
 typedef Dune::GMPField< 128 > StorageField;
 typedef Dune::GMPField< 512 > ComputeField;
 #else
-#warning using double field
 typedef double StorageField;
 typedef double ComputeField;
 #endif
@@ -51,7 +48,7 @@ bool test(unsigned int order)
         if (matrix(i,j)<Dune::Zero<StorageField>() ||
             Dune::Zero<StorageField>()<matrix(i,j))
           std::cout << "  non-zero entry in interpolation matrix: "
-                    << "(" << i << "," << j << ") = " << field_cast<double>(matrix(i,j))
+                    << "(" << i << "," << j << ") = " << Dune::field_cast<double>(matrix(i,j))
                     << std::endl;
 
     BasisFactory::release(&basis);

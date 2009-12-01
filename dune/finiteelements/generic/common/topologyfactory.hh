@@ -11,29 +11,52 @@
 
 namespace Dune
 {
+  /**
+   * @brief Provide a factory over the generic topologies
+   *
+   * This class can be used to dynamically create objects
+   * statically bound by there generic topology.
+   * The method create returns a pointer to an object depending
+   * on the topology id and a key; the dimension corresponding
+   * to the topology id is static and is provided by the
+   * Traits class. A static method (taking the Topology as template
+   * argument is also provided).
+   * The Traits class must provide the space dimension
+   * the types for the key (Key),
+   * the objects returned (Object) and the underlying factory
+   * (Factory). This class must have a template method
+   * createObject taking a key and returning a pointer to
+   * the newly create Object - for destruction call the release
+   * method.
+   **/
   template <class Traits>
   struct TopologyFactory
   {
+    // extract types from Traits class
     static const unsigned int dimension = Traits::dimension;
     typedef typename Traits::Key Key;
     typedef typename Traits::Object Object;
     typedef typename Traits::Factory Factory;
+    //! dynamically create objects
     static Object *create(unsigned int topologyId, const Key &key)
     {
       Object *object;
       GenericGeometry::IfTopology< Maker, dimension >::apply( topologyId, key, object );
       return object;
     }
+    //! statically create objects
     template <class Topology>
     static Object *create(const Key &key)
     {
       return Factory::template createObject<Topology> ( key );
     }
+    //! release the object returned by the create methods
     static void release( Object *object)
     {
       delete object;
     }
   private:
+    // Internal maker class used in ifTopology helper
     template< class Topology >
     struct Maker
     {
@@ -45,13 +68,23 @@ namespace Dune
   };
 
 
-  // Singleton wrapper
+  /** @brief A wrapper for a TopologyFactory providing
+   *         singleton storage. Same usage as TopologyFactory
+   *         but with empty release method an internal stroage.
+   **/
   template <class Factory>
   struct TopologySingletonFactory
   {
     static const unsigned int dimension = Factory::dimension;
     typedef typename Factory::Key Key;
     typedef const typename Factory::Object Object;
+    //! @copydoc TopologyFactory::create
+    static Object *create ( const unsigned int topologyId, const Key &key )
+    {
+      assert( topologyId < numTopologies );
+      return instance().getObject( topologyId, key );
+    }
+    //! statically create objects
     template< class Topology >
     static Object *create ( const Key &key )
     {
@@ -59,11 +92,7 @@ namespace Dune
                           "Topology with incompatible dimension used" );
       return instance().template getObject< Topology >( key );
     }
-    static Object *create ( const unsigned int topologyId, const Key &key )
-    {
-      assert( topologyId < numTopologies );
-      return instance().getObject( topologyId, key );
-    }
+    //! @copydoc TopologyFactory::release
     static void release ( Object *object )
     {}
   private:

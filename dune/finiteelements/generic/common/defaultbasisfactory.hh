@@ -11,6 +11,15 @@
 
 namespace Dune
 {
+  /************************************************
+  * Class for providing a factory for basis
+  * functions over the set of reference elements.
+  * Is based on the TopolgyFactory but additionaly
+  * provides rebindes of the field type.
+  * The user provides factories for the pre basis and the
+  * interpolations. The default construction process of
+  * the basis is performed in this class.
+  ************************************************/
   template< class PreBFactory,
       class InterpolFactory,
       unsigned int dim, unsigned int dimR,
@@ -80,8 +89,8 @@ namespace Dune
 
       basis->fill( matrix );
 
-      Traits::PreBasisFactory::release(preBasis);
       Traits::InterpolationFactory::release(interpol);
+      Traits::PreBasisFactory::release(preBasis);
 
       return basis;
     }

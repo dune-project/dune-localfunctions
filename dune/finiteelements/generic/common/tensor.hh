@@ -12,6 +12,18 @@
 
 namespace Dune
 {
+  /***********************************************
+   * The classes here are work in progress.
+   * Basically they provide tensor structures for
+   * higher order derivatives of vector valued function.
+   * Two storage structures are provided
+   * (either based on the components of the vector valued
+   * functions or on the order of the derivative).
+   * Conversions are supplied between the two storage
+   * structures and simple operations, which make the
+   * code difficult to use and requires rewritting...
+   ***************************************************/
+
   // Structure for scalar tensor of order deriv
   template <class F,int dimD,unsigned int deriv>
   class LFETensor

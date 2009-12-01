@@ -10,6 +10,12 @@
 
 namespace Dune
 {
+  /**
+   * @brief A LocalFiniteElement implementation bassed on three
+   *        TopologyFactories providing the LocalBasis, LocalCoefficients,
+   *        and LocalInterpolations. Note the key type for all three
+   *        factories must coincide.
+   **/
   template< class BasisF, class CoeffF, class InterpolF,
       unsigned int dimDomain, class D, class R >
   struct GenericLocalFiniteElement

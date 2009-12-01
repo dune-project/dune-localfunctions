@@ -11,6 +11,14 @@
 
 namespace Dune
 {
+  /*************************************************
+  * Default class for storing a coefficient matrix
+  * for the PolynomialBasis. Basically a simple
+  * CRS structure is used. The additional complexity
+  * is due to the storage and efficient evaluation
+  * of higher order derivatives. See the remarks
+  * in tensor.hh which also hold true for this file.
+  *************************************************/
   template <class Field, class Field2>
   struct Mult
   {

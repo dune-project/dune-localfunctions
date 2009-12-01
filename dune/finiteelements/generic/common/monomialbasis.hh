@@ -18,8 +18,51 @@
 
 namespace Dune
 {
-
-
+  /************************************************
+  * Classes for evaluating ''Monomials'' on any order
+  * for all reference element type.
+  * For a simplex topology these are the nomral
+  * monomials for cube topologies the bimonomials.
+  * The construction follows the construction of the
+  * generic geometries using tensor products for
+  * prism generation and duffy transform for pyramid
+  * construction.
+  * A derivative argument can be applied, in which case
+  * all derivatives up to the desired order are
+  * evaluated. Note that in for higher order derivatives
+  * only the ''lower'' part of the symmetric tensor
+  * is evaluated, e.g., passing derivative equal to 2
+  * to the class will provide the vector
+  *    (d/dxdx p, d/dxydx p, d/dydy p,
+  *     d/dx p, d/dy p, p)
+  * Important:
+  * So far the computation of the derivatives has not
+  * been fully implemented for general pyramid
+  * construction, i.e., in the case where a pyramid is
+  * build over a non simplex base geometry.
+  *
+  * Central classes:
+  * 1) template< class Topology, class F >
+  *    class MonomialBasisImpl;
+  *    Implementation of the monomial evaluation for
+  *    a given topology and field type.
+  *    The method evaluate fills a F* vector
+  * 2) template< class Topology, class F >
+  *    class MonomialBasis
+  *    The base class for the static monomial evaluation
+  *    providing addiional evaluate methods including
+  *    one taking std::vector<F>.
+  * 3) template< int dim, class F >
+  *    class VirtualMonomialBasis
+  *    Virtualization of the MonomialBasis.
+  * 4) template< int dim, class F >
+  *    struct MonomialBasisFactory;
+  *    A factory class for the VirtualMonomialBasis
+  * 5) template< int dim, class F >
+  *    struct MonomialBasisProvider
+  *    A singleton container for the virtual monomial
+  *    basis
+  ************************************************/
 
   // Internal Forward Declarations
   // -----------------------------

@@ -21,6 +21,22 @@ namespace Dune
   // ---------------
 
   /**
+   * This is the basis class for a ''polynomial''
+   * basis, i.e., a basis consisting of linear
+   * combiniations of a underlying second basis set.
+   * Examples are standard polynomials where the
+   * underlying basis is given by the MonomialBasis
+   * class. The basis evaluation is given by the matrix
+   * vector multiplication between the coefficient
+   * matrix and the vector filled by evaluating the
+   * underlying basis set.
+   * This class is constructed using a reference of
+   * the underlying basis and the coefficient matrix.
+   * A specialization holding an instance
+   * of the coefficient matrix is provided by the class
+   * template< class Eval, class CM = SparseCoeffMatrix<typename Eval::Field,Eval::dimRange> >
+   * class PolynomialBasisWithMatrix;
+   *
    * \tparam B Basis set with
    *           static const int dimension  -> dimension of reference element
    *           typedef DomainVector        -> coordinates in reference element
@@ -206,9 +222,10 @@ namespace Dune
    * value type. This class stores the coefficient matrix with can be
    * constructed via the fill method
    */
-  template< class Eval, class CM = SparseCoeffMatrix<typename Eval::Field,Eval::dimRange> >
+  template< class Eval, class CM = SparseCoeffMatrix<typename Eval::Field,Eval::dimRange>,
+      class D=double, class R=double>
   class PolynomialBasisWithMatrix
-    : public PolynomialBasis< Eval, CM >
+    : public PolynomialBasis< Eval, CM, D, R >
   {
   public:
     typedef CM CoefficientMatrix;
@@ -245,67 +262,5 @@ namespace Dune
     PolynomialBasisWithMatrix &operator=(const PolynomialBasisWithMatrix &);
     CoefficientMatrix coeffMatrix_;
   };
-
-#if 0
-  template< unsigned int dimDomain, class D, class R,
-      class PolynomialBasis >
-  class GenericLocalBasis :
-    public C1LocalBasisInterface<
-        C1LocalBasisTraits<D,dimDomain,FieldVector<D,dimDomain>,R,1,FieldVector<R,1>,
-            FieldVector<FieldVector<R,dimDomain>,1> >,
-        GenericLocalBasis<dimDomain,D,R,PolynomialBasis >
-        >
-  {
-  public:
-#if 0
-    /** \brief Export the number of degrees of freedom */
-    enum {N = (k+1)*(k+2)/2};
-    /** \brief Export the element order
-       OS: Surprising that we need to export this both statically and dynamically!
-     */
-    enum {O = k};
-#endif
-    typedef C1LocalBasisTraits<D,dimDomain,FieldVector<D,dimDomain>,R,1,FieldVector<R,1>,
-        FieldVector<FieldVector<R,dimDomain>,1> > Traits;
-
-    //! \brief Standard constructor
-    GenericLocalBasis (const PolynomialBasis &basis)
-      : basis_(basis)
-    {}
-
-    //! \brief number of shape functions
-    unsigned int size () const
-    {
-      return basis_.size();
-    }
-
-    //! \brief Evaluate all shape functions
-    inline void evaluateFunction (const typename Traits::DomainType& x,
-                                  std::vector<typename Traits::RangeType>& out) const
-    {
-      out.resize(size());
-      basis_.evaluate(x,out);
-    }
-
-    //! \brief Evaluate Jacobian of all shape functions
-    inline void
-    evaluateJacobian (const typename Traits::DomainType& x,       // position
-                      std::vector<typename Traits::JacobianType>& out) const                        // return value
-    {
-      out.resize(size());
-      basis_.jacobian(x,out);
-    }
-
-    //! \brief Polynomial order of the shape functions
-    unsigned int order () const
-    {
-      return basis_.order();
-    }
-
-  private:
-    const PolynomialBasis &basis_;
-  };
-#endif
-
 }
 #endif // DUNE_POLYNOMIALBASIS_HH

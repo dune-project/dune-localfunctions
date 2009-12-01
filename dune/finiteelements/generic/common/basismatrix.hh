@@ -12,12 +12,17 @@
 
 namespace Dune
 {
+  /****************************************
+  * A dense matrix representation of a ''polynomial''
+  * basis. Its represent a basis as a linear
+  * combination of a second basis, i.e., a
+  * monomial basis. It is simular to the PolynomialBasis
+  * but it not derived from the LocalBasis class.
+  * It is used to define a ''pre basis''.
+  ****************************************/
   template< class PreBasis, class Interpolation,
       class Field >
-  struct BasisMatrix
-  {
-    typedef typename PreBasis::HALLO HALLO;
-  };
+  struct BasisMatrix;
 
   template< class PreBasis, class Interpolation,
       class Field >

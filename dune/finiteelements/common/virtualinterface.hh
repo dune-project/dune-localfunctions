@@ -299,21 +299,18 @@ namespace Dune
     //! @copydoc LocalCoefficientsInterface::size
     std::size_t size () const
     {
-      return impl().size();
+      return impl_.size();
     }
 
     //! @copydoc LocalCoefficientsInterface::localKey
     const LocalKey& localKey (std::size_t i) const
     {
-      return impl().localKey(i);
+      return impl_.localKey(i);
     }
 
   protected:
     const Imp impl_;
 
-  private:
-    typedef LocalCoefficientsInterface<Imp> Interface;
-    const Interface& impl () const {return impl_;}
   };
 
 

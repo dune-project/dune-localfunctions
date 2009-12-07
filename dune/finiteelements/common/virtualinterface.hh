@@ -325,7 +325,6 @@ namespace Dune
    **/
   template<class T>
   class LocalFiniteElementVirtualInterface
-    : public LocalFiniteElementInterface< T, LocalFiniteElementVirtualInterface<T> >
   {
   public:
     typedef T Traits;

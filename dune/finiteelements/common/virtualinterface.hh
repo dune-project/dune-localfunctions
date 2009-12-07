@@ -155,7 +155,7 @@ namespace Dune
   {
   public:
     //! type of virtual function to interpolate
-    typedef Dune::VirtualFunctionInterface<DomainType, RangeType> FunctionType;
+    typedef Dune::VirtualFunction<DomainType, RangeType> FunctionType;
     //! type of the coefficient vector in the interpolate method
     typedef typename RangeType::field_type CoefficientType;
 

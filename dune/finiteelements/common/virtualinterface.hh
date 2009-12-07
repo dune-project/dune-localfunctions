@@ -344,7 +344,7 @@ namespace Dune
     virtual const typename T::LocalInterpolationType& localInterpolation () const = 0;
 
     //! @copydoc LocalFiniteElementInterface::type
-    virtual const GeometryType &type () const = 0;
+    virtual const GeometryType type () const = 0;
 
   };
 
@@ -390,7 +390,7 @@ namespace Dune
     }
 
     //! @copydoc LocalFiniteElementInterface::type
-    const GeometryType &type () const
+    const GeometryType type () const
     {
       return impl_.type();
     }

@@ -334,7 +334,7 @@ namespace Dune
     virtual const typename T::LocalBasisType& localBasis () const = 0;
 
     //! @copydoc LocalFiniteElementInterface::localCoefficients
-    virtual const typename T::LocalCoefficientsType& localCoefficients () const = 0;
+    virtual const LocalCoefficientsVirtualInterface& localCoefficients () const = 0;
 
     //! @copydoc LocalFiniteElementInterface::localInterpolation
     virtual const typename T::LocalInterpolationType& localInterpolation () const = 0;

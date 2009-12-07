@@ -263,7 +263,6 @@ namespace Dune
    * class but using pure virtual methods
    **/
   class LocalCoefficientsVirtualInterface
-    : public LocalCoefficientsInterface< LocalCoefficientsVirtualInterface >
   {
   public:
 

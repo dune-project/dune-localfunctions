@@ -367,6 +367,10 @@ namespace Dune
     LocalFiniteElementVirtualImp( const Imp &imp )
       : impl_(imp) {}
 
+    //! Default constructor.  Assumes that the implementation class is default constructible as well.
+    LocalFiniteElementVirtualImp()
+    {}
+
     //! @copydoc LocalFiniteElementInterface::localBasis
     const typename T::LocalBasisType& localBasis () const
     {

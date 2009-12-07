@@ -290,8 +290,7 @@ namespace Dune
   {
   public:
     typedef T Traits;
-    //! a virtual local finite element is construted giving a GeometryType
-    LocalFiniteElementVirtualInterface( const GeometryType &gt ) : gt_(gt) {}
+
     //! @copydoc LocalFiniteElementInterface::localBasis
     virtual const typename T::LocalBasisType& localBasis () const = 0;
     //! @copydoc LocalFiniteElementInterface::localCoefficients
@@ -299,12 +298,8 @@ namespace Dune
     //! @copydoc LocalFiniteElementInterface::localInterpolation
     virtual const typename T::LocalInterpolationType& localInterpolation () const = 0;
     //! @copydoc LocalFiniteElementInterface::type
-    const GeometryType &type () const
-    {
-      return gt_;
-    }
-  private:
-    const GeometryType gt_;
+    virtual const GeometryType &type () const = 0;
+
   };
   /**
    * @brief class for wrapping a local finite element
@@ -337,6 +332,13 @@ namespace Dune
     {
       return impl().localInterpolation();
     }
+
+    //! @copydoc LocalFiniteElementInterface::type
+    const GeometryType &type () const
+    {
+      return impl_.type();
+    }
+
   protected:
     const Imp impl_;
   private:

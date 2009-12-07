@@ -374,19 +374,19 @@ namespace Dune
     //! @copydoc LocalFiniteElementInterface::localBasis
     const typename T::LocalBasisType& localBasis () const
     {
-      return impl().localBasis();
+      return impl_.localBasis();
     }
 
     //! @copydoc LocalFiniteElementInterface::localCoefficients
     const typename T::LocalCoefficientsType& localCoefficients () const
     {
-      return impl().localCoefficients();
+      return impl_.localCoefficients();
     }
 
     //! @copydoc LocalFiniteElementInterface::localInterpolation
     const typename T::LocalInterpolationType& localInterpolation () const
     {
-      return impl().localInterpolation();
+      return impl_.localInterpolation();
     }
 
     //! @copydoc LocalFiniteElementInterface::type
@@ -398,9 +398,6 @@ namespace Dune
   protected:
     const Imp impl_;
 
-  private:
-    typedef LocalFiniteElementInterface<T,Imp> Interface;
-    const Interface& impl () const {return impl_;}
   };
 }
 #endif

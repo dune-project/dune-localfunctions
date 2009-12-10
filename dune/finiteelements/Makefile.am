@@ -5,11 +5,11 @@ finiteelements_HEADERS = edger02d.hh edges02d.hh edges03d.hh \
 	rannacher_turek2d.hh rt02d.hh hierarchicalprismp2.hh \
         refinedp1.hh monom.hh p2.hh mimetic.hh rt0q2d.hh rt0q3d.hh rt0q.hh \
 	pk2d.hh q22d.hh q1.hh \
-	pq22d.hh
+	pq22d.hh refinedp0.hh
 
 SUBDIRS = common generic test \
           p0 p1 pk2d pk3d q1 q22d rt02d edger02d edges02d \
  	  edges03d rannacher_turek2d refinedp1 monom mimetic rt0q2d rt0q3d \
-          prismp1 prismp2 hierarchicalprismp2
+          prismp1 prismp2 hierarchicalprismp2 refinedp0
 
 include $(top_srcdir)/am/global-rules

@@ -20,6 +20,7 @@
 #include "../prismp2.hh"
 #include "../q1.hh"
 #include "../refinedp1.hh"
+#include "../refinedp0.hh"
 #include "../p23d.hh"
 #include "../hierarchicalp2.hh"
 
@@ -287,6 +288,9 @@ int main(int argc, char** argv) try
 
   Dune::RefinedP1LocalFiniteElement<double,double,3> refp13dlfem;
   success = testFE(refp13dlfem) and success;
+
+  Dune::RefinedP0LocalFiniteElement<double,double,2> refp02dlfem;
+  success = testFE(refp02dlfem) and success;
 
   Dune::P23DLocalFiniteElement<double,double> p23dlfem;
   success = testFE(p23dlfem) and success;

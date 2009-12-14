@@ -1,0 +1,4 @@
+# Where to search and which files to use
+INPUT                 += @srcdir@/mainpage \
+                         @srcdir@/modules \
+                         @top_srcdir@/dune/

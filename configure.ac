@@ -4,7 +4,7 @@
 AC_PREREQ(2.50)
 DUNE_AC_INIT # gets module version from dune.module file
 AM_INIT_AUTOMAKE(tar-ustar)
-AC_CONFIG_SRCDIR([dune/finiteelements/common/localbasis.hh])
+AC_CONFIG_SRCDIR([dune/localfunctions/common/localbasis.hh])
 AM_CONFIG_HEADER([config.h])
 
 # add configure flags needed to create log files for dune-autobuild
@@ -27,36 +27,36 @@ LIBS="$DUNE_LIBS"
 AC_CONFIG_FILES([
 		Makefile
                 dune/Makefile
-                dune/finiteelements/common/Makefile
-                dune/finiteelements/edger02d/Makefile
-                dune/finiteelements/edges02d/Makefile
-                dune/finiteelements/edges03d/Makefile
-                dune/finiteelements/Makefile
-                dune/finiteelements/monom/Makefile
-                dune/finiteelements/mimetic/Makefile
-                dune/finiteelements/p0/Makefile
-                dune/finiteelements/p1/Makefile
-                dune/finiteelements/pk2d/Makefile
-                dune/finiteelements/pk3d/Makefile
-                dune/finiteelements/prismp1/Makefile
-                dune/finiteelements/prismp2/Makefile
-                dune/finiteelements/q1/Makefile
-                dune/finiteelements/q22d/Makefile
-                dune/finiteelements/hierarchicalprismp2/Makefile
-                dune/finiteelements/refinedp1/Makefile
-                dune/finiteelements/refinedp0/Makefile
-                dune/finiteelements/rannacher_turek2d/Makefile
-                dune/finiteelements/rt02d/Makefile
-                dune/finiteelements/rt0q2d/Makefile
-                dune/finiteelements/rt0q3d/Makefile
-                dune/finiteelements/test/Makefile
-                dune/finiteelements/generic/Makefile
-                dune/finiteelements/generic/common/Makefile
-                dune/finiteelements/generic/math/Makefile
-                dune/finiteelements/generic/quadrature/Makefile
-                dune/finiteelements/generic/orthonormalbasis/Makefile
-                dune/finiteelements/generic/lagrangebasis/Makefile
-                dune/finiteelements/generic/raviartthomasbasis/Makefile
+                dune/localfunctions/common/Makefile
+                dune/localfunctions/edger02d/Makefile
+                dune/localfunctions/edges02d/Makefile
+                dune/localfunctions/edges03d/Makefile
+                dune/localfunctions/Makefile
+                dune/localfunctions/monom/Makefile
+                dune/localfunctions/mimetic/Makefile
+                dune/localfunctions/p0/Makefile
+                dune/localfunctions/p1/Makefile
+                dune/localfunctions/pk2d/Makefile
+                dune/localfunctions/pk3d/Makefile
+                dune/localfunctions/prismp1/Makefile
+                dune/localfunctions/prismp2/Makefile
+                dune/localfunctions/q1/Makefile
+                dune/localfunctions/q22d/Makefile
+                dune/localfunctions/hierarchicalprismp2/Makefile
+                dune/localfunctions/refinedp1/Makefile
+                dune/localfunctions/refinedp0/Makefile
+                dune/localfunctions/rannacher_turek2d/Makefile
+                dune/localfunctions/rt02d/Makefile
+                dune/localfunctions/rt0q2d/Makefile
+                dune/localfunctions/rt0q3d/Makefile
+                dune/localfunctions/test/Makefile
+                dune/localfunctions/generic/Makefile
+                dune/localfunctions/generic/common/Makefile
+                dune/localfunctions/generic/math/Makefile
+                dune/localfunctions/generic/quadrature/Makefile
+                dune/localfunctions/generic/orthonormalbasis/Makefile
+                dune/localfunctions/generic/lagrangebasis/Makefile
+                dune/localfunctions/generic/raviartthomasbasis/Makefile
                 doc/doxygen/Makefile
                 doc/doxygen/Doxyfile
                 doc/Makefile

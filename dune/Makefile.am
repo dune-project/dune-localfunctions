@@ -1,4 +1,4 @@
 dunedir = $(includedir)/dune
-SUBDIRS = finiteelements
+SUBDIRS = localfunctions
 
 include $(top_srcdir)/am/global-rules

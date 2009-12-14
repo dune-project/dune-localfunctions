@@ -1,8 +1,0 @@
-Makefile
-Makefile.in
-.deps
-.libs
-rt_p*_*.basis
-orthonormal_p*_*.basis
-test
-test-all

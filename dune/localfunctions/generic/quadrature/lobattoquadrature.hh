@@ -61,8 +61,8 @@ namespace Dune
 
         for( unsigned int i = 0; i < n; ++i )
         {
-          alpha[ i ] = 0;
-          beta[ i ] = Field( i*i ) / Field( 4*(i*i)-1 );
+          alpha( i ) = 0;
+          beta( i ) = Field( i*i ) / Field( 4*(i*i)-1 );
         }
 
         bool succ = gqgenlobatto::generategausslobattoquadrature< precision >( alpha, beta, Field( 2 ), Field(-1),Field(1), n, p, w );

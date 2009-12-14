@@ -35,7 +35,7 @@ namespace Dune
       GenericGeometry::LobattoPoints<MPField> lobatto(order+1);
 
       for (unsigned int i=1; i<order; ++i) {
-        points_[i-1] = field_cast<Field>(lobatto.point(i));
+        points_[i-1] = field_cast<Field>(lobatto[i].point());
       }
     }
 

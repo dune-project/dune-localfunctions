@@ -67,7 +67,7 @@ namespace Dune
   };
 
   class MimeticLocalCoefficients
-    : public Dune::LocalCoefficientsInterface<MimeticLocalCoefficients> {
+  {
   public:
     MimeticLocalCoefficients (unsigned int variant_)
       : variant(variant_), li(variant_)

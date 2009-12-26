@@ -21,8 +21,6 @@ namespace Dune
   class Q1LocalCoefficients
 #if DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalCoefficientsInterface
-#else
-    : public LocalCoefficientsInterface<Q1LocalCoefficients<dim> >
 #endif
   {
   public:

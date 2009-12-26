@@ -162,8 +162,6 @@ namespace Dune
   class RT0Q2DLocalCoefficients
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalCoefficientsInterface
-#else
-    : public LocalCoefficientsInterface<RT0Q2DLocalCoefficients>
 #endif
   {
   public:

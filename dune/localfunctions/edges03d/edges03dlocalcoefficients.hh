@@ -20,8 +20,6 @@ namespace Dune
   class EdgeS03DLocalCoefficients
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalCoefficientsInterface
-#else
-    : public LocalCoefficientsInterface<EdgeS03DLocalCoefficients>
 #endif
   {
   public:

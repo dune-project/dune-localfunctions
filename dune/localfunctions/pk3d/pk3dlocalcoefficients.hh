@@ -21,8 +21,6 @@ namespace Dune
   class Pk3DLocalCoefficients
 #if DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalCoefficientsInterface
-#else
-    : public LocalCoefficientsInterface<Pk3DLocalCoefficients<k> >
 #endif
   {
     enum {N = (k+1)*(k+2)*(k+3)/6};

@@ -16,10 +16,7 @@ namespace Dune
 
          \nosubgrouping
    */
-  class PrismP2LocalCoefficients : public LocalCoefficientsInterface
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-                                   <PrismP2LocalCoefficients>
-#endif
+  class PrismP2LocalCoefficients
   {
   public:
     //! \brief Standard constructor

@@ -16,10 +16,7 @@ namespace Dune
 
          \nosubgrouping
    */
-  class P23DLocalCoefficients : public LocalCoefficientsInterface
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-                                <P23DLocalCoefficients>
-#endif
+  class P23DLocalCoefficients
   {
   public:
     //! \brief Standard constructor

@@ -21,8 +21,6 @@ namespace Dune
   class Pk2DLocalCoefficients
 #if DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalCoefficientsInterface
-#else
-    : public LocalCoefficientsInterface<Pk2DLocalCoefficients<k> >
 #endif
   {
     enum {N = (k+1)*(k+2)/2};

@@ -21,8 +21,6 @@ namespace Dune
   class MonomLocalCoefficients
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalCoefficientsInterface
-#else
-    : public LocalCoefficientsInterface<MonomLocalCoefficients<static_size> >
 #endif
   {
   public:

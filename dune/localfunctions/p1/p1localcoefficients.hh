@@ -17,10 +17,7 @@ namespace Dune
          \nosubgrouping
    */
   template <int dim>
-  class P1LocalCoefficients : public LocalCoefficientsInterface
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-                              <P1LocalCoefficients<dim> >
-#endif
+  class P1LocalCoefficients
   {
   public:
     //! \brief Standard constructor

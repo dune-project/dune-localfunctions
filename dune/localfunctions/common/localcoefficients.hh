@@ -79,38 +79,18 @@ namespace Dune
 
          \nosubgrouping
    */
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-  template<class Imp>
-#endif
+#if DUNE_VIRTUAL_SHAPEFUNCTIONS
   class LocalCoefficientsInterface
   {
   public:
     //! number of coefficients
-#if DUNE_VIRTUAL_SHAPEFUNCTIONS
     virtual std::size_t size () const = 0;
-#else
-    std::size_t size () const
-    {
-      return asImp().size();
-    }
-#endif
 
     //! get i'th index
-#if DUNE_VIRTUAL_SHAPEFUNCTIONS
     const virtual LocalKey& localKey (std::size_t i) const = 0;
-#else
-    const LocalKey& localKey (std::size_t i) const
-    {
-      return asImp().localKey(i);
-    }
-#endif
 
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-  private:
-    Imp& asImp () {return static_cast<Imp &> (*this);}
-    const Imp& asImp () const {return static_cast<const Imp &>(*this);}
-#endif
   };
+#endif
 
 }
 #endif

@@ -32,8 +32,6 @@ namespace Dune
   class RefinedP0LocalCoefficients
 #if DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalCoefficientsInterface
-#else
-    : public LocalCoefficientsInterface<RefinedP0LocalCoefficients<k> >
 #endif
   {
     enum {N = Pow<2,k>::value};

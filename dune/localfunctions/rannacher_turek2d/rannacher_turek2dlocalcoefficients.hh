@@ -11,7 +11,6 @@
 namespace Dune {
 
   class RannacherTurek2DLocalCoefficients
-    : public LocalCoefficientsInterface<RannacherTurek2DLocalCoefficients>
   {
   public:
     RannacherTurek2DLocalCoefficients () : li(4)  {

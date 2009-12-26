@@ -23,6 +23,7 @@
 #include "../refinedp0.hh"
 #include "../p23d.hh"
 #include "../hierarchicalp2.hh"
+#include "../rannacher_turek2d.hh"
 
 #ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
 // these shape functions don't provide the virtual interface
@@ -306,6 +307,9 @@ int main(int argc, char** argv) try
 
   Dune::PrismP2LocalFiniteElement<double,double> prismp2fem;
   success = testFE(prismp2fem) and success;
+
+  Dune::RannacherTurek2DLocalFiniteElement<double,double> rannacher_turek2dfem;
+  success = testFE(rannacher_turek2dfem) and success;
 
   success = testArbitraryOrderFE<10>() and success;
 

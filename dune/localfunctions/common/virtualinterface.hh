@@ -23,7 +23,6 @@ namespace Dune
    **/
   template<class T>
   class C0LocalBasisVirtualInterface
-    : public C0LocalBasisInterface< T, C0LocalBasisVirtualInterface<T> >
   {
   public:
     typedef T Traits;
@@ -98,8 +97,7 @@ namespace Dune
    **/
   template<class T>
   class C1LocalBasisVirtualInterface
-    : public C1LocalBasisInterface< T, C1LocalBasisVirtualInterface<T> >
-      , public virtual C0LocalBasisVirtualInterface<T>
+    : public virtual C0LocalBasisVirtualInterface<T>
   {
   public:
 
@@ -171,7 +169,6 @@ namespace Dune
    **/
   template<class DomainType, class RangeType>
   class LocalInterpolationVirtualInterface
-    : public LocalInterpolationInterface< LocalInterpolationVirtualInterface<DomainType,RangeType> >
   {
   public:
 

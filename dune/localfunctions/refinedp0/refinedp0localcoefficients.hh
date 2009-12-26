@@ -11,17 +11,6 @@
 
 namespace Dune
 {
-  template<int base, int exponent>
-  struct Pow
-  {
-    enum {value = base * Pow<base,exponent-1>::value};
-  };
-
-  template<int base>
-  struct Pow<base,0>
-  {
-    enum {value = 1};
-  };
 
   /**@ingroup LocalLayoutImplementation
      \brief Layout map for RefinedP0 elements
@@ -35,7 +24,8 @@ namespace Dune
     : public LocalCoefficientsInterface
 #endif
   {
-    enum {N = Pow<2,k>::value};
+    // 2 to the k-th power
+    enum {N = 1<<k};
 
   public:
     RefinedP0LocalCoefficients () :

@@ -200,20 +200,15 @@ namespace Dune
          Defines the constant scalar shape function in d dimensions. Is
          valid on any type of reference element.
 
-         - <tt>D</tt>: Type to represent the field in the domain.
-         - <tt>R</tt>: Type to represent the field in the range.
-         - <tt>d</tt>: Domain dimension
-     - <tt>p</tt>: polynomial order of the shapefunctions
+         \tparam D Type to represent the field in the domain.
+         \tparam R Type to represent the field in the range.
+         \tparam d Domain dimension
+     \tparam p polynomial order of the shapefunctions
 
          \nosubgrouping
    */
   template<class D, class R, unsigned int d, unsigned int p>
-  class MonomLocalBasis :
-    public CkLocalBasisInterface<
-        CkLocalBasisTraits<D,d,Dune::FieldVector<D,d>,
-            R,1,Dune::FieldVector<R,1>,
-            Dune::FieldVector<Dune::FieldVector<R,d>,1>, p>,
-        MonomLocalBasis<D,R,d,p> >
+  class MonomLocalBasis
   {
     enum { static_size = MonomImp::Size<d,p>::val };
 

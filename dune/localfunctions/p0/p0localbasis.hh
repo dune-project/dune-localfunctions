@@ -22,14 +22,13 @@ namespace Dune
          \nosubgrouping
    */
   template<class D, class R, int d>
-  class P0LocalBasis :
-    public C1LocalBasisInterface<
-        C1LocalBasisTraits<D,d,Dune::FieldVector<D,d>,R,1,Dune::FieldVector<R,1>,
-            Dune::FieldVector<Dune::FieldVector<R,d>,1> >
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-        , P0LocalBasis<D,R,d>
+  class P0LocalBasis
+#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
+    : public C1LocalBasisInterface<
+          C1LocalBasisTraits<D,d,Dune::FieldVector<D,d>,R,1,Dune::FieldVector<R,1>,
+              Dune::FieldVector<Dune::FieldVector<R,d>,1> >
+          >
 #endif
-        >
   {
   public:
     //! \brief export type traits for function signature

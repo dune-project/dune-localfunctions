@@ -9,13 +9,11 @@
 namespace Dune
 {
   template<class D, class R, int dim>
-  class RefinedP0LocalBasis :
-    public C1LocalBasisInterface<
-        C1LocalBasisTraits<D,dim,Dune::FieldVector<D,dim>,R,1,Dune::FieldVector<R,1>, Dune::FieldVector<Dune::FieldVector<R,dim>,1> >
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-        ,RefinedP0LocalBasis<D,R,dim>
+  class RefinedP0LocalBasis
+#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
+    : public C1LocalBasisInterface<
+          C1LocalBasisTraits<D,dim,Dune::FieldVector<D,dim>,R,1,Dune::FieldVector<R,1>, Dune::FieldVector<Dune::FieldVector<R,dim>,1> > >
 #endif
-        >
   {
   public:
     RefinedP0LocalBasis()
@@ -47,17 +45,15 @@ namespace Dune
      \nosubgrouping
    */
   template<class D, class R>
-  class RefinedP0LocalBasis<D,R,2> :
-    public C1LocalBasisInterface<
-        C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>, Dune::FieldVector<Dune::FieldVector<R,2>,1> >
-        // We derive from C1 to allow using this with the virtual interface.
-        // Otherwise the convariant return type of the localBasis() method
-        // in the FE does not match the base class.
-        // Notice that this is not even C0.
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-        ,RefinedP0LocalBasis<D,R,2>
+  class RefinedP0LocalBasis<D,R,2>
+#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
+    : public C1LocalBasisInterface<
+          C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>, Dune::FieldVector<Dune::FieldVector<R,2>,1> > >
+      // We derive from C1 to allow using this with the virtual interface.
+      // Otherwise the convariant return type of the localBasis() method
+      // in the FE does not match the base class.
+      // Notice that this is not even C0.
 #endif
-        >
   {
   public:
     //! \brief export type traits for function signature

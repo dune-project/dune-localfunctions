@@ -19,14 +19,12 @@ namespace Dune
          \nosubgrouping
    */
   template<class D, class R, int dim>
-  class Q1LocalBasis :
-    public C1LocalBasisInterface<
-        C1LocalBasisTraits<D,dim,Dune::FieldVector<D,dim>,R,1,Dune::FieldVector<R,1>,
-            Dune::FieldVector<Dune::FieldVector<R,dim>,1> >
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-        ,Q1LocalBasis<D,R,dim>
+  class Q1LocalBasis
+#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
+    : public C1LocalBasisInterface<
+          C1LocalBasisTraits<D,dim,Dune::FieldVector<D,dim>,R,1,Dune::FieldVector<R,1>,
+              Dune::FieldVector<Dune::FieldVector<R,dim>,1> > >
 #endif
-        >
   {
   public:
     typedef C1LocalBasisTraits<D,dim,Dune::FieldVector<D,dim>,R,1,Dune::FieldVector<R,1>,

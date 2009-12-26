@@ -16,14 +16,12 @@ namespace Dune
          \nosubgrouping
    */
   template<class D, class R>
-  class RT02DLocalBasis :
-    public C1LocalBasisInterface<
-        C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,2,Dune::FieldVector<R,2>,
-            Dune::FieldVector<Dune::FieldVector<R,2>,2> >
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-        , RT02DLocalBasis<D,R>
+  class RT02DLocalBasis
+#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
+    : public C1LocalBasisInterface<
+          C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,2,Dune::FieldVector<R,2>,
+              Dune::FieldVector<Dune::FieldVector<R,2>,2> > >
 #endif
-        >
   {
   public:
     typedef C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,2,Dune::FieldVector<R,2>,

@@ -78,11 +78,8 @@ namespace Dune
 
          \nosubgrouping
    */
-  template<class T
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-      , class Imp
-#endif
-      >
+#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
+  template<class T>
   class C0LocalBasisInterface
   {
   public:
@@ -90,50 +87,24 @@ namespace Dune
     typedef T Traits;
 
     //! \brief Number of shape functions
-#if DUNE_VIRTUAL_SHAPEFUNCTIONS
     virtual unsigned int size () const = 0;
-#else
-    unsigned int size () const
-    {
-      return asImp().size();
-    }
-#endif
 
     /** \brief Evaluate all basis function at given position
 
             Evaluates all shape functions at the given position and returns
             these values in a vector.
      */
-#if DUNE_VIRTUAL_SHAPEFUNCTIONS
     virtual void evaluateFunction (const typename Traits::DomainType& in,
                                    std::vector<typename Traits::RangeType>& out) const = 0;
-#else
-    inline void evaluateFunction (const typename Traits::DomainType& in,
-                                  std::vector<typename Traits::RangeType>& out) const
-    {
-      asImp().evaluateFunction(in,out);
-    }
-#endif
+
     /*! \brief Polynomial order of the shape functions
 
-       \todo Gurke!
+       \todo In the long run we need a more fine-grained control of function smoothness
      */
-#if DUNE_VIRTUAL_SHAPEFUNCTIONS
     virtual unsigned int order () const = 0;
-#else
-    unsigned int order () const
-    {
-      return asImp().order();
-    }
-#endif
 
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-  private:
-    Imp& asImp () {return static_cast<Imp &> (*this);}
-    const Imp& asImp () const {return static_cast<const Imp &>(*this);}
-#endif
   };
-
+#endif
 
 
   /**@ingroup LocalBasisInterface
@@ -189,11 +160,6 @@ namespace Dune
   template<class T>
   class C1LocalBasisInterface
     : public C0LocalBasisInterface<T>
-#else
-  template<class T, class Imp>
-  class C1LocalBasisInterface
-    : public C0LocalBasisInterface<T,Imp>
-#endif
   {
   public:
     //! \brief Export type traits
@@ -206,26 +172,12 @@ namespace Dune
 
        \param [out] out The result
      */
-#if DUNE_VIRTUAL_SHAPEFUNCTIONS
     virtual void
     evaluateJacobian(const typename Traits::DomainType& in,             // position
                      std::vector<typename Traits::JacobianType>& out) const = 0;
-#else
-    inline void
-    evaluateJacobian(const typename Traits::DomainType& in,             // position
-                     std::vector<typename Traits::JacobianType>& out) const                          // return value
-    {
-      asImp().evaluateJacobian(in,out);
-    }
-#endif
 
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-  private:
-    Imp& asImp () {return static_cast<Imp &> (*this);}
-    const Imp& asImp () const {return static_cast<const Imp &>(*this);}
-#endif
   };
-
+#endif
 
 
   template<class DF, int n, class D, class RF, int m, class R, class J, int dorder>
@@ -236,33 +188,6 @@ namespace Dune
       //! \brief number of derivatives supported
       diffOrder=dorder
     };
-  };
-
-  // hinzufügen:
-  template<class T, class Imp>
-  class CkLocalBasisInterface
-#if DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public C1LocalBasisInterface<T>
-#else
-    : public C1LocalBasisInterface<T,Imp>
-#endif
-  {
-  public:
-    //! \brief Export type traits
-    typedef T Traits;
-
-    //! return given derivative of all components
-    template<int k>
-    inline void evaluate (const Dune::array<int,k>& directions,
-                          const typename Traits::DomainType& in,
-                          std::vector<typename Traits::RangeType>& out) const
-    {
-      asImp().evaluate(directions,in,out);
-    }
-
-  private:
-    Imp& asImp () {return static_cast<Imp &> (*this);}
-    const Imp& asImp () const {return static_cast<const Imp &>(*this);}
   };
 
 }

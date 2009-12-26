@@ -12,12 +12,8 @@
 namespace Dune {
 
   template<class D, class R>
-  class RannacherTurek2DLocalBasis :
-    public C1LocalBasisInterface<
-        C1LocalBasisTraits<D,2,FieldVector<D,2>,
-            R,1,FieldVector<R,1>,
-            FieldVector<FieldVector<R,2>,1> >,
-        RannacherTurek2DLocalBasis<D,R> > {
+  class RannacherTurek2DLocalBasis
+  {
   public:
     typedef C1LocalBasisTraits<D,2,FieldVector<D,2>,
         R,1,FieldVector<R,1>,

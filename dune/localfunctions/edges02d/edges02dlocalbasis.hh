@@ -21,16 +21,6 @@ namespace Dune
    */
   template<class D, class R>
   class EdgeS02DLocalBasis
-    : public C1LocalBasisInterface<
-          C1LocalBasisTraits<
-              D,2,Dune::FieldVector<D,2>,
-              R,2,Dune::FieldVector<R,2>,
-              Dune::FieldVector<Dune::FieldVector<R,2>,2>
-              >
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-          , EdgeS02DLocalBasis<D,R>
-#endif
-          >
   {
   public:
     //! \brief export type traits for function signature

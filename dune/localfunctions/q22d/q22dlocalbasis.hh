@@ -12,20 +12,18 @@ namespace Dune
 
      Also known as \f$Q^2\f$.
 
-     - <tt>D</tt>: Type to represent the field in the domain.
-     - <tt>R</tt>: Type to represent the field in the range.
+     \tparam D Type to represent the field in the domain.
+     \tparam R Type to represent the field in the range.
 
      \nosubgrouping
    */
   template<class D, class R>
-  class Q22DLocalBasis :
-    public C1LocalBasisInterface<
-        C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,
-            Dune::FieldVector<Dune::FieldVector<R,2>,1> >
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-        , Q22DLocalBasis<D,R>
+  class Q22DLocalBasis
+#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
+    : public C1LocalBasisInterface<
+          C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,
+              Dune::FieldVector<Dune::FieldVector<R,2>,1> > >
 #endif
-        >
   {
   public:
     typedef C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,

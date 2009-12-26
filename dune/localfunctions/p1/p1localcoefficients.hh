@@ -12,9 +12,10 @@
 namespace Dune
 {
 
-  /** \brief Local coefficients for simplex P0 elements
+  /** \brief Local coefficients for simplex P1 elements
 
-         \nosubgrouping
+     \nosubgrouping
+     \implements Dune::LocalCoefficientsVirtualImp
    */
   template <int dim>
   class P1LocalCoefficients

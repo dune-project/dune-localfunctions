@@ -16,6 +16,7 @@ namespace Dune
          \brief Layout map for Monom elements
 
          \nosubgrouping
+     \implements Dune::LocalCoefficientsVirtualImp
    */
   template<int static_size>
   class MonomLocalCoefficients

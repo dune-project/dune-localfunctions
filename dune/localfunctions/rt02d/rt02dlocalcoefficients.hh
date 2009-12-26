@@ -16,6 +16,7 @@ namespace Dune
          \brief Layout map for RT0 elements
 
          \nosubgrouping
+     \implements Dune::LocalCoefficientsVirtualImp
    */
   class RT02DLocalCoefficients
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS

@@ -16,6 +16,7 @@ namespace Dune
      \brief Layout map for edge R0 elements
 
      \nosubgrouping
+     \implements Dune::LocalCoefficientsVirtualImp
    */
   class EdgeR02DLocalCoefficients
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS

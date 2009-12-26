@@ -16,6 +16,7 @@ namespace Dune
          \brief Layout map for Q1 elements
 
          \nosubgrouping
+     \implements Dune::LocalCoefficientsVirtualImp
    */
   template <int dim>
   class Q1LocalCoefficients

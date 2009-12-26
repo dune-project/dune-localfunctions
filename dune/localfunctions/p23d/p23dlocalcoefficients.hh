@@ -15,6 +15,7 @@ namespace Dune
          \brief Layout map for P23D elements
 
          \nosubgrouping
+     \implements Dune::LocalCoefficientsVirtualImp
    */
   class P23DLocalCoefficients
   {

@@ -10,6 +10,9 @@
 
 namespace Dune {
 
+  /** \todo Please doc me!
+      \implements Dune::LocalCoefficientsVirtualImp
+   */
   class RannacherTurek2DLocalCoefficients
   {
   public:

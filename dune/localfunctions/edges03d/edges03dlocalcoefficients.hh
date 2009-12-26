@@ -16,6 +16,7 @@ namespace Dune
      \brief Layout map for lowest order edge elements on tetrahedrons
 
      \nosubgrouping
+     \implements Dune::LocalCoefficientsVirtualImp
    */
   class EdgeS03DLocalCoefficients
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS

@@ -16,6 +16,7 @@ namespace Dune
          \brief Layout map for Q2 elements
 
          \nosubgrouping
+     \implements Dune::LocalCoefficientsVirtualImp
    */
   class Q22DLocalCoefficients
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS

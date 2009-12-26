@@ -16,6 +16,7 @@ namespace Dune
          \brief Layout map for PrismP1 elements
 
          \nosubgrouping
+     \implements Dune::LocalCoefficientsVirtualImp
    */
   class PrismP1LocalCoefficients
   {

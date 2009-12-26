@@ -180,6 +180,7 @@ namespace Dune
          \brief Layout map for RT0 elements on quadrilaterals
 
          \nosubgrouping
+     \implements Dune::LocalCoefficientsVirtualImp
    */
   class RT0Q3DLocalCoefficients
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS

@@ -16,6 +16,7 @@ namespace Dune
          \brief Layout map for P0 elements
 
          \nosubgrouping
+     \implements Dune::LocalCoefficientsVirtualImp
    */
   template<unsigned int k>
   class Pk2DLocalCoefficients

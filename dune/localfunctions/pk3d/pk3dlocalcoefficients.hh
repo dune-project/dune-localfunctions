@@ -16,6 +16,7 @@ namespace Dune
      \brief Please doc me!
 
      \nosubgrouping
+     \implements Dune::LocalCoefficientsVirtualImp
    */
   template<unsigned int k>
   class Pk3DLocalCoefficients

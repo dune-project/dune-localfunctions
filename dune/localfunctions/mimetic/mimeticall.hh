@@ -66,6 +66,9 @@ namespace Dune
     }
   };
 
+  /** \brief !
+      \implements Dune::LocalCoefficientsVirtualImp
+   */
   class MimeticLocalCoefficients
   {
   public:

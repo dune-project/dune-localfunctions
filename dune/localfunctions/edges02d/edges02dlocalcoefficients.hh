@@ -16,6 +16,7 @@ namespace Dune
      \brief Layout map for lowest order edge elements on triangles
 
      \nosubgrouping
+     \implements Dune::LocalCoefficientsVirtualImp
    */
   class EdgeS02DLocalCoefficients
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS

@@ -17,18 +17,13 @@ namespace Dune
    */
   template<class D, class R, unsigned int k>
   class Pk3DLocalFiniteElement
-    :
 #if DUNE_VIRTUAL_SHAPEFUNCTIONS
-      public
-#endif
+    : public
       LocalFiniteElementInterface<
           LocalFiniteElementTraits<Pk3DLocalBasis<D,R,k>,
               Pk3DLocalCoefficients<k>,
-              Pk3DLocalInterpolation<Pk3DLocalBasis<D,R,k> > >
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-          ,Pk3DLocalFiniteElement<D,R,k>
+              Pk3DLocalInterpolation<Pk3DLocalBasis<D,R,k> > > >
 #endif
-          >
   {
   public:
     /** \todo Please doc me !

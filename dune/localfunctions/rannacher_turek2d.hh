@@ -15,12 +15,6 @@ namespace Dune {
 
   template<class D, class R>
   class RannacherTurek2DLocalFiniteElement
-    : public LocalFiniteElementInterface<
-          LocalFiniteElementTraits<
-              RannacherTurek2DLocalBasis<D,R>,
-              RannacherTurek2DLocalCoefficients,
-              RannacherTurek2DLocalInterpolation<RannacherTurek2DLocalBasis<D,R> > >,
-          RannacherTurek2DLocalFiniteElement<D,R> >
   {
     RannacherTurek2DLocalBasis<D,R> basis;
     RannacherTurek2DLocalCoefficients coefficients;

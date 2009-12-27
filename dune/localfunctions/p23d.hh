@@ -19,11 +19,6 @@ namespace Dune
   class P23DLocalFiniteElement
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalFiniteElementInterface<D,R,3>
-#else
-    : LocalFiniteElementInterface<
-          LocalFiniteElementTraits<P23DLocalBasis<D,R>,P23DLocalCoefficients,
-              P23DLocalInterpolation<P23DLocalBasis<D,R> > >,
-          P23DLocalFiniteElement<D,R> >
 #endif
   {
   public:

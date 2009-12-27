@@ -82,57 +82,6 @@ namespace Dune {
 
   };
 
-#else
-  /** \brief interface for a finite element
-      \tparam T The controlling traits
-      \tparam Imp The deriving implementation class
-   */
-  template<class T, class Imp>
-  class LocalFiniteElementInterface
-  {
-  public:
-
-    /** \todo Please doc me !
-     */
-    typedef T Traits;
-
-    /** \todo Please doc me !
-     */
-    const typename T::LocalBasisType& localBasis () const
-    {
-      return asImp().localBasis();
-    }
-
-    /** \todo Please doc me !
-     */
-    const typename T::LocalCoefficientsType& localCoefficients () const
-    {
-      return asImp().localCoefficients();
-    }
-
-    /** \todo Please doc me !
-     */
-    const typename T::LocalInterpolationType& localInterpolation () const
-    {
-      return asImp().localInterpolation();
-    }
-
-    /** \todo Please doc me !
-     */
-    GeometryType type () const
-    {
-      return asImp().type();
-    }
-
-    //      Imp* clone () const
-    //      {
-    //        return asImp().clone();
-    //      }
-
-  private:
-    Imp& asImp () {return static_cast<Imp &> (*this);}
-    const Imp& asImp () const {return static_cast<const Imp &>(*this);}
-  };
 #endif
 
 }

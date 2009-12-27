@@ -17,16 +17,6 @@ namespace Dune
    */
   template<class D, class R>
   class EdgeS03DLocalFiniteElement
-    : public LocalFiniteElementInterface<
-          LocalFiniteElementTraits<
-              EdgeS03DLocalBasis<D,R>,
-              EdgeS03DLocalCoefficients,
-              EdgeS03DLocalInterpolation<EdgeS03DLocalBasis<D,R> >
-              >
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-          , EdgeS03DLocalFiniteElement<D,R>
-#endif
-          >
   {
   public:
     /** \todo Please doc me !

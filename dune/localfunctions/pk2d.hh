@@ -17,15 +17,8 @@ namespace Dune
    */
   template<class D, class R, unsigned int k>
   class Pk2DLocalFiniteElement
-    :
 #if DUNE_VIRTUAL_SHAPEFUNCTIONS
-      public LocalFiniteElementInterface<D,R,2>
-#else
-      public LocalFiniteElementInterface<
-          LocalFiniteElementTraits<Pk2DLocalBasis<D,R,k>,
-              Pk2DLocalCoefficients<k>,
-              Pk2DLocalInterpolation<Pk2DLocalBasis<D,R,k> > >
-          ,Pk2DLocalFiniteElement<D,R,k> >
+    : public LocalFiniteElementInterface<D,R,2>
 #endif
   {
   public:

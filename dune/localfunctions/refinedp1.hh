@@ -35,12 +35,6 @@ namespace Dune
   class RefinedP1LocalFiniteElement<D,R,2>
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalFiniteElementInterface<D,R,2>
-#else
-    : public LocalFiniteElementInterface<
-          LocalFiniteElementTraits<RefinedP1LocalBasis<D,R,2>,
-              Pk2DLocalCoefficients<2>,
-              Pk2DLocalInterpolation<Pk2DLocalBasis<D,R,2> > >
-          , RefinedP1LocalFiniteElement<D,R,2> >
 #endif
   {
   public:
@@ -103,12 +97,6 @@ namespace Dune
   class RefinedP1LocalFiniteElement<D,R,3>
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalFiniteElementInterface<D,R,3>
-#else
-    : public LocalFiniteElementInterface<
-          LocalFiniteElementTraits<RefinedP1LocalBasis<D,R,3>,
-              Pk3DLocalCoefficients<2>,
-              Pk3DLocalInterpolation<Pk3DLocalBasis<D,R,2> > >
-          , RefinedP1LocalFiniteElement<D,R,3> >
 #endif
   {
   public:

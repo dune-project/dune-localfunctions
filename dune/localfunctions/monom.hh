@@ -24,13 +24,6 @@ namespace Dune
   class MonomLocalFiniteElement
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalFiniteElementInterface<D,R,d>
-#else
-    : LocalFiniteElementInterface<
-          LocalFiniteElementTraits<
-              MonomLocalBasis<D,R,d,p>,
-              MonomLocalCoefficients<MonomImp::Size<d,p>::val>,
-              MonomLocalInterpolation<MonomLocalBasis<D,R,d,p>,MonomImp::Size<d,p>::val> >,
-          MonomLocalFiniteElement<D,R,d,p> >
 #endif
   {
     enum { static_size = MonomImp::Size<d,p>::val };

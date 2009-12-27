@@ -19,11 +19,6 @@ namespace Dune
   class P0LocalFiniteElement
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalFiniteElementInterface<D,R,d>
-#else
-    : LocalFiniteElementInterface<
-          LocalFiniteElementTraits<P0LocalBasis<D,R,d>,P0LocalCoefficients,
-              P0LocalInterpolation<P0LocalBasis<D,R,d> > > ,
-          P0LocalFiniteElement<D,R,d> >
 #endif
   {
   public:

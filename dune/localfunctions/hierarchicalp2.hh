@@ -22,12 +22,6 @@ namespace Dune
   class HierarchicalP2LocalFiniteElement
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalFiniteElementInterface<D,R,dim>
-#else
-    : LocalFiniteElementInterface<
-          LocalFiniteElementTraits<HierarchicalSimplexP2LocalBasis<D,R,dim>,
-              typename Dune::SelectType<dim==2, Pk2DLocalCoefficients<2>, Pk3DLocalCoefficients<2> >::Type,
-              HierarchicalSimplexP2LocalInterpolation<HierarchicalSimplexP2LocalBasis<D,R,dim> > >,
-          HierarchicalP2LocalFiniteElement<D,R,dim> >
 #endif
   {
 

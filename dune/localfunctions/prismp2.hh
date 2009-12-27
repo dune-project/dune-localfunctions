@@ -19,11 +19,6 @@ namespace Dune
   class PrismP2LocalFiniteElement
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalFiniteElementInterface<D,R,3>
-#else
-    : public LocalFiniteElementInterface<LocalFiniteElementTraits<PrismP2LocalBasis<D,R>,
-              PrismP2LocalCoefficients,
-              PrismP2LocalInterpolation<PrismP2LocalBasis<D,R> > >,
-          PrismP2LocalFiniteElement<D,R> >
 #endif
   {
   public:

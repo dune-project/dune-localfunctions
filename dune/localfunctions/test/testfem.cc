@@ -308,9 +308,6 @@ int main(int argc, char** argv) try
   Dune::PrismP2LocalFiniteElement<double,double> prismp2fem;
   success = testFE(prismp2fem) and success;
 
-  Dune::RannacherTurek2DLocalFiniteElement<double,double> rannacher_turek2dfem;
-  success = testFE(rannacher_turek2dfem) and success;
-
   success = testArbitraryOrderFE<10>() and success;
 
 #ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
@@ -334,6 +331,9 @@ int main(int argc, char** argv) try
 
   Dune::RT0Q3DLocalFiniteElement<double,double> rt0q3dlfem(1);
   success = testFE(rt0q3dlfem) and success;
+
+  Dune::RannacherTurek2DLocalFiniteElement<double,double> rannacher_turek2dfem;
+  success = testFE(rannacher_turek2dfem) and success;
 
   //    Dune::HierarchicalP2LocalFiniteElement<double,double,1> hierarchicalp21dlfem;
   //    success = testFE(hierarchicalp21dlfem) and success;

@@ -255,6 +255,7 @@ namespace Dune
     : public LocalCoefficientsVirtualInterface
   {
   public:
+
     //! constructor taking a Dune::LocalCoefficientsInterface implementation
     LocalCoefficientsVirtualImp( const Imp &imp )
       : impl_(imp) {}
@@ -327,6 +328,8 @@ namespace Dune
 
     //! Default constructor.  Assumes that the implementation class is default constructible as well.
     LocalFiniteElementVirtualImp()
+      : impl_(),
+        localCoefficientsImp_(impl_.localCoefficients())
     {}
 
     //! @copydoc LocalFiniteElementInterface::localBasis
@@ -338,7 +341,7 @@ namespace Dune
     //! @copydoc LocalFiniteElementInterface::localCoefficients
     const LocalCoefficientsVirtualInterface& localCoefficients () const
     {
-      return impl_.localCoefficients();
+      return localCoefficientsImp_;
     }
 
     //! @copydoc LocalFiniteElementInterface::localInterpolation
@@ -355,6 +358,8 @@ namespace Dune
 
   protected:
     const Imp impl_;
+
+    const LocalCoefficientsVirtualImp<typename Imp::Traits::LocalCoefficientsType>& localCoefficientsImp_;
 
   };
 }

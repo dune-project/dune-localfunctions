@@ -14,8 +14,6 @@ namespace Dune
   class P0LocalInterpolation
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalInterpolationInterface<typename LB::Traits::DomainType, typename LB::Traits::RangeType>
-#else
-    : public LocalInterpolationInterface<P0LocalInterpolation<LB> >
 #endif
   {
   public:

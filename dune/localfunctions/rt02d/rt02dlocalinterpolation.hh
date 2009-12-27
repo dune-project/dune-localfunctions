@@ -11,7 +11,6 @@ namespace Dune
 {
   template<class LB>
   class RT02DLocalInterpolation
-    : public LocalInterpolationInterface<RT02DLocalInterpolation<LB> >
   {
   public:
 

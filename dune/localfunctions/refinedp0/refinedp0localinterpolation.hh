@@ -11,8 +11,6 @@ namespace Dune
   class RefinedP0LocalInterpolation
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalInterpolationInterface<typename LB::Traits::DomainType, typename LB::Traits::RangeType>
-#else
-    : public LocalInterpolationInterface<RefinedP0LocalInterpolation<LB> >
 #endif
   {};
 
@@ -20,8 +18,6 @@ namespace Dune
   class RefinedP0LocalInterpolation<RefinedP0LocalBasis<D,R,2> >
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalInterpolationInterface<typename RefinedP0LocalBasis<D,R,2>::Traits::DomainType, typename RefinedP0LocalBasis<D,R,2>::Traits::RangeType>
-#else
-    : public LocalInterpolationInterface<RefinedP0LocalInterpolation<RefinedP0LocalBasis<D,R,2> > >
 #endif
   {
     typedef RefinedP0LocalBasis<D,R,2> LB;

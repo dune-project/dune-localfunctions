@@ -11,9 +11,7 @@ namespace Dune
   /** \todo Please doc me! */
   template<int dim, class LB>
   class Q1LocalInterpolation
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public LocalInterpolationInterface<Q1LocalInterpolation<dim,LB> >
-#else
+#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalInterpolationInterface<typename LB::Traits::DomainType, typename LB::Traits::RangeType>
 #endif
   {

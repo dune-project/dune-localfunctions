@@ -20,7 +20,6 @@ namespace Dune
 
   template<class LB>
   class EdgeS02DLocalInterpolation
-    : public LocalInterpolationInterface<EdgeS02DLocalInterpolation<LB> >
   {
   public:
     //! contruct an interpolation instance with default orientations

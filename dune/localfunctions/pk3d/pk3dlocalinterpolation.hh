@@ -11,8 +11,6 @@ namespace Dune
   class Pk3DLocalInterpolation
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalInterpolationInterface<typename LB::Traits::DomainType, typename LB::Traits::RangeType>
-#else
-    : public LocalInterpolationInterface<Pk3DLocalInterpolation<LB> >
 #endif
   {
     enum {N = LB::N};

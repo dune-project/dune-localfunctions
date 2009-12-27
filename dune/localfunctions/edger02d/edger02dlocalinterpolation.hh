@@ -11,7 +11,6 @@ namespace Dune
   /** \todo Please doc me! */
   template<class LB>
   class EdgeR02DLocalInterpolation
-    : public LocalInterpolationInterface<EdgeR02DLocalInterpolation<LB> >
   {
   public:
 

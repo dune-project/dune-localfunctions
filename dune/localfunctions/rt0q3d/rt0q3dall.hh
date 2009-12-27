@@ -120,7 +120,6 @@ namespace Dune
    */
   template<class LB>
   class RT0Q3DLocalInterpolation
-    : public LocalInterpolationInterface<RT0Q3DLocalInterpolation<LB> >
   {
   public:
 

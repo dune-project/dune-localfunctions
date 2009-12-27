@@ -11,8 +11,6 @@ namespace Dune
   class P23DLocalInterpolation
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalInterpolationInterface<typename LB::Traits::DomainType, typename LB::Traits::RangeType>
-#else
-    : public LocalInterpolationInterface<P23DLocalInterpolation<LB> >
 #endif
   {
   public:

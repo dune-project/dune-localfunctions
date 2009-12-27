@@ -9,9 +9,7 @@ namespace Dune
 {
   template<int dim, class LB>
   class P1LocalInterpolation
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public LocalInterpolationInterface<P1LocalInterpolation<dim,LB> >
-#else
+#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalInterpolationInterface<typename LB::Traits::DomainType, typename LB::Traits::RangeType>
 #endif
   {

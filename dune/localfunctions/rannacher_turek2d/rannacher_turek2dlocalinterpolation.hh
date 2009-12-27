@@ -11,7 +11,6 @@ namespace Dune {
 
   template<class LB>
   class RannacherTurek2DLocalInterpolation
-    : public LocalInterpolationInterface<RannacherTurek2DLocalInterpolation<LB> >
   {
   public:
 

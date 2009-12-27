@@ -11,8 +11,6 @@ namespace Dune
   class Pk2DLocalInterpolation
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalInterpolationInterface<typename LB::Traits::DomainType, typename LB::Traits::RangeType>
-#else
-    : public LocalInterpolationInterface<Pk2DLocalInterpolation<LB> >
 #endif
   {
     /** \brief The number of degrees of freedom */

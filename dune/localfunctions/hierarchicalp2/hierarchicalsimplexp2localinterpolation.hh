@@ -14,8 +14,6 @@ namespace Dune
   class HierarchicalSimplexP2LocalInterpolation
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalInterpolationInterface<typename LB::Traits::DomainType, typename LB::Traits::RangeType>
-#else
-    : public LocalInterpolationInterface<HierarchicalSimplexP2LocalInterpolation<LB> >
 #endif
   {
   public:

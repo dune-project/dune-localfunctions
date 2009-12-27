@@ -20,11 +20,13 @@ const int dim = 2;
 typedef double D;
 typedef double R;
 
-typedef C0LocalBasisTraits<D,dim,FieldVector<D,dim>,R,1,FieldVector<R,1> > C0Traits;
+//typedef C0LocalBasisTraits<D,dim,FieldVector<D,dim>,R,1,FieldVector<R,1> > C0Traits;
+typedef C1LocalBasisTraits<D,2,FieldVector<D,2>,R,1,FieldVector<R,1>,
+                           FieldVector<FieldVector<R,2>,1> > C1Traits;
 
 struct MagicLocalFiniteElementTraits
 {
-  typedef C0LocalBasisVirtualInterface<C0Traits> LocalBasisType;
+  typedef C1LocalBasisVirtualInterface<C1Traits> LocalBasisType;
 
   typedef LocalInterpolationVirtualInterface<FieldVector<D,dim>,FieldVector<R,1> > LocalInterpolationType;
 };

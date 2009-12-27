@@ -300,7 +300,8 @@ namespace Dune
     virtual const LocalCoefficientsVirtualInterface& localCoefficients () const = 0;
 
     //! @copydoc LocalFiniteElementInterface::localInterpolation
-    virtual const typename T::LocalInterpolationType& localInterpolation () const = 0;
+    virtual const LocalInterpolationVirtualInterface<typename T::LocalBasisType::Traits::DomainType,
+        typename T::LocalBasisType::Traits::RangeType>& localInterpolation () const = 0;
 
     //! @copydoc LocalFiniteElementInterface::type
     virtual const GeometryType type () const = 0;
@@ -347,7 +348,8 @@ namespace Dune
     }
 
     //! @copydoc LocalFiniteElementInterface::localInterpolation
-    const typename T::LocalInterpolationType& localInterpolation () const
+    const LocalInterpolationVirtualInterface<typename T::LocalBasisType::Traits::DomainType,
+        typename T::LocalBasisType::Traits::RangeType>& localInterpolation () const
     {
       return localInterpolationImp_;
     }

@@ -329,6 +329,7 @@ namespace Dune
     //! Default constructor.  Assumes that the implementation class is default constructible as well.
     LocalFiniteElementVirtualImp()
       : impl_(),
+        localBasisImp_(impl_.localBasis()),
         localCoefficientsImp_(impl_.localCoefficients()),
         localInterpolationImp_(impl_.localInterpolation())
     {}
@@ -336,7 +337,7 @@ namespace Dune
     //! @copydoc LocalFiniteElementInterface::localBasis
     const typename T::LocalBasisType& localBasis () const
     {
-      return impl_.localBasis();
+      return localBasisImp_;
     }
 
     //! @copydoc LocalFiniteElementInterface::localCoefficients
@@ -360,6 +361,7 @@ namespace Dune
   protected:
     const Imp impl_;
 
+    const C1LocalBasisVirtualImp<typename Imp::Traits::LocalBasisType::Traits, typename Imp::Traits::LocalBasisType>& localBasisImp_;
     const LocalCoefficientsVirtualImp<typename Imp::Traits::LocalCoefficientsType>& localCoefficientsImp_;
     const LocalInterpolationVirtualImp<typename Imp::Traits::LocalBasisType::Traits::DomainType,
         typename Imp::Traits::LocalBasisType::Traits::RangeType,

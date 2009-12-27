@@ -56,37 +56,28 @@ namespace Dune
     C0LocalBasisVirtualImp( const Imp &imp )
       : impl_(imp) {}
 
-    //! constructor taking a Dune::LocalFiniteElementInterface implementation
-    //! the local basis is taken from the finite element
-    template <class FET,class FEImpl>
-    C0LocalBasisVirtualImp( const LocalFiniteElementInterface<FET, FEImpl> &fe )
-      : impl_(fe.localBasis()) {}
-
     //! @copydoc C0LocalBasisInterface::size
     unsigned int size () const
     {
-      return impl().size();
+      return impl_.size();
     }
 
     //! @copydoc C0LocalBasisInterface::order
     unsigned int order () const
     {
-      return impl().order();
+      return impl_.order();
     }
 
     //! @copydoc C0LocalBasisInterface::evaluateFunction
     inline void evaluateFunction (const typename Traits::DomainType& in,
                                   std::vector<typename Traits::RangeType>& out) const
     {
-      impl().evaluateFunction(in,out);
+      impl_.evaluateFunction(in,out);
     }
 
   protected:
     const Imp impl_;
 
-  private:
-    typedef C0LocalBasisInterface<T,Imp> Interface;
-    const Interface& impl () const {return impl_;}
   };
 
   /**
@@ -130,13 +121,6 @@ namespace Dune
       : Base(imp)
     {}
 
-    //! constructor taking a Dune::LocalFiniteElementInterface implementation
-    //! the local basis is taken from the finite element
-    template <class FET,class FEImpl>
-    C1LocalBasisVirtualImp( const LocalFiniteElementInterface<FET, FEImpl> &fe )
-      : Base(fe.localBasis())
-    {}
-
     typedef T Traits;
     using Base::size;
     using Base::order;
@@ -146,15 +130,12 @@ namespace Dune
     inline void evaluateJacobian(const typename Traits::DomainType& in,         // position
                                  std::vector<typename Traits::JacobianType>& out) const      // return value
     {
-      impl().evaluateJacobian(in,out);
+      impl_.evaluateJacobian(in,out);
     }
 
   protected:
     using Base::impl_;
 
-  private:
-    typedef C1LocalBasisInterface<T,Imp> Interface;
-    const Interface& impl () const {return impl_;}
   };
 
 
@@ -226,27 +207,18 @@ namespace Dune
     LocalInterpolationVirtualImp( const Imp &imp)
       : impl_(imp) {}
 
-    //! constructor taking a Dune::LocalFiniteElementInterface implementation
-    //! the local interpolation is taken from the finite element
-    template <class FET,class FEImpl>
-    LocalInterpolationVirtualImp( const LocalFiniteElementInterface<FET, FEImpl> &fe )
-      : impl_(fe.localInterpolation()) {}
-
     typedef typename Base::FunctionType FunctionType;
 
     typedef typename Base::CoefficientType CoefficientType;
 
     virtual void interpolate (const FunctionType& f, std::vector<CoefficientType>& out) const
     {
-      impl().interpolate(f,out);
+      impl_.interpolate(f,out);
     }
 
   protected:
     const Imp impl_;
 
-  private:
-    typedef LocalInterpolationInterface<Imp> Interface;
-    const Interface& impl () const {return impl_;}
   };
 
 
@@ -286,12 +258,6 @@ namespace Dune
     //! constructor taking a Dune::LocalCoefficientsInterface implementation
     LocalCoefficientsVirtualImp( const Imp &imp )
       : impl_(imp) {}
-
-    //! constructor taking a Dune::LocalFiniteElementInterface implementation
-    //! the local coefficients is taken from the finite element
-    template <class FET,class FEImpl>
-    LocalCoefficientsVirtualImp( const LocalFiniteElementInterface<FET, FEImpl> &fe )
-      : impl_(fe.localCoefficients()) {}
 
     //! @copydoc LocalCoefficientsInterface::size
     std::size_t size () const

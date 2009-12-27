@@ -26,8 +26,6 @@ struct MagicLocalFiniteElementTraits
 {
   typedef C0LocalBasisVirtualInterface<C0Traits> LocalBasisType;
 
-  typedef LocalCoefficientsVirtualInterface LocalCoefficientsType;
-
   typedef LocalInterpolationVirtualInterface<FieldVector<D,dim>,FieldVector<R,1> > LocalInterpolationType;
 };
 

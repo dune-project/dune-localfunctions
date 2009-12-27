@@ -336,7 +336,7 @@ namespace Dune
     }
 
     //! @copydoc LocalFiniteElementInterface::localCoefficients
-    const typename T::LocalCoefficientsType& localCoefficients () const
+    const LocalCoefficientsVirtualInterface& localCoefficients () const
     {
       return impl_.localCoefficients();
     }

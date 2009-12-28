@@ -319,6 +319,9 @@ namespace Dune
   class LocalFiniteElementVirtualImp
     : public LocalFiniteElementVirtualInterface<typename Imp::Traits::LocalBasisType::Traits>
   {
+    /** \brief The traits class of the local basis implementation.  Typedef'ed her for legibility */
+    typedef typename Imp::Traits::LocalBasisType::Traits LocalBasisTraits;
+
   public:
     //typedef T Traits;
 
@@ -335,7 +338,7 @@ namespace Dune
     {}
 
     //! @copydoc LocalFiniteElementInterface::localBasis
-    const C0LocalBasisVirtualInterface<typename Imp::Traits::LocalBasisType::Traits>& localBasis () const
+    const C0LocalBasisVirtualInterface<LocalBasisTraits>& localBasis () const
     {
       return localBasisImp_;
     }
@@ -347,8 +350,8 @@ namespace Dune
     }
 
     //! @copydoc LocalFiniteElementInterface::localInterpolation
-    const LocalInterpolationVirtualInterface<typename Imp::Traits::LocalBasisType::Traits::DomainType,
-        typename Imp::Traits::LocalBasisType::Traits::RangeType>& localInterpolation () const
+    const LocalInterpolationVirtualInterface<typename LocalBasisTraits::DomainType,
+        typename LocalBasisTraits::RangeType>& localInterpolation () const
     {
       return localInterpolationImp_;
     }
@@ -362,10 +365,10 @@ namespace Dune
   protected:
     const Imp impl_;
 
-    const C1LocalBasisVirtualImp<typename Imp::Traits::LocalBasisType::Traits, typename Imp::Traits::LocalBasisType>& localBasisImp_;
+    const C1LocalBasisVirtualImp<LocalBasisTraits, typename Imp::Traits::LocalBasisType>& localBasisImp_;
     const LocalCoefficientsVirtualImp<typename Imp::Traits::LocalCoefficientsType>& localCoefficientsImp_;
-    const LocalInterpolationVirtualImp<typename Imp::Traits::LocalBasisType::Traits::DomainType,
-        typename Imp::Traits::LocalBasisType::Traits::RangeType,
+    const LocalInterpolationVirtualImp<typename LocalBasisTraits::DomainType,
+        typename LocalBasisTraits::RangeType,
         typename Imp::Traits::LocalInterpolationType>& localInterpolationImp_;
 
 

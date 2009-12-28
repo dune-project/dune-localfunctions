@@ -287,21 +287,21 @@ namespace Dune
    * This class defines the same interface as the LocalFiniteElementInterface
    * class but using pure virtual methods
    **/
-  template<class T>
+  template<class LocalBasisTraits>
   class LocalFiniteElementVirtualInterface
   {
   public:
-    typedef T Traits;
+    //typedef T Traits;
 
     //! @copydoc LocalFiniteElementInterface::localBasis
-    virtual const typename T::LocalBasisType& localBasis () const = 0;
+    virtual const C0LocalBasisVirtualInterface<LocalBasisTraits>& localBasis () const = 0;
 
     //! @copydoc LocalFiniteElementInterface::localCoefficients
     virtual const LocalCoefficientsVirtualInterface& localCoefficients () const = 0;
 
     //! @copydoc LocalFiniteElementInterface::localInterpolation
-    virtual const LocalInterpolationVirtualInterface<typename T::LocalBasisType::Traits::DomainType,
-        typename T::LocalBasisType::Traits::RangeType>& localInterpolation () const = 0;
+    virtual const LocalInterpolationVirtualInterface<typename LocalBasisTraits::DomainType,
+        typename LocalBasisTraits::RangeType>& localInterpolation () const = 0;
 
     //! @copydoc LocalFiniteElementInterface::type
     virtual const GeometryType type () const = 0;
@@ -313,15 +313,14 @@ namespace Dune
    * @brief class for wrapping a local finite element
    *        using the virtual interface
    *
-   * @tparam T traits class for the local finite element
    * @tparam Imp LocalFiniteElementInterface implementation
    **/
-  template<class T, class Imp>
+  template<class Imp>
   class LocalFiniteElementVirtualImp
-    : public LocalFiniteElementVirtualInterface<T>
+    : public LocalFiniteElementVirtualInterface<typename Imp::Traits::LocalBasisType::Traits>
   {
   public:
-    typedef T Traits;
+    //typedef T Traits;
 
     //! @copydoc constructor taking a LocalFiniteElementInterface implementation
     LocalFiniteElementVirtualImp( const Imp &imp )
@@ -336,7 +335,7 @@ namespace Dune
     {}
 
     //! @copydoc LocalFiniteElementInterface::localBasis
-    const typename T::LocalBasisType& localBasis () const
+    const C0LocalBasisVirtualInterface<typename Imp::Traits::LocalBasisType::Traits>& localBasis () const
     {
       return localBasisImp_;
     }
@@ -348,8 +347,8 @@ namespace Dune
     }
 
     //! @copydoc LocalFiniteElementInterface::localInterpolation
-    const LocalInterpolationVirtualInterface<typename T::LocalBasisType::Traits::DomainType,
-        typename T::LocalBasisType::Traits::RangeType>& localInterpolation () const
+    const LocalInterpolationVirtualInterface<typename Imp::Traits::LocalBasisType::Traits::DomainType,
+        typename Imp::Traits::LocalBasisType::Traits::RangeType>& localInterpolation () const
     {
       return localInterpolationImp_;
     }

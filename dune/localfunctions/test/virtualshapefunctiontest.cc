@@ -15,27 +15,11 @@
 
 using namespace Dune;
 
-const int dim = 2;
-
-typedef double D;
-typedef double R;
-
-//typedef C0LocalBasisTraits<D,dim,FieldVector<D,dim>,R,1,FieldVector<R,1> > C0Traits;
-typedef C1LocalBasisTraits<D,2,FieldVector<D,2>,R,1,FieldVector<R,1>,
-                           FieldVector<FieldVector<R,2>,1> > C1Traits;
-
-struct MagicLocalFiniteElementTraits
-{
-  typedef C1LocalBasisVirtualInterface<C1Traits> LocalBasisType;
-
-};
-
 
 int main (int argc, char *argv[]) try
 {
 
-  const Dune::LocalFiniteElementVirtualImp<MagicLocalFiniteElementTraits,
-      Dune::P1LocalFiniteElement<D, R, dim> > virtualLocalSimplexFE_;
+  const Dune::LocalFiniteElementVirtualImp<Dune::P1LocalFiniteElement<double, double, 2> > virtualLocalSimplexFE_;
 
   return 0;
 

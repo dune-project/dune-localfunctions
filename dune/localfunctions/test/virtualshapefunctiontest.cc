@@ -11,9 +11,41 @@
 
 /** \file
     \brief Test the dynamically polymorphic shape function interface
+
+    This file mainly tests whether the polymorphic interface can be properly
+    instantiated, compiled and run without crashed.  It does _not_ test whether
+    the shape function sets behave correctly.
  */
 
 using namespace Dune;
+
+template <class LocalBasisTraits>
+void testLocalBasis(const C0LocalBasisVirtualInterface<LocalBasisTraits>* localBasis)
+{
+  // call each method once to test that it's there
+  unsigned int size = localBasis->size();
+  unsigned int order = localBasis->order();
+
+  // evaluate the local basis at (0,...,0)
+  typename LocalBasisTraits::DomainType in(0);
+  std::vector<typename LocalBasisTraits::RangeType> out;
+  localBasis->evaluateFunction(in, out);
+  assert(out.size() == size);
+
+  // test whether this local basis has a Jacobian and evaluate it if possible
+  /** \todo This dynamic testing is Augenwischerei.  If localBasis was not actually
+      derived from C1LocalBasisVirtualInterface then LocalBasisTraits would not
+      contain a JacobianType and the whole thing wouldn't compile...
+   */
+  if (dynamic_cast<const C1LocalBasisVirtualInterface<LocalBasisTraits>*>(localBasis)) {
+
+    std::vector<typename LocalBasisTraits::JacobianType> jacobianOut;
+    dynamic_cast<const C1LocalBasisVirtualInterface<LocalBasisTraits>*>(localBasis)->evaluateJacobian(in, jacobianOut);
+    assert(jacobianOut.size() == size);
+
+  }
+
+}
 
 void testLocalCoefficients(const LocalCoefficientsVirtualInterface* localCoefficients)
 {
@@ -42,6 +74,7 @@ void testLocalFiniteElement(const LocalFiniteElementVirtualInterface<LocalBasisT
   std::cout << "Testing local finite element for a " << localFiniteElement->type() << "." << std::endl;
 
   // Test the local basis
+  testLocalBasis(&localFiniteElement->localBasis());
 
   // Test the local coefficients
   testLocalCoefficients(&localFiniteElement->localCoefficients());

@@ -306,7 +306,11 @@ namespace Dune
 
     //! @copydoc constructor taking a LocalFiniteElementInterface implementation
     LocalFiniteElementVirtualImp( const Imp &imp )
-      : impl_(imp) {}
+      : impl_(imp),
+        localBasisImp_(impl_.localBasis()),
+        localCoefficientsImp_(impl_.localCoefficients()),
+        localInterpolationImp_(impl_.localInterpolation())
+    {}
 
     //! Default constructor.  Assumes that the implementation class is default constructible as well.
     LocalFiniteElementVirtualImp()
@@ -345,11 +349,11 @@ namespace Dune
     const Imp impl_;
 
     /** \todo This needs to automatically change to C0LocalBasisBla... to work with C0 shape functions */
-    const C1LocalBasisVirtualImp<LocalBasisTraits, typename Imp::Traits::LocalBasisType>& localBasisImp_;
-    const LocalCoefficientsVirtualImp<typename Imp::Traits::LocalCoefficientsType>& localCoefficientsImp_;
+    const C1LocalBasisVirtualImp<LocalBasisTraits, typename Imp::Traits::LocalBasisType> localBasisImp_;
+    const LocalCoefficientsVirtualImp<typename Imp::Traits::LocalCoefficientsType> localCoefficientsImp_;
     const LocalInterpolationVirtualImp<typename LocalBasisTraits::DomainType,
         typename LocalBasisTraits::RangeType,
-        typename Imp::Traits::LocalInterpolationType>& localInterpolationImp_;
+        typename Imp::Traits::LocalInterpolationType> localInterpolationImp_;
 
 
   };

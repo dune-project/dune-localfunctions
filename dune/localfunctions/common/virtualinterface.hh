@@ -163,6 +163,12 @@ namespace Dune
     //! this is the pure virtual method taking a VirtualFunction
     virtual void interpolate (const FunctionType& f, std::vector<CoefficientType>& out) const = 0;
 
+    // I comment out the following static wrapper for the time being.  Together with
+    // the method above name resolution becomes ambiguous and code that is supposed
+    // to use the virtual interface doesn't compile (try this with virtualshapefunctiontest
+    // for a beauuuutiful compiler error).  Do we really need this code?  If so, we have
+    // to find a smarter solution.
+#if 0
     //! @copydoc LocalInterpolationInterface::interpolate
     //! this uses the pure virtual method by wrapping the template argument into a VirtualFunction
     template<typename F>
@@ -184,6 +190,8 @@ namespace Dune
       }
       const F &f_;
     };
+#endif
+
   };
 
 

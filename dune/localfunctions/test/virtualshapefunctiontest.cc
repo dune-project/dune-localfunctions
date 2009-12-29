@@ -19,6 +19,18 @@
 
 using namespace Dune;
 
+// A test function to test the local interpolation
+template <class DomainType, class RangeType>
+struct TestFunction
+  : public VirtualFunction<DomainType,RangeType>
+{
+  void evaluate(const DomainType& in, RangeType& out) const {
+    // May not be flexible enough to compile for all range types
+    out = 1;
+  }
+};
+
+
 template <class LocalBasisTraits>
 void testLocalBasis(const C0LocalBasisVirtualInterface<LocalBasisTraits>* localBasis)
 {
@@ -66,6 +78,15 @@ void testLocalCoefficients(const LocalCoefficientsVirtualInterface* localCoeffic
   }
 }
 
+template <class DomainType, class RangeType>
+void testLocalInterpolation(const LocalInterpolationVirtualInterface<DomainType,RangeType>* localInterpolation)
+{
+  // Test interpolation of a function object derived from VirtualFunction
+  TestFunction<DomainType,RangeType> testFunction;
+  std::vector<typename RangeType::field_type> coefficients;
+  localInterpolation->interpolate(testFunction, coefficients);
+}
+
 // Test all methods of a local finite element given as a pointer to the abstract base class
 template <class LocalBasisTraits>
 void testLocalFiniteElement(const LocalFiniteElementVirtualInterface<LocalBasisTraits>* localFiniteElement)
@@ -80,6 +101,8 @@ void testLocalFiniteElement(const LocalFiniteElementVirtualInterface<LocalBasisT
   testLocalCoefficients(&localFiniteElement->localCoefficients());
 
   // Test the interpolation
+  testLocalInterpolation(&localFiniteElement->localInterpolation());
+
 }
 
 

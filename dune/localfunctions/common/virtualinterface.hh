@@ -270,7 +270,12 @@ namespace Dune
   class LocalFiniteElementVirtualInterface
   {
   public:
-    //typedef T Traits;
+    typedef LocalFiniteElementTraits<
+        C0LocalBasisVirtualInterface<LocalBasisTraits>,
+        LocalCoefficientsVirtualInterface,
+        LocalInterpolationVirtualInterface<
+            typename LocalBasisTraits::DomainType,
+            typename LocalBasisTraits::RangeType> > Traits;
 
     //! @copydoc LocalFiniteElementInterface::localBasis
     virtual const C0LocalBasisVirtualInterface<LocalBasisTraits>& localBasis () const = 0;
@@ -284,6 +289,8 @@ namespace Dune
 
     //! @copydoc LocalFiniteElementInterface::type
     virtual const GeometryType type () const = 0;
+
+    virtual LocalFiniteElementVirtualInterface* clone() const = 0;
 
   };
 
@@ -343,6 +350,11 @@ namespace Dune
     const GeometryType type () const
     {
       return impl_.type();
+    }
+
+    virtual LocalFiniteElementVirtualImp* clone() const
+    {
+      return new LocalFiniteElementVirtualImp(*this);
     }
 
   protected:

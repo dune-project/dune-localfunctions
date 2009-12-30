@@ -95,13 +95,16 @@ void testLocalFiniteElement(const LocalFiniteElementVirtualInterface<LocalBasisT
   std::cout << "Testing local finite element for a " << localFiniteElement->type() << "." << std::endl;
 
   // Test the local basis
-  testLocalBasis(&localFiniteElement->localBasis());
+  const typename LocalFiniteElementVirtualInterface<LocalBasisTraits>::Traits::LocalBasisType& basis = localFiniteElement->localBasis();
+  testLocalBasis(&basis);
 
   // Test the local coefficients
-  testLocalCoefficients(&localFiniteElement->localCoefficients());
+  const typename LocalFiniteElementVirtualInterface<LocalBasisTraits>::Traits::LocalCoefficientsType& coeffs = localFiniteElement->localCoefficients();
+  testLocalCoefficients(&coeffs);
 
   // Test the interpolation
-  testLocalInterpolation(&localFiniteElement->localInterpolation());
+  const typename LocalFiniteElementVirtualInterface<LocalBasisTraits>::Traits::LocalInterpolationType& interp = localFiniteElement->localInterpolation();
+  testLocalInterpolation(&interp);
 
 }
 

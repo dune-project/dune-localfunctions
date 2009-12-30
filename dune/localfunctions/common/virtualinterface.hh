@@ -80,6 +80,7 @@ namespace Dune
 
   };
 
+
   /**
    * @brief virtual base class for a C1 local basis
    *
@@ -102,6 +103,8 @@ namespace Dune
     virtual void evaluateJacobian(const typename Traits::DomainType& in,         // position
                                   std::vector<typename Traits::JacobianType>& out) const = 0;
   };
+
+
   /**
    * @brief class for wrapping a C1 basis using the virtual interface
    *
@@ -110,8 +113,8 @@ namespace Dune
    **/
   template<class T , class Imp>
   class C1LocalBasisVirtualImp
-    : public virtual C1LocalBasisVirtualInterface<T>
-      , public virtual C0LocalBasisVirtualImp<T,Imp>
+    : public virtual C1LocalBasisVirtualInterface<T>,
+      public virtual C0LocalBasisVirtualImp<T,Imp>
   {
     typedef C0LocalBasisVirtualImp<T,Imp> Base;
 
@@ -237,7 +240,8 @@ namespace Dune
 
     //! constructor taking a Dune::LocalCoefficientsInterface implementation
     LocalCoefficientsVirtualImp( const Imp &imp )
-      : impl_(imp) {}
+      : impl_(imp)
+    {}
 
     //! @copydoc LocalCoefficientsInterface::size
     std::size_t size () const
@@ -270,6 +274,7 @@ namespace Dune
   class LocalFiniteElementVirtualInterface
   {
   public:
+
     typedef LocalFiniteElementTraits<
         C0LocalBasisVirtualInterface<LocalBasisTraits>,
         LocalCoefficientsVirtualInterface,
@@ -366,8 +371,6 @@ namespace Dune
     const LocalInterpolationVirtualImp<typename LocalBasisTraits::DomainType,
         typename LocalBasisTraits::RangeType,
         typename Imp::Traits::LocalInterpolationType> localInterpolationImp_;
-
-
   };
 }
 #endif

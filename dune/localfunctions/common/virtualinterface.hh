@@ -265,13 +265,13 @@ namespace Dune
   // Finite Element
   // -----------------------------------------------------------------
   /**
-   * @brief virtual base class for local finite elements
+   * @brief virtual base class for local finite elements with C0 functions
    *
    * This class defines the same interface as the LocalFiniteElementInterface
    * class but using pure virtual methods
    **/
   template<class LocalBasisTraits>
-  class LocalFiniteElementVirtualInterface
+  class C0LocalFiniteElementVirtualInterface
   {
   public:
 
@@ -295,29 +295,59 @@ namespace Dune
     //! @copydoc LocalFiniteElementInterface::type
     virtual const GeometryType type () const = 0;
 
-    virtual LocalFiniteElementVirtualInterface* clone() const = 0;
+    virtual C0LocalFiniteElementVirtualInterface* clone() const = 0;
 
   };
 
 
   /**
-   * @brief class for wrapping a local finite element
+   * @brief virtual base class for local finite elements with C1 functions
+   *
+   * This class defines the same interface as the LocalFiniteElementInterface
+   * class but using pure virtual methods
+   **/
+  template<class LocalBasisTraits>
+  class C1LocalFiniteElementVirtualInterface
+    : public virtual C0LocalFiniteElementVirtualInterface<LocalBasisTraits>
+  {
+    typedef C0LocalFiniteElementVirtualInterface<LocalBasisTraits> Base;
+
+  public:
+    typedef LocalFiniteElementTraits<
+        C1LocalBasisVirtualInterface<LocalBasisTraits>,
+        LocalCoefficientsVirtualInterface,
+        LocalInterpolationVirtualInterface<
+            typename LocalBasisTraits::DomainType,
+            typename LocalBasisTraits::RangeType> > Traits;
+
+    //! @copydoc C1LocalFiniteElementInterface::localBasis
+    virtual const C1LocalBasisVirtualInterface<LocalBasisTraits>& localBasis () const = 0;
+
+    using Base::localCoefficients;
+    using Base::localInterpolation;
+    using Base::type;
+
+    virtual C1LocalFiniteElementVirtualInterface* clone() const = 0;
+  };
+
+
+  /**
+   * @brief class for wrapping a local finite element with C0 basis functions
    *        using the virtual interface
    *
-   * @tparam Imp LocalFiniteElementInterface implementation
+   * @tparam Imp C0LocalFiniteElementInterface implementation
    **/
   template<class Imp>
-  class LocalFiniteElementVirtualImp
-    : public LocalFiniteElementVirtualInterface<typename Imp::Traits::LocalBasisType::Traits>
+  class C0LocalFiniteElementVirtualImp
+    : public virtual C0LocalFiniteElementVirtualInterface<typename Imp::Traits::LocalBasisType::Traits>
   {
     /** \brief The traits class of the local basis implementation.  Typedef'ed her for legibility */
     typedef typename Imp::Traits::LocalBasisType::Traits LocalBasisTraits;
 
   public:
-    //typedef T Traits;
 
     //! @copydoc constructor taking a LocalFiniteElementInterface implementation
-    LocalFiniteElementVirtualImp( const Imp &imp )
+    C0LocalFiniteElementVirtualImp( const Imp &imp )
       : impl_(imp),
         localBasisImp_(impl_.localBasis()),
         localCoefficientsImp_(impl_.localCoefficients()),
@@ -325,7 +355,7 @@ namespace Dune
     {}
 
     //! Default constructor.  Assumes that the implementation class is default constructible as well.
-    LocalFiniteElementVirtualImp()
+    C0LocalFiniteElementVirtualImp()
       : impl_(),
         localBasisImp_(impl_.localBasis()),
         localCoefficientsImp_(impl_.localCoefficients()),
@@ -357,20 +387,72 @@ namespace Dune
       return impl_.type();
     }
 
-    virtual LocalFiniteElementVirtualImp* clone() const
+    virtual C0LocalFiniteElementVirtualImp* clone() const
     {
-      return new LocalFiniteElementVirtualImp(*this);
+      return new C0LocalFiniteElementVirtualImp(*this);
     }
 
   protected:
     const Imp impl_;
 
     /** \todo This needs to automatically change to C0LocalBasisBla... to work with C0 shape functions */
-    const C1LocalBasisVirtualImp<LocalBasisTraits, typename Imp::Traits::LocalBasisType> localBasisImp_;
+    const C0LocalBasisVirtualImp<LocalBasisTraits, typename Imp::Traits::LocalBasisType> localBasisImp_;
     const LocalCoefficientsVirtualImp<typename Imp::Traits::LocalCoefficientsType> localCoefficientsImp_;
     const LocalInterpolationVirtualImp<typename LocalBasisTraits::DomainType,
         typename LocalBasisTraits::RangeType,
         typename Imp::Traits::LocalInterpolationType> localInterpolationImp_;
+  };
+
+
+  /**
+   * @brief class for wrapping a local finite element with C1 basis functions
+   *        using the virtual interface
+   *
+   * @tparam Imp C1LocalFiniteElementInterface implementation
+   **/
+  template<class Imp>
+  class C1LocalFiniteElementVirtualImp
+    : public virtual C1LocalFiniteElementVirtualInterface<typename Imp::Traits::LocalBasisType::Traits>,
+      public virtual C0LocalFiniteElementVirtualImp<Imp>
+  {
+    /** \brief The traits class of the local basis implementation.  Typedef'ed her for legibility */
+    typedef typename Imp::Traits::LocalBasisType::Traits LocalBasisTraits;
+    typedef C0LocalFiniteElementVirtualImp<Imp> Base;
+
+  public:
+
+    //! @copydoc constructor taking a LocalFiniteElementInterface implementation
+    C1LocalFiniteElementVirtualImp( const Imp &imp )
+      : Base(imp),
+        localBasisImp_(impl_.localBasis())
+    {}
+
+    //! Default constructor.  Assumes that the implementation class is default constructible as well.
+    C1LocalFiniteElementVirtualImp()
+      : Base(),
+        localBasisImp_(impl_.localBasis())
+    {}
+
+    //! @copydoc LocalFiniteElementInterface::localBasis
+    const C1LocalBasisVirtualInterface<LocalBasisTraits>& localBasis () const
+    {
+      return localBasisImp_;
+    }
+
+    using Base::localCoefficients;
+    using Base::localInterpolation;
+    using Base::type;
+
+    virtual C1LocalFiniteElementVirtualImp* clone() const
+    {
+      return new C1LocalFiniteElementVirtualImp(*this);
+    }
+
+  protected:
+    using Base::impl_;
+
+    /** \todo This needs to automatically change to C0LocalBasisBla... to work with C0 shape functions */
+    const C1LocalBasisVirtualImp<LocalBasisTraits, typename Imp::Traits::LocalBasisType> localBasisImp_;
   };
 }
 #endif

@@ -32,7 +32,7 @@ struct TestFunction
 
 
 template <class LocalBasisTraits>
-void testLocalBasis(const C0LocalBasisVirtualInterface<LocalBasisTraits>* localBasis)
+void testC0LocalBasis(const C0LocalBasisVirtualInterface<LocalBasisTraits>* localBasis)
 {
   // call each method once to test that it's there
   unsigned int size = localBasis->size();
@@ -49,14 +49,22 @@ void testLocalBasis(const C0LocalBasisVirtualInterface<LocalBasisTraits>* localB
       derived from C1LocalBasisVirtualInterface then LocalBasisTraits would not
       contain a JacobianType and the whole thing wouldn't compile...
    */
-  if (dynamic_cast<const C1LocalBasisVirtualInterface<LocalBasisTraits>*>(localBasis)) {
+  if (dynamic_cast<const C1LocalBasisVirtualInterface<LocalBasisTraits>*>(localBasis))
+    testC1LocalBasis(dynamic_cast<const C1LocalBasisVirtualInterface<LocalBasisTraits>*>(localBasis));
+}
 
-    std::vector<typename LocalBasisTraits::JacobianType> jacobianOut;
-    dynamic_cast<const C1LocalBasisVirtualInterface<LocalBasisTraits>*>(localBasis)->evaluateJacobian(in, jacobianOut);
-    assert(jacobianOut.size() == size);
-
-  }
-
+template <class LocalBasisTraits>
+void testC1LocalBasis(const C1LocalBasisVirtualInterface<LocalBasisTraits>* localBasis)
+{
+  // evaluate Jacobian at (0,...,0)
+  /** \todo This dynamic testing is Augenwischerei.  If localBasis was not actually
+      derived from C1LocalBasisVirtualInterface then LocalBasisTraits would not
+      contain a JacobianType and the whole thing wouldn't compile...
+   */
+  typename LocalBasisTraits::DomainType in(0);
+  std::vector<typename LocalBasisTraits::JacobianType> jacobianOut;
+  localBasis->evaluateJacobian(in, jacobianOut);
+  assert(jacobianOut.size() == localBasis->size());
 }
 
 void testLocalCoefficients(const LocalCoefficientsVirtualInterface* localCoefficients)
@@ -89,21 +97,24 @@ void testLocalInterpolation(const LocalInterpolationVirtualInterface<DomainType,
 
 // Test all methods of a local finite element given as a pointer to the abstract base class
 template <class LocalBasisTraits>
-void testLocalFiniteElement(const LocalFiniteElementVirtualInterface<LocalBasisTraits>* localFiniteElement)
+void testLocalFiniteElement(const C1LocalFiniteElementVirtualInterface<LocalBasisTraits>* localFiniteElement)
 {
   // Test method type()
   std::cout << "Testing local finite element for a " << localFiniteElement->type() << "." << std::endl;
 
+  typedef C1LocalFiniteElementVirtualInterface<LocalBasisTraits> FEType;
+
   // Test the local basis
-  const typename LocalFiniteElementVirtualInterface<LocalBasisTraits>::Traits::LocalBasisType& basis = localFiniteElement->localBasis();
-  testLocalBasis(&basis);
+  const typename FEType::Traits::LocalBasisType& basis = localFiniteElement->localBasis();
+  testC0LocalBasis(&basis);
+  testC1LocalBasis(&basis);
 
   // Test the local coefficients
-  const typename LocalFiniteElementVirtualInterface<LocalBasisTraits>::Traits::LocalCoefficientsType& coeffs = localFiniteElement->localCoefficients();
+  const typename FEType::Traits::LocalCoefficientsType& coeffs = localFiniteElement->localCoefficients();
   testLocalCoefficients(&coeffs);
 
   // Test the interpolation
-  const typename LocalFiniteElementVirtualInterface<LocalBasisTraits>::Traits::LocalInterpolationType& interp = localFiniteElement->localInterpolation();
+  const typename FEType::Traits::LocalInterpolationType& interp = localFiniteElement->localInterpolation();
   testLocalInterpolation(&interp);
 
 }
@@ -112,7 +123,7 @@ void testLocalFiniteElement(const LocalFiniteElementVirtualInterface<LocalBasisT
 int main (int argc, char *argv[]) try
 {
 
-  const Dune::LocalFiniteElementVirtualImp<Dune::P1LocalFiniteElement<double, double, 2> > virtualLocalSimplexFE;
+  const Dune::C1LocalFiniteElementVirtualImp<Dune::P1LocalFiniteElement<double, double, 2> > virtualLocalSimplexFE;
 
   testLocalFiniteElement(&virtualLocalSimplexFE);
 

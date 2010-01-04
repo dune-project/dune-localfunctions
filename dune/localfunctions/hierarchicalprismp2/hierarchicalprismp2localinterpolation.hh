@@ -30,7 +30,6 @@ namespace Dune
 
       //First the  vertex dofs
       x[0] = 0.0;    x[1] = 0.0;     x[2] = 0.0;    f.evaluate(x, y);    out[0] = y;
-
       x[0] = 1.0;    x[1] = 0.0;     x[2] = 0.0;    f.evaluate(x, y);    out[1] = y;
       x[0] = 0.0;    x[1] = 1.0;     x[2] = 0.0;    f.evaluate(x, y);    out[2] = y;
       x[0] = 0.0;    x[1] = 0.0;     x[2] = 1.0;    f.evaluate(x, y);    out[3] = y;
@@ -69,13 +68,13 @@ namespace Dune
 
       //faces
       x[0] = 0.5;    x[1] = 0.0;     x[2] = 0.5;    f.evaluate(x, y);
-      out[15] = y - 0.5*(out[4] + out[1] + out[0] +  out[3] );
+      out[15] = y - 0.25*(out[4] + out[1] + out[0] +  out[3] );
 
       x[0] = 0.0;    x[1] = 0.5;     x[2] = 0.5;    f.evaluate(x, y);
-      out[16] = y - 0.5*(out[2] + out[0] + out[3] + out[5] );
+      out[16] = y - 0.25*(out[2] + out[0] + out[3] + out[5] );
 
       x[0] = 0.5;    x[1] = 0.5;     x[2] = 0.5;    f.evaluate(x, y);
-      out[17] = y - 0.5*(out[2] + out[1] + out[4] + out[5] );
+      out[17] = y - 0.25*(out[2] + out[1] + out[4] + out[5] );
 
     }
 

@@ -18,12 +18,6 @@ namespace Dune
   class HierarchicalP2WithElementBubbleLocalFiniteElement
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalFiniteElementInterface<D,R,dim>
-#else
-    : LocalFiniteElementInterface<
-          LocalFiniteElementTraits<HierarchicalSimplexP2WithElementBubbleLocalBasis<D,R,dim>,
-              HierarchicalSimplexP2WithElementBubbleLocalCoefficients<dim>,
-              HierarchicalSimplexP2WithElementBubbleLocalInterpolation<HierarchicalSimplexP2WithElementBubbleLocalBasis<D,R,dim> > >,
-          HierarchicalP2WithElementBubbleLocalFiniteElement<D,R,dim> >
 #endif
   {
 

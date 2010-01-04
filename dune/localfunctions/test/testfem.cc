@@ -313,9 +313,6 @@ int main(int argc, char** argv) try
   Dune::HierarchicalP2WithElementBubbleLocalFiniteElement<double,double,2> hierarchicalp2bubble2dlfem;
   success = testFE(hierarchicalp2bubble2dlfem) and success;
 
-  Dune::HierarchicalP2WithElementBubbleLocalFiniteElement<double,double,3> hierarchicalp2bubble3dlfem;
-  success = testFE(hierarchicalp2bubble3dlfem) and success;
-
   Dune::PrismP1LocalFiniteElement<double,double> prismp1fem;
   success = testFE(prismp1fem) and success;
 

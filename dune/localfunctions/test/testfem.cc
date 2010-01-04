@@ -23,6 +23,8 @@
 #include "../refinedp0.hh"
 #include "../p23d.hh"
 #include "../hierarchicalp2.hh"
+#include "../hierarchicalp2withelementbubble.hh"
+#include "../hierarchicalprismp2.hh"
 #include "../rannacher_turek2d.hh"
 
 #ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
@@ -296,11 +298,23 @@ int main(int argc, char** argv) try
   Dune::P23DLocalFiniteElement<double,double> p23dlfem;
   success = testFE(p23dlfem) and success;
 
+  //    Dune::HierarchicalP2LocalFiniteElement<double,double,1> hierarchicalp21dlfem;
+  //    success = testFE(hierarchicalp21dlfem) and success;
+
   Dune::HierarchicalP2LocalFiniteElement<double,double,2> hierarchicalp22dlfem;
   success = testFE(hierarchicalp22dlfem) and success;
 
   Dune::HierarchicalP2LocalFiniteElement<double,double,3> hierarchicalp23dlfem;
   success = testFE(hierarchicalp23dlfem) and success;
+
+  Dune::HierarchicalPrismP2LocalFiniteElement<double,double> hierarchicalprismp2lfem;
+  success = testFE(hierarchicalprismp2lfem) and success;
+
+  Dune::HierarchicalP2WithElementBubbleLocalFiniteElement<double,double,2> hierarchicalp2bubble2dlfem;
+  success = testFE(hierarchicalp2bubble2dlfem) and success;
+
+  Dune::HierarchicalP2WithElementBubbleLocalFiniteElement<double,double,3> hierarchicalp2bubble3dlfem;
+  success = testFE(hierarchicalp2bubble3dlfem) and success;
 
   Dune::PrismP1LocalFiniteElement<double,double> prismp1fem;
   success = testFE(prismp1fem) and success;
@@ -335,8 +349,6 @@ int main(int argc, char** argv) try
   Dune::RannacherTurek2DLocalFiniteElement<double,double> rannacher_turek2dfem;
   success = testFE(rannacher_turek2dfem) and success;
 
-  //    Dune::HierarchicalP2LocalFiniteElement<double,double,1> hierarchicalp21dlfem;
-  //    success = testFE(hierarchicalp21dlfem) and success;
 #endif
 
   std::cout << "Monomials are only tested up to order 2 due to the instability of interpolate()." << std::endl;

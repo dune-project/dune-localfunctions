@@ -22,12 +22,6 @@ namespace Dune
   class HierarchicalPrismP2LocalFiniteElement
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
     : public LocalFiniteElementInterface<D,R,3>
-#else
-    : LocalFiniteElementInterface<
-          LocalFiniteElementTraits<HierarchicalPrismP2LocalBasis<D,R>,
-              PrismP2LocalCoefficients,
-              HierarchicalPrismP2LocalInterpolation<HierarchicalPrismP2LocalBasis<D,R> > >,
-          HierarchicalPrismP2LocalFiniteElement<D,R> >
 #endif
   {
 

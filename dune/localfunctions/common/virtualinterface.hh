@@ -454,5 +454,33 @@ namespace Dune
     /** \todo This needs to automatically change to C0LocalBasisBla... to work with C0 shape functions */
     const C1LocalBasisVirtualImp<LocalBasisTraits, typename Imp::Traits::LocalBasisType> localBasisImp_;
   };
+
+
+  /**
+   * @brief Return a proper base class for functions to use with LocalInterpolation.
+   *
+   * @tparam FE A FiniteElement type
+   */
+  template<class FE>
+  class LocalFiniteElementFunctionBase
+  {
+    typedef typename FE::Traits::LocalBasisType::Traits::DomainType DomainType;
+    typedef typename FE::Traits::LocalBasisType::Traits::RangeType RangeType;
+
+    typedef VirtualFunction<DomainType, RangeType> VirtualFunctionBase;
+    typedef Function<const DomainType&, RangeType&> FunctionBase;
+
+    typedef LocalInterpolationVirtualInterface<DomainType, RangeType> Interface;
+    typedef typename FE::Traits::LocalInterpolationType Implementation;
+
+  public:
+
+    /** \brief Base class type for functions to use with LocalInterpolation
+     *
+     * This is the VirtualFunction interface class if FE implements the virtual
+     * interface and Function base class otherwise.
+     **/
+    typedef typename SelectType<IsBaseOf<Interface, Implementation>::value, VirtualFunctionBase, FunctionBase>::Type type;
+  };
 }
 #endif

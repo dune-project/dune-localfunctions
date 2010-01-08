@@ -61,14 +61,6 @@ public:
   typedef typename FE::Traits::LocalBasisType::Traits::RangeType RangeType;
   typedef typename Dune::Function<const DomainType&, RangeType&> Base;
 
-  // the base class exports the type but some FEs assume that
-  // it is encapsulated in a Traits class
-  struct Traits
-  {
-    typedef typename Base::RangeType RangeType;
-    typedef typename Base::DomainType DomainType;
-  };
-
   void evaluate (const DomainType& x, RangeType& y) const
   {
     DomainType c(0.5);
@@ -97,14 +89,6 @@ public:
   typedef typename FE::Traits::LocalBasisType::Traits::DomainType DomainType;
   typedef typename FE::Traits::LocalBasisType::Traits::RangeType RangeType;
   typedef typename Dune::Function<const DomainType&, RangeType&> Base;
-
-  // the base class exports the type but some FEs assume that
-  // it is encapsulated in a Traits class
-  struct Traits
-  {
-    typedef typename Base::RangeType RangeType;
-    typedef typename Base::DomainType DomainType;
-  };
 
   typedef typename FE::Traits::LocalBasisType::Traits::RangeFieldType CT;
 

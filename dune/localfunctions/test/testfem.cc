@@ -5,6 +5,7 @@
 #endif
 
 //#define DUNE_VIRTUAL_SHAPEFUNCTIONS 1
+//#undef DUNE_VIRTUAL_SHAPEFUNCTIONS
 
 #include <cstddef>
 #include <iostream>
@@ -41,15 +42,14 @@
 #include "../edges03d.hh"
 #endif
 
+#include <dune/localfunctions/common/virtualinterface.hh>
 
 double TOL = 1e-10;
 
 template<class FE>
 class Func :
 #ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-  public Dune::Function<
-      const typename FE::Traits::LocalBasisType::Traits::DomainType&,
-      typename FE::Traits::LocalBasisType::Traits::RangeType&>
+  public Dune::LocalFiniteElementFunctionBase<FE>::type
 #else
   public Dune::VirtualFunction<
       typename FE::Traits::LocalBasisType::Traits::DomainType,
@@ -86,9 +86,7 @@ public:
 template<class FE>
 class LocalFEFunction :
 #ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-  public Dune::Function<
-      const typename FE::Traits::LocalBasisType::Traits::DomainType&,
-      typename FE::Traits::LocalBasisType::Traits::RangeType&>
+  public Dune::LocalFiniteElementFunctionBase<FE>::type
 #else
   public Dune::VirtualFunction<
       typename FE::Traits::LocalBasisType::Traits::DomainType,
@@ -201,15 +199,25 @@ bool testFE(const FE& fe)
 
   fe.localInterpolation().interpolate(Func<FE>(),c);
 
+  bool success = true;
 #ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-  return testLocalInterpolation<FE>(fe);
+  success = testLocalInterpolation<FE>(fe) and success;
+
+  typedef typename FE::Traits::LocalBasisType::Traits LBTraits;
+  typedef typename Dune::C0LocalBasisTraitsFromOther<LBTraits>::Traits C0LBTraits;
+  typedef typename Dune::C0LocalFiniteElementVirtualInterface<C0LBTraits> VirtualFEInterface;
+  typedef typename Dune::C0LocalFiniteElementVirtualImp<FE> VirtualFEImp;
+
+  const VirtualFEImp virtualFE(fe);
+  success = testLocalInterpolation<VirtualFEInterface>(virtualFE) and success;
 #else
   typedef typename FE::Traits::LocalBasisType::Traits::DomainFieldType DT;
   typedef typename FE::Traits::LocalBasisType::Traits::RangeFieldType RT;
   const int dim = FE::Traits::LocalBasisType::Traits::dimDomain;
   typedef Dune::LocalFiniteElementInterface<DT, RT, dim> FEBase;
-  return testLocalInterpolation<FEBase>(fe);
+  success = testLocalInterpolation<FEBase>(fe) and success;
 #endif
+  return success;
 }
 
 

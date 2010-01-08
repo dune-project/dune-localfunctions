@@ -43,14 +43,6 @@ void testC0LocalBasis(const C0LocalBasisVirtualInterface<LocalBasisTraits>* loca
   std::vector<typename LocalBasisTraits::RangeType> out;
   localBasis->evaluateFunction(in, out);
   assert(out.size() == size);
-
-  // test whether this local basis has a Jacobian and evaluate it if possible
-  /** \todo This dynamic testing is Augenwischerei.  If localBasis was not actually
-      derived from C1LocalBasisVirtualInterface then LocalBasisTraits would not
-      contain a JacobianType and the whole thing wouldn't compile...
-   */
-  if (dynamic_cast<const C1LocalBasisVirtualInterface<LocalBasisTraits>*>(localBasis))
-    testC1LocalBasis(dynamic_cast<const C1LocalBasisVirtualInterface<LocalBasisTraits>*>(localBasis));
 }
 
 template <class LocalBasisTraits>

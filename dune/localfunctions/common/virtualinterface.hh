@@ -12,6 +12,25 @@
 
 namespace Dune
 {
+
+  /**
+   * @brief Construct C0LocalBasisTraits from any other LocalBasisTraits
+   *
+   * @tparam T A LocalBasisTraits class
+   */
+  template<class T>
+  struct C0LocalBasisTraitsFromOther
+  {
+    //! The proper C0LocalBasisTraits for the given LocalBasisTraits T
+    typedef C0LocalBasisTraits<
+        typename T::DomainFieldType,
+        T::dimDomain,
+        typename T::DomainType,
+        typename T::RangeFieldType,
+        T::dimRange,
+        typename T::RangeType> Traits;
+  };
+
   // -----------------------------------------------------------------
   // Basis
   // -----------------------------------------------------------------
@@ -89,12 +108,12 @@ namespace Dune
    **/
   template<class T>
   class C1LocalBasisVirtualInterface
-    : public virtual C0LocalBasisVirtualInterface<T>
+    : public virtual C0LocalBasisVirtualInterface<typename C0LocalBasisTraitsFromOther<T>::Traits >
   {
   public:
 
     typedef T Traits;
-    typedef C0LocalBasisVirtualInterface<T> Base;
+    typedef C0LocalBasisVirtualInterface<typename C0LocalBasisTraitsFromOther<T>::Traits > Base;
     using Base::size;
     using Base::order;
     using Base::evaluateFunction;
@@ -114,9 +133,9 @@ namespace Dune
   template<class T , class Imp>
   class C1LocalBasisVirtualImp
     : public virtual C1LocalBasisVirtualInterface<T>,
-      public virtual C0LocalBasisVirtualImp<T,Imp>
+      public virtual C0LocalBasisVirtualImp<typename C0LocalBasisTraitsFromOther<T>::Traits,Imp>
   {
-    typedef C0LocalBasisVirtualImp<T,Imp> Base;
+    typedef C0LocalBasisVirtualImp<typename C0LocalBasisTraitsFromOther<T>::Traits,Imp> Base;
 
   public:
     //! constructor taking a Dune::C1LocalBasisInterface implementation
@@ -273,17 +292,18 @@ namespace Dune
   template<class LocalBasisTraits>
   class C0LocalFiniteElementVirtualInterface
   {
+    typedef typename C0LocalBasisTraitsFromOther<LocalBasisTraits>::Traits C0LBTraits;
   public:
 
     typedef LocalFiniteElementTraits<
-        C0LocalBasisVirtualInterface<LocalBasisTraits>,
+        C0LocalBasisVirtualInterface<C0LBTraits>,
         LocalCoefficientsVirtualInterface,
         LocalInterpolationVirtualInterface<
             typename LocalBasisTraits::DomainType,
             typename LocalBasisTraits::RangeType> > Traits;
 
     //! @copydoc LocalFiniteElementInterface::localBasis
-    virtual const C0LocalBasisVirtualInterface<LocalBasisTraits>& localBasis () const = 0;
+    virtual const C0LocalBasisVirtualInterface<C0LBTraits>& localBasis () const = 0;
 
     //! @copydoc LocalFiniteElementInterface::localCoefficients
     virtual const LocalCoefficientsVirtualInterface& localCoefficients () const = 0;
@@ -308,9 +328,9 @@ namespace Dune
    **/
   template<class LocalBasisTraits>
   class C1LocalFiniteElementVirtualInterface
-    : public virtual C0LocalFiniteElementVirtualInterface<LocalBasisTraits>
+    : public virtual C0LocalFiniteElementVirtualInterface<typename C0LocalBasisTraitsFromOther<LocalBasisTraits>::Traits >
   {
-    typedef C0LocalFiniteElementVirtualInterface<LocalBasisTraits> Base;
+    typedef C0LocalFiniteElementVirtualInterface<typename C0LocalBasisTraitsFromOther<LocalBasisTraits>::Traits> Base;
 
   public:
     typedef LocalFiniteElementTraits<
@@ -339,10 +359,10 @@ namespace Dune
    **/
   template<class Imp>
   class C0LocalFiniteElementVirtualImp
-    : public virtual C0LocalFiniteElementVirtualInterface<typename Imp::Traits::LocalBasisType::Traits>
+    : public virtual C0LocalFiniteElementVirtualInterface<typename C0LocalBasisTraitsFromOther<typename Imp::Traits::LocalBasisType::Traits>::Traits>
   {
     /** \brief The traits class of the local basis implementation.  Typedef'ed her for legibility */
-    typedef typename Imp::Traits::LocalBasisType::Traits LocalBasisTraits;
+    typedef typename C0LocalBasisTraitsFromOther<typename Imp::Traits::LocalBasisType::Traits>::Traits LocalBasisTraits;
 
   public:
 

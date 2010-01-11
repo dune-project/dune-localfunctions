@@ -65,6 +65,11 @@ namespace Dune
       return gt_;
     }
 
+    HierarchicalP2WithElementBubbleLocalFiniteElement* clone () const
+    {
+      return new HierarchicalP2WithElementBubbleLocalFiniteElement(*this);
+    }
+
   private:
     HierarchicalSimplexP2WithElementBubbleLocalBasis<D,R,dim> basis_;
 

@@ -345,7 +345,8 @@ namespace Dune
   template<class LB>
   class HierarchicalSimplexP2WithElementBubbleLocalInterpolation
 #ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public LocalInterpolationInterface
+  //    : public LocalInterpolationInterface
+    : public LocalInterpolationInterface<typename LB::Traits::DomainType, typename LB::Traits::RangeType>
 #endif
   {
   public:
@@ -387,6 +388,17 @@ namespace Dune
         out[6] -= out[i]*sfValues[i];
 
     }
+
+#if DUNE_VIRTUAL_SHAPEFUNCTIONS
+    typedef LocalInterpolationInterface<typename LB::Traits::DomainType, typename LB::Traits::RangeType> Base;
+
+    /** \brief Interpolate a function given as an abstract base class */
+    void interpolate(const typename Base::FunctionType& f, typename std::vector<typename Base::CoefficientType>& out) const
+    {
+      // Call the static implementation with a reference to the base class
+      interpolate<typename Base::FunctionType, typename Base::CoefficientType>(f, out);
+    }
+#endif
   };
 
 

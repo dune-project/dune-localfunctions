@@ -4,5 +4,6 @@ Makefile
 doxy-header.html
 doxygen.log
 Doxyfile
+Doxyfile.in
 html
 doxygen-tag

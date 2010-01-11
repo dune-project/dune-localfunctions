@@ -14,7 +14,7 @@ namespace Dune
   /**
    * @brief a dg space using lagrange basis functions
    *
-   * Simular to the Dune::LagrangeLocalFiniteElement class
+   * Similar to the Dune::LagrangeLocalFiniteElement class
    * but this class uses the Dune::DGLocalCoefficients factory
    * to build a discontinuous space from the lagrange basis functions.
    * The point set used to define the lagrange points is given

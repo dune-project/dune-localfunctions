@@ -155,10 +155,10 @@ bool testFE(const FE& fe)
   typedef typename Dune::C0LocalFiniteElementVirtualInterface<C0LBTraits> VirtualFEInterface;
   typedef typename Dune::C0LocalFiniteElementVirtualImp<FE> VirtualFEImp;
 
-  /*
-     const VirtualFEImp virtualFE(fe);
-     success = testLocalInterpolation<VirtualFEInterface>(virtualFE) and success;
-   */
+#if 0 // this does not work if FE returns virtual basis, interpolation, or coefficients
+  const VirtualFEImp virtualFE(fe);
+  success = testLocalInterpolation<VirtualFEInterface>(virtualFE) and success;
+#endif
 #else
   typedef typename FE::Traits::LocalBasisType::Traits::DomainFieldType DT;
   typedef typename FE::Traits::LocalBasisType::Traits::RangeFieldType RT;

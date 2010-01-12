@@ -22,6 +22,7 @@
 #include "../refinedp1.hh"
 #include "../refinedp0.hh"
 #include "../p23d.hh"
+#include "../pq22d.hh"
 #include "../hierarchicalp2.hh"
 #include "../hierarchicalp2withelementbubble.hh"
 #include "../hierarchicalprismp2.hh"
@@ -118,6 +119,10 @@ int main(int argc, char** argv) try
   Dune::Q1LocalFiniteElement<double,double,3> q13dlfem;
   success = testFE(q13dlfem) and success;
 
+  Dune::PQ22DLocalFiniteElement<double,double> pq22dlfem(
+    Dune::GeometryType( Dune::GeometryType::simplex,2) );
+  success = testFE(pq22dlfem) and success;
+
   Dune::RefinedP1LocalFiniteElement<double,double,2> refp12dlfem;
   success = testFE(refp12dlfem) and success;
 
@@ -129,6 +134,12 @@ int main(int argc, char** argv) try
 
   Dune::P23DLocalFiniteElement<double,double> p23dlfem;
   success = testFE(p23dlfem) and success;
+
+#if 0 // the following is (also) problematic due to double virtualization
+  Dune::C0LocalFiniteElementVirtualImp< Dune::P23DLocalFiniteElement<double,double> >
+  p23dlfemVirtual(p23dlfem);
+  success = testFE(p23dlfemVirtual) and success;
+#endif
 
   //    Dune::HierarchicalP2LocalFiniteElement<double,double,1> hierarchicalp21dlfem;
   //    success = testFE(hierarchicalp21dlfem) and success;

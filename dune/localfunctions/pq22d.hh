@@ -10,17 +10,7 @@
 namespace Dune
 {
   template<class D, class R>
-  class PQ22DLocalFiniteElement :
-    public LocalFiniteElementInterface<
-        LocalFiniteElementTraits<
-            C1LocalBasisVirtualInterface<
-                C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,
-                    R,1,Dune::FieldVector<R,1>,
-                    Dune::FieldVector<Dune::FieldVector<R,2>,1> > >,
-            LocalCoefficientsVirtualInterface,
-            LocalInterpolationVirtualInterface< Dune::FieldVector<D,2>, Dune::FieldVector<R,1> >
-            >, PQ22DLocalFiniteElement<D,R>
-        >
+  class PQ22DLocalFiniteElement
   {
     typedef Dune::FieldVector<D,2> Domain;
     typedef Dune::FieldVector<R,1> Range;
@@ -80,9 +70,9 @@ namespace Dune
     template <class FE>
     void setup(const FE& fe)
     {
-      basis_ = new C1LocalBasisVirtualImp< BasisTraits, typename FE::Traits::LocalBasisType >(fe);
-      coefficients_ = new LocalCoefficientsVirtualImp< typename FE::Traits::LocalCoefficientsType >(fe);
-      interpolation_ = new LocalInterpolationVirtualImp< Domain, Range, typename FE::Traits::LocalInterpolationType >(fe);
+      basis_ = new C1LocalBasisVirtualImp< BasisTraits, typename FE::Traits::LocalBasisType >(fe.localBasis());
+      coefficients_ = new LocalCoefficientsVirtualImp< typename FE::Traits::LocalCoefficientsType >(fe.localCoefficients());
+      interpolation_ = new LocalInterpolationVirtualImp< Domain, Range, typename FE::Traits::LocalInterpolationType >(fe.localInterpolation());
     }
 
     const GeometryType gt_;

@@ -44,7 +44,7 @@ namespace Dune
 
 
       int coeff;
-      R a[2], b[2], c[2], aa[2][2], bb[2][2], a1d, b1d, c1d;
+      R a[2], b[2], c[2], a1d, b1d, c1d;
 
 
       // lower triangle:

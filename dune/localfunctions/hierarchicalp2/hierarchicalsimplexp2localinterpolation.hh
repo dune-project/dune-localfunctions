@@ -27,7 +27,7 @@ namespace Dune
       dune_static_assert(LB::Traits::dimDomain <=3, "LocalInterpolation for HierarchicalSimplexP2 finite elements"
                          " is only implemented for dimDomain <=3!");
 
-      switch (LB::Traits::dimDomain) {
+      switch ( int(LB::Traits::dimDomain))  {
 
       case 1 :
 

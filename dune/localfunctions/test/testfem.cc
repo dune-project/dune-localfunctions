@@ -65,6 +65,8 @@ public:
   {
     DomainType c(0.5);
 
+    y = 0;
+
     c -= x;
     y[0] = exp(-3.0*c.two_norm2());
   }

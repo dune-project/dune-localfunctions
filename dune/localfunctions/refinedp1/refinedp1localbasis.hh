@@ -756,6 +756,8 @@ namespace Dune
         return;
       }
 
+      DUNE_THROW(InvalidStateException, "no subelement defined");
+
     }
 
   };

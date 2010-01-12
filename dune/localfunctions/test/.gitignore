@@ -1,0 +1,11 @@
+testfem
+testgenericfem
+edges02dshapefunctiontest
+test-edges03dinterpolate
+lagrangeshapefunctiontest
+monomshapefunctiontest
+virtualshapefunctiontest
+refinedp1test
+Makefile.in
+Makefile
+.deps

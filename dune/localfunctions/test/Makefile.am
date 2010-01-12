@@ -9,6 +9,7 @@ TESTS = testfem edges02dshapefunctiontest lagrangeshapefunctiontest \
 	monomshapefunctiontest			\
 	test-edges03dinterpolate		\
 	virtualshapefunctiontest		\
+	testgenericfem              \
 	$(ALUPROG)
 
 
@@ -21,6 +22,9 @@ check_PROGRAMS = $(TESTS)
 # define the programs
 
 testfem_SOURCES = testfem.cc
+testgenericfem_SOURCES = testgenericfem.cc
+testgenericfem_CPPFLAGS = $(AM_CPPFLAGS) $(GMP_CPPFLAGS)
+testgenericfem_LDADD = $(GMP_LIBS) $(GMP_LDFLAGS)
 edges02dshapefunctiontest_SOURCES = edges02dshapefunctiontest.cc
 lagrangeshapefunctiontest_SOURCES = lagrangeshapefunctiontest.cc
 monomshapefunctiontest_SOURCES = monomshapefunctiontest.cc

@@ -19,10 +19,8 @@ namespace Dune
    * @brief A class providing local coefficients for dg spaces
    **/
   class DGLocalCoefficients
-    : public LocalCoefficientsInterface< DGLocalCoefficients >
   {
     typedef DGLocalCoefficients This;
-    typedef LocalCoefficientsInterface< This > Base;
 
   public:
     //! construct local keys for n basis functions

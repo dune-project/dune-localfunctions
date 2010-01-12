@@ -800,7 +800,7 @@ namespace Dune
   // -------------------
 
   template< int dim, class F >
-  class VirtualMonomialBasis // : public BasisInterface<dim,F>
+  class VirtualMonomialBasis
   {
     typedef VirtualMonomialBasis< dim, F > This;
 

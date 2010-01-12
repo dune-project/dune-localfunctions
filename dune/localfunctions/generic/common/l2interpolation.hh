@@ -32,7 +32,6 @@ namespace Dune
 
   template< class B, class Q >
   class LocalL2InterpolationBase
-    : public LocalInterpolationInterface< LocalL2InterpolationBase< B, Q > >
   {
     typedef LocalL2InterpolationBase< B, Q > This;
 

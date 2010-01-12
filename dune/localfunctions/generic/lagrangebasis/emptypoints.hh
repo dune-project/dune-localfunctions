@@ -45,7 +45,6 @@ namespace Dune
 
   template< class F, unsigned int dim >
   class EmptyPointSet
-    : public LocalCoefficientsInterface< EmptyPointSet< F, dim > >
   {
     typedef EmptyPointSet< F, dim > This;
 

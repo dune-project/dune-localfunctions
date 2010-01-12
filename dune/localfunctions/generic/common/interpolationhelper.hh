@@ -14,8 +14,6 @@ namespace Dune
   // and once for a basis)
   template< class F, unsigned int dimension >
   struct InterpolationHelper
-    : public LocalInterpolationInterface<
-          InterpolationHelper<F,dimension> >
   {
     template <class Func,class Container, bool type>
     struct Helper;

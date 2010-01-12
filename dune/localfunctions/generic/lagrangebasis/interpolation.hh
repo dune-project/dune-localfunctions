@@ -21,7 +21,6 @@ namespace Dune
   template< template <class,unsigned int> class LP,
       unsigned int dim, class F >
   class LocalLagrangeInterpolation
-    : public LocalInterpolationInterface< LocalLagrangeInterpolation<LP,dim,F> >
   {
     typedef LocalLagrangeInterpolation< LP,dim,F > This;
 
@@ -54,7 +53,11 @@ namespace Dune
       unsigned int index = 0;
       const Iterator end = lagrangePoints_.end();
       for( Iterator it = lagrangePoints_.begin(); it != end; ++it )
-        field_cast(function( it->point() ), coefficients[ index++ ] );
+      {
+        typename Function::RangeType val;
+        function.evaluate( field_cast<typename Function::DomainType::field_type>(it->point()), val );
+        field_cast( val, coefficients[ index++ ] );
+      }
     }
 
     template< class Matrix, class Basis >

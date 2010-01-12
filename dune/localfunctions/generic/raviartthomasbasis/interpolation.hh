@@ -33,10 +33,8 @@ namespace Dune
   struct RaviartThomasL2InterpolationFactory;
 
   class LocalCoefficientsContainer
-    : public LocalCoefficientsInterface< LocalCoefficientsContainer >
   {
     typedef LocalCoefficientsContainer This;
-    typedef LocalCoefficientsInterface< This > Base;
 
   public:
     template <class Setter>

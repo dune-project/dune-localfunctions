@@ -58,13 +58,7 @@ namespace Dune
    *           const_iterator begin()
    **/
   template< class Eval, class CM, class D=double, class R=double >
-  class PolynomialBasis :
-    public C1LocalBasisInterface<
-        C1LocalBasisTraits<D,Eval::dimension,FieldVector<D,Eval::dimension>,
-            R,Eval::dimRange*CM::blockSize,FieldVector<R,Eval::dimRange*CM::blockSize>,
-            FieldVector<FieldVector<R,Eval::dimension>,Eval::dimRange*CM::blockSize> >,
-        PolynomialBasis<Eval,CM,D,R >
-        >
+  class PolynomialBasis
   {
     typedef PolynomialBasis< Eval, CM > This;
     typedef Eval Evaluator;
@@ -93,6 +87,13 @@ namespace Dune
     {
       assert(size_ <= coeffMatrix.size());
     }
+    PolynomialBasis(const PolynomialBasis &other)
+      : basis_(other.basis_),
+        coeffMatrix_(other.coeffMatrix_),
+        eval_(basis_),
+        order_(basis_.order()),
+        size_(other.size_)
+    {}
 
     const Basis &basis () const
     {
@@ -208,7 +209,6 @@ namespace Dune
     }
 
   protected:
-    PolynomialBasis(const PolynomialBasis &);
     PolynomialBasis &operator=(const PolynomialBasis&);
     const Basis &basis_;
     const CoefficientMatrix* coeffMatrix_;
@@ -258,7 +258,6 @@ namespace Dune
     }
 
   private:
-    PolynomialBasisWithMatrix(const PolynomialBasisWithMatrix &);
     PolynomialBasisWithMatrix &operator=(const PolynomialBasisWithMatrix &);
     CoefficientMatrix coeffMatrix_;
   };

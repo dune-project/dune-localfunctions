@@ -19,19 +19,11 @@ namespace Dune
   template< class BasisF, class CoeffF, class InterpolF,
       unsigned int dimDomain, class D, class R >
   struct GenericLocalFiniteElement
-    : LocalFiniteElementInterface<
-          LocalFiniteElementTraits< typename BasisF::Object,
-              typename CoeffF::Object,
-              typename InterpolF::Object >,
-          GenericLocalFiniteElement<BasisF, CoeffF, InterpolF, dimDomain,D,R> >
   {
     typedef GenericLocalFiniteElement<BasisF, CoeffF, InterpolF, dimDomain,D,R> This;
-    typedef LocalFiniteElementInterface<
-        LocalFiniteElementTraits<
-            typename BasisF::Object,
-            typename CoeffF::Object,
-            typename InterpolF::Object >, This > Base;
-    typedef typename Base::Traits Traits;
+    typedef LocalFiniteElementTraits< typename BasisF::Object,
+        typename CoeffF::Object,
+        typename InterpolF::Object > Traits;
 
     typedef typename BasisF::Key Key;
 

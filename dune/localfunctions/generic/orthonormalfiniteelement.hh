@@ -11,7 +11,7 @@
 namespace Dune
 {
   /**
-   * @brief A class providing orthonromal basis functions
+   * @brief A class providing orthonormal basis functions
    *
    * These basis functions are constructed by l2 orthonormalizing
    * of monomials over a reference element. Thus the span is

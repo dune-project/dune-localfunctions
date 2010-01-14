@@ -35,8 +35,16 @@ virtualshapefunctiontest_CPPFLAGS = $(AM_CPPFLAGS)
 
 if ALUGRID
 refinedp1test_SOURCES = refinedp1test.cc
-refinedp1test_CXXFLAGS = $(ALUGRID_CPPFLAGS) $(MPI_CPPFLAGS) $(AM_CPPFLAGS)
-refinedp1test_LDADD = $(ALUGRID_LDFLAGS) $(ALUGRID_LIBS) $(MPI_LDFLAGS)
+refinedp1test_CPPFLAGS = $(AM_CPPFLAGS)		\
+	$(DUNEMPICPPFLAGS)			\
+	$(ALUGRID_CPPFLAGS)
+refinedp1test_LDFLAGS = $(AM_LDFLAGS)		\
+	$(DUNEMPILDFLAGS)			\
+	$(ALUGRID_LDFLAGS)
+refinedp1test_LDADD =				\
+	$(ALUGRID_LDFLAGS) $(ALUGRID_LIBS)	\
+	$(DUNEMPILIBS)				\
+	$(LDADD)
 endif
 
 

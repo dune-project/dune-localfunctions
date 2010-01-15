@@ -151,7 +151,7 @@ int main(int argc, char** argv) try
   Dune::PrismP2LocalFiniteElement<double,double> prismp2fem;
   success = testFE(prismp2fem) and success;
 
-  success = testArbitraryOrderFE<12>() and success;
+  success = testArbitraryOrderFE<10>() and success;
 
   Dune::Q22DLocalFiniteElement<double,double> q22dlfem;
   success = testFE(q22dlfem) and success;

@@ -23,8 +23,8 @@ check_PROGRAMS = $(TESTS)
 
 testfem_SOURCES = testfem.cc
 testgenericfem_SOURCES = testgenericfem.cc
-testgenericfem_CPPFLAGS = $(AM_CPPFLAGS) $(GMP_CPPFLAGS)
-testgenericfem_LDADD = $(GMP_LIBS) $(GMP_LDFLAGS)
+testgenericfem_CPPFLAGS = $(AM_CPPFLAGS) $(GMP_CPPFLAGS) $(ALGLIB_CPPFLAGS)
+testgenericfem_LDADD = $(GMP_LIBS) $(GMP_LDFLAGS) $(ALGLIB_LIBS) $(ALGLIB_LDFLAGS)
 edges02dshapefunctiontest_SOURCES = edges02dshapefunctiontest.cc
 lagrangeshapefunctiontest_SOURCES = lagrangeshapefunctiontest.cc
 monomshapefunctiontest_SOURCES = monomshapefunctiontest.cc

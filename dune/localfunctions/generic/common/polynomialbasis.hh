@@ -87,13 +87,6 @@ namespace Dune
     {
       assert(size_ <= coeffMatrix.size());
     }
-    PolynomialBasis(const PolynomialBasis &other)
-      : basis_(other.basis_),
-        coeffMatrix_(other.coeffMatrix_),
-        eval_(basis_),
-        order_(basis_.order()),
-        size_(other.size_)
-    {}
 
     const Basis &basis () const
     {
@@ -209,6 +202,13 @@ namespace Dune
     }
 
   protected:
+    PolynomialBasis(const PolynomialBasis &other)
+      : basis_(other.basis_),
+        coeffMatrix_(other.coeffMatrix_),
+        eval_(basis_),
+        order_(basis_.order()),
+        size_(other.size_)
+    {}
     PolynomialBasis &operator=(const PolynomialBasis&);
     const Basis &basis_;
     const CoefficientMatrix* coeffMatrix_;
@@ -258,6 +258,7 @@ namespace Dune
     }
 
   private:
+    PolynomialBasisWithMatrix(const PolynomialBasisWithMatrix &);
     PolynomialBasisWithMatrix &operator=(const PolynomialBasisWithMatrix &);
     CoefficientMatrix coeffMatrix_;
   };

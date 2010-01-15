@@ -56,22 +56,6 @@ namespace Dune
         numRows_(0),
         numCols_(0)
     {}
-    SparseCoeffMatrix(const This &other)
-      : numRows_( other.numRows_ ),
-        numCols_( other.numCols_ )
-    {
-      const unsigned int size = other.rows_[numRows_]-other.rows_[0];
-      coeff_ = new Field[ size ];
-      rows_ = new Field*[ numRows_+1 ];
-      skip_ = new unsigned int[ size+1 ];
-      for (unsigned int i=0; i<size; ++i)
-      {
-        coeff_[i] = other.coeff_[i];
-        skip_[i] = other.skip_[i];
-      }
-      for (unsigned int i=0; i<=numRows_; ++i)
-        rows_[i] = other.rows_[i]+(coeff_-other.coeff_);
-    }
 
     ~SparseCoeffMatrix()
     {
@@ -248,6 +232,22 @@ namespace Dune
       }
     }
   private:
+    SparseCoeffMatrix(const This &other)
+      : numRows_( other.numRows_ ),
+        numCols_( other.numCols_ )
+    {
+      const unsigned int size = other.rows_[numRows_]-other.rows_[0];
+      coeff_ = new Field[ size ];
+      rows_ = new Field*[ numRows_+1 ];
+      skip_ = new unsigned int[ size+1 ]; // size might do...
+      for (unsigned int i=0; i<size; ++i)
+      {
+        coeff_[i] = other.coeff_[i];
+        skip_[i] = other.skip_[i];
+      }
+      for (unsigned int i=0; i<=numRows_; ++i)
+        rows_[i] = other.rows_[i]+(coeff_-other.coeff_);
+    }
     This &operator= (const This&);
     Field *coeff_;
     Field **rows_;

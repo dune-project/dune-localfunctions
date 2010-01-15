@@ -37,9 +37,17 @@ namespace Dune
     GenericLocalFiniteElement ( unsigned int topologyId,
                                 const Key &key )
       : topologyId_(topologyId),
+        key_(key),
         finiteElement_( )
     {
-      GenericGeometry::IfTopology< FiniteElement::template Maker, dimDomain >::apply( topologyId, key, finiteElement_ );
+      GenericGeometry::IfTopology< FiniteElement::template Maker, dimDomain >::apply( topologyId_, key_, finiteElement_ );
+    }
+    GenericLocalFiniteElement ( const GenericLocalFiniteElement &other )
+      : topologyId_(other.topologyId_),
+        key_(other.key_),
+        finiteElement_( )
+    {
+      GenericGeometry::IfTopology< FiniteElement::template Maker, dimDomain >::apply( topologyId_, key_, finiteElement_ );
     }
     ~GenericLocalFiniteElement()
     {
@@ -119,6 +127,7 @@ namespace Dune
       typename Traits::LocalInterpolationType *interpol_;
     };
     unsigned int topologyId_;
+    Key key_;
     FiniteElement finiteElement_;
   };
 

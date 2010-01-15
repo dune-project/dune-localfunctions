@@ -49,6 +49,7 @@ namespace Dune
       static std::vector< RangeVector > basisValues( size );
 
       coefficients.resize( size );
+      basisValues.resize( size );
       for( unsigned int i = 0; i < size; ++i )
         coefficients[ i ] = Zero< DofField >();
 
@@ -56,7 +57,9 @@ namespace Dune
       for( Iterator it = quadrature().begin(); it != end; ++it )
       {
         basis().evaluate( it->point(), basisValues );
-        RangeVector factor = field_cast< DofField >( function( it->point() ) );
+        typename Function::RangeType val;
+        function.evaluate( field_cast<typename Function::DomainType::field_type>(it->point()), val );
+        RangeVector factor = field_cast< DofField >( val );
         factor *= field_cast< DofField >( it->weight() );
         for( unsigned int i = 0; i < size; ++i )
           coefficients[ i ] += factor * basisValues[ i ];
@@ -168,7 +171,8 @@ namespace Dune
   struct LocalL2InterpolationFactoryTraits
   {
     static const unsigned int dimension = BasisFactory::dimension;
-    typedef typename BasisFactory::StorageField Field;
+    // typedef typename BasisFactory::StorageField Field;
+    typedef double Field;
     typedef GenericGeometry::GaussQuadratureProvider<dimension,Field> QuadratureProvider;
     typedef typename QuadratureProvider::Object Quadrature;
 

@@ -90,7 +90,7 @@ bool testLocalInterpolation(const FE& fe, int n=100)
   LocalFEFunction<FE> f(fe);
 
   std::vector<typename LocalFEFunction<FE>::CT> coeff;
-  for(int i=0; i<n; ++i)
+  for(int i=0; i<n && success; ++i)
   {
     // Set random coefficient vector
     f.setRandom(100);
@@ -109,7 +109,7 @@ bool testLocalInterpolation(const FE& fe, int n=100)
     }
 
     // Check if interpolation weights are equal to coefficients
-    for(std::size_t j=0; j<coeff.size(); ++j)
+    for(std::size_t j=0; j<coeff.size() && success; ++j)
     {
       if (std::abs(coeff[j]-f.coeff_[j]) > TOL)
       {

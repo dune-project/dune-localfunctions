@@ -5,7 +5,7 @@
 
 #include <dune/common/geometrytype.hh>
 
-#include <dune/localfunctions/common/localfiniteelement.hh>
+#include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include <dune/localfunctions/hierarchicalp2withelementbubble/hierarchicalsimplexp2withelementbubble.hh>
 
 

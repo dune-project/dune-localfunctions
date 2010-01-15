@@ -5,7 +5,7 @@ common_HEADERS =				\
 	interpolation.hh			\
 	localbasis.hh				\
 	localkey.hh      			\
-	localfiniteelement.hh			\
+	localfiniteelementtraits.hh		\
 	simplebasis.hh				\
 	simpleinterpolation.hh                  \
 	virtualinterface.hh

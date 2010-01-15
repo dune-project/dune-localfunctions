@@ -5,7 +5,7 @@
 
 #include <dune/common/geometrytype.hh>
 
-#include <dune/localfunctions/common/localfiniteelement.hh>
+#include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include "raviartthomas02d/rt02dlocalbasis.hh"
 #include "raviartthomas02d/rt02dlocalcoefficients.hh"
 #include "raviartthomas02d/rt02dlocalinterpolation.hh"

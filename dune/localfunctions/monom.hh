@@ -5,7 +5,7 @@
 
 #include <dune/common/geometrytype.hh>
 
-#include "common/localfiniteelement.hh"
+#include "common/localfiniteelementtraits.hh"
 #include "monom/monomlocalbasis.hh"
 #include "monom/monomlocalcoefficients.hh"
 #include "monom/monomlocalinterpolation.hh"

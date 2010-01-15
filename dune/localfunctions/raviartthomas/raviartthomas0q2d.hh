@@ -5,7 +5,7 @@
 
 #include <dune/common/geometrytype.hh>
 
-#include <dune/localfunctions/common/localfiniteelement.hh>
+#include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include "raviartthomas0q2d/rt0q2dall.hh"
 
 namespace Dune

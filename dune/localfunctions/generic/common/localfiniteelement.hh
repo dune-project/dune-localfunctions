@@ -6,7 +6,7 @@
 #include <dune/common/geometrytype.hh>
 #include <dune/grid/genericgeometry/conversion.hh>
 
-#include <dune/localfunctions/common/localfiniteelement.hh>
+#include <dune/localfunctions/common/localfiniteelementtraits.hh>
 
 namespace Dune
 {

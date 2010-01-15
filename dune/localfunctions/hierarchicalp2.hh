@@ -5,7 +5,7 @@
 
 #include <dune/common/geometrytype.hh>
 
-#include "common/localfiniteelement.hh"
+#include "common/localfiniteelementtraits.hh"
 
 #include "hierarchicalp2/hierarchicalsimplexp2localbasis.hh"
 #include "hierarchicalp2/hierarchicalsimplexp2localinterpolation.hh"

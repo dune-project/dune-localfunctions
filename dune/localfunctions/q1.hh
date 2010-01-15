@@ -3,7 +3,7 @@
 #ifndef DUNE_Q1_LOCALFINITEELEMENT_HH
 #define DUNE_Q1_LOCALFINITEELEMENT_HH
 
-#include <dune/localfunctions/common/localfiniteelement.hh>
+#include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include <dune/localfunctions/q1/q1localbasis.hh>
 #include <dune/localfunctions/q1/q1localcoefficients.hh>
 #include <dune/localfunctions/q1/q1localinterpolation.hh>

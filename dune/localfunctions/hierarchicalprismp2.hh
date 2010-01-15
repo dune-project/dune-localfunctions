@@ -5,7 +5,7 @@
 
 #include <dune/common/geometrytype.hh>
 
-#include "common/localfiniteelement.hh"
+#include "common/localfiniteelementtraits.hh"
 
 #include "hierarchicalprismp2/hierarchicalprismp2localbasis.hh"
 #include "hierarchicalprismp2/hierarchicalprismp2localinterpolation.hh"

@@ -5,7 +5,7 @@
 
 #include <dune/common/geometrytype.hh>
 
-#include "common/localfiniteelement.hh"
+#include "common/localfiniteelementtraits.hh"
 #include "edges02d/edges02dlocalbasis.hh"
 #include "edges02d/edges02dlocalcoefficients.hh"
 #include "edges02d/edges02dlocalinterpolation.hh"

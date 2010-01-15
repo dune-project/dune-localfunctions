@@ -1,12 +1,12 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_RT0Q3DLOCALFINITEELEMENT_HH
-#define DUNE_RT0Q3DLOCALFINITEELEMENT_HH
+#ifndef DUNE_RAVIARTTHOMAS0Q3DLOCALFINITEELEMENT_HH
+#define DUNE_RAVIARTTHOMAS0Q3DLOCALFINITEELEMENT_HH
 
 #include <dune/common/geometrytype.hh>
 
-#include "common/localfiniteelement.hh"
-#include "rt0q3d/rt0q3dall.hh"
+#include <dune/localfunctions/common/localfiniteelement.hh>
+#include "raviartthomas0q3d/rt0q3dall.hh"
 
 namespace Dune
 {

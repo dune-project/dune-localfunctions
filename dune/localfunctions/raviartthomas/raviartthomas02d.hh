@@ -1,14 +1,14 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_RT02DLOCALFINITEELEMENT_HH
-#define DUNE_RT02DLOCALFINITEELEMENT_HH
+#ifndef DUNE_RAVIARTTHOMAS02DLOCALFINITEELEMENT_HH
+#define DUNE_RAVIARTTHOMAS02DLOCALFINITEELEMENT_HH
 
 #include <dune/common/geometrytype.hh>
 
-#include "common/localfiniteelement.hh"
-#include "rt02d/rt02dlocalbasis.hh"
-#include "rt02d/rt02dlocalcoefficients.hh"
-#include "rt02d/rt02dlocalinterpolation.hh"
+#include <dune/localfunctions/common/localfiniteelement.hh>
+#include "raviartthomas02d/rt02dlocalbasis.hh"
+#include "raviartthomas02d/rt02dlocalcoefficients.hh"
+#include "raviartthomas02d/rt02dlocalinterpolation.hh"
 
 namespace Dune
 {

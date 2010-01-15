@@ -22,11 +22,6 @@ namespace Dune
    */
   template<class D, class R>
   class RT0Q2DLocalBasis
-#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public C1LocalBasisInterface<
-          C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,2,Dune::FieldVector<R,2>,
-              Dune::FieldVector<Dune::FieldVector<R,2>,2> > >
-#endif
   {
   public:
     typedef C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,2,Dune::FieldVector<R,2>,
@@ -158,9 +153,6 @@ namespace Dune
      \implements Dune::LocalCoefficientsVirtualImp
    */
   class RT0Q2DLocalCoefficients
-#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public LocalCoefficientsInterface
-#endif
   {
   public:
     //! \brief Standard constructor

@@ -32,9 +32,6 @@ namespace Dune
    */
   template<class D, class R>
   class RefinedP0LocalFiniteElement<D,R,2>
-#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public LocalFiniteElementInterface<D,R,2>
-#endif
   {
   public:
     /** \todo Please doc me !

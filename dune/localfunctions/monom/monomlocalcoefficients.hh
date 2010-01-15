@@ -20,9 +20,6 @@ namespace Dune
    */
   template<int static_size>
   class MonomLocalCoefficients
-#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public LocalCoefficientsInterface
-#endif
   {
   public:
     //! \brief Standard constructor

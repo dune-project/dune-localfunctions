@@ -9,9 +9,6 @@ namespace Dune
 {
   template<class LB>
   class Pk2DLocalInterpolation
-#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public LocalInterpolationInterface<typename LB::Traits::DomainType, typename LB::Traits::RangeType>
-#endif
   {
     /** \brief The number of degrees of freedom */
     enum {N = LB::N};
@@ -38,15 +35,6 @@ namespace Dune
           n++;
         }
     }
-
-#if DUNE_VIRTUAL_SHAPEFUNCTIONS
-    typedef LocalInterpolationInterface<typename LB::Traits::DomainType, typename LB::Traits::RangeType> Base;
-
-    void interpolate(const typename Base::FunctionType& f, typename std::vector<typename Base::CoefficientType>& out) const
-    {
-      interpolate<typename Base::FunctionType, typename Base::CoefficientType>(f, out);
-    }
-#endif
 
   };
 }

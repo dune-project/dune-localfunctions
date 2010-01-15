@@ -22,9 +22,6 @@ namespace Dune
    */
   template<class D, class R, int d, int p>
   class MonomLocalFiniteElement
-#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public LocalFiniteElementInterface<D,R,d>
-#endif
   {
     enum { static_size = MonomImp::Size<d,p>::val };
 

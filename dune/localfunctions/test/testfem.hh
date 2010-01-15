@@ -10,13 +10,7 @@ double TOL = 1e-10;
 
 template<class FE>
 class Func :
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
   public Dune::LocalFiniteElementFunctionBase<FE>::type
-#else
-  public Dune::VirtualFunction<
-      typename FE::Traits::LocalBasisType::Traits::DomainType,
-      typename FE::Traits::LocalBasisType::Traits::RangeType>
-#endif
 {
 public:
   typedef typename FE::Traits::LocalBasisType::Traits::DomainType DomainType;
@@ -40,13 +34,7 @@ public:
 // method.
 template<class FE>
 class LocalFEFunction :
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
   public Dune::LocalFiniteElementFunctionBase<FE>::type
-#else
-  public Dune::VirtualFunction<
-      typename FE::Traits::LocalBasisType::Traits::DomainType,
-      typename FE::Traits::LocalBasisType::Traits::RangeType>
-#endif
 {
 public:
   typedef typename FE::Traits::LocalBasisType::Traits::DomainType DomainType;
@@ -147,7 +135,6 @@ bool testFE(const FE& fe)
   fe.localInterpolation().interpolate(Func<FE>(),c);
 
   bool success = true;
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
   success = testLocalInterpolation<FE>(fe) and success;
 
   typedef typename FE::Traits::LocalBasisType::Traits LBTraits;
@@ -158,13 +145,6 @@ bool testFE(const FE& fe)
 #if 0 // this does not work if FE returns virtual basis, interpolation, or coefficients
   const VirtualFEImp virtualFE(fe);
   success = testLocalInterpolation<VirtualFEInterface>(virtualFE) and success;
-#endif
-#else
-  typedef typename FE::Traits::LocalBasisType::Traits::DomainFieldType DT;
-  typedef typename FE::Traits::LocalBasisType::Traits::RangeFieldType RT;
-  const int dim = FE::Traits::LocalBasisType::Traits::dimDomain;
-  typedef Dune::LocalFiniteElementInterface<DT, RT, dim> FEBase;
-  success = testLocalInterpolation<FEBase>(fe) and success;
 #endif
   return success;
 }

@@ -21,11 +21,6 @@ namespace Dune
    */
   template<class D, class R, unsigned int k>
   class Pk2DLocalBasis
-#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public C1LocalBasisInterface<
-          C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,
-              Dune::FieldVector<Dune::FieldVector<R,2>,1> > >
-#endif
   {
   public:
 
@@ -164,11 +159,6 @@ namespace Dune
   //Specialization for k=0
   template<class D, class R>
   class Pk2DLocalBasis<D,R,0>
-#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    :  public C1LocalBasisInterface<
-          C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,
-              Dune::FieldVector<Dune::FieldVector<R,2>,1> > >
-#endif
   {
   public:
     typedef C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,

@@ -9,9 +9,6 @@ namespace Dune
 {
   template<class LB>
   class PrismP2LocalInterpolation
-#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public LocalInterpolationInterface<typename LB::Traits::DomainType, typename LB::Traits::RangeType>
-#endif
   {
   public:
 
@@ -78,17 +75,6 @@ namespace Dune
       x[0] = 0.5;   x[1] = 0.5;   x[2] = 0.5;
       f.evaluate(x,y); out[17] = y;
     }
-
-#if DUNE_VIRTUAL_SHAPEFUNCTIONS
-    typedef LocalInterpolationInterface<typename LB::Traits::DomainType, typename LB::Traits::RangeType> Base;
-
-    /** \brief Interpolate a function given as an abstract base class */
-    void interpolate(const typename Base::FunctionType& f, typename std::vector<typename Base::CoefficientType>& out) const
-    {
-      // Call the static implementation with a reference to the base class
-      interpolate<typename Base::FunctionType, typename Base::CoefficientType>(f, out);
-    }
-#endif
 
   };
 }

@@ -33,9 +33,6 @@ namespace Dune
    */
   template<class D, class R>
   class RefinedP1LocalFiniteElement<D,R,2>
-#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public LocalFiniteElementInterface<D,R,2>
-#endif
   {
   public:
     /** \todo Please doc me !
@@ -95,9 +92,6 @@ namespace Dune
    */
   template<class D, class R>
   class RefinedP1LocalFiniteElement<D,R,3>
-#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public LocalFiniteElementInterface<D,R,3>
-#endif
   {
   public:
     /** \todo Please doc me !

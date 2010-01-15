@@ -77,14 +77,10 @@ namespace Dune
     typedef T Traits;
 
     //! \brief Number of shape functions
-#if DUNE_VIRTUAL_SHAPEFUNCTIONS
-    virtual unsigned int size () const = 0;
-#else
     unsigned int size () const
     {
       return asImp().size();
     }
-#endif
 
     /** \brief Evaluate all basis function at given position
      *
@@ -95,16 +91,11 @@ namespace Dune
      *                   coordinates.
      *  \param [out] out The resulting global values, one per shape function.
      */
-#if DUNE_VIRTUAL_SHAPEFUNCTIONS
-    virtual void evaluateFunction(const typename Traits::DomainType& in,
-                                  std::vector<typename Traits::RangeType>& out) const = 0;
-#else
     inline void evaluateFunction(const typename Traits::DomainType& in,
                                  std::vector<typename Traits::RangeType>& out) const
     {
       asImp().evaluateFunction(in,out);
     }
-#endif
 
     /** \brief Evaluate basis with coefficients at given position
      *
@@ -139,20 +130,14 @@ namespace Dune
 
        \todo Gurke!
      */
-#if DUNE_VIRTUAL_SHAPEFUNCTIONS
-    virtual unsigned int order () const = 0;
-#else
     unsigned int order () const
     {
       return asImp().order();
     }
-#endif
 
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
   private:
     Imp& asImp () {return static_cast<Imp &> (*this);}
     const Imp& asImp () const {return static_cast<const Imp &>(*this);}
-#endif
   };
 
 
@@ -187,18 +172,12 @@ namespace Dune
      *  \param [in]  in  Where to evaluate in local coordinates.
      *  \param [out] out The result, one jacobian per base function.
      */
-#if DUNE_VIRTUAL_SHAPEFUNCTIONS
-    virtual void
-    evaluateJacobian(const typename Traits::DomainType& in,             // position
-                     std::vector<typename Traits::JacobianType>& out) const = 0;
-#else
     inline void
     evaluateJacobian(const typename Traits::DomainType& in,             // position
                      std::vector<typename Traits::JacobianType>& out) const                          // return value
     {
       asImp().evaluateJacobian(in,out);
     }
-#endif
 
     /** \brief Evaluate jacobian with given coefficients at given position.
      *
@@ -231,11 +210,9 @@ namespace Dune
       return out;
     }
 
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
   private:
     Imp& asImp () {return static_cast<Imp &> (*this);}
     const Imp& asImp () const {return static_cast<const Imp &>(*this);}
-#endif
   };
 }
 #endif // DUNE_BASIS_HH

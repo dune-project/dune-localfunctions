@@ -13,11 +13,6 @@ namespace Dune
 {
   template<class D, class R, int dim>
   class HierarchicalSimplexP2LocalBasis
-#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public C1LocalBasisInterface<
-          C1LocalBasisTraits<D,dim,Dune::FieldVector<D,dim>,R,1,Dune::FieldVector<R,1>,
-              Dune::FieldVector<Dune::FieldVector<R,dim>,1> > >
-#endif
   {
   public:
     HierarchicalSimplexP2LocalBasis()
@@ -42,11 +37,6 @@ namespace Dune
    */
   template<class D, class R>
   class HierarchicalSimplexP2LocalBasis<D,R,1>
-#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public C1LocalBasisInterface<
-          C1LocalBasisTraits<D,1,Dune::FieldVector<D,1>,R,1,Dune::FieldVector<R,1>,
-              Dune::FieldVector<Dune::FieldVector<R,1>,1> > >
-#endif
   {
   public:
     //! \brief export type traits for function signature
@@ -112,11 +102,6 @@ namespace Dune
    */
   template<class D, class R>
   class HierarchicalSimplexP2LocalBasis<D,R,2>
-#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public C1LocalBasisInterface<
-          C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,
-              Dune::FieldVector<Dune::FieldVector<R,2>,1> > >
-#endif
   {
   public:
     //! \brief export type traits for function signature
@@ -193,11 +178,6 @@ namespace Dune
    */
   template<class D, class R>
   class HierarchicalSimplexP2LocalBasis<D,R,3>
-#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public C1LocalBasisInterface<
-          C1LocalBasisTraits<D,3,Dune::FieldVector<D,3>,R,1,Dune::FieldVector<R,1>,
-              Dune::FieldVector<Dune::FieldVector<R,3>,1> > >
-#endif
   {
   public:
     //! \brief export type traits for function signature

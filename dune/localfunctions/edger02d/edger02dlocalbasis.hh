@@ -25,16 +25,6 @@ namespace Dune
    */
   template<class D, class R>
   class EdgeR02DLocalBasis
-#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public C1LocalBasisInterface<
-          C1LocalBasisTraits<
-              D, 2,
-              Dune::FieldVector<D,2>,
-              R, 2,
-              Dune::FieldVector<R,3>,
-              Dune::FieldVector<Dune::FieldVector<R,2>, 1>
-              > >
-#endif
   {
   public:
     typedef C1LocalBasisTraits<

@@ -18,9 +18,6 @@ namespace Dune
      \implements Dune::LocalCoefficientsVirtualImp
    */
   class P23DLocalCoefficients
-#if DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public LocalCoefficientsInterface
-#endif
   {
   public:
     //! \brief Standard constructor

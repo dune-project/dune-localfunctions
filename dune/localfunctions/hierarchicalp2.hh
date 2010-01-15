@@ -20,9 +20,6 @@ namespace Dune
    */
   template<class D, class R, int dim>
   class HierarchicalP2LocalFiniteElement
-#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public LocalFiniteElementInterface<D,R,dim>
-#endif
   {
 
     dune_static_assert(dim==2 || dim==3, "HierarchicalP2LocalFiniteElement only implemented for dim==2, 3.");

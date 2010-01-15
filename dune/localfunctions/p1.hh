@@ -20,9 +20,6 @@ namespace Dune
    */
   template<class D, class R, int dim>
   class P1LocalFiniteElement
-#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public LocalFiniteElementInterface<D,R,dim>
-#endif
   {
   public:
     /** \todo Please doc me !

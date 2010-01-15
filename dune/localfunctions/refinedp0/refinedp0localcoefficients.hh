@@ -20,9 +20,6 @@ namespace Dune
    */
   template<unsigned int k>
   class RefinedP0LocalCoefficients
-#if DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public LocalCoefficientsInterface
-#endif
   {
     // 2 to the k-th power
     enum {N = 1<<k};

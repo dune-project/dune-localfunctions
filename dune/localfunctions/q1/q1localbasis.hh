@@ -20,11 +20,6 @@ namespace Dune
    */
   template<class D, class R, int dim>
   class Q1LocalBasis
-#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public C1LocalBasisInterface<
-          C1LocalBasisTraits<D,dim,Dune::FieldVector<D,dim>,R,1,Dune::FieldVector<R,1>,
-              Dune::FieldVector<Dune::FieldVector<R,dim>,1> > >
-#endif
   {
   public:
     typedef C1LocalBasisTraits<D,dim,Dune::FieldVector<D,dim>,R,1,Dune::FieldVector<R,1>,

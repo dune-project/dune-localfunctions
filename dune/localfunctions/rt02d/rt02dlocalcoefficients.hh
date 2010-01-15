@@ -19,9 +19,6 @@ namespace Dune
      \implements Dune::LocalCoefficientsVirtualImp
    */
   class RT02DLocalCoefficients
-#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public LocalCoefficientsInterface
-#endif
   {
   public:
     //! \brief Standard constructor

@@ -9,9 +9,6 @@ namespace Dune
 {
   template<class LB>
   class P23DLocalInterpolation
-#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public LocalInterpolationInterface<typename LB::Traits::DomainType, typename LB::Traits::RangeType>
-#endif
   {
   public:
 
@@ -55,15 +52,6 @@ namespace Dune
       f.evaluate(x,y); out[9] = y;
 
     }
-
-#if DUNE_VIRTUAL_SHAPEFUNCTIONS
-    typedef LocalInterpolationInterface<typename LB::Traits::DomainType, typename LB::Traits::RangeType> Base;
-
-    void interpolate(const typename Base::FunctionType& f, typename std::vector<typename Base::CoefficientType>& out) const
-    {
-      interpolate<typename Base::FunctionType, typename Base::CoefficientType>(f, out);
-    }
-#endif
 
   private:
     typename LB::Traits::DomainType x[4];

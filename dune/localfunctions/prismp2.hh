@@ -17,9 +17,6 @@ namespace Dune
    */
   template<class D, class R>
   class PrismP2LocalFiniteElement
-#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public LocalFiniteElementInterface<D,R,3>
-#endif
   {
   public:
     /** \todo Please doc me !

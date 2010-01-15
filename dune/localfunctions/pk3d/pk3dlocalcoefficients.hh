@@ -20,9 +20,6 @@ namespace Dune
    */
   template<unsigned int k>
   class Pk3DLocalCoefficients
-#if DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public LocalCoefficientsInterface
-#endif
   {
     enum {N = (k+1)*(k+2)*(k+3)/6};
 

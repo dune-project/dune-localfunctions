@@ -67,30 +67,5 @@ namespace Dune
     }
   };
 
-  /**@ingroup LocalLayoutInterface
-         \brief Layout description corresponding to a local basis
-
-         To make a (global) finite element function out of a
-         local basis on each element certain basis functions in touching
-         elements have to be identified.
-
-         This is achieved by mapping the index of a local basis function to a geometric
-         (sub-)entity and an offset within that entity.
-
-         \nosubgrouping
-   */
-#if DUNE_VIRTUAL_SHAPEFUNCTIONS
-  class LocalCoefficientsInterface
-  {
-  public:
-    //! number of coefficients
-    virtual std::size_t size () const = 0;
-
-    //! get i'th index
-    const virtual LocalKey& localKey (std::size_t i) const = 0;
-
-  };
-#endif
-
 }
 #endif

@@ -4,9 +4,6 @@
 #include "config.h"
 #endif
 
-//#define DUNE_VIRTUAL_SHAPEFUNCTIONS 1
-//#undef DUNE_VIRTUAL_SHAPEFUNCTIONS
-
 #include <cstddef>
 #include <iostream>
 #include <cstdlib>
@@ -27,9 +24,6 @@
 #include "../hierarchicalp2withelementbubble.hh"
 #include "../hierarchicalprismp2.hh"
 #include "../rannacher_turek2d.hh"
-
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
-// these shape functions don't provide the virtual interface
 #include "../pk2d.hh"
 #include "../pk3d.hh"
 #include "../q22d.hh"
@@ -40,7 +34,6 @@
 #include "../edger02d.hh"
 #include "../edges02d.hh"
 #include "../edges03d.hh"
-#endif
 
 #include <dune/localfunctions/common/virtualinterface.hh>
 
@@ -52,13 +45,11 @@ bool testArbitraryOrderFE()
 {
   bool success = true;
 
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
   Dune::Pk2DLocalFiniteElement<double,double,k> pk2dlfem(1);
   success = testFE(pk2dlfem) and success;
 
   Dune::Pk3DLocalFiniteElement<double,double,k> pk3dlfem;
   success = testFE(pk3dlfem) and success;
-#endif
 
   return testArbitraryOrderFE<k-1>() and success;
 }
@@ -74,7 +65,6 @@ bool testMonomials()
 {
   bool success = true;
 
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
   Dune::MonomLocalFiniteElement<double,double,1,k> monom1d(Dune::GeometryType::simplex);
   success = testFE(monom1d) and success;
 
@@ -83,7 +73,6 @@ bool testMonomials()
 
   Dune::MonomLocalFiniteElement<double,double,3,k> monom3d(Dune::GeometryType::simplex);
   success = testFE(monom3d) and success;
-#endif
 
   return testMonomials<k-1>() and success;
 }
@@ -164,7 +153,6 @@ int main(int argc, char** argv) try
 
   success = testArbitraryOrderFE<12>() and success;
 
-#ifndef DUNE_VIRTUAL_SHAPEFUNCTIONS
   Dune::Q22DLocalFiniteElement<double,double> q22dlfem;
   success = testFE(q22dlfem) and success;
 
@@ -188,8 +176,6 @@ int main(int argc, char** argv) try
 
   Dune::RannacherTurek2DLocalFiniteElement<double,double> rannacher_turek2dfem;
   success = testFE(rannacher_turek2dfem) and success;
-
-#endif
 
   std::cout << "Monomials are only tested up to order 2 due to the instability of interpolate()." << std::endl;
   success = testMonomials<2>() and success;

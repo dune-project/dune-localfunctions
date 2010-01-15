@@ -23,12 +23,6 @@ namespace Dune
    */
   template<class D, class R, int d>
   class P0LocalBasis
-#ifdef DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public C1LocalBasisInterface<
-          C1LocalBasisTraits<D,d,Dune::FieldVector<D,d>,R,1,Dune::FieldVector<R,1>,
-              Dune::FieldVector<Dune::FieldVector<R,d>,1> >
-          >
-#endif
   {
   public:
     //! \brief export type traits for function signature

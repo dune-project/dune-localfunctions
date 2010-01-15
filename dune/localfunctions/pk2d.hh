@@ -17,9 +17,6 @@ namespace Dune
    */
   template<class D, class R, unsigned int k>
   class Pk2DLocalFiniteElement
-#if DUNE_VIRTUAL_SHAPEFUNCTIONS
-    : public LocalFiniteElementInterface<D,R,2>
-#endif
   {
   public:
     /** \todo Please doc me !

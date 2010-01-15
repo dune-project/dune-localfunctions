@@ -13,7 +13,7 @@
 #include <dune/grid/genericgeometry/topologytypes.hh>
 #include <dune/grid/genericgeometry/subtopologies.hh>
 
-#include <dune/localfunctions/common/localcoefficients.hh>
+#include <dune/localfunctions/common/localkey.hh>
 
 namespace Dune
 {

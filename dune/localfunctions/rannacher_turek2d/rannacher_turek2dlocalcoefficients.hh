@@ -6,7 +6,7 @@
 #include <cstddef>
 #include <vector>
 
-#include "../common/localcoefficients.hh"
+#include "../common/localkey.hh"
 
 namespace Dune {
 

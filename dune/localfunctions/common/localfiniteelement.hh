@@ -10,7 +10,7 @@
 #include <dune/common/geometrytype.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
-#include <dune/localfunctions/common/localcoefficients.hh>
+#include <dune/localfunctions/common/localkey.hh>
 
 namespace Dune {
 

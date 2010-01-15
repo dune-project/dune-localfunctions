@@ -4,7 +4,7 @@ common_HEADERS =				\
 	finiteelement.hh			\
 	interpolation.hh			\
 	localbasis.hh				\
-	localcoefficients.hh			\
+	localkey.hh      			\
 	localfiniteelement.hh			\
 	simplebasis.hh				\
 	simpleinterpolation.hh                  \

@@ -7,7 +7,7 @@
 #include <vector>
 
 #include <dune/localfunctions/generic/common/topologyfactory.hh>
-#include <dune/localfunctions/common/localcoefficients.hh>
+#include <dune/localfunctions/common/localkey.hh>
 
 namespace Dune
 {

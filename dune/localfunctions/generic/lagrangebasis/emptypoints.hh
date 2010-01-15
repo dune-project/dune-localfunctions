@@ -6,7 +6,7 @@
 #include <vector>
 
 #include <dune/common/fvector.hh>
-#include <dune/localfunctions/common/localcoefficients.hh>
+#include <dune/localfunctions/common/localkey.hh>
 
 namespace Dune
 {

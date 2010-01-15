@@ -117,8 +117,8 @@ int testForDim()
 
       for (int v=0; v < element->geometry().corners(); ++v)
       {
-        p1values[grid.leafIndexSet().template subIndex<dim>(*element,v)] = p1values_[v];
-        invJacobian.mv(p1grads_[v][0],p1grads[grid.leafIndexSet().template subIndex<dim>(*element,v)][0]);
+        p1values[grid.leafIndexSet().subIndex(*element,v,dim)] = p1values_[v];
+        invJacobian.mv(p1grads_[v][0],p1grads[grid.leafIndexSet().subIndex(*element,v,dim)][0]);
       }
 
       for (std::size_t j=0; j<p1values.size(); ++j)

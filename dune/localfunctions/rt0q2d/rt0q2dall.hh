@@ -92,7 +92,7 @@ namespace Dune
   /**@ingroup LocalInterpolationImplementation
          \brief Lowest order Raviart-Thomas shape functions on the reference quadrilateral.
 
-         - <tt>LB</tt>: corresponding LocalBasis giving traits
+         \tparam LB corresponding LocalBasis giving traits
 
          \nosubgrouping
    */

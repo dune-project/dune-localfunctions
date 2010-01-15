@@ -14,8 +14,8 @@ namespace Dune
   /**@ingroup LocalBasisImplementation
          \brief Lowest order Raviart-Thomas shape functions on the reference hexahedron.
 
-         - <tt>D</tt>: Type to represent the field in the domain.
-         - <tt>R</tt>: Type to represent the field in the range.
+         \tparam D Type to represent the field in the domain.
+         \tparam R Type to represent the field in the range.
 
          \nosubgrouping
    */
@@ -108,7 +108,7 @@ namespace Dune
   /**@ingroup LocalInterpolationImplementation
          \brief Lowest order Raviart-Thomas shape functions on the reference hexahedron.
 
-         - <tt>LB</tt>: corresponding LocalBasis giving traits
+         \tparam LB corresponding LocalBasis giving traits
 
          \nosubgrouping
    */

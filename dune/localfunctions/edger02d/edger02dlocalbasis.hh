@@ -18,8 +18,8 @@ namespace Dune
      rotation, shearing and second order transformations will destroy
      important properties of the basis.
 
-     - <tt>D</tt>: Type to represent the field in the domain.
-     - <tt>R</tt>: Type to represent the field in the range.
+     \tparam D Type to represent the field in the domain.
+     \tparam R Type to represent the field in the range.
 
      \nosubgrouping
    */

@@ -3,8 +3,6 @@
 #ifndef DUNE_Pk2DLOCALINTERPOLATION_HH
 #define DUNE_Pk2DLOCALINTERPOLATION_HH
 
-#include "../common/localinterpolation.hh"
-
 namespace Dune
 {
   template<class LB>

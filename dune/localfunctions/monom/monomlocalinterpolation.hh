@@ -10,8 +10,6 @@
 #include <dune/common/fmatrix.hh>
 #include <dune/grid/common/quadraturerules.hh>
 
-#include "../common/localinterpolation.hh"
-
 namespace Dune
 {
 

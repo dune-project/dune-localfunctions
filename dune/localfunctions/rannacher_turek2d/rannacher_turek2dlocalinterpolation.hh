@@ -5,7 +5,6 @@
 
 #include <vector>
 
-#include "../common/localinterpolation.hh"
 
 namespace Dune {
 

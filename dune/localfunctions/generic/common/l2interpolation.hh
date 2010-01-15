@@ -6,8 +6,6 @@
 #include <dune/localfunctions/generic/common/topologyfactory.hh>
 #include <dune/localfunctions/generic/math/matrix.hh>
 
-#include <dune/localfunctions/common/localinterpolation.hh>
-
 #include <dune/localfunctions/generic/quadrature/gaussquadrature.hh>
 
 namespace Dune

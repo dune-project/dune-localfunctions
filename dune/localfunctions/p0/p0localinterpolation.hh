@@ -5,7 +5,6 @@
 
 #include <dune/grid/common/genericreferenceelements.hh>
 
-#include "../common/localinterpolation.hh"
 
 namespace Dune
 {

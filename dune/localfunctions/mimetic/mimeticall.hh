@@ -11,7 +11,6 @@
 
 #include "../common/localbasis.hh"
 #include "../common/localcoefficients.hh"
-#include "../common/localinterpolation.hh"
 
 namespace Dune
 {

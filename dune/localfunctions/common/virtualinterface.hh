@@ -6,7 +6,6 @@
 #include <dune/common/function.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
-#include <dune/localfunctions/common/localinterpolation.hh>
 #include <dune/localfunctions/common/localcoefficients.hh>
 #include <dune/localfunctions/common/localfiniteelement.hh>
 

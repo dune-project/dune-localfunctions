@@ -14,7 +14,6 @@
 #include <dune/localfunctions/generic/common/topologyfactory.hh>
 #include <dune/localfunctions/generic/common/interpolationhelper.hh>
 #include <dune/localfunctions/generic/math/matrix.hh>
-#include <dune/localfunctions/common/localinterpolation.hh>
 #include <dune/localfunctions/common/localcoefficients.hh>
 
 #include <dune/localfunctions/generic/quadrature/gaussquadrature.hh>

@@ -5,8 +5,6 @@
 
 #include <dune/common/exceptions.hh>
 
-#include "../common/localinterpolation.hh"
-
 namespace Dune
 {
   template<class LB>

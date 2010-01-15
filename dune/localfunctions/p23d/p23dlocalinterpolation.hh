@@ -3,7 +3,6 @@
 #ifndef DUNE_P2_3DLOCALINTERPOLATION_HH
 #define DUNE_P2_3DLOCALINTERPOLATION_HH
 
-#include "../common/localinterpolation.hh"
 
 namespace Dune
 {

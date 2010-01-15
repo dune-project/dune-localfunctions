@@ -5,7 +5,6 @@
 
 #include <cmath>
 
-#include "../common/localinterpolation.hh"
 
 namespace Dune
 {

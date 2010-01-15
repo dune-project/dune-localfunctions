@@ -5,7 +5,6 @@
 
 #include <vector>
 #include <dune/localfunctions/generic/common/topologyfactory.hh>
-#include <dune/localfunctions/common/localinterpolation.hh>
 #include <dune/localfunctions/generic/lagrangebasis/lagrangecoefficients.hh>
 
 namespace Dune

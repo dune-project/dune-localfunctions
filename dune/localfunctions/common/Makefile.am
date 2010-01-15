@@ -6,7 +6,6 @@ common_HEADERS =				\
 	localbasis.hh				\
 	localcoefficients.hh			\
 	localfiniteelement.hh			\
-	localinterpolation.hh			\
 	simplebasis.hh				\
 	simpleinterpolation.hh                  \
 	virtualinterface.hh

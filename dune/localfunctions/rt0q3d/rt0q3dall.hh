@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "../common/localbasis.hh"
-#include "../common/localinterpolation.hh"
 #include "../common/localcoefficients.hh"
 
 namespace Dune

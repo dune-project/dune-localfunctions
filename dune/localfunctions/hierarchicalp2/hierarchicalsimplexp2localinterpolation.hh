@@ -3,7 +3,6 @@
 #ifndef DUNE_HIERARCHICAL_SIMPLEX_P2_LOCALINTERPOLATION_HH
 #define DUNE_HIERARCHICAL_SIMPLEX_P2_LOCALINTERPOLATION_HH
 
-#include "../common/localinterpolation.hh"
 
 namespace Dune
 {

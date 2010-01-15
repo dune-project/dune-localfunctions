@@ -3,7 +3,6 @@
 #ifndef DUNE_EDGER02DLOCALINTERPOLATION_HH
 #define DUNE_EDGER02DLOCALINTERPOLATION_HH
 
-#include "../common/localinterpolation.hh"
 
 namespace Dune
 {

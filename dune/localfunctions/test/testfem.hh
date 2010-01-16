@@ -84,7 +84,7 @@ private:
 // Check if localInterpolation is consistens with
 // localBasis evaluation.
 template<class FE>
-bool testLocalInterpolation(const FE& fe, int n=100)
+bool testLocalInterpolation(const FE& fe, int n=5)
 {
   bool success = true;
   LocalFEFunction<FE> f(fe);

@@ -3,6 +3,8 @@
 #ifndef DUNE_EDGER02DLOCALBASIS_HH
 #define DUNE_EDGER02DLOCALBASIS_HH
 
+#include <dune/common/fmatrix.hh>
+
 #include "../common/localbasis.hh"
 
 namespace Dune
@@ -31,8 +33,8 @@ namespace Dune
         D, 2,
         Dune::FieldVector<D,2>,
         R, 2,
-        Dune::FieldVector<R,3>,
-        Dune::FieldVector<Dune::FieldVector<R,2>, 1>
+        Dune::FieldVector<R,2>,
+        Dune::FieldMatrix<R,2,2>
         > Traits;
 
     //! \brief number of shape functions

@@ -3,6 +3,8 @@
 #ifndef DUNE_PQ22DLOCALFINITEELEMENT_HH
 #define DUNE_PQ22DLOCALFINITEELEMENT_HH
 
+#include <dune/common/fmatrix.hh>
+
 #include "common/virtualinterface.hh"
 #include "q22d.hh"
 #include "pk2d.hh"
@@ -14,7 +16,7 @@ namespace Dune
   {
     typedef Dune::FieldVector<D,2> Domain;
     typedef Dune::FieldVector<R,1> Range;
-    typedef C1LocalBasisTraits<D,2,Domain, R,1,Range, Dune::FieldVector<Domain,1> > BasisTraits;
+    typedef C1LocalBasisTraits<D,2,Domain, R,1,Range, Dune::FieldMatrix<R,1,2> > BasisTraits;
   public:
     typedef LocalFiniteElementTraits<
         C1LocalBasisVirtualInterface<BasisTraits>,

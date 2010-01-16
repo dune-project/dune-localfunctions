@@ -7,6 +7,8 @@
     \brief Hierarchical p2 shape functions for the simplex
  */
 
+#include <dune/common/fmatrix.hh>
+
 #include "../common/localbasis.hh"
 
 namespace Dune
@@ -41,7 +43,7 @@ namespace Dune
   public:
     //! \brief export type traits for function signature
     typedef C1LocalBasisTraits<D,1,Dune::FieldVector<D,1>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldVector<Dune::FieldVector<R,1>,1> > Traits;
+        Dune::FieldMatrix<R,1,1> > Traits;
 
     //! \brief number of shape functions
     unsigned int size () const
@@ -107,7 +109,7 @@ namespace Dune
   public:
     //! \brief export type traits for function signature
     typedef C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldVector<Dune::FieldVector<R,2>,1> > Traits;
+        Dune::FieldMatrix<R,1,2> > Traits;
 
     //! \brief number of shape functions
     unsigned int size () const
@@ -190,7 +192,7 @@ namespace Dune
   public:
     //! \brief export type traits for function signature
     typedef C1LocalBasisTraits<D,3,Dune::FieldVector<D,3>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldVector<Dune::FieldVector<R,3>,1> > Traits;
+        Dune::FieldMatrix<R,1,3> > Traits;
 
     //! \brief number of shape functions
     unsigned int size () const

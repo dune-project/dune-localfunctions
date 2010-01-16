@@ -5,6 +5,8 @@
 
 #include <cassert>
 
+#include <dune/common/fmatrix.hh>
+
 #include <dune/grid/common/referenceelements.hh>
 
 #include "../common/localbasis.hh"
@@ -215,7 +217,7 @@ namespace Dune
   public:
     //! \brief export type traits for function signature
     typedef CkLocalBasisTraits<D,d,Dune::FieldVector<D,d>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldVector<Dune::FieldVector<R,d>,1>,p> Traits;
+        Dune::FieldMatrix<R,1,d>,p> Traits;
 
     //! \brief number of shape functions
     unsigned int size () const

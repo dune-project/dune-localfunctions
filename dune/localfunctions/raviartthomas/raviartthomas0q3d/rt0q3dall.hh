@@ -6,6 +6,8 @@
 #include <cstddef>
 #include <vector>
 
+#include <dune/common/fmatrix.hh>
+
 #include "../common/localbasis.hh"
 #include "../common/localkey.hh"
 
@@ -24,7 +26,7 @@ namespace Dune
   {
   public:
     typedef C1LocalBasisTraits<D,3,Dune::FieldVector<D,3>,R,3,Dune::FieldVector<R,3>,
-        Dune::FieldVector<Dune::FieldVector<R,3>,3> > Traits;
+        Dune::FieldMatrix<R,3,3> > Traits;
 
     //! \brief Standard constructor
     RT0Q3DLocalBasis ()

@@ -3,6 +3,8 @@
 #ifndef DUNE_PK2DLOCALBASIS_HH
 #define DUNE_PK2DLOCALBASIS_HH
 
+#include <dune/common/fmatrix.hh>
+
 #include "../common/localbasis.hh"
 
 namespace Dune
@@ -33,7 +35,7 @@ namespace Dune
     enum {O = k};
 
     typedef C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldVector<Dune::FieldVector<R,2>,1> > Traits;
+        Dune::FieldMatrix<R,1,2> > Traits;
 
     //! \brief Standard constructor
     Pk2DLocalBasis ()
@@ -162,7 +164,7 @@ namespace Dune
   {
   public:
     typedef C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldVector<Dune::FieldVector<R,2>,1> > Traits;
+        Dune::FieldMatrix<R,1,2> > Traits;
 
     unsigned int size () const
     {

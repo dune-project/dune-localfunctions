@@ -6,6 +6,7 @@
 #include <vector>
 
 #include <dune/common/fvector.hh>
+#include <dune/common/fmatrix.hh>
 
 #include "../common/localbasis.hh"
 
@@ -17,7 +18,7 @@ namespace Dune {
   public:
     typedef C1LocalBasisTraits<D,2,FieldVector<D,2>,
         R,1,FieldVector<R,1>,
-        FieldVector<FieldVector<R,2>,1> > Traits;
+        FieldMatrix<R,1,2> > Traits;
 
     unsigned int size () const {
       return 4;

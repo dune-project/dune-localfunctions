@@ -5,6 +5,8 @@
 
 #include <cmath>
 
+#include <dune/common/fmatrix.hh>
+
 #include "../common/localbasis.hh"
 
 namespace Dune
@@ -27,7 +29,7 @@ namespace Dune
     typedef C1LocalBasisTraits<
         D,2,Dune::FieldVector<D,2>,
         R,2,Dune::FieldVector<R,2>,
-        Dune::FieldVector<Dune::FieldVector<R,2>,2>
+        Dune::FieldMatrix<R,2,2>
         > Traits;
 
     //! contruct a local basis instance with default orientations

@@ -3,6 +3,8 @@
 #ifndef DUNE_RT0TRIANGLELOCALBASIS_HH
 #define DUNE_RT0TRIANGLELOCALBASIS_HH
 
+#include <dune/common/fmatrix.hh>
+
 #include "../common/localbasis.hh"
 
 namespace Dune
@@ -20,7 +22,7 @@ namespace Dune
   {
   public:
     typedef C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,2,Dune::FieldVector<R,2>,
-        Dune::FieldVector<Dune::FieldVector<R,2>,2> > Traits;
+        Dune::FieldMatrix<R,2,2> > Traits;
 
     //! \brief Standard constructor
     RT02DLocalBasis ()

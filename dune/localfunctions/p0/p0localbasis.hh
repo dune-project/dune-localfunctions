@@ -5,6 +5,8 @@
 
 #include <dune/grid/common/referenceelements.hh>
 
+#include <dune/common/fmatrix.hh>
+
 #include "../common/localbasis.hh"
 
 namespace Dune
@@ -27,7 +29,7 @@ namespace Dune
   public:
     //! \brief export type traits for function signature
     typedef C1LocalBasisTraits<D,d,Dune::FieldVector<D,d>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldVector<Dune::FieldVector<R,d>,1> > Traits;
+        Dune::FieldMatrix<R,1,d> > Traits;
 
     //! \brief number of shape functions
     unsigned int size () const

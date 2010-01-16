@@ -3,6 +3,8 @@
 #ifndef DUNE_Q1_LOCALBASIS_HH
 #define DUNE_Q1_LOCALBASIS_HH
 
+#include <dune/common/fmatrix.hh>
+
 #include "../common/localbasis.hh"
 
 namespace Dune
@@ -23,7 +25,7 @@ namespace Dune
   {
   public:
     typedef C1LocalBasisTraits<D,dim,Dune::FieldVector<D,dim>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldVector<Dune::FieldVector<R,dim>,1> > Traits;
+        Dune::FieldMatrix<R,1,dim> > Traits;
 
     //! \brief number of shape functions
     unsigned int size () const

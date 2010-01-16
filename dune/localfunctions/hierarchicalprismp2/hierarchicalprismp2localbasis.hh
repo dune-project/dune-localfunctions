@@ -7,6 +7,8 @@
     \brief Hierarchical prism p2 shape functions for the simplex
  */
 
+#include <dune/common/fmatrix.hh>
+
 #include "../common/localbasis.hh"
 
 namespace Dune
@@ -16,7 +18,7 @@ namespace Dune
   {
   public:
     //! \brief export type traits for function signature
-    typedef C1LocalBasisTraits<D,3,Dune::FieldVector<D,3>,R,1,Dune::FieldVector<R,1>, Dune::FieldVector<Dune::FieldVector<R,3>,1> > Traits;
+    typedef C1LocalBasisTraits<D,3,Dune::FieldVector<D,3>,R,1,Dune::FieldVector<R,1>, Dune::FieldMatrix<R,1,3> > Traits;
 
     //! \brief number of shape functions
     unsigned int size () const

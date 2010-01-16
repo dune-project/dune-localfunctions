@@ -285,7 +285,7 @@ namespace Dune
       FaceQuadratureProvider;
       typedef Dune::GenericGeometry::ReferenceMappings< Field, dimension > RefMappings;
       typedef typename RefMappings::Container::
-      template Codim< dimension-1 >::Mapping Mapping;
+      template Codim< 1 >::Mapping Mapping;
 
       for (unsigned int f=0; f<builder_.faceSize(); ++f)
       {
@@ -294,7 +294,7 @@ namespace Dune
         testBasisVal.resize(builder_.testFaceBasis(f)->size());
 
         const Mapping& mapping = RefMappings::container( topologyId ).
-                                 template mapping< dimension-1 >( f );
+                                 template mapping< 1 >( f );
         const unsigned int subTopologyId = mapping.topologyId();
         const typename FaceQuadratureProvider::Object *faceQuad = FaceQuadratureProvider::create( subTopologyId, 2*order_+2 );
 

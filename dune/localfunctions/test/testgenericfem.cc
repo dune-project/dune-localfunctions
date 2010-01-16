@@ -105,17 +105,15 @@ int main(int argc, char** argv) try
     onbPrism(5,order);
     success &= testFE(onbPrism);
   }
-  /*
-     std::cout << "Testing RaviartThomasFiniteElement on 3d"
+  std::cout << "Testing RaviartThomasFiniteElement on 3d"
             << " simplex elements with double precision" << std::endl;
-     for (unsigned int order=0;order<=4;++order)
-     {
-     std::cout << "order : " << order << std::endl;
-     Dune::RaviartThomasLocalFiniteElement<3,double,double>
-      lagrangeCube(0,order);
-     success &= testFE(lagrangeCube);
-     }
-   */
+  for (unsigned int order=0; order<=3; ++order)
+  {
+    std::cout << "order : " << order << std::endl;
+    Dune::RaviartThomasLocalFiniteElement<3,double,double>
+    lagrangeCube(0,order);
+    success &= testFE(lagrangeCube);
+  }
 
   return success;
 }

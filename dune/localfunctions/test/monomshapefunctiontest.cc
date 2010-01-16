@@ -22,6 +22,7 @@ void testShapeFunctionDerivative(const GeometryType& type)
 {
 
   MonomLocalFiniteElement<double,double,dim,order> shapeFunctionSet(type.basicType());
+  typedef typename MonomLocalFiniteElement<double,double,dim,order>::Traits::LocalBasisType::Traits LBTraits;
 
   // ////////////////////////////////////////////////////////////
   //   Check the partial derivatives by comparing them
@@ -38,7 +39,7 @@ void testShapeFunctionDerivative(const GeometryType& type)
     const FieldVector<double,dim>& testPoint = quad[i].position();
 
     // Get the shape function derivatives there
-    std::vector<FieldVector<FieldVector<double,dim>,1> > jacobians;
+    std::vector<typename LBTraits::JacobianType> jacobians;
     shapeFunctionSet.localBasis().evaluateJacobian(testPoint, jacobians);
 
     // Loop over all shape functions in this set

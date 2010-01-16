@@ -115,7 +115,7 @@ int main(int argc, char** argv) try
     success &= testFE(lagrangeCube);
   }
 
-  return success;
+  return success ? 0 : 1;
 }
 catch (const Dune::Exception &e)
 {

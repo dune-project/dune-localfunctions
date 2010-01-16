@@ -181,7 +181,7 @@ int main(int argc, char** argv) try
   success = testMonomials<2>() and success;
 
 
-  return success;
+  return success ? 0 : 1;
 }
 catch (Dune::Exception e)
 {

@@ -101,8 +101,10 @@ int testForDim()
                                                 p1values,
                                                 refp1values;
 
+      typedef typename Dune::PkLocalFiniteElement<typename GridType::ctype,double,dim,1>::Traits::LocalBasisType::Traits::JacobianType PkJacobianType;
+
       std::vector<typename Dune::RefinedP1LocalFiniteElement<typename GridType::ctype,double,dim>::Traits::LocalBasisType::Traits::JacobianType> refp1grads;
-      std::vector<typename Dune::PkLocalFiniteElement<typename GridType::ctype,double,dim,1>::Traits::LocalBasisType::Traits::JacobianType> p1grads_, p1grads;
+      std::vector<PkJacobianType> p1grads_, p1grads;
 
       p1element.localBasis().evaluateFunction(randomPoint, p1values_);
       refp1element.localBasis().evaluateFunction(element->geometry().global(randomPoint),refp1values);
@@ -111,7 +113,10 @@ int testForDim()
       refp1element.localBasis().evaluateJacobian(element->geometry().global(randomPoint), refp1grads);
 
       p1values.assign(refp1values.size(),0.0);
-      p1grads.assign(refp1grads.size(),Dune::FieldVector<double,dim>(0.0));
+
+      PkJacobianType zeroJacobian;
+      zeroJacobian = 0.0;
+      p1grads.assign(refp1grads.size(),zeroJacobian);
 
       const Dune::FieldMatrix<double,dim,dim>& invJacobian = element->geometry().jacobianInverseTransposed(randomPoint);
 

@@ -51,7 +51,11 @@ namespace Dune
     template <class DomainVector>
     const Result &evaluate(const DomainVector &x) const
     {
-      field_cast(func_( x ), tmp_[0] );
+      typename Func::DomainType xx ;
+      typename Func::RangeType ff ;
+      field_cast(x,xx);
+      func_.evaluate(xx,ff);
+      field_cast(ff, tmp_[0] );
       return tmp_;
     }
     unsigned int size() const

@@ -125,6 +125,16 @@ bool testLocalInterpolation(const FE& fe, int n=100)
   return success;
 }
 
+template<class FE>
+bool testJacobian(const FE& fe)
+{
+  typename FE::Traits::LocalBasisType::Traits::DomainType in(0);
+  std::vector<typename FE::Traits::LocalBasisType::Traits::JacobianType> out;
+
+  fe.localBasis().evaluateJacobian(in, out);
+
+  return (out.size() == fe.localBasis().size());
+}
 
 // call tests for given finite element
 template<class FE>
@@ -136,6 +146,7 @@ bool testFE(const FE& fe)
 
   bool success = true;
   success = testLocalInterpolation<FE>(fe) and success;
+  success = testJacobian<FE>(fe) and success;
 
   typedef typename FE::Traits::LocalBasisType::Traits LBTraits;
   typedef typename Dune::C0LocalBasisTraitsFromOther<LBTraits>::Traits C0LBTraits;
@@ -145,6 +156,7 @@ bool testFE(const FE& fe)
 #if 0 // this does not work if FE returns virtual basis, interpolation, or coefficients
   const VirtualFEImp virtualFE(fe);
   success = testLocalInterpolation<VirtualFEInterface>(virtualFE) and success;
+  success = testJacobian<VirtualFEInterface>(virtualFE) and success;
 #endif
   return success;
 }

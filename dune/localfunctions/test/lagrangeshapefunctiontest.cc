@@ -54,6 +54,7 @@ void getPkTestPoints(unsigned order, unsigned level, std::vector<FieldVector<dou
 template <class FE>
 void testPk(const FE& local_fe)
 {
+  typedef typename FE::Traits::LocalBasisType::Traits LBTraits;
   const int dim = FE::Traits::LocalBasisType::Traits::dimDomain;
   const unsigned order = local_fe.localBasis().order();
 
@@ -90,7 +91,7 @@ void testPk(const FE& local_fe)
     //////////////////////////////////////////////////////////////////
 
     // Get the shape function derivatives at pos
-    std::vector<FieldVector<FieldVector<double,dim>,1> > jacobians;
+    std::vector<typename LBTraits::JacobianType> jacobians;
     local_fe.localBasis().evaluateJacobian(pos, jacobians);
 
     // Loop over all axes

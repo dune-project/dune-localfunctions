@@ -14,6 +14,12 @@ namespace Dune
 {
 
   /** \brief Lowest order 2D edge elements for triangles
+
+      \note This class does not implement the usual
+            LocalFiniteElementInterface since that does not make much sense
+            for vector valued elements.  An experimental interface providing
+            global rather than local values is provided instead.  Be warned
+            that this interface is subject to change without notice, however.
    */
   template<class D, class R>
   class EdgeS02DLocalFiniteElement

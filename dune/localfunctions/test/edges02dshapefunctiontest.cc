@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include <dune/grid/common/quadraturerules.hh>
+#include <dune/grid/genericgeometry/geometry.hh>
 
 #include <dune/localfunctions/edges02d.hh>
 
@@ -16,6 +17,49 @@ bool success = true;
 double epsilon = 1e-8;
 
 using namespace Dune;
+
+// Identity geometry matching general reference elements
+template<typename ctype, unsigned dim>
+class ReferenceGeometry
+  : public Dune::GenericGeometry::BasicGeometry<
+      dim,
+      Dune::GenericGeometry::DefaultGeometryTraits<ctype, dim, dim, true> >
+{
+  typedef Dune::GenericGeometry::BasicGeometry<
+      dim,
+      Dune::GenericGeometry::DefaultGeometryTraits<ctype, dim, dim, true> >
+  Base;
+  class RefelemCorners {
+    const Dune::GenericReferenceElement<ctype, dim>& refelem;
+
+  public:
+    RefelemCorners(const Dune::GeometryType& gt)
+      : refelem(Dune::GenericReferenceElements<ctype, dim>::general(gt))
+    {}
+
+    const Dune::FieldVector<ctype, dim>&
+    operator[](unsigned i) const
+    { return refelem.position(i, dim); }
+  };
+
+public:
+  ReferenceGeometry(const Dune::GeometryType& gt)
+    : Base(gt, RefelemCorners(gt))
+  {}
+};
+
+// Identity geometry matching reference simplices
+template<typename ctype, unsigned dim>
+class SimplexGeometry
+  : public ReferenceGeometry<ctype, dim>
+{
+public:
+  SimplexGeometry()
+    : ReferenceGeometry<ctype, dim>
+        (Dune::GeometryType(Dune::GeometryType::simplex,dim))
+  {}
+};
+
 
 void testShapeFunctionDerivative(unsigned int orientation, int order)
 {
@@ -34,6 +78,7 @@ void testShapeFunctionDerivative(unsigned int orientation, int order)
   // Bad: dependence on dune-grid.  Only for the test points, though
   const QuadratureRule<double,LB::Traits::dimDomain> quad =
     QuadratureRules<double,LB::Traits::dimDomain>::rule(lFE.type(),order);
+  const SimplexGeometry<double,LB::Traits::dimDomain> geometry;
 
   // Loop over all quadrature points
   for (size_t i=0; i<quad.size(); i++) {
@@ -43,7 +88,7 @@ void testShapeFunctionDerivative(unsigned int orientation, int order)
 
     // Get the shape function derivatives there
     std::vector<LB::Traits::JacobianType> jacobians;
-    lFE.localBasis().evaluateJacobian(testPoint, jacobians);
+    lFE.localBasis().evaluateJacobianGlobal(testPoint, jacobians, geometry);
 
     // Loop over all shape functions in this set
     for (unsigned int j=0; j<lFE.localBasis().size(); ++j) {
@@ -60,8 +105,8 @@ void testShapeFunctionDerivative(unsigned int orientation, int order)
 
         std::vector<LB::Traits::RangeType> upValues, downValues;
 
-        lFE.localBasis().evaluateFunction(upPos,   upValues);
-        lFE.localBasis().evaluateFunction(downPos, downValues);
+        lFE.localBasis().evaluateFunctionGlobal(upPos,   upValues,   geometry);
+        lFE.localBasis().evaluateFunctionGlobal(downPos, downValues, geometry);
 
         //Loop over all components
         for(int l=0; l < LB::Traits::dimRange; ++l) {

@@ -38,6 +38,7 @@
 #include <dune/localfunctions/common/virtualinterface.hh>
 
 #include "testfem.hh"
+#include "testfemglobal.hh"
 
 // tmp for testing arbitrary order finite elements
 template<int k>
@@ -160,10 +161,10 @@ int main(int argc, char** argv) try
   success = testFE(edger02dlfem) and success;
 
   Dune::EdgeS02DLocalFiniteElement<double,double> edges02dlfem;
-  success = testFE(edges02dlfem) and success;
+  success = testFEGlobal(edges02dlfem) and success;
 
   Dune::EdgeS03DLocalFiniteElement<double,double> edges03dlfem;
-  success = testFE(edges03dlfem) and success;
+  success = testFEGlobal(edges03dlfem) and success;
 
   Dune::RT02DLocalFiniteElement<double,double> rt02dlfem(1);
   success = testFE(rt02dlfem) and success;

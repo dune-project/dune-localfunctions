@@ -19,6 +19,10 @@ check_PROGRAMS = $(TESTS)
 # output code coverage
 #AM_CXXFLAGS = @AM_CPPFLAGS@ -fprofile-arcs -ftest-coverage
 
+noinst_HEADERS =				\
+	testfem.hh				\
+	testfemglobal.hh
+
 # define the programs
 
 testfem_SOURCES = testfem.cc

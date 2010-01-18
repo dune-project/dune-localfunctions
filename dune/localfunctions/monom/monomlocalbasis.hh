@@ -216,7 +216,7 @@ namespace Dune
 
   public:
     //! \brief export type traits for function signature
-    typedef CkLocalBasisTraits<D,d,Dune::FieldVector<D,d>,R,1,Dune::FieldVector<R,1>,
+    typedef LocalBasisTraits<D,d,Dune::FieldVector<D,d>,R,1,Dune::FieldVector<R,1>,
         Dune::FieldMatrix<R,1,d>,p> Traits;
 
     //! \brief number of shape functions
@@ -233,7 +233,7 @@ namespace Dune
     }
 
     //! return given derivative of all components
-    template<int k>
+    template<unsigned int k>
     inline void evaluate (const array<int,k>& directions,
                           const typename Traits::DomainType& in,
                           std::vector<typename Traits::RangeType>& out) const

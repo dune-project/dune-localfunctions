@@ -6,6 +6,7 @@
 #include <dune/common/fmatrix.hh>
 
 #include "common/virtualinterface.hh"
+#include "common/virtualwrappers.hh"
 #include "q22d.hh"
 #include "pk2d.hh"
 
@@ -16,10 +17,12 @@ namespace Dune
   {
     typedef Dune::FieldVector<D,2> Domain;
     typedef Dune::FieldVector<R,1> Range;
-    typedef C1LocalBasisTraits<D,2,Domain, R,1,Range, Dune::FieldMatrix<R,1,2> > BasisTraits;
+    typedef LocalBasisTraits<D,2,Domain, R,1,Range, Dune::FieldMatrix<R,1,2>, 0 > BasisTraits;
+
+    typedef typename Dune::LocalFiniteElementVirtualInterface<BasisTraits> LocalFiniteElementBase;
   public:
     typedef LocalFiniteElementTraits<
-        C1LocalBasisVirtualInterface<BasisTraits>,
+        LocalBasisVirtualInterface<BasisTraits>,
         LocalCoefficientsVirtualInterface,
         LocalInterpolationVirtualInterface< Domain, Range >
         > Traits;
@@ -28,17 +31,16 @@ namespace Dune
     typedef typename Traits::LocalInterpolationType LocalInterpolation;
 
     PQ22DLocalFiniteElement ( const GeometryType &gt )
-      : gt_(gt),
-        basis_(0), coefficients_(0), interpolation_(0)
+      : gt_(gt)
     {
       if ( gt.isTriangle() )
         setup( Pk2DLocalFiniteElement<D,R,2>() );
       else if ( gt.isQuadrilateral() )
         setup( Q22DLocalFiniteElement<D,R>() );
     }
+
     PQ22DLocalFiniteElement ( const GeometryType &gt, const std::vector<unsigned int> vertexmap )
-      : gt_(gt),
-        basis_(0), coefficients_(0), interpolation_(0)
+      : gt_(gt)
     {
       if ( gt.isTriangle() )
         setup( Pk2DLocalFiniteElement<D,R,2>(vertexmap) );
@@ -46,41 +48,47 @@ namespace Dune
         setup( Q22DLocalFiniteElement<D,R>() );
     }
 
-    virtual ~PQ22DLocalFiniteElement ( )
+    PQ22DLocalFiniteElement ( const PQ22DLocalFiniteElement<D, R>& other )
+      : gt_(other.gt_)
     {
-      delete coefficients_;
-      delete interpolation_;
-      delete basis_;
+      fe_ = other.fe_->clone();
     }
+
+    ~PQ22DLocalFiniteElement ( )
+    {
+      delete fe_;
+    }
+
     const LocalBasis& localBasis () const
     {
-      return *basis_;
+      return fe_->localBasis();
     }
+
     const LocalCoefficients& localCoefficients () const
     {
-      return *coefficients_;
+      return fe_->localCoefficients();
     }
+
     const LocalInterpolation& localInterpolation () const
     {
-      return *interpolation_;
+      return fe_->localInterpolation();
     }
+
     const GeometryType &type () const
     {
       return gt_;
     }
+
   private:
+
     template <class FE>
     void setup(const FE& fe)
     {
-      basis_ = new C1LocalBasisVirtualImp< BasisTraits, typename FE::Traits::LocalBasisType >(fe.localBasis());
-      coefficients_ = new LocalCoefficientsVirtualImp< typename FE::Traits::LocalCoefficientsType >(fe.localCoefficients());
-      interpolation_ = new LocalInterpolationVirtualImp< Domain, Range, typename FE::Traits::LocalInterpolationType >(fe.localInterpolation());
+      fe_ = new LocalFiniteElementVirtualImp<FE>(fe);
     }
 
     const GeometryType gt_;
-    const LocalBasis *basis_;
-    const LocalCoefficients *coefficients_;
-    const LocalInterpolation *interpolation_;
+    const LocalFiniteElementBase *fe_;
   };
 
 }

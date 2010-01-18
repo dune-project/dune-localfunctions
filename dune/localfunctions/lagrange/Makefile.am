@@ -1,7 +1,7 @@
-lagrangebasisdir = $(includedir)/dune/localfunctions/generic/lagrangebasis
-lagrangebasis_HEADERS = emptypoints.hh        lagrangebasis.hh         \
-                        equidistantpoints.hh  lagrangecoefficients.hh  \
-                        interpolation.hh      lobattopoints.hh
+lagrangedir = $(includedir)/dune/localfunctions/lagrange
+lagrange_HEADERS = emptypoints.hh        lagrangebasis.hh         \
+                   equidistantpoints.hh  lagrangecoefficients.hh  \
+                   interpolation.hh      lobattopoints.hh
 
 check_PROGRAMS = test-all
 EXTRA_PROGRMAS = test
@@ -18,5 +18,3 @@ test_all_CPPFLAGS = $(DUNE_CPPFLAGS) $(GMP_CPPFLAGS) $(ALGLIB_CPPFLAGS) $(AM_CPP
 LDADD = $(DUNE_LDFLAGS) $(DUNE_LIBS) $(GMP_LIBS) $(ALGLIB_LIBS)
 
 include $(top_srcdir)/am/global-rules
-
-

@@ -4,11 +4,11 @@
 
 #include <dune/localfunctions/utility/field.hh>
 
-#include <dune/localfunctions/generic/lagrangebasis/equidistantpoints.hh>
+#include <dune/localfunctions/lagrange/equidistantpoints.hh>
 
-#include <dune/localfunctions/generic/lagrangebasis/lobattopoints.hh>
+#include <dune/localfunctions/lagrange/lobattopoints.hh>
 
-#include <dune/localfunctions/generic/lagrangebasis/lagrangebasis.hh>
+#include <dune/localfunctions/lagrange/lagrangebasis.hh>
 #include <dune/localfunctions/generic/quadrature/genericquadrature.hh>
 #include <dune/localfunctions/utility/basisprint.hh>
 

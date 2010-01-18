@@ -15,13 +15,12 @@
 #include <dune/localfunctions/utility/gmpfield.hh>
 
 // Lagrange type elements
-#include <dune/localfunctions/generic/lagrangefiniteelement.hh>
-#include <dune/localfunctions/generic/lagrangebasis/equidistantpoints.hh>
-#include <dune/localfunctions/generic/lagrangebasis/lobattopoints.hh>
+#include <dune/localfunctions/lagrange.hh>
+#include <dune/localfunctions/lagrange/equidistantpoints.hh>
+#include <dune/localfunctions/lagrange/lobattopoints.hh>
 
 // DG type elements
 #include <dune/localfunctions/generic/orthonormalfiniteelement.hh>
-#include <dune/localfunctions/generic/dglagrangefiniteelement.hh>
 
 // Raviart Thomas type elements
 #include <dune/localfunctions/generic/raviartthomasfiniteelement.hh>

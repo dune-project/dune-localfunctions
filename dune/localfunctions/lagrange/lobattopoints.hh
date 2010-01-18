@@ -12,8 +12,8 @@
 #include <dune/grid/genericgeometry/referencemappings.hh>
 
 #include <dune/localfunctions/generic/quadrature/lobattoquadrature.hh>
-#include <dune/localfunctions/generic/lagrangebasis/lagrangecoefficients.hh>
-#include <dune/localfunctions/generic/lagrangebasis/emptypoints.hh>
+#include <dune/localfunctions/lagrange/lagrangecoefficients.hh>
+#include <dune/localfunctions/lagrange/emptypoints.hh>
 
 namespace Dune
 {

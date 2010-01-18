@@ -12,7 +12,7 @@
 #include <dune/grid/genericgeometry/topologytypes.hh>
 #include <dune/grid/genericgeometry/subtopologies.hh>
 
-#include <dune/localfunctions/generic/lagrangebasis/emptypoints.hh>
+#include <dune/localfunctions/lagrange/emptypoints.hh>
 
 namespace Dune
 {

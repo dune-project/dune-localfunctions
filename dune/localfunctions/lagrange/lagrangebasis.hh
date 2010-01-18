@@ -10,7 +10,7 @@
 
 #include <dune/localfunctions/utility/monomialbasis.hh>
 #include <dune/localfunctions/generic/orthonormalbasis/orthonormalbasis.hh>
-#include <dune/localfunctions/generic/lagrangebasis/interpolation.hh>
+#include <dune/localfunctions/lagrange/interpolation.hh>
 
 namespace Dune
 {

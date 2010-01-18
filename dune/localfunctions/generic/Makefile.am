@@ -1,9 +1,7 @@
 genericdir = $(includedir)/dune/localfunctions/generic
-generic_HEADERS = lagrangefiniteelement.hh \
-                  dglagrangefiniteelement.hh \
-                  orthonormalfiniteelement.hh \
+generic_HEADERS = orthonormalfiniteelement.hh \
                   raviartthomasfiniteelement.hh
-SUBDIRS = orthonormalbasis lagrangebasis raviartthomasbasis quadrature
+SUBDIRS = orthonormalbasis raviartthomasbasis quadrature
 AM_CPPFLAGS = $(DUNE_CPPFLAGS)
 
 include $(top_srcdir)/am/global-rules

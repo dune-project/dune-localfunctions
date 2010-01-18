@@ -5,7 +5,7 @@
 
 #include <vector>
 #include <dune/localfunctions/utility/topologyfactory.hh>
-#include <dune/localfunctions/generic/lagrangebasis/lagrangecoefficients.hh>
+#include <dune/localfunctions/lagrange/lagrangecoefficients.hh>
 
 namespace Dune
 {

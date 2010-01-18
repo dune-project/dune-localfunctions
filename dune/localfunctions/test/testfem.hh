@@ -11,7 +11,7 @@
 #include <dune/localfunctions/common/virtualinterface.hh>
 #include <dune/localfunctions/common/virtualwrappers.hh>
 
-double TOL = 1e-10;
+double TOL = 1e-9;
 // The FD approximation used for checking the Jacobian uses half of the
 // precision -- so we have to be a little bit more tolerant here.
 double jacobianTOL = 1e-5;  // sqrt(TOL)

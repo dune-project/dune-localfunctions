@@ -4,7 +4,7 @@ lagrange_HEADERS = emptypoints.hh        lagrangebasis.hh         \
                    interpolation.hh      lobattopoints.hh
 
 check_PROGRAMS = test-all
-EXTRA_PROGRMAS = test
+EXTRA_PROGRAMS = test
 
 
 TOPOLOGY = Pyramid< Pyramid< Pyramid< Point > > >

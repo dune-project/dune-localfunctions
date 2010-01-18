@@ -23,7 +23,7 @@
 #include <dune/localfunctions/orthonormal.hh>
 
 // Raviart Thomas type elements
-#include <dune/localfunctions/generic/raviartthomasfiniteelement.hh>
+#include <dune/localfunctions/raviartthomas.hh>
 
 #include "testfem.hh"
 

@@ -1,5 +1,5 @@
-rt02ddir = $(includedir)/dune/localfunctions/rt02d
+raviartthomas02ddir = $(includedir)/dune/localfunctions/raviartthomas02d
 
-rt02d_HEADERS = rt02dlocalbasis.hh rt02dlocalcoefficients.hh rt02dlocalinterpolation.hh
+raviartthomas02d_HEADERS = raviartthomas02dlocalbasis.hh raviartthomas02dlocalcoefficients.hh raviartthomas02dlocalinterpolation.hh
 
 include $(top_srcdir)/am/global-rules

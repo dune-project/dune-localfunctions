@@ -8,6 +8,7 @@ common_HEADERS =				\
 	localfiniteelementtraits.hh		\
 	simplebasis.hh				\
 	simpleinterpolation.hh                  \
-	virtualinterface.hh
+	virtualinterface.hh 	\
+	virtualwrappers.hh
 
 include $(top_srcdir)/am/global-rules

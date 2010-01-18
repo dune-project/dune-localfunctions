@@ -47,7 +47,7 @@ namespace Dune
   {
   public:
     //! \brief export type traits for function signature
-    typedef C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>, Dune::FieldMatrix<R,1,2> > Traits;
+    typedef LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>, Dune::FieldMatrix<R,1,2> > Traits;
 
     //! \brief number of shape functions
     unsigned int size () const

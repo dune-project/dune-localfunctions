@@ -33,7 +33,7 @@ namespace Dune
   {
   public:
     //! \brief export type traits for function signature
-    typedef C1LocalBasisTraits<
+    typedef LocalBasisTraits<
         D,3,Dune::FieldVector<D,3>,
         R,3,Dune::FieldVector<R,3>,
         Dune::FieldMatrix<R,3,3>

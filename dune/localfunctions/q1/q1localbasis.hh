@@ -24,7 +24,7 @@ namespace Dune
   class Q1LocalBasis
   {
   public:
-    typedef C1LocalBasisTraits<D,dim,Dune::FieldVector<D,dim>,R,1,Dune::FieldVector<R,1>,
+    typedef LocalBasisTraits<D,dim,Dune::FieldVector<D,dim>,R,1,Dune::FieldVector<R,1>,
         Dune::FieldMatrix<R,1,dim> > Traits;
 
     //! \brief number of shape functions

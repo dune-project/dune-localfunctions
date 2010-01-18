@@ -16,7 +16,7 @@ namespace Dune {
   class RannacherTurek2DLocalBasis
   {
   public:
-    typedef C1LocalBasisTraits<D,2,FieldVector<D,2>,
+    typedef LocalBasisTraits<D,2,FieldVector<D,2>,
         R,1,FieldVector<R,1>,
         FieldMatrix<R,1,2> > Traits;
 

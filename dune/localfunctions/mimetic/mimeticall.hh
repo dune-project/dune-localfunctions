@@ -17,13 +17,13 @@ namespace Dune
   template<class D, class R, int dim>
   class MimeticLocalBasis :
     public Dune::C0LocalBasisInterface<
-        Dune::C0LocalBasisTraits<D,dim,Dune::FieldVector<D,dim>,
+        Dune::LocalBasisTraits<D,dim,Dune::FieldVector<D,dim>,
             R,1,Dune::FieldVector<R,1> >,
         MimeticLocalBasis<D,R,dim> >
   {
   public:
-    typedef Dune::C0LocalBasisTraits<D,dim,Dune::FieldVector<D,dim>,
-        R,1,Dune::FieldVector<R,1> > Traits;
+    typedef Dune::LocalBasisTraits<D,dim,Dune::FieldVector<D,dim>,
+        R,1,Dune::FieldVector<R,1>, Dune::FielMatrix<R,1,dim> > Traits;
 
     MimeticLocalBasis (unsigned int variant_)
       : variant(variant_)
@@ -41,6 +41,14 @@ namespace Dune
       std::vector<typename Traits::RangeType>& out) const
     {
       DUNE_THROW(Dune::Exception,"mimetic basis evaluation not available");
+    }
+
+    //! \brief Evaluate Jacobian of all shape functions
+    inline void evaluateJacobian (
+      const typename Traits::DomainType& in,
+      std::vector<typename Traits::JacobianType>& out) const
+    {
+      DUNE_THROW(Dune::Exception,"mimetic basis Jacobian evaluation not available");
     }
 
     //! \brief Polynomial order of the shape functions

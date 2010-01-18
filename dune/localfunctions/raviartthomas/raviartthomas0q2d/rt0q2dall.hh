@@ -25,7 +25,7 @@ namespace Dune
   class RT0Q2DLocalBasis
   {
   public:
-    typedef C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,2,Dune::FieldVector<R,2>,
+    typedef LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,2,Dune::FieldVector<R,2>,
         Dune::FieldMatrix<R,2,2> > Traits;
 
     //! \brief Standard constructor

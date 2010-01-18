@@ -28,7 +28,7 @@ namespace Dune
     enum {N = (k+1)*(k+2)*(k+3)/6};
     enum {O = k};
 
-    typedef C1LocalBasisTraits<D,3,Dune::FieldVector<D,3>,R,1,Dune::FieldVector<R,1>,
+    typedef LocalBasisTraits<D,3,Dune::FieldVector<D,3>,R,1,Dune::FieldVector<R,1>,
         Dune::FieldMatrix<R,1,3> > Traits;
 
     //! \brief Standard constructor
@@ -160,7 +160,7 @@ namespace Dune
   class Pk3DLocalBasis<D,R,0>
   {
   public:
-    typedef C1LocalBasisTraits<D,3,Dune::FieldVector<D,3>,R,1,Dune::FieldVector<R,1>,
+    typedef LocalBasisTraits<D,3,Dune::FieldVector<D,3>,R,1,Dune::FieldVector<R,1>,
         Dune::FieldMatrix<R,1,3> > Traits;
 
     unsigned int size () const

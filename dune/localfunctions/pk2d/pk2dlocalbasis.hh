@@ -34,7 +34,7 @@ namespace Dune
      */
     enum {O = k};
 
-    typedef C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,
+    typedef LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,
         Dune::FieldMatrix<R,1,2> > Traits;
 
     //! \brief Standard constructor
@@ -163,7 +163,7 @@ namespace Dune
   class Pk2DLocalBasis<D,R,0>
   {
   public:
-    typedef C1LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,
+    typedef LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,
         Dune::FieldMatrix<R,1,2> > Traits;
 
     unsigned int size () const

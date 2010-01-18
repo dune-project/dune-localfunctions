@@ -70,7 +70,7 @@ namespace Dune
 
     static const unsigned int dimension = Evaluator::dimension;
     static const unsigned int dimRange = Evaluator::dimRange*CoefficientMatrix::blockSize;
-    typedef C1LocalBasisTraits<D,dimension,FieldVector<D,dimension>,
+    typedef LocalBasisTraits<D,dimension,FieldVector<D,dimension>,
         R,dimRange,FieldVector<R,dimRange>,
         FieldMatrix<R,dimRange,dimension> > Traits;
     typedef typename Evaluator::Basis Basis;

@@ -29,7 +29,7 @@ namespace Dune
   class EdgeR02DLocalBasis
   {
   public:
-    typedef C1LocalBasisTraits<
+    typedef LocalBasisTraits<
         D, 2,
         Dune::FieldVector<D,2>,
         R, 2,

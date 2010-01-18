@@ -9,6 +9,7 @@
 
 #include <dune/grid/common/quadraturerules.hh>
 #include <dune/localfunctions/common/virtualinterface.hh>
+#include <dune/localfunctions/common/virtualwrappers.hh>
 
 double TOL = 1e-10;
 // The FD approximation used for checking the Jacobian uses half of the
@@ -40,8 +41,10 @@ public:
 // This provides the evaluate method needed by the interpolate()
 // method.
 template<class FE>
+//class LocalFEFunction :
+//  public Dune::LocalFiniteElementFunctionBase<FE>::type
 class LocalFEFunction :
-  public Dune::LocalFiniteElementFunctionBase<FE>::type
+  public Dune::LocalFiniteElementFunctionBase<FE>::FunctionBase
 {
 public:
   typedef typename FE::Traits::LocalBasisType::Traits::DomainType DomainType;
@@ -235,15 +238,14 @@ bool testFE(const FE& fe, unsigned order = 2)
   success = testJacobian<FE>(fe, order) and success;
 
   typedef typename FE::Traits::LocalBasisType::Traits LBTraits;
-  typedef typename Dune::C0LocalBasisTraitsFromOther<LBTraits>::Traits C0LBTraits;
-  typedef typename Dune::C0LocalFiniteElementVirtualInterface<C0LBTraits> VirtualFEInterface;
-  typedef typename Dune::C0LocalFiniteElementVirtualImp<FE> VirtualFEImp;
+  typedef typename Dune::FixedOrderLocalBasisTraits<LBTraits,0>::Traits C0LBTraits;
+  typedef typename Dune::LocalFiniteElementVirtualInterface<C0LBTraits> VirtualFEInterface;
+  typedef typename Dune::LocalFiniteElementVirtualImp<FE> VirtualFEImp;
 
-#if 0 // this does not work if FE returns virtual basis, interpolation, or coefficients
   const VirtualFEImp virtualFE(fe);
   success = testLocalInterpolation<VirtualFEInterface>(virtualFE) and success;
   success = testJacobian<VirtualFEInterface>(virtualFE) and success;
-#endif
+
   return success;
 }
 #endif // DUNE_LOCALFUNCTIONS_TESTFEM_HH

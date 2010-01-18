@@ -36,6 +36,7 @@
 #include "../edges03d.hh"
 
 #include <dune/localfunctions/common/virtualinterface.hh>
+#include <dune/localfunctions/common/virtualwrappers.hh>
 
 #include "testfem.hh"
 #include "testfemglobal.hh"
@@ -125,12 +126,6 @@ int main(int argc, char** argv) try
   Dune::P23DLocalFiniteElement<double,double> p23dlfem;
   success = testFE(p23dlfem) and success;
 
-#if 0 // the following is (also) problematic due to double virtualization
-  Dune::C0LocalFiniteElementVirtualImp< Dune::P23DLocalFiniteElement<double,double> >
-  p23dlfemVirtual(p23dlfem);
-  success = testFE(p23dlfemVirtual) and success;
-#endif
-
   //    Dune::HierarchicalP2LocalFiniteElement<double,double,1> hierarchicalp21dlfem;
   //    success = testFE(hierarchicalp21dlfem) and success;
 
@@ -181,6 +176,30 @@ int main(int argc, char** argv) try
   std::cout << "Monomials are only tested up to order 2 due to the instability of interpolate()." << std::endl;
   success = testMonomials<2>() and success;
 
+  // test virtualalized FEs
+  // notice that testFE add another level of virtualization
+  Dune::LocalFiniteElementVirtualImp< Dune::P1LocalFiniteElement<double,double, 2> >
+  p12dlfemVirtual(p12dlfem);
+  success = testFE(p12dlfemVirtual) and success;
+
+  Dune::LocalFiniteElementVirtualImp< Dune::PQ22DLocalFiniteElement<double,double> >
+  pq22dlfemVirtual(pq22dlfem);
+  success = testFE(pq22dlfemVirtual) and success;
+
+  Dune::LocalFiniteElementVirtualImp<
+      Dune::LocalFiniteElementVirtualImp<
+          Dune::P1LocalFiniteElement<double,double, 2> > >
+  p12dlfemVirtualVirtual(p12dlfemVirtual);
+  success = testFE(p12dlfemVirtualVirtual) and success;
+
+  Dune::LocalFiniteElementVirtualImp<
+      Dune::LocalFiniteElementVirtualImp<
+          Dune::PQ22DLocalFiniteElement<double,double> > >
+  pq22dlfemVirtualVirtual(pq22dlfemVirtual);
+  success = testFE(pq22dlfemVirtualVirtual) and success;
+
+  typedef Dune::LocalFiniteElementVirtualInterface< Dune::P1LocalFiniteElement<double,double, 2>::Traits::LocalBasisType::Traits > Interface;
+  success = testFE<Interface>(p12dlfemVirtual) and success;
 
   return success ? 0 : 1;
 }

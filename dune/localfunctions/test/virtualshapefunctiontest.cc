@@ -2,12 +2,19 @@
 // vi: set et ts=4 sw=2 sts=2:
 #include <config.h>
 
+#undef DUNE_VIRTUAL_SHAPEFUNCTIONS
+
+
 #include <cstddef>
 #include <iostream>
 
+#include <dune/common/geometrytype.hh>
 #include <dune/localfunctions/common/virtualinterface.hh>
 
+#include <dune/localfunctions/p0.hh>
 #include <dune/localfunctions/p1.hh>
+#include <dune/localfunctions/pq22d.hh>
+#include <dune/localfunctions/monom.hh>
 
 /** \file
     \brief Test the dynamically polymorphic shape function interface
@@ -22,7 +29,8 @@ using namespace Dune;
 // A test function to test the local interpolation
 template <class DomainType, class RangeType>
 struct TestFunction
-  : public VirtualFunction<DomainType,RangeType>
+//    : public VirtualFunction<DomainType,RangeType>
+  : public Function<const DomainType&,RangeType&>
 {
   void evaluate(const DomainType& in, RangeType& out) const {
     // May not be flexible enough to compile for all range types
@@ -31,30 +39,20 @@ struct TestFunction
 };
 
 
-template <class LocalBasisTraits>
-void testC0LocalBasis(const C0LocalBasisVirtualInterface<LocalBasisTraits>* localBasis)
+template <class T>
+void testLocalBasis(const LocalBasisVirtualInterface<T>* localBasis)
 {
   // call each method once to test that it's there
   unsigned int size = localBasis->size();
   unsigned int order = localBasis->order();
 
   // evaluate the local basis at (0,...,0)
-  typename LocalBasisTraits::DomainType in(0);
-  std::vector<typename LocalBasisTraits::RangeType> out;
+  typename T::DomainType in(0);
+  std::vector<typename T::RangeType> out;
   localBasis->evaluateFunction(in, out);
   assert(out.size() == size);
-}
 
-template <class LocalBasisTraits>
-void testC1LocalBasis(const C1LocalBasisVirtualInterface<LocalBasisTraits>* localBasis)
-{
-  // evaluate Jacobian at (0,...,0)
-  /** \todo This dynamic testing is Augenwischerei.  If localBasis was not actually
-      derived from C1LocalBasisVirtualInterface then LocalBasisTraits would not
-      contain a JacobianType and the whole thing wouldn't compile...
-   */
-  typename LocalBasisTraits::DomainType in(0);
-  std::vector<typename LocalBasisTraits::JacobianType> jacobianOut;
+  std::vector<typename T::JacobianType> jacobianOut;
   localBasis->evaluateJacobian(in, jacobianOut);
   assert(jacobianOut.size() == localBasis->size());
 }
@@ -87,19 +85,51 @@ void testLocalInterpolation(const LocalInterpolationVirtualInterface<DomainType,
   localInterpolation->interpolate(testFunction, coefficients);
 }
 
+template <class Interface, int order>
+struct EvaluateTest
+{
+  static void test(const Interface& fe)
+  {
+    typedef typename Interface::Traits::LocalBasisType::Traits LBTraits;
+
+    Dune::array<int,order> d;
+    for(int i=0; i<d.size(); ++i)
+      d[i] = 0;
+
+    typename LBTraits::DomainType x;
+    x = 0;
+
+    typename std::vector<typename LBTraits::RangeType> y;
+
+    fe.localBasis().evaluate(d,x,y);
+    std::cout << "order : " << order << std::endl;
+    for(int i=0; i<y.size(); ++i)
+      std::cout << y[i] << std::endl;
+
+    EvaluateTest<Interface, order-1>::test(fe);
+  }
+};
+
+template <class Interface>
+struct EvaluateTest<Interface, -1>
+{
+  static void test(const Interface& fe)
+  {}
+};
+
+
 // Test all methods of a local finite element given as a pointer to the abstract base class
-template <class LocalBasisTraits>
-void testLocalFiniteElement(const C1LocalFiniteElementVirtualInterface<LocalBasisTraits>* localFiniteElement)
+template <class T>
+void testLocalFiniteElement(const LocalFiniteElementVirtualInterface<T>* localFiniteElement)
 {
   // Test method type()
   std::cout << "Testing local finite element for a " << localFiniteElement->type() << "." << std::endl;
 
-  typedef C1LocalFiniteElementVirtualInterface<LocalBasisTraits> FEType;
+  typedef LocalFiniteElementVirtualInterface<T> FEType;
 
   // Test the local basis
   const typename FEType::Traits::LocalBasisType& basis = localFiniteElement->localBasis();
-  testC0LocalBasis(&basis);
-  testC1LocalBasis(&basis);
+  testLocalBasis(&basis);
 
   // Test the local coefficients
   const typename FEType::Traits::LocalCoefficientsType& coeffs = localFiniteElement->localCoefficients();
@@ -109,15 +139,46 @@ void testLocalFiniteElement(const C1LocalFiniteElementVirtualInterface<LocalBasi
   const typename FEType::Traits::LocalInterpolationType& interp = localFiniteElement->localInterpolation();
   testLocalInterpolation(&interp);
 
+  EvaluateTest<FEType, T::diffOrder>::test(*localFiniteElement);
 }
-
 
 int main (int argc, char *argv[]) try
 {
 
-  const Dune::C1LocalFiniteElementVirtualImp<Dune::P1LocalFiniteElement<double, double, 2> > virtualLocalSimplexFE;
+  typedef Dune::P1LocalFiniteElement<double, double, 2>::Traits::LocalBasisType::Traits LBTraits;
+  typedef Dune::FixedOrderLocalBasisTraits<LBTraits,0>::Traits C0LBTraits;
+  typedef Dune::FixedOrderLocalBasisTraits<LBTraits,1>::Traits C1LBTraits;
+  typedef Dune::FixedOrderLocalBasisTraits<LBTraits,2>::Traits C2LBTraits;
 
-  testLocalFiniteElement(&virtualLocalSimplexFE);
+  const Dune::P0LocalFiniteElement<double, double, 2> p0FE(Dune::GeometryType::cube);
+  const Dune::LocalFiniteElementVirtualImp<Dune::P0LocalFiniteElement<double, double, 2> > p0VFE(p0FE);
+  testLocalFiniteElement<C0LBTraits>(&p0VFE);
+
+  const Dune::PQ22DLocalFiniteElement<double, double> pq2FE(Dune::GeometryType(Dune::GeometryType::cube, 2));
+  const Dune::PQ22DLocalFiniteElement<double, double> pq2FE2(pq2FE);
+
+  const Dune::LocalFiniteElementVirtualImp<Dune::PQ22DLocalFiniteElement<double, double> > pq2VFE(pq2FE);
+  testLocalFiniteElement<C0LBTraits>(&pq2VFE);
+
+  const Dune::LocalFiniteElementVirtualImp<Dune::P1LocalFiniteElement<double, double, 2> > p1VFE;
+  testLocalFiniteElement<C0LBTraits>(&p1VFE);
+  testLocalFiniteElement<C1LBTraits>(&p1VFE);
+  testLocalFiniteElement<C2LBTraits>(&p1VFE);
+
+  const Dune::LocalFiniteElementVirtualImp<
+      Dune::LocalFiniteElementVirtualImp<Dune::P1LocalFiniteElement<double, double, 2> > > p1VVFE;
+  testLocalFiniteElement<C0LBTraits>(&p1VVFE);
+  testLocalFiniteElement<C1LBTraits>(&p1VVFE);
+  testLocalFiniteElement<C2LBTraits>(&p1VVFE);
+
+  typedef Dune::MonomLocalFiniteElement<double, double, 2, 7> Monom7;
+  const Monom7 monom7FE(Dune::GeometryType::cube);
+  const Dune::LocalFiniteElementVirtualImp<Monom7> monom7VFE(monom7FE);
+  const Dune::LocalFiniteElementVirtualImp<
+      Dune::LocalFiniteElementVirtualImp<Monom7> > monom7VVFE(monom7VFE);
+  testLocalFiniteElement<C0LBTraits>(&monom7VVFE);
+  testLocalFiniteElement<C1LBTraits>(&monom7VVFE);
+  testLocalFiniteElement<C2LBTraits>(&monom7VVFE);
 
   return 0;
 

@@ -8,7 +8,7 @@ localfunctions_HEADERS = lagrange.hh orthonormal.hh raviartthomas.hh \
 	pk2d.hh q22d.hh q1.hh \
 	pq22d.hh refinedp0.hh
 
-SUBDIRS = common generic utility test \
+SUBDIRS = common utility test \
           lagrange orthonormal \
           p0 p1 pk2d pk3d q1 q22d raviartthomas edger02d edges02d \
  	  edges03d rannacher_turek2d refinedp1 monom mimetic \

@@ -7,7 +7,7 @@
 #include <dune/common/exceptions.hh>
 
 #include <dune/localfunctions/utility/basismatrix.hh>
-#include <dune/localfunctions/utility/topologyfactory.hh>
+#include <dune/grid/common/topologyfactory.hh>
 
 namespace Dune
 {

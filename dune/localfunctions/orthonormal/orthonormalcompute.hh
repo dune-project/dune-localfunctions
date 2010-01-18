@@ -12,7 +12,7 @@
 #include <dune/common/fmatrix.hh>
 
 #include <dune/localfunctions/utility/field.hh>
-#include <dune/localfunctions/utility/matrix.hh>
+#include <dune/localfunctions/utility/lfematrix.hh>
 
 #include <dune/grid/genericgeometry/topologytypes.hh>
 

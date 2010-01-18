@@ -6,7 +6,7 @@
 #include <fstream>
 #include <dune/common/exceptions.hh>
 
-#include <dune/localfunctions/utility/matrix.hh>
+#include <dune/localfunctions/utility/lfematrix.hh>
 #include <dune/localfunctions/utility/monomialbasis.hh>
 #include <dune/localfunctions/utility/polynomialbasis.hh>
 

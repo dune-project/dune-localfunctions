@@ -12,7 +12,7 @@
 
 #include <dune/localfunctions/utility/field.hh>
 
-#include <dune/localfunctions/utility/topologyfactory.hh>
+#include <dune/grid/common/topologyfactory.hh>
 #include <dune/localfunctions/utility/multiindex.hh>
 #include <dune/localfunctions/utility/tensor.hh>
 

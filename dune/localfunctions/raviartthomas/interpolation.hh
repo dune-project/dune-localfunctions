@@ -2,28 +2,27 @@
 // vi: set et ts=4 sw=2 sts=2:
 #ifndef DUNE_RAVIARTTHOMASINTERPOLATION_HH
 #define DUNE_RAVIARTTHOMASINTERPOLATION_HH
+
 #include <fstream>
 #include <utility>
 
 #include <dune/common/exceptions.hh>
 #include <dune/common/forloop.hh>
 
+#include <dune/grid/common/quadraturerules/gaussquadrature.hh>
 #include <dune/grid/genericgeometry/referencemappings.hh>
 #include <dune/grid/genericgeometry/referenceelements.hh>
 
-#include <dune/localfunctions/utility/topologyfactory.hh>
-#include <dune/localfunctions/utility/interpolationhelper.hh>
-#include <dune/localfunctions/utility/matrix.hh>
 #include <dune/localfunctions/common/localkey.hh>
-
-#include <dune/localfunctions/generic/quadrature/gaussquadrature.hh>
-
+#include <dune/grid/common/topologyfactory.hh>
+#include <dune/localfunctions/utility/interpolationhelper.hh>
+#include <dune/localfunctions/utility/lfematrix.hh>
 #include <dune/localfunctions/utility/polynomialbasis.hh>
 #include <dune/localfunctions/orthonormal/orthonormalbasis.hh>
 
-
 namespace Dune
 {
+
   // LocalCoefficientsContainer
   // -------------------
   template < unsigned int dim >

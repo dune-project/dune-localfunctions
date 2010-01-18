@@ -4,14 +4,16 @@
 #define DUNE_LOBATTOBASIS_HH
 
 #include <fstream>
-#include <dune/localfunctions/utility/matrix.hh>
-#include <dune/localfunctions/utility/field.hh>
+
 #include <dune/common/forloop.hh>
-#include <dune/localfunctions/utility/topologyfactory.hh>
+
+#include <dune/grid/common/topologyfactory.hh>
+#include <dune/grid/common/quadraturerules/lobattoquadrature.hh>
 #include <dune/grid/genericgeometry/referenceelements.hh>
 #include <dune/grid/genericgeometry/referencemappings.hh>
 
-#include <dune/localfunctions/generic/quadrature/lobattoquadrature.hh>
+#include <dune/localfunctions/utility/lfematrix.hh>
+#include <dune/localfunctions/utility/field.hh>
 #include <dune/localfunctions/lagrange/lagrangecoefficients.hh>
 #include <dune/localfunctions/lagrange/emptypoints.hh>
 

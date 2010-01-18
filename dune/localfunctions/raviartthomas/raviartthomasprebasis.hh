@@ -5,7 +5,7 @@
 #include <fstream>
 #include <utility>
 
-#include <dune/localfunctions/utility/matrix.hh>
+#include <dune/localfunctions/utility/lfematrix.hh>
 #include <dune/grid/genericgeometry/topologytypes.hh>
 
 #include <dune/localfunctions/utility/polynomialbasis.hh>

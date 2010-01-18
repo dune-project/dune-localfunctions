@@ -5,8 +5,8 @@ utility_HEADERS = basisevaluator.hh       localfiniteelement.hh  \
                   basisprint.hh           multiindex.hh          \
                   coeffmatrix.hh          polynomialbasis.hh     \
                   defaultbasisfactory.hh  tensor.hh              \
-                  dglocalcoefficients.hh  topologyfactory.hh     \
+                  dglocalcoefficients.hh \
                   interpolationhelper.hh  l2interpolation.hh     \
-                  field.hh gmpfield.hh matrix.hh
+                  field.hh gmpfield.hh lfematrix.hh
 
 include $(top_srcdir)/am/global-rules

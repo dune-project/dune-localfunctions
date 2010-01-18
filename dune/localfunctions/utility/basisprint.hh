@@ -2,8 +2,8 @@
 // vi: set et ts=4 sw=2 sts=2:
 #ifndef BASISPRINT
 #define BASISPRINT
-#include <dune/localfunctions/generic/common/multiindex.hh>
-#include <dune/localfunctions/generic/common/polynomialbasis.hh>
+#include <dune/localfunctions/utility/multiindex.hh>
+#include <dune/localfunctions/utility/polynomialbasis.hh>
 namespace Dune {
   /**********************************************
   * Methods for printing a PolynomialBasis.

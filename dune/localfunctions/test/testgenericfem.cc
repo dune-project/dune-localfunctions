@@ -12,7 +12,7 @@
 
 #include <dune/common/function.hh>
 
-#include <dune/localfunctions/generic/math/gmpfield.hh>
+#include <dune/localfunctions/utility/gmpfield.hh>
 
 // Lagrange type elements
 #include <dune/localfunctions/generic/lagrangefiniteelement.hh>

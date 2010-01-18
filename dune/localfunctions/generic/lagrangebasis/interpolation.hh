@@ -4,7 +4,7 @@
 #define DUNE_LAGRANGEBASIS_INTERPOLATION_HH
 
 #include <vector>
-#include <dune/localfunctions/generic/common/topologyfactory.hh>
+#include <dune/localfunctions/utility/topologyfactory.hh>
 #include <dune/localfunctions/generic/lagrangebasis/lagrangecoefficients.hh>
 
 namespace Dune

@@ -6,9 +6,9 @@
 #include <vector>
 
 #include <dune/common/fvector.hh>
-#include <dune/localfunctions/generic/math/field.hh>
+#include <dune/localfunctions/utility/field.hh>
 #include <dune/common/forloop.hh>
-#include <dune/localfunctions/generic/common/topologyfactory.hh>
+#include <dune/localfunctions/utility/topologyfactory.hh>
 
 #include <dune/grid/genericgeometry/topologytypes.hh>
 #include <dune/grid/genericgeometry/subtopologies.hh>

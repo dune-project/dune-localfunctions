@@ -6,7 +6,7 @@
 #include <vector>
 #include <ostream>
 
-#include <dune/localfunctions/generic/math/field.hh>
+#include <dune/localfunctions/utility/field.hh>
 #include <dune/common/fvector.hh>
 #include <dune/common/misc.hh>
 

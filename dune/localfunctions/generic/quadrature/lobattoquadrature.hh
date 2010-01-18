@@ -11,7 +11,7 @@
 
 #include <dune/common/static_assert.hh>
 
-#include <dune/localfunctions/generic/math/field.hh>
+#include <dune/localfunctions/utility/field.hh>
 
 #include <dune/localfunctions/generic/quadrature/genericquadrature.hh>
 

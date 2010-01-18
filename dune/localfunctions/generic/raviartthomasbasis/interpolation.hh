@@ -11,14 +11,14 @@
 #include <dune/grid/genericgeometry/referencemappings.hh>
 #include <dune/grid/genericgeometry/referenceelements.hh>
 
-#include <dune/localfunctions/generic/common/topologyfactory.hh>
-#include <dune/localfunctions/generic/common/interpolationhelper.hh>
-#include <dune/localfunctions/generic/math/matrix.hh>
+#include <dune/localfunctions/utility/topologyfactory.hh>
+#include <dune/localfunctions/utility/interpolationhelper.hh>
+#include <dune/localfunctions/utility/matrix.hh>
 #include <dune/localfunctions/common/localkey.hh>
 
 #include <dune/localfunctions/generic/quadrature/gaussquadrature.hh>
 
-#include <dune/localfunctions/generic/common/polynomialbasis.hh>
+#include <dune/localfunctions/utility/polynomialbasis.hh>
 #include <dune/localfunctions/generic/orthonormalbasis/orthonormalbasis.hh>
 
 

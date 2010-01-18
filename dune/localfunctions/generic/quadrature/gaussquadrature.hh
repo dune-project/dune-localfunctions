@@ -7,7 +7,7 @@
 #include <alglib/gqgengauss.h>
 #endif
 
-#include <dune/localfunctions/generic/math/field.hh>
+#include <dune/localfunctions/utility/field.hh>
 
 #include <dune/grid/common/quadraturerules.hh>
 

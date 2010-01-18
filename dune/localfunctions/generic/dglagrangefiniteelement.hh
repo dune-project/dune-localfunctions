@@ -3,8 +3,8 @@
 #ifndef DUNE_DGLAGRANGEFINITEELEMENT_HH
 #define DUNE_DGLAGRANGEFINITEELEMENT_HH
 
-#include <dune/localfunctions/generic/common/localfiniteelement.hh>
-#include <dune/localfunctions/generic/common/dglocalcoefficients.hh>
+#include <dune/localfunctions/utility/localfiniteelement.hh>
+#include <dune/localfunctions/utility/dglocalcoefficients.hh>
 #include <dune/localfunctions/generic/lagrangebasis/lagrangecoefficients.hh>
 #include <dune/localfunctions/generic/lagrangebasis/interpolation.hh>
 #include <dune/localfunctions/generic/lagrangebasis/lagrangebasis.hh>

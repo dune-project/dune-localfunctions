@@ -3,8 +3,8 @@
 #ifndef DUNE_L2INTERPOLATION_HH
 #define DUNE_L2INTERPOLATION_HH
 
-#include <dune/localfunctions/generic/common/topologyfactory.hh>
-#include <dune/localfunctions/generic/math/matrix.hh>
+#include <dune/localfunctions/utility/topologyfactory.hh>
+#include <dune/localfunctions/utility/matrix.hh>
 
 #include <dune/localfunctions/generic/quadrature/gaussquadrature.hh>
 

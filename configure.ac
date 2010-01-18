@@ -51,8 +51,7 @@ AC_CONFIG_FILES([
                 dune/localfunctions/raviartthomas/raviartthomas0q3d/Makefile
                 dune/localfunctions/test/Makefile
                 dune/localfunctions/generic/Makefile
-                dune/localfunctions/generic/common/Makefile
-                dune/localfunctions/generic/math/Makefile
+                dune/localfunctions/utility/Makefile
                 dune/localfunctions/generic/quadrature/Makefile
                 dune/localfunctions/generic/orthonormalbasis/Makefile
                 dune/localfunctions/generic/lagrangebasis/Makefile

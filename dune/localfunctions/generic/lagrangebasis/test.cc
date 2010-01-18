@@ -2,7 +2,7 @@
 // vi: set et ts=4 sw=2 sts=2:
 #include <config.h>
 
-#include <dune/localfunctions/generic/math/field.hh>
+#include <dune/localfunctions/utility/field.hh>
 
 #include <dune/localfunctions/generic/lagrangebasis/equidistantpoints.hh>
 
@@ -10,7 +10,7 @@
 
 #include <dune/localfunctions/generic/lagrangebasis/lagrangebasis.hh>
 #include <dune/localfunctions/generic/quadrature/genericquadrature.hh>
-#include <dune/localfunctions/generic/common/basisprint.hh>
+#include <dune/localfunctions/utility/basisprint.hh>
 
 #if HAVE_ALGLIB
 typedef amp::ampf< 128 > StorageField;

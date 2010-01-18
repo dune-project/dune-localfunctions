@@ -6,8 +6,8 @@
 #include <iostream>
 #include <vector>
 #include <dune/common/fvector.hh>
-#include <dune/localfunctions/generic/math/field.hh>
-#include <dune/localfunctions/generic/common/tensor.hh>
+#include <dune/localfunctions/utility/field.hh>
+#include <dune/localfunctions/utility/tensor.hh>
 
 namespace Dune
 {

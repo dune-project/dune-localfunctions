@@ -3,9 +3,9 @@
 #ifndef DUNE_ORTHONORMALFINITEELEMENT_HH
 #define DUNE_ORTHONORMALFINITEELEMENT_HH
 
-#include <dune/localfunctions/generic/common/localfiniteelement.hh>
-#include <dune/localfunctions/generic/common/dglocalcoefficients.hh>
-#include <dune/localfunctions/generic/common/l2interpolation.hh>
+#include <dune/localfunctions/utility/localfiniteelement.hh>
+#include <dune/localfunctions/utility/dglocalcoefficients.hh>
+#include <dune/localfunctions/utility/l2interpolation.hh>
 #include <dune/localfunctions/generic/orthonormalbasis/orthonormalbasis.hh>
 
 namespace Dune

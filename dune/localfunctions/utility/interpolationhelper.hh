@@ -4,7 +4,7 @@
 #define GENERIC_INTERPOLATIONHELPER_HH
 
 #include <dune/common/fvector.hh>
-#include <dune/localfunctions/generic/math/field.hh>
+#include <dune/localfunctions/utility/field.hh>
 
 namespace Dune
 {

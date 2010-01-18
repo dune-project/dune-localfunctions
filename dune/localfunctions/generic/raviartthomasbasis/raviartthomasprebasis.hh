@@ -5,10 +5,10 @@
 #include <fstream>
 #include <utility>
 
-#include <dune/localfunctions/generic/math/matrix.hh>
+#include <dune/localfunctions/utility/matrix.hh>
 #include <dune/grid/genericgeometry/topologytypes.hh>
 
-#include <dune/localfunctions/generic/common/polynomialbasis.hh>
+#include <dune/localfunctions/utility/polynomialbasis.hh>
 
 namespace Dune
 {

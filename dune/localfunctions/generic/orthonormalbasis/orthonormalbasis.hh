@@ -5,9 +5,9 @@
 
 #include <sstream>
 
-#include <dune/localfunctions/generic/common/topologyfactory.hh>
+#include <dune/localfunctions/utility/topologyfactory.hh>
 
-#include <dune/localfunctions/generic/common/polynomialbasis.hh>
+#include <dune/localfunctions/utility/polynomialbasis.hh>
 #include <dune/localfunctions/generic/orthonormalbasis/orthonormalcompute.hh>
 
 namespace Dune

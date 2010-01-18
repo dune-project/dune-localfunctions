@@ -10,11 +10,11 @@
 
 #include <dune/grid/genericgeometry/topologytypes.hh>
 
-#include <dune/localfunctions/generic/math/field.hh>
+#include <dune/localfunctions/utility/field.hh>
 
-#include <dune/localfunctions/generic/common/multiindex.hh>
+#include <dune/localfunctions/utility/multiindex.hh>
 
-#include <dune/localfunctions/generic/common/tensor.hh>
+#include <dune/localfunctions/utility/tensor.hh>
 
 namespace Dune
 {

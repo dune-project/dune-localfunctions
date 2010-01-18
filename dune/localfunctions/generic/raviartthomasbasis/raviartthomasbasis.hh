@@ -6,7 +6,7 @@
 #include <fstream>
 #include <dune/common/exceptions.hh>
 
-#include <dune/localfunctions/generic/common/defaultbasisfactory.hh>
+#include <dune/localfunctions/utility/defaultbasisfactory.hh>
 #include <dune/localfunctions/generic/raviartthomasbasis/interpolation.hh>
 #include <dune/localfunctions/generic/raviartthomasbasis/raviartthomasprebasis.hh>
 

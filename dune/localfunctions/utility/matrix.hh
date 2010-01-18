@@ -6,8 +6,8 @@
 #include <cassert>
 #include <vector>
 
-#include <dune/localfunctions/generic/math/field.hh>
-// #include <dune/localfunctions/generic/math/vector.hh>
+#include <dune/localfunctions/utility/field.hh>
+// #include <dune/localfunctions/utility/vector.hh>
 
 #if HAVE_ALGLIB
 #include <alglib/amp.h>

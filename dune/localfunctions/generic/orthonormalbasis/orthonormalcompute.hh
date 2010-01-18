@@ -11,13 +11,13 @@
 
 #include <dune/common/fmatrix.hh>
 
-#include <dune/localfunctions/generic/math/field.hh>
-#include <dune/localfunctions/generic/math/matrix.hh>
+#include <dune/localfunctions/utility/field.hh>
+#include <dune/localfunctions/utility/matrix.hh>
 
 #include <dune/grid/genericgeometry/topologytypes.hh>
 
-#include <dune/localfunctions/generic/common/monomialbasis.hh>
-#include <dune/localfunctions/generic/common/multiindex.hh>
+#include <dune/localfunctions/utility/monomialbasis.hh>
+#include <dune/localfunctions/utility/multiindex.hh>
 
 namespace ONBCompute
 {

@@ -4,10 +4,10 @@
 #define DUNE_LOBATTOBASIS_HH
 
 #include <fstream>
-#include <dune/localfunctions/generic/math/matrix.hh>
-#include <dune/localfunctions/generic/math/field.hh>
+#include <dune/localfunctions/utility/matrix.hh>
+#include <dune/localfunctions/utility/field.hh>
 #include <dune/common/forloop.hh>
-#include <dune/localfunctions/generic/common/topologyfactory.hh>
+#include <dune/localfunctions/utility/topologyfactory.hh>
 #include <dune/grid/genericgeometry/referenceelements.hh>
 #include <dune/grid/genericgeometry/referencemappings.hh>
 

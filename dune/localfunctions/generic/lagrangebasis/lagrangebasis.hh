@@ -6,9 +6,9 @@
 #include <fstream>
 #include <dune/common/exceptions.hh>
 
-#include <dune/localfunctions/generic/common/defaultbasisfactory.hh>
+#include <dune/localfunctions/utility/defaultbasisfactory.hh>
 
-#include <dune/localfunctions/generic/common/monomialbasis.hh>
+#include <dune/localfunctions/utility/monomialbasis.hh>
 #include <dune/localfunctions/generic/orthonormalbasis/orthonormalbasis.hh>
 #include <dune/localfunctions/generic/lagrangebasis/interpolation.hh>
 

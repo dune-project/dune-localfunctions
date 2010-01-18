@@ -7,7 +7,7 @@
 #include <dune/grid/genericgeometry/topologytypes.hh>
 
 #include <dune/localfunctions/generic/quadrature/quadrature.hh>
-#include <dune/localfunctions/generic/common/topologyfactory.hh>
+#include <dune/localfunctions/utility/topologyfactory.hh>
 
 namespace Dune
 {

@@ -6,9 +6,9 @@
 #include <fstream>
 #include <dune/common/exceptions.hh>
 
-#include <dune/localfunctions/generic/math/matrix.hh>
-#include <dune/localfunctions/generic/common/monomialbasis.hh>
-#include <dune/localfunctions/generic/common/polynomialbasis.hh>
+#include <dune/localfunctions/utility/matrix.hh>
+#include <dune/localfunctions/utility/monomialbasis.hh>
+#include <dune/localfunctions/utility/polynomialbasis.hh>
 
 namespace Dune
 {

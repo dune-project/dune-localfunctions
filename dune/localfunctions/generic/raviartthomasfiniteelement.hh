@@ -3,7 +3,7 @@
 #ifndef DUNE_RAVIARTTHOMASFINITEELEMENT_HH
 #define DUNE_RAVIARTTHOMASFINITEELEMENT_HH
 
-#include <dune/localfunctions/generic/common/localfiniteelement.hh>
+#include <dune/localfunctions/utility/localfiniteelement.hh>
 #include <dune/localfunctions/generic/raviartthomasbasis/raviartthomasbasis.hh>
 
 namespace Dune

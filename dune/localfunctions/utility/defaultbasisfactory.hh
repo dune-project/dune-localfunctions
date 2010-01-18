@@ -6,8 +6,8 @@
 #include <fstream>
 #include <dune/common/exceptions.hh>
 
-#include <dune/localfunctions/generic/common/basismatrix.hh>
-#include <dune/localfunctions/generic/common/topologyfactory.hh>
+#include <dune/localfunctions/utility/basismatrix.hh>
+#include <dune/localfunctions/utility/topologyfactory.hh>
 
 namespace Dune
 {

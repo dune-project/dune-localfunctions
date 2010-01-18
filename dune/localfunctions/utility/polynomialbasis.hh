@@ -9,10 +9,10 @@
 
 #include <dune/localfunctions/common/localbasis.hh>
 
-#include <dune/localfunctions/generic/common/coeffmatrix.hh>
-#include <dune/localfunctions/generic/common/monomialbasis.hh>
-#include <dune/localfunctions/generic/common/multiindex.hh>
-#include <dune/localfunctions/generic/common/basisevaluator.hh>
+#include <dune/localfunctions/utility/coeffmatrix.hh>
+#include <dune/localfunctions/utility/monomialbasis.hh>
+#include <dune/localfunctions/utility/multiindex.hh>
+#include <dune/localfunctions/utility/basisevaluator.hh>
 
 namespace Dune
 {

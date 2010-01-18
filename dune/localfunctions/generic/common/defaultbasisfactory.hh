@@ -40,8 +40,8 @@ namespace Dune
     typedef InterpolFactory InterpolationFactory;
     typedef typename InterpolationFactory::Object Interpolation;
 
-    typedef typename PreBasisFactory::template EvaluationBasisFactory<dim,SF>::Type MonomialBasisProvider;
-    typedef typename MonomialBasisProvider::Object MonomialBasis;
+    typedef typename PreBasisFactory::template EvaluationBasisFactory<dim,SF>::Type MonomialBasisFactory;
+    typedef typename MonomialBasisFactory::Object MonomialBasis;
     typedef StandardEvaluator< MonomialBasis > Evaluator;
     typedef PolynomialBasisWithMatrix< Evaluator, SparseCoeffMatrix< SF, dimRange > > Basis;
 
@@ -83,7 +83,7 @@ namespace Dune
           typename Traits::Interpolation,
           ComputeField > matrix( *preBasis, *interpol );
 
-      const typename Traits::MonomialBasis *monomialBasis = Traits::MonomialBasisProvider::template create< Topology >( preBasis->order() );
+      const typename Traits::MonomialBasis *monomialBasis = Traits::MonomialBasisFactory::template create< Topology >( preBasis->order() );
 
       Basis *basis = new Basis( *monomialBasis );
 
@@ -93,6 +93,13 @@ namespace Dune
       Traits::PreBasisFactory::release(preBasis);
 
       return basis;
+    }
+    //! release the object returned by the create methods
+    static void release( Object *object)
+    {
+      const typename Traits::MonomialBasis *monomialBasis = &(object->basis());
+      delete object;
+      Traits::MonomialBasisFactory::release( monomialBasis );
     }
   };
 }

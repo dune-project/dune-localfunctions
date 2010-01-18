@@ -85,7 +85,8 @@ namespace Dune
         order_(basis.order()),
         size_(size)
     {
-      assert(size_ <= coeffMatrix.size());
+      // assert(coeffMatrix_);
+      // assert(size_ <= coeffMatrix.size()); // !!!
     }
 
     const Basis &basis () const

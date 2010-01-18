@@ -13,7 +13,7 @@
 double TOL = 1e-10;
 // The FD approximation used for checking the Jacobian uses half of the
 // precision -- so we have to be a little bit more tolerant here.
-double jacobianTOL = 1e-7;
+double jacobianTOL = 1e-5;  // sqrt(TOL)
 
 template<class FE>
 class Func :
@@ -201,7 +201,7 @@ bool testJacobian(const FE& fe, unsigned order = 2)
                               / (2*jacobianTOL);
 
           // Check
-          if (std::abs(derivative-finiteDiff) > jacobianTOL) {
+          if (std::abs(derivative-finiteDiff) > TOL/jacobianTOL) {
             std::cout << std::setprecision(16);
             std::cout << "Bug in evaluateJacobian() for finite element type "
                       << typeid(FE).name() << std::endl;

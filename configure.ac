@@ -53,7 +53,7 @@ AC_CONFIG_FILES([
                 dune/localfunctions/generic/Makefile
                 dune/localfunctions/utility/Makefile
                 dune/localfunctions/generic/quadrature/Makefile
-                dune/localfunctions/generic/orthonormalbasis/Makefile
+                dune/localfunctions/orthonormal/Makefile
                 dune/localfunctions/lagrange/Makefile
                 dune/localfunctions/generic/raviartthomasbasis/Makefile
                 doc/doxygen/Makefile

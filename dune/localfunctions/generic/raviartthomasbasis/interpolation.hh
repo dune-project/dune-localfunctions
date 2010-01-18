@@ -19,7 +19,7 @@
 #include <dune/localfunctions/generic/quadrature/gaussquadrature.hh>
 
 #include <dune/localfunctions/utility/polynomialbasis.hh>
-#include <dune/localfunctions/generic/orthonormalbasis/orthonormalbasis.hh>
+#include <dune/localfunctions/orthonormal/orthonormalbasis.hh>
 
 
 namespace Dune

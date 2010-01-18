@@ -6,7 +6,7 @@
 #include <dune/localfunctions/utility/localfiniteelement.hh>
 #include <dune/localfunctions/utility/dglocalcoefficients.hh>
 #include <dune/localfunctions/utility/l2interpolation.hh>
-#include <dune/localfunctions/generic/orthonormalbasis/orthonormalbasis.hh>
+#include <dune/localfunctions/orthonormal/orthonormalbasis.hh>
 
 namespace Dune
 {

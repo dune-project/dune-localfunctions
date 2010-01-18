@@ -20,7 +20,7 @@
 #include <dune/localfunctions/lagrange/lobattopoints.hh>
 
 // DG type elements
-#include <dune/localfunctions/generic/orthonormalfiniteelement.hh>
+#include <dune/localfunctions/orthonormal.hh>
 
 // Raviart Thomas type elements
 #include <dune/localfunctions/generic/raviartthomasfiniteelement.hh>

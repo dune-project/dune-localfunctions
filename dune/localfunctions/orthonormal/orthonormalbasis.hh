@@ -8,7 +8,7 @@
 #include <dune/localfunctions/utility/topologyfactory.hh>
 
 #include <dune/localfunctions/utility/polynomialbasis.hh>
-#include <dune/localfunctions/generic/orthonormalbasis/orthonormalcompute.hh>
+#include <dune/localfunctions/orthonormal/orthonormalcompute.hh>
 
 namespace Dune
 {

@@ -1,5 +1,5 @@
-orthonormalbasisdir = $(includedir)/dune/localfunctions/generic/orthonormalbasis
-orthonormalbasis_HEADERS = orthonormalbasis.hh orthonormalcompute.hh
+orthonormaldir = $(includedir)/dune/localfunctions/generic/orthonormal
+orthonormal_HEADERS = orthonormalbasis.hh orthonormalcompute.hh
 check_PROGRAMS = test
 EXTRA_PROGRAMS = test-all
 

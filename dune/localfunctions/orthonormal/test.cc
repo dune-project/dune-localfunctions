@@ -3,7 +3,7 @@
 #include <config.h>
 
 #include <dune/localfunctions/utility/field.hh>
-#include <dune/localfunctions/generic/orthonormalbasis/orthonormalbasis.hh>
+#include <dune/localfunctions/orthonormal/orthonormalbasis.hh>
 #include <dune/localfunctions/generic/quadrature/gaussquadrature.hh>
 
 #if HAVE_ALGLIB

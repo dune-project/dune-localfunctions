@@ -7,13 +7,13 @@
 #include <dune/common/exceptions.hh>
 
 #include <dune/localfunctions/utility/defaultbasisfactory.hh>
-
 #include <dune/localfunctions/utility/monomialbasis.hh>
-#include <dune/localfunctions/generic/orthonormalbasis/orthonormalbasis.hh>
+
 #include <dune/localfunctions/lagrange/interpolation.hh>
 
 namespace Dune
 {
+
   template< template <class,unsigned int> class LP,
       unsigned int dim, class SF, class CF >
   struct LagrangeBasisFactory
@@ -21,15 +21,7 @@ namespace Dune
           LagrangeInterpolationFactory<LP,dim,CF>,
           dim,1,SF,CF >
   {};
-#if 0
-  template< template <class,unsigned int> class LP,
-      unsigned int dim, class SF, class CF >
-  struct LagrangeBasisFactory
-    : public DefaultBasisFactory< OrthonormalBasisFactory<dim,CF>,
-          LagrangeInterpolationFactory<LP,dim,CF>,
-          dim,1,SF,CF >
-  {};
-#endif
+
 }
 
 #endif // #ifndef DUNE_LAGRANGEBASIS_HH

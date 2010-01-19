@@ -17,6 +17,9 @@ namespace Dune
   template<class DomainType, class RangeType>
   class LocalInterpolationVirtualInterface;
 
+  template<class T>
+  class LocalBasisVirtualInterface;
+
   // -----------------------------------------------------------------
   // Helper traits classes
   // -----------------------------------------------------------------
@@ -100,16 +103,24 @@ namespace Dune
    *
    * Provides the local basis interface with pure virtual methods.
    * The class derives from the interface with one differentiation order lower.
+   *
+   * This class defines the interface using pure virtual methods.
+   * In applications you should use the derived class
+   * LocalBasisVirtualInterface that also
+   * contains an evaluate with order as template parameter.
+   *
+   * This template method can not be defined in the same
+   * class as the virtual method. Otherwise name resolution fails.
    */
   template<class T>
-  class LocalBasisVirtualInterface :
+  class LocalBasisVirtualInterfaceBase :
     public virtual LocalBasisVirtualInterface<typename LowerOrderLocalBasisTraits<T>::Traits>
   {
     typedef LocalBasisVirtualInterface<typename LowerOrderLocalBasisTraits<T>::Traits> BaseInterface;
   public:
     typedef T Traits;
 
-    //! @copydoc C0LocalBasisInterface::evaluateFunction
+    //! \todo Please doc me!
     virtual void evaluate (
       const typename Dune::template array<int,Traits::diffOrder>& directions,
       const typename Traits::DomainType& in,
@@ -118,7 +129,6 @@ namespace Dune
     using BaseInterface::evaluate;
   };
 
-
   /**
    * @brief virtual base class for a local basis
    *
@@ -126,12 +136,12 @@ namespace Dune
    * This is the base interface with differentiation order 0.
    */
   template<class DF, int n, class D, class RF, int m, class R, class J>
-  class LocalBasisVirtualInterface<LocalBasisTraits<DF,n,D,RF,m,R,J,0> >
+  class LocalBasisVirtualInterfaceBase<LocalBasisTraits<DF,n,D,RF,m,R,J,0> >
   {
   public:
     typedef LocalBasisTraits<DF,n,D,RF,m,R,J,0> Traits;
 
-    virtual ~LocalBasisVirtualInterface() {}
+    virtual ~LocalBasisVirtualInterfaceBase() {}
 
     //! \brief Number of shape functions
     virtual unsigned int size () const = 0;
@@ -164,6 +174,42 @@ namespace Dune
       std::vector<typename Traits::RangeType>& out) const = 0;
 
   };
+
+  /**
+   * @brief virtual base class for a local basis
+   *
+   * Provides the local basis interface with pure virtual methods.
+   * The class derives from the interface with one differentiation order lower.
+   *
+   * This class defines the interface using pure virtual methods.
+   * It also contains the evaluate method with order as template parameter.
+   */
+  template<class T>
+  class LocalBasisVirtualInterface :
+    public virtual LocalBasisVirtualInterfaceBase<T>
+  {
+    typedef LocalBasisVirtualInterfaceBase<T> BaseInterface;
+  public:
+    typedef T Traits;
+
+    //! \todo Please doc me!
+    template <int k>
+    void evaluate (
+      const typename Dune::template array<int,k>& directions,
+      const typename Traits::DomainType& in,
+      std::vector<typename Traits::RangeType>& out) const
+    {
+      const BaseInterface& asBase = *this;
+      asBase.evaluate(directions, in, out);
+    }
+
+    using BaseInterface::size;
+    using BaseInterface::order;
+    using BaseInterface::evaluateFunction;
+    using BaseInterface::evaluateJacobian;;
+    using BaseInterface::evaluate;
+  };
+
 
 
 

@@ -16,31 +16,6 @@ namespace Dune
   template<class Imp>
   class LocalFiniteElementVirtualImp;
 
-  // helper template needed to allow double virtualization
-  template<class Imp, int k>
-  struct LocalBasisEvaluateHelper
-  {
-    template<class Directions, class In, class Out>
-    static void evaluate(const Imp& imp, const Directions& d, const In& in, Out& out)
-    {
-      imp.template evaluate<k>(d, in, out);
-    }
-  };
-
-  template<class T, int k>
-  struct LocalBasisEvaluateHelper<LocalBasisVirtualInterface<T>,k>
-  {
-    typedef LocalBasisVirtualInterface<T> Imp;
-
-    template<class Directions, class In, class Out>
-    static void evaluate(const Imp& imp, const Directions& d, const In& in, Out& out)
-    {
-      imp.evaluate(d, in, out);
-    }
-  };
-
-
-
   // default clone method is the copy constructor
   template<class Imp, bool IsInterface>
   struct LocalFiniteElementCloneFactoryHelper
@@ -125,22 +100,13 @@ namespace Dune
       const typename Traits::DomainType& in,
       std::vector<typename Traits::RangeType>& out) const
     {
-      // If the template parameter of evaluate is 'int k' instead of
-      // 'unsigned int k' we woud need to explicitly specify it:
+      // Even for double virtualization it is save to call the template method
+      // since the interface provides it redirecting to the virtual method
+      // of the derived class
       //
-      //   impl_.template evaluate<Traits::diffOrder> (directions, in, out);
-      //
-      // Then the case corresponding non-template methods in case of
-      // multiple nested virtualization does not work. The use of the
-      // following helper template allows to insert the '<Traits::diffOrder>'
-      // only if Imp is not the interface type.
-      //
-      //   LocalBasisEvaluateHelper<Imp,Traits::diffOrder>::evaluate(impl_, directions, in, out);
-      //
-      // However, this forbids implementing the evaluate method separately.
-      // Thus the template parameter should always be 'unsigned int' this
-      // allows to use
-      impl_.evaluate(directions, in, out);
+      // Unfortunately not all compiler can determine Traits::diffOrder from the
+      // type of the arument directions
+      impl_.template evaluate<Traits::diffOrder>(directions, in, out);
     }
 
   protected:

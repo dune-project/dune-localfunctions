@@ -6,7 +6,7 @@ raviartthomas_HEADERS = raviartthomas02d.hh raviartthomas0q2d.hh raviartthomas0q
 SUBDIRS = raviartthomas02d raviartthomas0q2d raviartthomas0q3d
 
 check_PROGRAMS = test
-EXTRA_PROGRMAS = test-all
+EXTRA_PROGRAMS = test-all
 
 TOPOLOGY = Pyramid< Pyramid< Point > >
 SETTINGS = -DTOPOLOGY="$(TOPOLOGY)"

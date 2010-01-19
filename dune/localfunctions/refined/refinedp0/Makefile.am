@@ -1,4 +1,4 @@
-refinedp0dir = $(includedir)/dune/localfunctions/refinedp0
+refinedp0dir = $(includedir)/dune/localfunctions/refined/refinedp0
 
 refinedp0_HEADERS = refinedp0localbasis.hh refinedp0localcoefficients.hh refinedp0localinterpolation.hh
 

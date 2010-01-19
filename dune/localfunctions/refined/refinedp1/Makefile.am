@@ -1,4 +1,4 @@
-refinedp1dir = $(includedir)/dune/localfunctions/refinedp1
+refinedp1dir = $(includedir)/dune/localfunctions/refined/refinedp1
 
 refinedp1_HEADERS = refinedp1localbasis.hh
 

@@ -1,11 +1,11 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_LOCALCOEFFICIENTS_HH
-#define DUNE_LOCALCOEFFICIENTS_HH
+#ifndef DUNE_LOCALKEY_HH
+#define DUNE_LOCALKEY_HH
 
 #include <cstddef>
 
-#include <dune/common/tuples.hh>
+#include <dune/common/array.hh>
 
 namespace Dune
 {
@@ -24,9 +24,6 @@ namespace Dune
          \nosubgrouping
    */
   class LocalKey
-  // The data members of this class are implemented using a tuple base class,
-  // because that way they can be used as keys in stl containers.
-    : public Dune::tuple<unsigned int, unsigned int, unsigned int>
   {
   public:
     //! \brief Standard constructor for uninitialized local index
@@ -39,32 +36,47 @@ namespace Dune
         \param i Index in the set of all functions associated to this subentity
      */
     LocalKey (unsigned int s, unsigned int c, unsigned int i)
-      : Dune::tuple<unsigned int, unsigned int, unsigned int>(s,c,i)
-    {}
+    {
+      values_[0] = s;
+      values_[1] = c;
+      values_[2] = i;
+    }
 
     //! \brief Return number of associated subentity
     inline unsigned int subEntity () const
     {
-      return Dune::get<0>(*this);
+      return values_[0];
     }
 
     //! \brief Return codim of associated entity
     inline unsigned int codim () const
     {
-      return Dune::get<1>(*this);
+      return values_[1];
     }
 
     //! \brief Return offset within subentity
     inline unsigned int index () const
     {
-      return Dune::get<2>(*this);
+      return values_[2];
     }
 
     //! \brief Set index component
     void index (unsigned int i)
     {
-      Dune::get<2>(*this) = i;
+      values_[2] = i;
     }
+
+    /** \brief Less-than operator so we can use this class as a key type in stl containers */
+    bool operator< (const LocalKey& other) const
+    {
+      return values_ < other.values_;
+    }
+
+  private:
+
+    // We use an array to store the values in order to be able to use the array::operator< implementation
+    Dune::array<unsigned int,3> values_;
+
   };
 
 }

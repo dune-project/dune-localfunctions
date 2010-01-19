@@ -6,7 +6,7 @@ localfunctions_HEADERS = lagrange.hh orthonormal.hh raviartthomas.hh \
 	rannacher_turek2d.hh hierarchicalprismp2.hh \
         monom.hh p2.hh mimetic.hh \
 	pk2d.hh q22d.hh q1.hh \
-	pq22d.hh
+	pq22d.hh refined.hh
 
 SUBDIRS = common utility test \
           lagrange orthonormal \

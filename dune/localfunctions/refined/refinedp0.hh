@@ -6,7 +6,7 @@
 #include <dune/common/geometrytype.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
-#include <dune/localfunctions/p0.hh>
+#include <dune/localfunctions/lagrange/p0.hh>
 
 #include "refinedp0/refinedp0localbasis.hh"
 #include "refinedp0/refinedp0localcoefficients.hh"

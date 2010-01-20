@@ -5,7 +5,7 @@
 
 #include <dune/common/geometrytype.hh>
 
-#include "common/localfiniteelementtraits.hh"
+#include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include "q22d/q22dlocalbasis.hh"
 #include "q22d/q22dlocalcoefficients.hh"
 #include "q22d/q22dlocalinterpolation.hh"

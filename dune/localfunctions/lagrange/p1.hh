@@ -5,7 +5,7 @@
 
 #include <dune/common/geometrytype.hh>
 
-#include "common/localfiniteelementtraits.hh"
+#include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include "p1/p1localbasis.hh"
 #include "p1/p1localcoefficients.hh"
 #include "p1/p1localinterpolation.hh"

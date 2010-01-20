@@ -5,8 +5,8 @@
 
 #include <dune/common/fmatrix.hh>
 
-#include "common/virtualinterface.hh"
-#include "common/virtualwrappers.hh"
+#include <dune/localfunctions/common/virtualinterface.hh>
+#include <dune/localfunctions/common/virtualwrappers.hh>
 #include "q22d.hh"
 #include "pk2d.hh"
 

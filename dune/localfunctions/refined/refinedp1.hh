@@ -6,15 +6,15 @@
 #include <dune/common/geometrytype.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
-#include <dune/localfunctions/p0.hh>
+#include <dune/localfunctions/lagrange/p0.hh>
 
 #include <dune/localfunctions/refined/refinedp1/refinedp1localbasis.hh>
-#include <dune/localfunctions/pk2d/pk2dlocalcoefficients.hh>
-#include <dune/localfunctions/pk2d/pk2dlocalinterpolation.hh>
-#include <dune/localfunctions/pk2d/pk2dlocalbasis.hh>
-#include <dune/localfunctions/pk3d/pk3dlocalcoefficients.hh>
-#include <dune/localfunctions/pk3d/pk3dlocalinterpolation.hh>
-#include <dune/localfunctions/pk3d/pk3dlocalbasis.hh>
+#include <dune/localfunctions/lagrange/pk2d/pk2dlocalcoefficients.hh>
+#include <dune/localfunctions/lagrange/pk2d/pk2dlocalinterpolation.hh>
+#include <dune/localfunctions/lagrange/pk2d/pk2dlocalbasis.hh>
+#include <dune/localfunctions/lagrange/pk3d/pk3dlocalcoefficients.hh>
+#include <dune/localfunctions/lagrange/pk3d/pk3dlocalinterpolation.hh>
+#include <dune/localfunctions/lagrange/pk3d/pk3dlocalbasis.hh>
 
 namespace Dune
 {

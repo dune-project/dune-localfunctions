@@ -5,7 +5,7 @@
 
 #include <dune/common/geometrytype.hh>
 
-#include "common/localfiniteelementtraits.hh"
+#include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include "pk2d/pk2dlocalbasis.hh"
 #include "pk2d/pk2dlocalcoefficients.hh"
 #include "pk2d/pk2dlocalinterpolation.hh"

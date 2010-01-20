@@ -33,14 +33,16 @@ AC_CONFIG_FILES([
                 dune/localfunctions/Makefile
                 dune/localfunctions/monom/Makefile
                 dune/localfunctions/mimetic/Makefile
-                dune/localfunctions/p0/Makefile
-                dune/localfunctions/p1/Makefile
-                dune/localfunctions/pk2d/Makefile
-                dune/localfunctions/pk3d/Makefile
-                dune/localfunctions/prismp1/Makefile
-                dune/localfunctions/prismp2/Makefile
-                dune/localfunctions/q1/Makefile
-                dune/localfunctions/q22d/Makefile
+                dune/localfunctions/lagrange/Makefile
+                dune/localfunctions/lagrange/p0/Makefile
+                dune/localfunctions/lagrange/p1/Makefile
+                dune/localfunctions/lagrange/p23d/Makefile
+                dune/localfunctions/lagrange/pk2d/Makefile
+                dune/localfunctions/lagrange/pk3d/Makefile
+                dune/localfunctions/lagrange/prismp1/Makefile
+                dune/localfunctions/lagrange/prismp2/Makefile
+                dune/localfunctions/lagrange/q1/Makefile
+                dune/localfunctions/lagrange/q22d/Makefile
                 dune/localfunctions/hierarchicalprismp2/Makefile
                 dune/localfunctions/refined/Makefile
                 dune/localfunctions/refined/refinedp1/Makefile
@@ -53,7 +55,6 @@ AC_CONFIG_FILES([
                 dune/localfunctions/test/Makefile
                 dune/localfunctions/utility/Makefile
                 dune/localfunctions/orthonormal/Makefile
-                dune/localfunctions/lagrange/Makefile
                 doc/doxygen/Makefile
                 doc/doxygen/Doxyfile
                 doc/Makefile

@@ -30,13 +30,11 @@ namespace Dune
   class OrthonormalLocalFiniteElement
     : public GenericLocalFiniteElement< OrthonormalBasisFactory< dimDomain, SF, CF >,
           DGLocalCoefficientsFactory< OrthonormalBasisFactory< dimDomain, SF, CF > >,
-          LocalL2InterpolationFactory< OrthonormalBasisFactory< dimDomain, SF, CF >,true >,
-          dimDomain,D,R>
+          LocalL2InterpolationFactory< OrthonormalBasisFactory< dimDomain, SF, CF >,true > >
   {
     typedef GenericLocalFiniteElement< OrthonormalBasisFactory< dimDomain, SF, CF >,
         DGLocalCoefficientsFactory< OrthonormalBasisFactory< dimDomain, SF, CF > >,
-        LocalL2InterpolationFactory< OrthonormalBasisFactory< dimDomain, SF, CF >,true >,
-        dimDomain,D,R> Base;
+        LocalL2InterpolationFactory< OrthonormalBasisFactory< dimDomain, SF, CF >,true > > Base;
   public:
     using Base::Traits;
 

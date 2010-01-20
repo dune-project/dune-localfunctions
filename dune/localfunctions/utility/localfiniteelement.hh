@@ -7,6 +7,8 @@
 #include <dune/grid/genericgeometry/conversion.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
+#include <dune/localfunctions/utility/l2interpolation.hh>
+#include <dune/localfunctions/utility/dglocalcoefficients.hh>
 
 namespace Dune
 {
@@ -16,16 +18,20 @@ namespace Dune
    *        and LocalInterpolations. Note the key type for all three
    *        factories must coincide.
    **/
-  template< class BasisF, class CoeffF, class InterpolF,
-      unsigned int dimDomain, class D, class R >
+  template< class BasisF, class CoeffF, class InterpolF>
   struct GenericLocalFiniteElement
   {
-    typedef GenericLocalFiniteElement<BasisF, CoeffF, InterpolF, dimDomain,D,R> This;
+    typedef GenericLocalFiniteElement<BasisF, CoeffF, InterpolF> This;
     typedef LocalFiniteElementTraits< typename BasisF::Object,
         typename CoeffF::Object,
         typename InterpolF::Object > Traits;
 
     typedef typename BasisF::Key Key;
+    static const unsigned int dimDomain = BasisF::dimension;
+
+    typedef BasisF BasisFactory;
+    typedef CoeffF CoefficientFactory;
+    typedef InterpolF InterpolationFactory;
 
     dune_static_assert( (Conversion<Key,typename CoeffF::Key>::sameType),
                         "incompatible keys between BasisCreator and CoefficientsCreator" );
@@ -131,6 +137,55 @@ namespace Dune
     FiniteElement finiteElement_;
   };
 
+  /**
+   * @brief Takes the basis and interpolation factory from a given
+   *        LocalFiniteElement (derived from GenericLocalFiniteElement)
+   *        and replaces the coefficients with dg local keys, i.e.,
+   *        attaches all degrees of freedom to the codimension zero entity.
+   **/
+  template <class FE>
+  struct DGLocalFiniteElement
+    : public GenericLocalFiniteElement< typename FE::BasisFactory,
+          DGLocalCoefficientsFactory< typename FE::BasisFactory >,
+          typename FE::InterpolationFactory>
+  {
+    typedef GenericLocalFiniteElement< typename FE::BasisFactory,
+        DGLocalCoefficientsFactory< typename FE::BasisFactory >,
+        typename FE::InterpolationFactory> Base;
+  public:
+    typedef typename Base::Traits Traits;
+
+    /** \todo Please doc me !
+     */
+    DGLocalFiniteElement ( unsigned int topologyId, const typename Base::Key &key  )
+      : Base( topologyId, key )
+    {}
+  };
+  /**
+   * @brief Takes the basis factory from a given
+   *        LocalFiniteElement (derived from GenericLocalFiniteElement)
+   *        and replaces the coefficients with dg local keys, i.e.,
+   *        attaches all degrees of freedom to the codimension zero entity
+   *        and uses a l2 interpolation.
+   **/
+  template <class FE>
+  struct L2LocalFiniteElement
+    : public GenericLocalFiniteElement< typename FE::BasisFactory,
+          DGLocalCoefficientsFactory< typename FE::BasisFactory >,
+          LocalL2InterpolationFactory< typename FE::BasisFactory, false > >
+  {
+    typedef GenericLocalFiniteElement< typename FE::BasisFactory,
+        DGLocalCoefficientsFactory< typename FE::BasisFactory >,
+        LocalL2InterpolationFactory< typename FE::BasisFactory, false > > Base;
+  public:
+    typedef typename Base::Traits Traits;
+
+    /** \todo Please doc me !
+     */
+    L2LocalFiniteElement ( unsigned int topologyId, const typename Base::Key &key  )
+      : Base( topologyId, key )
+    {}
+  };
 }
 
 #endif

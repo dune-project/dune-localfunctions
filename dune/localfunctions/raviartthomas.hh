@@ -25,13 +25,11 @@ namespace Dune
   class RaviartThomasLocalFiniteElement
     : public GenericLocalFiniteElement< RaviartThomasBasisFactory< dimDomain, SF, CF >,
           RaviartThomasCoefficientsFactory< dimDomain >,
-          RaviartThomasL2InterpolationFactory< dimDomain, SF >,
-          dimDomain,D,R>
+          RaviartThomasL2InterpolationFactory< dimDomain, SF > >
   {
     typedef GenericLocalFiniteElement< RaviartThomasBasisFactory< dimDomain, SF, CF >,
         RaviartThomasCoefficientsFactory< dimDomain >,
-        RaviartThomasL2InterpolationFactory< dimDomain, SF >,
-        dimDomain,D,R> Base;
+        RaviartThomasL2InterpolationFactory< dimDomain, SF > > Base;
   public:
     using Base::Traits;
 

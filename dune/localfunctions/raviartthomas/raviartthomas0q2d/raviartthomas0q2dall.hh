@@ -8,8 +8,8 @@
 
 #include <dune/common/fmatrix.hh>
 
-#include "../common/localbasis.hh"
-#include "../common/localkey.hh"
+#include <dune/localfunctions/common/localbasis.hh>
+#include <dune/localfunctions/common/localkey.hh>
 
 namespace Dune
 {

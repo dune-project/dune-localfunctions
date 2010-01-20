@@ -7,7 +7,7 @@
 #include <iostream>
 #include <vector>
 
-#include "../common/localkey.hh"
+#include <dune/localfunctions/common/localkey.hh>
 
 namespace Dune
 {

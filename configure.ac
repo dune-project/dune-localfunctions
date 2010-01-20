@@ -27,7 +27,6 @@ AC_CONFIG_FILES([
 		Makefile
                 dune/Makefile
                 dune/localfunctions/common/Makefile
-                dune/localfunctions/edger02d/Makefile
                 dune/localfunctions/edges02d/Makefile
                 dune/localfunctions/edges03d/Makefile
                 dune/localfunctions/Makefile

@@ -32,7 +32,6 @@
 #include "../raviartthomas/raviartthomas0q2d.hh"
 #include "../raviartthomas/raviartthomas0q3d.hh"
 #include "../monom.hh"
-#include "../edger02d.hh"
 #include "../edges02d.hh"
 #include "../edges03d.hh"
 
@@ -152,9 +151,6 @@ int main(int argc, char** argv) try
 
   Dune::Q22DLocalFiniteElement<double,double> q22dlfem;
   success = testFE(q22dlfem) and success;
-
-  Dune::EdgeR02DLocalFiniteElement<double,double> edger02dlfem;
-  success = testFE(edger02dlfem) and success;
 
   Dune::EdgeS02DLocalFiniteElement<double,double> edges02dlfem;
   success = testFEGlobal(edges02dlfem) and success;

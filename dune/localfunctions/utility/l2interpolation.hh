@@ -56,9 +56,9 @@ namespace Dune
       const Iterator end = quadrature().end();
       for( Iterator it = quadrature().begin(); it != end; ++it )
       {
-        basis().evaluate( it->point(), basisValues );
+        basis().evaluate( it->position(), basisValues );
         typename Function::RangeType val;
-        function.evaluate( field_cast<typename Function::DomainType::field_type>(it->point()), val );
+        function.evaluate( field_cast<typename Function::DomainType::field_type>(it->position()), val );
         RangeVector factor = field_cast< DofField >( val );
         factor *= field_cast< DofField >( it->weight() );
         for( unsigned int i = 0; i < size; ++i )
@@ -142,7 +142,7 @@ namespace Dune
       const Iterator end = Base::quadrature().end();
       for( Iterator it = Base::quadrature().begin(); it != end; ++it )
       {
-        Base::basis().evaluate( it->point(), basisValues );
+        Base::basis().evaluate( it->position(), basisValues );
         for (unsigned int i=0; i<size; ++i)
           for (unsigned int j=0; j<size; ++j)
             massMatrix_(i,j) += (basisValues[i]*basisValues[j])*it->weight();

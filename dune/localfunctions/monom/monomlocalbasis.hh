@@ -242,7 +242,7 @@ namespace Dune
       int index = 0;
       array<int, d> derivatives;
       for(unsigned int i = 0; i < d; ++i) derivatives[i] = 0;
-      for(int i = 0; i < k; ++i) ++derivatives[directions[i]];
+      for(unsigned int i = 0; i < k; ++i) ++derivatives[directions[i]];
       MonomImp::EvalAccess<Traits> access(out);
       for(unsigned int lp = 0; lp <= p; ++lp)
         MonomImp::Evaluate<Traits, d>::eval(in, derivatives, 1, lp, index,

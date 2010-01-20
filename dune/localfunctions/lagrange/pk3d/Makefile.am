@@ -1,4 +1,4 @@
-pk3ddir = $(includedir)/dune/localfunctions/pk3d
+pk3ddir = $(includedir)/dune/localfunctions/lagrange/pk3d
 
 pk3d_HEADERS = pk3dlocalbasis.hh pk3dlocalcoefficients.hh pk3dlocalinterpolation.hh
 

@@ -1,4 +1,4 @@
-q22ddir = $(includedir)/dune/localfunctions/q22d
+q22ddir = $(includedir)/dune/localfunctions/lagrange/q22d
 
 q22d_HEADERS = q22dlocalbasis.hh q22dlocalcoefficients.hh q22dlocalinterpolation.hh
 

@@ -122,7 +122,8 @@ bool testLocalInterpolation(const FE& fe, int n=5)
     // Check if interpolation weights are equal to coefficients
     for(std::size_t j=0; j<coeff.size() && success; ++j)
     {
-      if (std::abs(coeff[j]-f.coeff_[j]) > TOL)
+      if ( std::abs(coeff[j]-f.coeff_[j]) >
+           TOL*((std::abs(f.coeff_[j])>1) ? std::abs(f.coeff_[j]) : 1.) )
       {
         std::cout << std::setprecision(16);
         std::cout << "Bug in LocalInterpolation for finite element type "
@@ -204,7 +205,9 @@ bool testJacobian(const FE& fe, unsigned order = 2)
                               / (2*jacobianTOL);
 
           // Check
-          if (std::abs(derivative-finiteDiff) > TOL/jacobianTOL) {
+          if ( std::abs(derivative-finiteDiff) >
+               TOL/jacobianTOL*((std::abs(finiteDiff)>1) ? std::abs(finiteDiff) : 1.) )
+          {
             std::cout << std::setprecision(16);
             std::cout << "Bug in evaluateJacobian() for finite element type "
                       << typeid(FE).name() << std::endl;

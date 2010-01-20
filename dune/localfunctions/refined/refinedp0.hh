@@ -6,6 +6,8 @@
 #include <dune/common/geometrytype.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
+#include <dune/localfunctions/p0.hh>
+
 #include "refinedp0/refinedp0localbasis.hh"
 #include "refinedp0/refinedp0localcoefficients.hh"
 #include "refinedp0/refinedp0localinterpolation.hh"
@@ -21,11 +23,12 @@ namespace Dune
   template<class D, class R, int dim>
   class RefinedP0LocalFiniteElement
   {
+    RefinedP0LocalFiniteElement() {}
+
   public:
-    RefinedP0LocalFiniteElement()
-    {
-      DUNE_THROW(Dune::NotImplemented,"RefinedP0LocalFiniteElement not implemented for dim > 2 nor for dim = 1.");
-    }
+    // We steal the p0 traits since they exist for all dim.
+    // This allows to instanciate the type and access the Traits.
+    typedef typename P0LocalFiniteElement<D,R,dim>::Traits Traits;
   };
 
   /** \brief Local finite element that is piecewise P0 on a the once unifromly refined reference geometry

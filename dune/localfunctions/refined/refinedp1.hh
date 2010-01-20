@@ -6,6 +6,8 @@
 #include <dune/common/geometrytype.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
+#include <dune/localfunctions/p0.hh>
+
 #include <dune/localfunctions/refined/refinedp1/refinedp1localbasis.hh>
 #include <dune/localfunctions/pk2d/pk2dlocalcoefficients.hh>
 #include <dune/localfunctions/pk2d/pk2dlocalinterpolation.hh>
@@ -22,11 +24,12 @@ namespace Dune
   template<class D, class R, int dim>
   class RefinedP1LocalFiniteElement
   {
+    RefinedP1LocalFiniteElement() {}
+
   public:
-    RefinedP1LocalFiniteElement()
-    {
-      DUNE_THROW(Dune::NotImplemented,"RefinedP1LocalFiniteElement not implemented for dim > 3 nor for dim = 1 (the latter for lack of P21D-elements).");
-    }
+    // We steal the p0 traits since they exist for all dim.
+    // This allows to instanciate the type and access the Traits.
+    typedef typename P0LocalFiniteElement<D,R,dim>::Traits Traits;
   };
 
   /** \todo Please doc me !

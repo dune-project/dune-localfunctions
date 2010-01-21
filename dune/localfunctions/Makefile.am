@@ -1,6 +1,6 @@
 localfunctionsdir = $(includedir)/dune/localfunctions
 
-localfunctions_HEADERS = lagrange.hh orthonormal.hh raviartthomas.hh \
+localfunctions_HEADERS = lagrange.hh orthonormal.hh raviartthomas.hh rannacherturek.hh \
         edges02d.hh					\
 	edges03d.hh					\
 	hierarchicalprismp2.hh \

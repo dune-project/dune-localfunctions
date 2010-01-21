@@ -15,7 +15,7 @@ namespace Dune
 {
   template<class D, class R, int dim>
   class RefinedP1LocalBasis
-    : public RefinedSimplexLocalBasis<D,R,dim>
+    : public RefinedSimplexLocalBasis<D,dim>
   {
   public:
     RefinedP1LocalBasis()
@@ -49,7 +49,7 @@ namespace Dune
    */
   template<class D, class R>
   class RefinedP1LocalBasis<D,R,1>
-    : public RefinedSimplexLocalBasis<D,R,1>
+    : public RefinedSimplexLocalBasis<D,1>
   {
   public:
     //! \brief export type traits for function signature
@@ -157,7 +157,7 @@ namespace Dune
    */
   template<class D, class R>
   class RefinedP1LocalBasis<D,R,2>
-    : public RefinedSimplexLocalBasis<D,R,2>
+    : public RefinedSimplexLocalBasis<D,2>
   {
   public:
     //! \brief export type traits for function signature
@@ -315,7 +315,7 @@ namespace Dune
    */
   template<class D, class R>
   class RefinedP1LocalBasis<D,R,3>
-    : public RefinedSimplexLocalBasis<D,R,3>
+    : public RefinedSimplexLocalBasis<D,3>
   {
   public:
     //! \brief export type traits for function signature

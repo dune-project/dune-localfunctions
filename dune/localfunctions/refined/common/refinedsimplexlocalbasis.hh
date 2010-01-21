@@ -10,7 +10,7 @@
 
 namespace Dune
 {
-  template<class D, class R, int dim>
+  template<class D, int dim>
   class RefinedSimplexLocalBasis
   {
   public:
@@ -39,17 +39,13 @@ namespace Dune
      f_2 ~ (0.5)
 
      \tparam D Type to represent the field in the domain.
-     \tparam R Type to represent the field in the range.
 
      \nosubgrouping
    */
-  template<class D, class R>
-  class RefinedSimplexLocalBasis<D,R,1>
+  template<class D>
+  class RefinedSimplexLocalBasis<D,1>
   {
-  public:
-    //! \brief export type traits for function signature
-    typedef LocalBasisTraits<D,1,Dune::FieldVector<D,1>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldMatrix<R,1,1> > Traits;
+  protected:
 
     /** \brief Get local coordinates in the subtriangle
 
@@ -57,9 +53,9 @@ namespace Dune
        \param[out] subElement Which of the four subtriangles is global in?
        \param[out] local The local coordinates in the subtriangle
      */
-    static void getSubElement(const typename Traits::DomainType& global,
+    static void getSubElement(const FieldVector<D,1>& global,
                               int& subElement,
-                              typename Traits::DomainType& local)
+                              FieldVector<D,1>& local)
     {
       if (global[0] <= 0.5) {
         subElement = 0;
@@ -93,16 +89,13 @@ namespace Dune
      f_3 ~ (2/6, 2/6)
 
      \tparam D Type to represent the field in the domain.
-     \tparam R Type to represent the field in the range.
 
      \nosubgrouping
    */
-  template<class D, class R>
-  class RefinedSimplexLocalBasis<D,R,2>
+  template<class D>
+  class RefinedSimplexLocalBasis<D,2>
   {
   protected:
-    //! \brief export type traits for function signature
-    typedef LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>, Dune::FieldMatrix<R,1,2> > Traits;
 
     /** \brief Get local coordinates in the subtriangle.
      *
@@ -118,7 +111,7 @@ namespace Dune
      * \param[in] global Coordinates in the reference triangle
      * \returns Number of the subtriangles containing in
      */
-    static int getSubElement(const typename Traits::DomainType& global)
+    static int getSubElement(const FieldVector<D,2>& global)
     {
       if (global[0] + global[1] <= 0.5)
         return 0;
@@ -135,9 +128,9 @@ namespace Dune
        \param[out] subElement Which of the four subtriangles is global in?
        \param[out] local The local coordinates in the subtriangle
      */
-    static void getSubElement(const typename Traits::DomainType& global,
+    static void getSubElement(const FieldVector<D,2>& global,
                               int& subElement,
-                              typename Traits::DomainType& local)
+                              FieldVector<D,2>& local)
     {
       if (global[0] + global[1] <= 0.5) {
         subElement = 0;
@@ -189,17 +182,13 @@ namespace Dune
      f_9 ~ (0.0, 0.5, 0.5)
 
      \tparam D Type to represent the field in the domain.
-     \tparam R Type to represent the field in the range.
 
      \nosubgrouping
    */
-  template<class D, class R>
-  class RefinedSimplexLocalBasis<D,R,3>
+  template<class D>
+  class RefinedSimplexLocalBasis<D,3>
   {
   public:
-    //! \brief export type traits for function signature
-    typedef LocalBasisTraits<D,3,Dune::FieldVector<D,3>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldMatrix<R,1,3> > Traits;
 
     /** \brief Get local coordinates in the subsimplex
 
@@ -207,9 +196,9 @@ namespace Dune
        \param[out] subElement Which of the subsimplice is global in?
        \param[out] local The local coordinates in the subsimplex
      */
-    static void getSubElement(const typename Traits::DomainType& global,
+    static void getSubElement(const FieldVector<D,3>& global,
                               int& subElement,
-                              typename Traits::DomainType& local)
+                              FieldVector<D,3>& local)
     {
       if (global[0] + global[1] + global[2] <= 0.5) {
         subElement = 0;

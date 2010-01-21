@@ -7,9 +7,10 @@
     \brief Hierarchical prism p2 shape functions for the simplex
  */
 
+#include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
 
-#include "../common/localbasis.hh"
+#include <dune/localfunctions/common/localbasis.hh>
 
 namespace Dune
 {

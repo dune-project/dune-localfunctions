@@ -8,7 +8,7 @@
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
 
-#include "../common/localbasis.hh"
+#include <dune/localfunctions/common/localbasis.hh>
 
 namespace Dune {
 

@@ -18,7 +18,9 @@ double jacobianTOL = 1e-5;  // sqrt(TOL)
 
 template<class FE>
 class Func :
-  public Dune::LocalFiniteElementFunctionBase<FE>::type
+  //  public Dune::LocalFiniteElementFunctionBase<FE>::type
+  public Dune::LocalFiniteElementFunctionBase<FE>::FunctionBase
+  //  public Dune::LocalFiniteElementFunctionBase<FE>::VirtualFunctionBase
 {
 public:
   typedef typename FE::Traits::LocalBasisType::Traits::DomainType DomainType;
@@ -41,10 +43,10 @@ public:
 // This provides the evaluate method needed by the interpolate()
 // method.
 template<class FE>
-//class LocalFEFunction :
-//  public Dune::LocalFiniteElementFunctionBase<FE>::type
 class LocalFEFunction :
+  //  public Dune::LocalFiniteElementFunctionBase<FE>::type
   public Dune::LocalFiniteElementFunctionBase<FE>::FunctionBase
+  //  public Dune::LocalFiniteElementFunctionBase<FE>::VirtualFunctionBase
 {
 public:
   typedef typename FE::Traits::LocalBasisType::Traits::DomainType DomainType;

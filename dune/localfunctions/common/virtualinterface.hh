@@ -287,11 +287,22 @@ namespace Dune
 
     //! @copydoc LocalInterpolationInterfaceBase::interpolate
     //! This uses the pure virtual method by wrapping the template argument into a VirtualFunction
-    template<typename F>
+    template<class F>
     void interpolate (const F& f, std::vector<CoefficientType>& out) const
     {
       const LocalInterpolationVirtualInterfaceBase<DomainType, RangeType>& asBase = *this;
       asBase.interpolate(VirtualFunctionWrapper<F>(f),out);
+    }
+
+    template<class F, class C>
+    void interpolate (const F& f, std::vector<C>& out) const
+    {
+      std::vector<CoefficientType> outDummy;
+      const LocalInterpolationVirtualInterfaceBase<DomainType, RangeType>& asBase = *this;
+      asBase.interpolate(VirtualFunctionWrapper<F>(f),outDummy);
+      out.resize(outDummy.size());
+      for(int i=0; i<outDummy.size(); ++i)
+        out[i] = outDummy[i];
     }
 
   private:

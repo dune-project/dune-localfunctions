@@ -5,7 +5,8 @@ lagrange_HEADERS = emptypoints.hh        lagrangebasis.hh         \
                    equidistantpoints.hh  lagrangecoefficients.hh  \
                    interpolation.hh      lobattopoints.hh         \
                    p0.hh p1.hh p23d.hh p2.hh pk2d.hh pk3d.hh pk.hh pq22d.hh \
-                   prismp1.hh prismp2.hh q1.hh q22d.hh
+                   prismp1.hh prismp2.hh q1.hh q22d.hh \
+                   pqkfactory.hh
 
 check_PROGRAMS = test-all
 EXTRA_PROGRAMS = test

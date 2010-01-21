@@ -3,6 +3,7 @@ Makefile
 
 doxy-header.html
 doxygen.log
+doxyerr.log
 Doxyfile
 Doxyfile.in
 html

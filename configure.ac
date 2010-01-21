@@ -42,7 +42,10 @@ AC_CONFIG_FILES([
                 dune/localfunctions/lagrange/prismp2/Makefile
                 dune/localfunctions/lagrange/q1/Makefile
                 dune/localfunctions/lagrange/q22d/Makefile
-                dune/localfunctions/hierarchicalprismp2/Makefile
+                dune/localfunctions/hierarchical/Makefile
+                dune/localfunctions/hierarchical/hierarchicalp2/Makefile
+                dune/localfunctions/hierarchical/hierarchicalprismp2/Makefile
+                dune/localfunctions/hierarchical/hierarchicalp2withelementbubble/Makefile
                 dune/localfunctions/refined/Makefile
                 dune/localfunctions/refined/common/Makefile
                 dune/localfunctions/refined/refinedp1/Makefile

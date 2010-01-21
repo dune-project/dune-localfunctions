@@ -24,9 +24,9 @@
 
 #include "../refined/refinedp1.hh"
 #include "../refined/refinedp0.hh"
-#include "../hierarchicalp2.hh"
-#include "../hierarchicalp2withelementbubble.hh"
-#include "../hierarchicalprismp2.hh"
+#include "../hierarchical/hierarchicalp2.hh"
+#include "../hierarchical/hierarchicalp2withelementbubble.hh"
+#include "../hierarchical/hierarchicalprismp2.hh"
 #include "../rannacherturek/rannacherturek2d.hh"
 #include "../raviartthomas/raviartthomas02d.hh"
 #include "../raviartthomas/raviartthomas0q2d.hh"

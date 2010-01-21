@@ -5,13 +5,13 @@
 
 #include <dune/common/geometrytype.hh>
 
-#include "common/localfiniteelementtraits.hh"
+#include <dune/localfunctions/common/localfiniteelementtraits.hh>
 
 #include "hierarchicalp2/hierarchicalsimplexp2localbasis.hh"
 #include "hierarchicalp2/hierarchicalsimplexp2localinterpolation.hh"
 
-#include "lagrange/pk2d/pk2dlocalcoefficients.hh"
-#include "lagrange/pk3d/pk3dlocalcoefficients.hh"
+#include <dune/localfunctions/lagrange/pk2d/pk2dlocalcoefficients.hh>
+#include <dune/localfunctions/lagrange/pk3d/pk3dlocalcoefficients.hh>
 
 namespace Dune
 {

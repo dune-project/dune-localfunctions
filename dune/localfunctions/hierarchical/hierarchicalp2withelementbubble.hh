@@ -6,7 +6,7 @@
 #include <dune/common/geometrytype.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
-#include <dune/localfunctions/hierarchicalp2withelementbubble/hierarchicalsimplexp2withelementbubble.hh>
+#include <dune/localfunctions/hierarchical/hierarchicalp2withelementbubble/hierarchicalsimplexp2withelementbubble.hh>
 
 
 namespace Dune

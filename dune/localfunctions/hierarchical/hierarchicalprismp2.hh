@@ -5,12 +5,12 @@
 
 #include <dune/common/geometrytype.hh>
 
-#include "common/localfiniteelementtraits.hh"
+#include <dune/localfunctions/common/localfiniteelementtraits.hh>
 
 #include "hierarchicalprismp2/hierarchicalprismp2localbasis.hh"
 #include "hierarchicalprismp2/hierarchicalprismp2localinterpolation.hh"
 
-#include "lagrange/prismp2/prismp2localcoefficients.hh"
+#include <dune/localfunctions/lagrange/prismp2/prismp2localcoefficients.hh>
 
 
 namespace Dune

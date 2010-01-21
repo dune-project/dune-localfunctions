@@ -13,7 +13,7 @@ namespace Dune
   template<class D, int dim>
   class RefinedSimplexLocalBasis
   {
-  public:
+  protected:
     RefinedSimplexLocalBasis()
     {
       DUNE_THROW(Dune::NotImplemented,"RefinedSimplexLocalBasis not implemented for dim > 3.");
@@ -46,6 +46,9 @@ namespace Dune
   class RefinedSimplexLocalBasis<D,1>
   {
   protected:
+
+    /** \brief Protected default constructor so this class can only be instantiated as a base class. */
+    RefinedSimplexLocalBasis() {}
 
     /** \brief Get local coordinates in the subtriangle
 
@@ -96,6 +99,9 @@ namespace Dune
   class RefinedSimplexLocalBasis<D,2>
   {
   protected:
+
+    /** \brief Protected default constructor so this class can only be instantiated as a base class. */
+    RefinedSimplexLocalBasis() {}
 
     /** \brief Get local coordinates in the subtriangle.
      *
@@ -188,7 +194,10 @@ namespace Dune
   template<class D>
   class RefinedSimplexLocalBasis<D,3>
   {
-  public:
+  protected:
+
+    /** \brief Protected default constructor so this class can only be instantiated as a base class. */
+    RefinedSimplexLocalBasis() {}
 
     /** \brief Get local coordinates in the subsimplex
 

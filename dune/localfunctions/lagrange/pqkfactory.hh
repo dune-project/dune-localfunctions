@@ -120,7 +120,7 @@ namespace Dune
   protected:
     typedef typename FixedOrderLocalBasisTraits<typename P0LocalFiniteElement<D,R,dim>::Traits::LocalBasisType::Traits,0>::Traits T;
     typedef LocalFiniteElementVirtualInterface<T> FE;
-    typedef typename std::map<int,FE*> FEMap;
+    typedef typename std::map<GeometryType,FE*> FEMap;
 
   public:
     typedef FE FiniteElementType;

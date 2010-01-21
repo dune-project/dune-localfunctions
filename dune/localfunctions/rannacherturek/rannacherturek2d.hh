@@ -7,9 +7,9 @@
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 
-#include "rannacher_turek2d/rannacher_turek2dlocalbasis.hh"
-#include "rannacher_turek2d/rannacher_turek2dlocalcoefficients.hh"
-#include "rannacher_turek2d/rannacher_turek2dlocalinterpolation.hh"
+#include "rannacherturek2d/rannacher_turek2dlocalbasis.hh"
+#include "rannacherturek2d/rannacher_turek2dlocalcoefficients.hh"
+#include "rannacherturek2d/rannacher_turek2dlocalinterpolation.hh"
 
 namespace Dune {
 

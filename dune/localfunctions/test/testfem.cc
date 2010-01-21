@@ -27,7 +27,7 @@
 #include "../hierarchicalp2.hh"
 #include "../hierarchicalp2withelementbubble.hh"
 #include "../hierarchicalprismp2.hh"
-#include "../rannacher_turek2d.hh"
+#include "../rannacherturek/rannacherturek2d.hh"
 #include "../raviartthomas/raviartthomas02d.hh"
 #include "../raviartthomas/raviartthomas0q2d.hh"
 #include "../raviartthomas/raviartthomas0q3d.hh"

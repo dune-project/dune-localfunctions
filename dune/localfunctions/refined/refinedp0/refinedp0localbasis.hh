@@ -12,6 +12,7 @@ namespace Dune
 {
   template<class D, class R, int dim>
   class RefinedP0LocalBasis
+    : public RefinedSimplexLocalBasis<D,R,dim>
   {
   public:
     RefinedP0LocalBasis()
@@ -44,6 +45,7 @@ namespace Dune
    */
   template<class D, class R>
   class RefinedP0LocalBasis<D,R,2>
+    : public RefinedSimplexLocalBasis<D,R,2>
   {
   public:
     //! \brief export type traits for function signature
@@ -107,31 +109,6 @@ namespace Dune
       return 0;
     }
 
-  private:
-    /** \brief Get local coordinates in the subtriangle.
-     *
-     * The triangles are ordered according to
-     *
-     * |\
-     * |2\
-     * |--\
-     * |\3|\
-     * |0\|1\
-     * ------
-     *
-     * \param[in] global Coordinates in the reference triangle
-     * \returns Number of the subtriangles containing in
-     */
-    static int getSubElement(const typename Traits::DomainType& global)
-    {
-      if (global[0] + global[1] <= 0.5)
-        return 0;
-      else if (global[0] >= 0.5)
-        return 1;
-      else if (global[1] >= 0.5)
-        return 2;
-      return 3;
-    }
   };
 
 }

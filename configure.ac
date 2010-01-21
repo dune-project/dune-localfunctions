@@ -44,6 +44,7 @@ AC_CONFIG_FILES([
                 dune/localfunctions/lagrange/q22d/Makefile
                 dune/localfunctions/hierarchicalprismp2/Makefile
                 dune/localfunctions/refined/Makefile
+                dune/localfunctions/refined/common/Makefile
                 dune/localfunctions/refined/refinedp1/Makefile
                 dune/localfunctions/refined/refinedp0/Makefile
                 dune/localfunctions/rannacher_turek2d/Makefile

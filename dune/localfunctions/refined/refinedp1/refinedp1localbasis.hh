@@ -9,12 +9,13 @@
 
 #include <dune/common/fmatrix.hh>
 
-#include <dune/localfunctions/common/localbasis.hh>
+#include <dune/localfunctions/refined/common/refinedsimplexlocalbasis.hh>
 
 namespace Dune
 {
   template<class D, class R, int dim>
   class RefinedP1LocalBasis
+    : public RefinedSimplexLocalBasis<D,R,dim>
   {
   public:
     RefinedP1LocalBasis()
@@ -48,6 +49,7 @@ namespace Dune
    */
   template<class D, class R>
   class RefinedP1LocalBasis<D,R,1>
+    : public RefinedSimplexLocalBasis<D,R,1>
   {
   public:
     //! \brief export type traits for function signature
@@ -127,28 +129,6 @@ namespace Dune
       return 1;
     }
 
-  private:
-    /** \brief Get local coordinates in the subtriangle
-
-       \param[in] global Coordinates in the reference triangle
-       \param[out] subElement Which of the four subtriangles is global in?
-       \param[out] local The local coordinates in the subtriangle
-     */
-    static void getSubElement(const typename Traits::DomainType& global,
-                              int& subElement,
-                              typename Traits::DomainType& local)
-    {
-      if (global[0] <= 0.5) {
-        subElement = 0;
-        local[0] = 2.0 * global[0];
-        return;
-      }
-
-      subElement = 1;
-      local[0] = 2.0 * global[0] - 1.0;
-
-    }
-
   };
 
   /**@ingroup LocalBasisImplementation
@@ -177,6 +157,7 @@ namespace Dune
    */
   template<class D, class R>
   class RefinedP1LocalBasis<D,R,2>
+    : public RefinedSimplexLocalBasis<D,R,2>
   {
   public:
     //! \brief export type traits for function signature
@@ -302,40 +283,6 @@ namespace Dune
       return 1;
     }
 
-  private:
-    /** \brief Get local coordinates in the subtriangle
-
-       \param[in] global Coordinates in the reference triangle
-       \param[out] subElement Which of the four subtriangles is global in?
-       \param[out] local The local coordinates in the subtriangle
-     */
-    static void getSubElement(const typename Traits::DomainType& global,
-                              int& subElement,
-                              typename Traits::DomainType& local)
-    {
-      if (global[0] + global[1] <= 0.5) {
-        subElement = 0;
-        local[0] = 2*global[0];
-        local[1] = 2*global[1];
-        return;
-      } else if (global[0] >= 0.5) {
-        subElement = 1;
-        local[0] = 2*global[0]-1;
-        local[1] = 2*global[1];
-        return;
-      } else if (global[1] >= 0.5) {
-        subElement = 2;
-        local[0] = 2*global[0];
-        local[1] = 2*global[1]-1;
-        return;
-      }
-
-      subElement = 3;
-      local[0] = -2 * global[0] + 1;
-      local[1] = -2 * global[1] + 1;
-
-    }
-
   };
 
   /**@ingroup LocalBasisImplementation
@@ -368,6 +315,7 @@ namespace Dune
    */
   template<class D, class R>
   class RefinedP1LocalBasis<D,R,3>
+    : public RefinedSimplexLocalBasis<D,R,3>
   {
   public:
     //! \brief export type traits for function signature
@@ -639,107 +587,6 @@ namespace Dune
     unsigned int order () const
     {
       return 1;
-    }
-
-  private:
-    /** \brief Get local coordinates in the subsimplex
-
-       \param[in] global Coordinates in the reference simplex
-       \param[out] subElement Which of the subsimplice is global in?
-       \param[out] local The local coordinates in the subsimplex
-     */
-    static void getSubElement(const typename Traits::DomainType& global,
-                              int& subElement,
-                              typename Traits::DomainType& local)
-    {
-      if (global[0] + global[1] + global[2] <= 0.5) {
-        subElement = 0;
-        local = global;
-        local *= 2.0;
-        return;
-      } else if (global[0] >= 0.5) {
-        subElement = 1;
-        local = global;
-        local[0] -= 0.5;
-        local *= 2.0;
-        return;
-      } else if (global[1] >= 0.5) {
-        subElement = 2;
-        local = global;
-        local[1] -= 0.5;
-        local *= 2.0;
-        return;
-      } else if (global[2] >= 0.5) {
-        subElement = 3;
-        local = global;
-        local[2] -= 0.5;
-        local *= 2.0;
-        return;
-      } else if ((global[0] + global[1] <= 0.5)and (global[1] + global[2] <= 0.5)) {
-        subElement = 4;
-        local[0] = 2.0 * global[1];
-        local[1] = 2.0 * (0.5 - global[0] - global[1]);
-        local[2] = 2.0 * (-0.5 + global[0] + global[1] + global[2]);
-        //              Dune::FieldMatrix<double,3,3> A(0.0);
-        //              A[0][1] =  2.0;
-        //              A[1][0] = -2.0;
-        //              A[1][1] = -2.0;
-        //              A[2][0] =  2.0;
-        //              A[2][1] =  2.0;
-        //              A[2][2] =  2.0;
-        //              A.mv(global,local);
-        //              local[1] += 1.0;
-        //              local[2] -= 1.0;
-        return;
-      } else if ((global[0] + global[1] >= 0.5)and (global[1] + global[2] <= 0.5)) {
-        subElement = 5;
-        local[0] = 2.0 * (0.5 - global[0]);
-        local[1] = 2.0 * (0.5 - global[1] - global[2]);
-        local[2] = 2.0 * global[2];
-        //              Dune::FieldMatrix<double,3,3> A(0.0);
-        //              A[0][0] = -2.0;
-        //              A[1][1] = -2.0;
-        //              A[1][2] = -2.0;
-        //              A[2][2] =  2.0;
-        //              A.mv(global,local);
-        //              local[0] += 1.0;
-        //              local[1] += 1.0;
-        return;
-      } else if ((global[0] + global[1] <= 0.5)and (global[1] + global[2] >= 0.5)) {
-        subElement = 6;
-        local[0] = 2.0 * (0.5 - global[0] - global[1]);
-        local[1] = 2.0 * global[0];
-        local[2] = 2.0 * (-0.5 + global[1] + global[2]);
-        //              Dune::FieldMatrix<double,3,3> A(0.0);
-        //              A[0][0] = -2.0;
-        //              A[0][1] = -2.0;
-        //              A[1][0] =  2.0;
-        //              A[2][1] =  2.0;
-        //              A[2][2] =  2.0;
-        //              A.mv(global,local);
-        //              local[0] += 1.0;
-        //              local[2] -= 1.0;
-        return;
-      } else if ((global[0] + global[1] >= 0.5)and (global[1] + global[2] >= 0.5)) {
-        subElement = 7;
-        local[0] = 2.0 * (-0.5 + global[1] + global[2]);
-        local[1] = 2.0 * (0.5 - global[1]);
-        local[2] = 2.0 * (-0.5 + global[0] + global[1]);
-        //              Dune::FieldMatrix<double,3,3> A(0.0);
-        //              A[0][1] =  2.0;
-        //              A[0][2] =  2.0;
-        //              A[1][1] = -2.0;
-        //              A[2][0] =  2.0;
-        //              A[2][1] =  2.0;
-        //              A.mv(global,local);
-        //              local[0] -= 1.0;
-        //              local[1] += 1.0;
-        //              local[2] -= 1.0;
-        return;
-      }
-
-      DUNE_THROW(InvalidStateException, "no subelement defined");
-
     }
 
   };

@@ -57,7 +57,7 @@ bool testArbitraryOrderFE()
 }
 
 template<>
-bool testArbitraryOrderFE<0>()
+bool testArbitraryOrderFE<-1>()
 {
   return true;
 }

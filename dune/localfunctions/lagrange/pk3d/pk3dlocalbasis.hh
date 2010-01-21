@@ -163,6 +163,12 @@ namespace Dune
     typedef LocalBasisTraits<D,3,Dune::FieldVector<D,3>,R,1,Dune::FieldVector<R,1>,
         Dune::FieldMatrix<R,1,3> > Traits;
 
+    /** \brief Export the number of degrees of freedom */
+    enum {N = 1};
+
+    /** \brief Export the element order */
+    enum {O = 0};
+
     unsigned int size () const
     {
       return 1;

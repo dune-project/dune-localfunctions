@@ -7,6 +7,6 @@ utility_HEADERS = basisevaluator.hh       localfiniteelement.hh  \
                   defaultbasisfactory.hh  tensor.hh              \
                   dglocalcoefficients.hh \
                   interpolationhelper.hh  l2interpolation.hh     \
-                  field.hh gmpfield.hh lfematrix.hh
+                  field.hh lfematrix.hh
 
 include $(top_srcdir)/am/global-rules

@@ -6,8 +6,9 @@
 #if HAVE_ALGLIB
 #include <alglib/amp.h>
 #endif
+
 #if HAVE_GMP
-#include <dune/localfunctions/utility/gmpfield.hh>
+#include <dune/common/gmpfield.hh>
 #endif
 
 #include <dune/common/fvector.hh>

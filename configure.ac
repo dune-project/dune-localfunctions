@@ -27,8 +27,6 @@ AC_CONFIG_FILES([
 		Makefile
                 dune/Makefile
                 dune/localfunctions/common/Makefile
-                dune/localfunctions/edges02d/Makefile
-                dune/localfunctions/edges03d/Makefile
                 dune/localfunctions/Makefile
                 dune/localfunctions/monom/Makefile
                 dune/localfunctions/mimetic/Makefile
@@ -56,6 +54,9 @@ AC_CONFIG_FILES([
                 dune/localfunctions/raviartthomas/raviartthomas02d/Makefile
                 dune/localfunctions/raviartthomas/raviartthomas0q2d/Makefile
                 dune/localfunctions/raviartthomas/raviartthomas0q3d/Makefile
+                dune/localfunctions/whitney/Makefile
+                dune/localfunctions/whitney/edges02d/Makefile
+                dune/localfunctions/whitney/edges03d/Makefile
                 dune/localfunctions/test/Makefile
                 dune/localfunctions/utility/Makefile
                 dune/localfunctions/orthonormal/Makefile

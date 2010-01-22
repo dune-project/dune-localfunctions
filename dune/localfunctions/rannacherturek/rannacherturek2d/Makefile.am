@@ -1,6 +1,6 @@
-rannacherturek2ddir = $(includedir)/dune/localfunctions/rannacherturek2d
+rannacherturek2ddir = $(includedir)/dune/localfunctions/rannacherturek/rannacherturek2d
 
-rannacher_turek2d_HEADERS = 			\
+rannacherturek2d_HEADERS = 			\
 	rannacherturek2dlocalbasis.hh		\
 	rannacherturek2dlocalcoefficients.hh	\
 	rannacherturek2dlocalinterpolation.hh

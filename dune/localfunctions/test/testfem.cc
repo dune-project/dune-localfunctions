@@ -32,8 +32,8 @@
 #include "../raviartthomas/raviartthomas0q2d.hh"
 #include "../raviartthomas/raviartthomas0q3d.hh"
 #include "../monom.hh"
-#include "../edges02d.hh"
-#include "../edges03d.hh"
+#include "../whitney/edges02d.hh"
+#include "../whitney/edges03d.hh"
 
 #include <dune/localfunctions/common/virtualinterface.hh>
 #include <dune/localfunctions/common/virtualwrappers.hh>

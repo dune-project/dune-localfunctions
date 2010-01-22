@@ -9,7 +9,7 @@
 
 #include <dune/grid/common/genericreferenceelements.hh>
 
-#include "../common/localbasis.hh"
+#include <dune/localfunctions/common/localbasis.hh>
 
 namespace Dune
 {

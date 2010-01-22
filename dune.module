@@ -3,11 +3,11 @@
 
 #Name of the module
 Module: dune-localfunctions
-Version: 0.1
+Version: 2.0
 Maintainer: dune@dune-project.org
 #depending on
 # the dune-grid dependency can be downgraded to a Suggests: once the
 # referenceelements are untangled from the p0 functions.
-Depends: dune-common (>= 1.3) dune-grid (>= 1.3)
+Depends: dune-common (>= 2.0) dune-grid (>= 2.0)
 # Needed for the debugging vtk output program
-Suggests: dune-grid (>= 1.3)
+Suggests: dune-grid (>= 2.0)

@@ -3,6 +3,8 @@
 #ifndef DUNE_RT02DLOCALINTERPOLATION_HH
 #define DUNE_RT02DLOCALINTERPOLATION_HH
 
+#include <cmath>
+#include <vector>
 #include <dune/common/exceptions.hh>
 
 namespace Dune

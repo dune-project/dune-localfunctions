@@ -7,10 +7,12 @@
     \brief Hierarchical p2 shape functions for the simplex
  */
 
+#include <vector>
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
+#include <dune/localfunctions/common/localkey.hh>
 
 namespace Dune
 {

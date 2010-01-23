@@ -3,6 +3,8 @@
 #ifndef DUNE_PRISM_P1_LOCALINTERPOLATION_HH
 #define DUNE_PRISM_P1_LOCALINTERPOLATION_HH
 
+#include <vector>
+
 namespace Dune
 {
   template<class LB>

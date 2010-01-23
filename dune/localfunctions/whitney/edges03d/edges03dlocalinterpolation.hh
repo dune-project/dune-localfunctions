@@ -4,7 +4,9 @@
 #define DUNE_EDGES03DLOCALINTERPOLATION_HH
 
 #include <cmath>
+#include <vector>
 
+#include <dune/grid/common/genericreferenceelements.hh>
 
 namespace Dune
 {

@@ -3,6 +3,7 @@
 #ifndef DUNE_Q1_LOCALFINITEELEMENT_HH
 #define DUNE_Q1_LOCALFINITEELEMENT_HH
 
+#include <dune/common/geometrytype.hh>
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include <dune/localfunctions/lagrange/q1/q1localbasis.hh>
 #include <dune/localfunctions/lagrange/q1/q1localcoefficients.hh>

@@ -3,6 +3,7 @@
 #ifndef DUNE_P0LOCALINTERPOLATION_HH
 #define DUNE_P0LOCALINTERPOLATION_HH
 
+#include <vector>
 #include <dune/grid/common/genericreferenceelements.hh>
 
 

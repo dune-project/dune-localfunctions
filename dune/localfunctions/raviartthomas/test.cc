@@ -33,8 +33,8 @@ bool test(unsigned int order)
     std::stringstream name;
     name << "rt_" << Topology::name() << "_p" << o << ".basis";
     std::ofstream out(name.str().c_str());
-    Dune::basisPrint<0,BasisFactory,typename BasisFactory::StorageField>(out,basis);
-    Dune::basisPrint<1,BasisFactory,typename BasisFactory::StorageField>(out,basis);
+    // Dune::basisPrint<0,BasisFactory,typename BasisFactory::StorageField>(out,basis);
+    // Dune::basisPrint<1,BasisFactory,typename BasisFactory::StorageField>(out,basis);
 
     // test interpolation
     typedef Dune::RaviartThomasL2InterpolationFactory<Topology::dimension,StorageField> InterpolationFactory;

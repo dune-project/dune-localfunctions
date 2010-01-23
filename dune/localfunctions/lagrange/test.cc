@@ -9,7 +9,7 @@
 #include <dune/localfunctions/lagrange/lobattopoints.hh>
 
 #include <dune/localfunctions/lagrange/lagrangebasis.hh>
-#include <dune/localfunctions/generic/quadrature/genericquadrature.hh>
+#include <dune/grid/common/quadraturerules/genericquadrature.hh>
 #include <dune/localfunctions/utility/basisprint.hh>
 
 #if HAVE_ALGLIB
@@ -32,7 +32,7 @@ bool test(const Basis &basis, const Points &points, bool verbose)
   {
     if (verbose)
       std::cout << index << "   " << points[ index ].point() << " "
-                << points[ index ].localKey()
+      //                            << points[ index ].localKey()
                 << std::endl;
     basis.evaluate( points[ index ].point(), y );
     bool first = true;

@@ -3,6 +3,7 @@
 #ifndef DUNE_REFINED_P0_LOCALINTERPOLATION_HH
 #define DUNE_REFINED_P0_LOCALINTERPOLATION_HH
 
+#include <dune/localfunctions/refined/refinedp0/refinedp0localbasis.hh>
 
 namespace Dune
 {

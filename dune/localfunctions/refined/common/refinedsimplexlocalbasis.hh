@@ -7,6 +7,9 @@
     \brief Contains a base class for a LocalBasis classes based on uniform refinement
  */
 
+#include <dune/common/fvector.hh>
+#include <dune/common/exceptions.hh>
+#include <dune/localfunctions/common/localbasis.hh>
 
 namespace Dune
 {

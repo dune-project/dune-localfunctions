@@ -13,7 +13,7 @@
 
 #include <dune/grid/genericgeometry/geometry.hh>
 
-#include "../edges03d.hh"
+#include <dune/localfunctions/whitney/edges03d.hh>
 
 class U
 {

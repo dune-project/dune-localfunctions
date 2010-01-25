@@ -79,7 +79,7 @@ int main(int argc, char** argv) try
   for (unsigned int order=1; order<=3; ++order)
   {
     std::cout << "order : " << order << std::endl;
-    typedef Dune::LagrangeLocalFiniteElement<Dune::LobattoPointSet,3,double,double> FE;
+    typedef Dune::LagrangeLocalFiniteElement<Dune::EquidistantPointSet,3,double,double> FE;
     Dune::DGLocalFiniteElement<FE> dglagrangeCube(7,order);
     success &= testFE(dglagrangeCube);
   }
@@ -88,7 +88,7 @@ int main(int argc, char** argv) try
   for (unsigned int order=1; order<=3; ++order)
   {
     std::cout << "order : " << order << std::endl;
-    typedef Dune::LagrangeLocalFiniteElement<Dune::LobattoPointSet,3,double,double> FE;
+    typedef Dune::LagrangeLocalFiniteElement<Dune::EquidistantPointSet,3,double,double> FE;
     Dune::L2LocalFiniteElement<FE> dglagrangeCube(7,order);
     success &= testFE(dglagrangeCube);
   }

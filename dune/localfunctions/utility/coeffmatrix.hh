@@ -195,7 +195,7 @@ namespace Dune
         }
         rows_[ r+1 ] = cit;
       }
-      assert( rows_[numRows_]-rows_[0] <= size );
+      assert( size_t(rows_[numRows_]-rows_[0]) <= size_t(size) );
       size = rows_[numRows_]-rows_[0];
       coeff_ = new Field[ size ];
       skip_ = new unsigned int[ size+1 ];

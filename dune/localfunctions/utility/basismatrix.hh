@@ -35,9 +35,10 @@ namespace Dune
       : cols_(preBasis.size())
     {
       localInterpolation.interpolate( preBasis, *this );
+
       if ( !Matrix::invert() )
       {
-        DUNE_THROW(MathError, "While computing LagrangeBasis a singular matrix was constructed!");
+        DUNE_THROW(MathError, "While computing basis a singular matrix was constructed!");
       }
     }
     unsigned int cols () const

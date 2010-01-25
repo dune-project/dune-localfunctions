@@ -316,6 +316,8 @@ namespace Dune
         : f_(f)
       {}
 
+      virtual ~VirtualFunctionWrapper() {}
+
       virtual void evaluate(const DomainType& x, RangeType& y) const
       {
         f_.evaluate(x,y);

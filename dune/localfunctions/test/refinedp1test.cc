@@ -11,9 +11,10 @@
 #include <dune/grid/io/file/dgfparser/dgfalu.hh>
 
 #include <dune/common/exceptions.hh>
+#include <dune/common/mpihelper.hh>
 
-#include <dune/localfunctions/pk.hh>
-#include <dune/localfunctions/refinedp1.hh>
+#include <dune/localfunctions/lagrange/pk.hh>
+#include <dune/localfunctions/refined/refinedp1.hh>
 
 template<int dim>
 int testForDim()
@@ -139,8 +140,11 @@ int testForDim()
 }
 
 
-int main () try
+int main (int argc, char** argv) try
 {
+  //Init MPI
+  Dune::MPIHelper::instance(argc, argv);
+
   testForDim<2>();
   testForDim<3>();
 }

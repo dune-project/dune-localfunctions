@@ -4,7 +4,7 @@
 
 #include <dune/localfunctions/utility/field.hh>
 #include <dune/localfunctions/orthonormal/orthonormalbasis.hh>
-#include <dune/localfunctions/generic/quadrature/gaussquadrature.hh>
+#include <dune/grid/common/quadraturerules/gaussquadrature.hh>
 
 #if HAVE_ALGLIB
 typedef amp::ampf< 128 > StorageField;
@@ -37,13 +37,14 @@ bool test(unsigned int order)
     for( unsigned int i = 0; i < size * size; ++i )
       m[ i ] = 0;
 
-    typedef typename Dune::GenericGeometry::GaussQuadratureProvider<Topology::dimension,double,ComputeField> QuadratureProvider;
+    // typedef typename Dune::GenericGeometry::GaussQuadratureProvider<Topology::dimension,double,ComputeField> QuadratureProvider;
+    typedef typename Dune::GenericGeometry::GaussQuadratureProvider<Topology::dimension,double,double> QuadratureProvider;
     typedef typename QuadratureProvider::Object Quadrature;
     const Quadrature &quadrature = *QuadratureProvider::template create<Topology>(2*order+1);
     const unsigned int quadratureSize = quadrature.size();
     for( unsigned int qi = 0; qi < quadratureSize; ++qi )
     {
-      basis.evaluate( quadrature.point( qi ), y );
+      basis.evaluate( quadrature.position( qi ), y );
       for( unsigned int i = 0; i < size; ++i )
       {
         for( unsigned int j = 0; j < size; ++j )
@@ -90,13 +91,14 @@ bool test(unsigned int topologyId, unsigned int order)
     for( unsigned int i = 0; i < size * size; ++i )
       m[ i ] = 0;
 
-    typedef typename Dune::GenericGeometry::GaussQuadratureProvider<dimension,double,ComputeField> QuadratureProvider;
+    // typedef typename Dune::GenericGeometry::GaussQuadratureProvider<dimension,double,ComputeField> QuadratureProvider;
+    typedef typename Dune::GenericGeometry::GaussQuadratureProvider<dimension,double,double> QuadratureProvider;
     typedef typename QuadratureProvider::Object Quadrature;
     const Quadrature &quadrature = *QuadratureProvider::create(topologyId,2*order+1);
     const unsigned int quadratureSize = quadrature.size();
     for( unsigned int qi = 0; qi < quadratureSize; ++qi )
     {
-      basis.evaluate( quadrature.point( qi ), y );
+      basis.evaluate( quadrature.position( qi ), y );
       for( unsigned int i = 0; i < size; ++i )
       {
         for( unsigned int j = 0; j < size; ++j )

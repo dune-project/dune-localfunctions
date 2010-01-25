@@ -3,6 +3,8 @@
 #ifndef GENERIC_INTERPOLATIONHELPER_HH
 #define GENERIC_INTERPOLATIONHELPER_HH
 
+#include <vector>
+
 #include <dune/common/fvector.hh>
 #include <dune/localfunctions/utility/field.hh>
 

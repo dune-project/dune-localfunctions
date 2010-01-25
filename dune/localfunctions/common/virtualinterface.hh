@@ -98,6 +98,9 @@ namespace Dune
   // Basis
   // -----------------------------------------------------------------
 
+  // current versions of doxygen (<= 1.6.2) enter an inifinite loop when parsing
+  // the following class
+#ifndef DOXYGEN
   /**
    * @brief virtual base class for a local basis
    *
@@ -128,6 +131,7 @@ namespace Dune
 
     using BaseInterface::evaluate;
   };
+#endif // DOXYGEN
 
   /**
    * @brief virtual base class for a local basis

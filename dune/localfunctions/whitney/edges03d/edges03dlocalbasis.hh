@@ -74,9 +74,9 @@ namespace Dune
      * where \f$g\f$ is transformation for coordinates, \f$L\f$ the
      * tranformation for values and the hat \f$\hat{\phantom x}\f$ denotes
      * local quantities.  Worse, if we require for edge elements that
-     * \f[ \psi_i\cdot\mathbf t_j=\delta_{ij}\text{ on edge }j \f]
+     * \f[ \psi_i\cdot\mathbf t_j=\delta_{ij}\mbox{ on edge }j \f]
      * and
-     * \f[ \hat\psi_i\cdot\mathbf{\hat t}_j=\delta_{ij}\text{ on edge }j \f]
+     * \f[ \hat\psi_i\cdot\mathbf{\hat t}_j=\delta_{ij}\mbox{ on edge }j \f]
      * then we need a different \f$L\f$ for each shape function.  This
      * property is very desirable be eases debugging and the construction of
      * constraints for grids with hanging nodes.
@@ -116,11 +116,11 @@ namespace Dune
      * This calculates the global Jacobian
      * \f[
      *   \mathrm J(\psi^i)=
-     *   \begin{pmatrix}
+     *   \left(\begin{array}{ccc}
      *     \partial\psi^i_0/\partial x_0 & \partial\psi^i_0/\partial x_1 & \cdots \\
      *     \partial\psi^i_1/\partial x_0 & \partial\psi^i_1/\partial x_1 & \cdots \\
      *     \vdots & \vdots & \ddots
-     *   \end{pmatrix}
+     *   \end{array}\right)
      * \f]
      * Note that this are the derivatives of the global values by the global
      * coordinates, evaluated at local coordinates.

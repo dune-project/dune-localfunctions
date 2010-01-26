@@ -11,9 +11,9 @@
 #include <dune/common/geometrytype.hh>
 #include <dune/localfunctions/common/virtualinterface.hh>
 
-#include <dune/localfunctions/p0.hh>
-#include <dune/localfunctions/p1.hh>
-#include <dune/localfunctions/pq22d.hh>
+#include <dune/localfunctions/lagrange/p0.hh>
+#include <dune/localfunctions/lagrange/p1.hh>
+#include <dune/localfunctions/lagrange/pq22d.hh>
 #include <dune/localfunctions/monom.hh>
 
 /** \file

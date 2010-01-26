@@ -6,12 +6,10 @@
 #include <typeinfo>
 #include <fenv.h>
 
-#include <dune/localfunctions/p1.hh>
-#include <dune/localfunctions/p1.hh>
-#include <dune/localfunctions/p1.hh>
-#include <dune/localfunctions/p23d.hh>
-#include <dune/localfunctions/pk2d.hh>
-#include <dune/localfunctions/pk3d.hh>
+#include <dune/localfunctions/lagrange/p1.hh>
+#include <dune/localfunctions/lagrange/p23d.hh>
+#include <dune/localfunctions/lagrange/pk2d.hh>
+#include <dune/localfunctions/lagrange/pk3d.hh>
 
 /** \file
     \brief Performs some tests for the Pk shape functions

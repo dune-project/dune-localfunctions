@@ -12,11 +12,6 @@ namespace Dune
 {
   template<class D, class R, int dim>
   class MimeticLocalFiniteElement
-    : public Dune::LocalFiniteElementInterface<
-          Dune::LocalFiniteElementTraits<MimeticLocalBasis<D,R,dim>,
-              MimeticLocalCoefficients,
-              MimeticLocalInterpolation<MimeticLocalBasis<D,R,dim> > >,
-          MimeticLocalFiniteElement<D,R,dim> >
   {
     Dune::GeometryType gt;
     MimeticLocalBasis<D,R,dim> basis;

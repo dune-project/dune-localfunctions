@@ -15,15 +15,11 @@
 namespace Dune
 {
   template<class D, class R, int dim>
-  class MimeticLocalBasis :
-    public Dune::C0LocalBasisInterface<
-        Dune::LocalBasisTraits<D,dim,Dune::FieldVector<D,dim>,
-            R,1,Dune::FieldVector<R,1> >,
-        MimeticLocalBasis<D,R,dim> >
+  class MimeticLocalBasis
   {
   public:
     typedef Dune::LocalBasisTraits<D,dim,Dune::FieldVector<D,dim>,
-        R,1,Dune::FieldVector<R,1>, Dune::FielMatrix<R,1,dim> > Traits;
+        R,1,Dune::FieldVector<R,1>, Dune::FieldMatrix<R,1,dim> > Traits;
 
     MimeticLocalBasis (unsigned int variant_)
       : variant(variant_)
@@ -62,8 +58,8 @@ namespace Dune
   };
 
   template<class LB>
-  class MimeticLocalInterpolation : public Dune::
-                                    LocalInterpolationInterface<MimeticLocalInterpolation<LB> > {
+  class MimeticLocalInterpolation
+  {
   public:
 
     //! \brief Local interpolation of a function

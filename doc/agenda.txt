@@ -60,12 +60,12 @@ follwing changes:
 
 == responsibilities ==
 
-- Christian will setup the initial modul
+- Christian will setup the initial module
 - Peter merges his existing code
 - Discussion
-- Aggrement
+- Agreement
 - Oliver adds tests
-- Everybody adds his favorid basis funktions
+- Everybody adds his favorite basis functions
   -- Carsten: Argyriselement
 
 

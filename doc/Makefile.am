@@ -2,6 +2,13 @@
 
 SUBDIRS = doxygen
 
+TEXSOURCES = dune-localfunctions-manual.tex
+
+if BUILD_DOCS
+  DOCFILES = dune-localfunctions-manual.pdf
+  EXTRA_DIST = dune-localfunctions-manual.pdf
+endif
+
 EXTRA_DIST = Makefile.dist.in Makefile.dist.am
 
 # setting like in dune-web

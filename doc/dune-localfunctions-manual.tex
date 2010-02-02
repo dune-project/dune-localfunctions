@@ -1,0 +1,181 @@
+\documentclass[11pt]{article}
+\usepackage{multicol}
+\usepackage{ifthen}
+%\usepackage{multitoc}
+%\usepackage{german}
+%\usepackage{bibgerm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{xspace}
+\usepackage[dvips]{epsfig}
+\usepackage[dvips]{graphicx}
+\usepackage[a4paper,body={148mm,240mm,nohead}]{geometry}
+\usepackage[ansinew]{inputenc}
+\usepackage{listings}
+\usepackage{hyperref}
+\lstset{language=C++, basicstyle=\ttfamily,
+  stringstyle=\ttfamily, commentstyle=\it, extendedchars=true}
+
+\newif\ifpdf
+\ifnum\ifx\pdfoutput\undefined0\else\pdfoutput\fi<1
+\pdffalse % we are not running PDFLaTeX
+\else
+\pdftrue % we are running PDFLaTeX
+\fi
+
+\ifpdf
+\usepackage[pdftex]{graphicx}
+\else
+\usepackage{graphicx}
+\fi
+
+\ifpdf
+\DeclareGraphicsExtensions{.pdf, .jpg, .tif}
+\else
+\DeclareGraphicsExtensions{.eps, .jpg}
+\fi
+
+\newcommand{\dune}{\textsc{Dune}\xspace}
+\newcommand{\modulename}[1]{\texttt{#1}\xspace}
+
+\title{The dune-localfunctions module}
+
+\author{The \dune Team}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This document describes the \modulename{dune-localfunctions} module.
+The module provides a C++ interface for shape functions needed in
+finite element methods.  A growing list of implementations of this
+interface is included. \modulename{dune-localfunctions}
+is part of the Distributed and Unified Numerics Environment (\dune) which is
+available from the site \url{http://www.dune-project.org/}.
+\end{abstract}
+
+\begin{multicols}{2}
+{\small\tableofcontents}
+\end{multicols}
+
+\section{Introduction}
+
+A feature common to all implementations of finite element methods are the
+shape functions.  In the easier cases, these are polynomial functions
+defined on a reference element and associated to some face of the reference
+element.  The more complicated non-affine finite elements generalize this
+by defining the shape functions directly on an element in the grid.
+
+Implementations of shape functions are contained in all finite element codes,
+but in most cases their implementation is so intertwined with the rest of
+the code as to make their reuse in other situations impossible.
+For the easier shape functions this may not matter much, as they are
+fairly easy to implement.  Still, errors can occur and bugs in shape function
+implementations can be difficult to detect and track down.
+More exotic shape function implementations can get fairly involved
+and require meticulous care to be done right.  For these reasons it is
+very desirable to provide shape functions in a separate, reusable library.
+This is what the \modulename{dune-localfunctions} module tries to do.
+
+
+Following the UNIX philosophy of having each program doing only one thing,
+but doing that thing well, the \modulename{dune-localfunctions} module
+provides only local and global finite elements.  There are two sides to this.
+\begin{enumerate}
+ \item \modulename{dune-localfunction} prescribes an {\em interface} to shape functions.
+  This interface
+  should be general enough to encompass the needs of virtually all implementors
+  of finite element codes.
+ \item The module contains {\em implementations} of this interface.  The set
+  of implementations contains common elements like the Lagrange elements and
+  exotic ones as well.  We aim to collect contributions from outside sources
+  and, in time, to be able to provide a shape function library that is virtually
+  complete.
+\end{enumerate}
+
+\subsection{Static vs.\ Dynamic Interfaces}
+
+From a textbook C++ perspective, an interface to finite element shape functions
+can be described naturally using dynamical polymorphism.  An abstract base
+class would describe all methods expected from a shape function implementation,
+and actual implementations would derive from the base class.  Users of shape functions,
+such as finite element assemblers, would receive shape function implementations
+through pointers to the abstract base class.
+
+However, the run-time overhead of virtual function calls is considered prohibitive
+by some users.  We measured a slowdown of around 7\% when assembling a Laplace
+stiffness matrix on a two-dimensional structured grid.  This can be relevant,
+for example, in an explicit time-stepping method where a large percentage of
+the overall time is spent assembling matrices.
+
+We have therefore opted for a different way.  In \modulename{dune-localfunctions},
+the implementation classes are {\em not} organized in a hierarchy.  Adherence
+to a certain interface is enforced only implicitly, by a test suite.  Finite
+element assemblers have to have the C++ type of the shape function implementation
+as a template parameter, and can then call the object's methods directly.
+The static interface is described in Section~\ref{sec:static_interface}.
+
+Of course such a scheme makes it impossible to select shape function sets at run-time.
+For example, $p$-adaptive methods, and methods on grids with more than a single
+element type are precluded.  Therefore, \modulename{dune-localfunctions} offers
+a second way to access its shape functions.  There is a set of {\em wrapper classes},
+which are organized in a hierarchy using dynamical polymorphism.  These
+wrapper classes are statically parametrized with a static implementation class
+and forward the function calls to this implementation.  Details of this
+{\em dynamic interface} are given in Section~\ref{sec:dynamic_interface}.
+
+\subsection{Dependencies on other Modules}
+
+When designing the \modulename{dune-localfunctions} module we have deliberately
+tried to keep dependencies on other \dune modules to a minimum.  Ideally,
+people should be able to use the shape functions from \dune without having
+to use anything else from \dune.  The only exception here is \modulename{dune-common},
+which all \dune modules depend on.
+
+In addition to \modulename{dune-common}, \modulename{dune-localfunctions} currently
+depends only on \modulename{dune-grid}.  This dependence is somewhat unfortunate,
+and it has been hotly debated.  We would like users to be able to use \dune grids
+without shapefunctions from \modulename{dune-localfunctions} and the shapefunctions
+from \modulename{dune-localfunctions} without the grids from \modulename{dune-grid}.
+While the former is easy, \modulename{dune-localfunctions} currently needs a few
+features from \modulename{dune-grid} to work.  These are in particular a few
+quadrature rules and some of the infrastructure for constructing reference elements.
+More seriously, \modulename{dune-localfunctions} provides some {\em global} finite
+elements (also known as {\em non-affine families} of finite elements).  These
+have to have some information about the geometry of the grid.
+
+In the future the necessary things from \modulename{dune-grid} may be split off
+into a separate module \modulename{dune-geometry} (or similar).  The dependence of
+\modulename{dune-localfunctions} on \modulename{dune-grid} can then be replaced
+by the weaker dependency on the new module.
+
+
+\section{The LocalFiniteElement Interface}
+\label{sec:static_interface}
+
+\subsection{The LocalBasis Classes}
+
+\subsection{The LocalCoefficients Classes}
+
+\subsection{The LocalInterpolation Classes}
+
+
+\section{The Dynamic Interface}
+\label{sec:dynamic_interface}
+
+\section{Global Finite Elements}
+
+
+\section{Appendix: List of Available Elements}
+
+
+
+% bibtex bibliography
+%\bibliographystyle{plain}
+%\bibliography{istl.bib}
+
+
+\end{document}

@@ -1,3 +1,9 @@
+*.backup
+*.aux
+*.toc
+*.out
+*.log
+*.dvi
 Makefile.dist.in
 Makefile.dist
 Makefile.in

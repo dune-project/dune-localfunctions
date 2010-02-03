@@ -32,7 +32,7 @@ bool test(const Basis &basis, const Points &points, bool verbose)
   {
     if (verbose)
       std::cout << index << "   " << points[ index ].point() << " "
-      //                            << points[ index ].localKey()
+                << points[ index ].localKey()
                 << std::endl;
     basis.evaluate( points[ index ].point(), y );
     bool first = true;

@@ -72,6 +72,14 @@ namespace Dune
       return values_ < other.values_;
     }
 
+    /** \brief Write LocalKey object to output stream */
+    friend std::ostream& operator<< (std::ostream& s, const LocalKey& localKey)
+    {
+      return s << "[ subEntity: " << localKey.subEntity()
+             << ", codim: " << localKey.codim()
+             << ", index: " << localKey.index() << " ]";
+    }
+
   private:
 
     // We use an array to store the values in order to be able to use the array::operator< implementation

@@ -105,7 +105,7 @@ namespace Dune
     template <class DomainVector>
     const Result &evaluate(const DomainVector &x) const
     {
-      basis_.template evaluate<0>(x,tmp_);
+      basis_.template evaluate<0, DomainVector, Result>(x,tmp_);
       return tmp_;
     }
     unsigned int size() const

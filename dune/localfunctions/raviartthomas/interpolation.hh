@@ -282,6 +282,7 @@ namespace Dune
       // boundary dofs:
       typedef Dune::GenericGeometry::GaussQuadratureProvider< dimension-1, Field >
       FaceQuadratureProvider;
+      typedef typename FaceQuadratureProvider::Object FaceQuadrature;
       typedef Dune::GenericGeometry::ReferenceMappings< Field, dimension > RefMappings;
       typedef typename RefMappings::Container::
       template Codim< 1 >::Mapping Mapping;
@@ -295,12 +296,14 @@ namespace Dune
         const Mapping& mapping = RefMappings::container( topologyId ).
                                  template mapping< 1 >( f );
         const unsigned int subTopologyId = mapping.topologyId();
-        const typename FaceQuadratureProvider::Object *faceQuad = FaceQuadratureProvider::create( subTopologyId, 2*order_+2 );
+        const FaceQuadrature *faceQuad = FaceQuadratureProvider::create( subTopologyId, 2*order_+2 );
 
         const unsigned int quadratureSize = faceQuad->size();
         for( unsigned int qi = 0; qi < quadratureSize; ++qi )
         {
-          builder_.testFaceBasis(f)->template evaluate<0>(faceQuad->position(qi),testBasisVal);
+          typedef typename FaceQuadrature :: Vector Vector;
+          Vector pos = faceQuad->position(qi);
+          builder_.testFaceBasis(f)->template evaluate<0, Vector, std::vector<Field> >(pos,testBasisVal);
           fillBnd( row, testBasisVal,
                    func.evaluate( mapping.global( faceQuad->position(qi) ) ),
                    builder_.normal(f), faceQuad->weight(qi),
@@ -317,12 +320,14 @@ namespace Dune
         testBasisVal.resize(builder_.testBasis()->size());
 
         typedef Dune::GenericGeometry::GaussQuadratureProvider< dimension, Field > QuadratureProvider;
-        const typename QuadratureProvider::Object *elemQuad = QuadratureProvider::create(topologyId,2*order_+1);
+        typedef typename QuadratureProvider :: Object Quadrature;
+        const Quadrature *elemQuad = QuadratureProvider::create(topologyId,2*order_+1);
 
         const unsigned int quadratureSize = elemQuad->size();
         for( unsigned int qi = 0; qi < quadratureSize; ++qi )
         {
-          builder_.testBasis()->template evaluate<0>(elemQuad->position(qi),testBasisVal);
+          typedef typename Quadrature :: Vector Vector;
+          builder_.testBasis()->template evaluate<0, Vector, std::vector<Field> >(elemQuad->position(qi),testBasisVal);
           fillInterior( row, testBasisVal,
                         func.evaluate(elemQuad->position(qi)),
                         elemQuad->weight(qi),

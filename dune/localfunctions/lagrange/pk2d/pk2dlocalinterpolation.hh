@@ -16,6 +16,9 @@ namespace Dune
     /** \brief Export the element order */
     enum {k = LB::O};
 
+  private:
+    static const int kdiv = (k == 0 ? 1 : k);
+
   public:
 
     template<typename F, typename C>
@@ -29,7 +32,7 @@ namespace Dune
       for (int j=0; j<=k; j++)
         for (int i=0; i<=k-j; i++)
         {
-          x[0] = ((D)i)/((D)k); x[1] = ((D)j)/((D)k);
+          x[0] = ((D)i)/((D)kdiv); x[1] = ((D)j)/((D)kdiv);
           f.evaluate(x,y);
           out[n] = y;
           n++;

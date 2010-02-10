@@ -27,7 +27,7 @@ namespace Dune
 
          The standard interface of dune-localfunctions assumes that degrees of freedom are attached to subentities
          of an element.  This subentities can be described by a codimension and a subentity number.
-         However some elements (an example would be nice here), attach their degrees of freedom to intersections.
+         However some elements, like the mimetic finite elements, attach their degrees of freedom to intersections.
          While intersections do have a codimension, namely 1, having the method codim() return 1 in this case
          would be ambiguous.  Hence 'intersectionCodim' is returned instead.
        */

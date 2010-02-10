@@ -40,7 +40,7 @@ namespace Dune
     template< class FF >
     This &operator= ( const FF &f )
     {
-      block() = field_cast< F >( f );
+      block() = fieldvector_cast< F >( f );
       return *this;
     }
 
@@ -112,7 +112,7 @@ namespace Dune
     template< class FF >
     This &operator= ( const FF &f )
     {
-      block() = field_cast< F >( f );
+      block() = fieldvector_cast< F >( f );
       return *this;
     }
 
@@ -485,7 +485,7 @@ namespace Dune
     template <class FF>
     This &operator=(const FF& f)
     {
-      block() = field_cast<F>(f);
+      block() = fieldvector_cast<F>(f);
       return *this;
     }
     This &operator=(const Block &t)

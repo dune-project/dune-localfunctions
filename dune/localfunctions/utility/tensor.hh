@@ -40,7 +40,7 @@ namespace Dune
     template< class FF >
     This &operator= ( const FF &f )
     {
-      block() = field_cast< F >( f );
+      block() = fieldvector_cast< F >( f );
       return *this;
     }
 
@@ -112,7 +112,7 @@ namespace Dune
     template< class FF >
     This &operator= ( const FF &f )
     {
-      block() = field_cast< F >( f );
+      block() = fieldvector_cast< F >( f );
       return *this;
     }
 
@@ -181,7 +181,8 @@ namespace Dune
     static const DerivativeLayout layout = value;
     static const unsigned int dimDomain = dimD;
     static const unsigned int dimRange = dimR;
-    static const unsigned int size = Base::size+ThisLFETensor::size*dimR;
+    // size needs to be an anonymous enum value for gcc 3.4 compatibility
+    enum { size = Base::size+ThisLFETensor::size*dimR };
     typedef Dune::FieldVector<F,size> Block;
 
     This &operator=(const F& f)
@@ -342,7 +343,8 @@ namespace Dune
     static const DerivativeLayout layout = value;
     static const unsigned int dimDomain = dimD;
     static const unsigned int dimRange = dimR;
-    static const unsigned int size = ThisLFETensor::size*dimR;
+    // size needs to be an anonymous enum value for gcc 3.4 compatibility
+    enum { size = ThisLFETensor::size*dimR };
     typedef Dune::FieldVector<F,size> Block;
 
     template <class FF>
@@ -479,13 +481,14 @@ namespace Dune
     static const DerivativeLayout layout = value;
     static const unsigned int dimDomain = dimD;
     static const unsigned int dimRange = dimR;
-    static const unsigned int size = ScalarDeriv::size*dimR;
+    // size needs to be an anonymous enum value for gcc 3.4 compatibility
+    enum { size = ScalarDeriv::size*dimR };
     typedef Dune::FieldVector<F,size> Block;
 
     template <class FF>
     This &operator=(const FF& f)
     {
-      block() = field_cast<F>(f);
+      block() = fieldvector_cast<F>(f);
       return *this;
     }
     This &operator=(const Block &t)

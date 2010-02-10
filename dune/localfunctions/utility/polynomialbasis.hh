@@ -174,7 +174,7 @@ namespace Dune
       DomainVector bx;
       for( unsigned int d = 0; d < dimension; ++d )
         field_cast( x[ d ], bx[ d ] );
-      evaluate<0>( bx, values );
+      evaluate<0, DomainVector, RVector>( bx, values );
     }
     template< class DVector, class RVector >
     void jacobian ( const DVector &x, RVector &values ) const
@@ -201,7 +201,7 @@ namespace Dune
       DomainVector bx;
       for( int d = 0; d < dimension; ++d )
         field_cast( x[ d ], bx[ d ] );
-      evaluate<deriv>( bx, values );
+      evaluate<deriv, DomainVector, RVector>( bx, values );
     }
 
     template <class Fy>

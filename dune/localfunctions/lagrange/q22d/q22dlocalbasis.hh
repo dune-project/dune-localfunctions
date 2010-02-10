@@ -63,8 +63,8 @@ namespace Dune
       out.resize(9);
 
       R x=in[0], y=in[1];
-      R X0=2*x*x-3*x+1, X1=4*x*x-4*x, X2=2*x*x-x;
-      R Y0=2*y*y-3*y+1, Y1=4*y*y-4*y, Y2=2*y*y-y;
+      R X0=2*x*x-3*x+1, X1=-4*x*x+4*x, X2=2*x*x-x;
+      R Y0=2*y*y-3*y+1, Y1=-4*y*y+4*y, Y2=2*y*y-y;
       R DX0=4*x-3, DX1=-8*x+4, DX2=4*x-1;
       R DY0=4*y-3, DY1=-8*y+4, DY2=4*y-1;
 

@@ -58,8 +58,8 @@ namespace Dune
       {
         basis().evaluate( it->position(), basisValues );
         typename Function::RangeType val;
-        function.evaluate( field_cast<typename Function::DomainType::field_type>(it->position()), val );
-        RangeVector factor = field_cast< DofField >( val );
+        function.evaluate( fieldvector_cast<typename Function::DomainType::field_type>(it->position()), val );
+        RangeVector factor = fieldvector_cast< DofField >( val );
         factor *= field_cast< DofField >( it->weight() );
         for( unsigned int i = 0; i < size; ++i )
           coefficients[ i ] += factor * basisValues[ i ];

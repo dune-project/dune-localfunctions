@@ -272,15 +272,15 @@ namespace Dune
   }
 
   template< class F2,class F1,int dim >
-  inline Dune::FieldVector<F2,dim> field_cast ( const Dune::FieldVector<F1,dim> &f1 )
+  inline Dune::FieldVector<F2,dim> fieldvector_cast ( const Dune::FieldVector<F1,dim> &f1 )
   {
     Dune::FieldVector<F2,dim> f2;
     field_cast( f1, f2 );
     return f2;
   }
 
-  template< class F2,class F1,int dim1, int dim2>
-  inline Dune::FieldMatrix<F2,dim1,dim2> field_cast ( const Dune::FieldMatrix<F1,dim1,dim2> &f1 )
+  template<class F2, class F1,int dim1, int dim2>
+  inline Dune::FieldMatrix<F2,dim1,dim2> fieldmatrix_cast ( const Dune::FieldMatrix<F1,dim1,dim2> &f1 )
   {
     Dune::FieldMatrix<F2,dim1,dim2> f2;
     field_cast( f1, f2 );

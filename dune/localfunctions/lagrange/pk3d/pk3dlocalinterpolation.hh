@@ -12,6 +12,9 @@ namespace Dune
   {
     enum {N = LB::N};
     enum {k = LB::O};
+
+  private:
+    static const int kdiv = (k == 0 ? 1 : k);
   public:
 
     template<typename F, typename C>
@@ -26,9 +29,9 @@ namespace Dune
         for (int i1 = 0; i1 <= k-i2; i1++)
           for (int i0 = 0; i0 <= k-i1-i2; i0++)
           {
-            x[0] = ((D)i0)/((D)k);
-            x[1] = ((D)i1)/((D)k);
-            x[2] = ((D)i2)/((D)k);
+            x[0] = ((D)i0)/((D)kdiv);
+            x[1] = ((D)i1)/((D)kdiv);
+            x[2] = ((D)i2)/((D)kdiv);
             f.evaluate(x,y);
             out[n] = y;
             n++;

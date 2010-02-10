@@ -211,7 +211,11 @@ namespace Dune
     using BaseInterface::order;
     using BaseInterface::evaluateFunction;
     using BaseInterface::evaluateJacobian;;
+    /* Unfortunately, the intel compiler cannot use the different evaluate
+     * methods with varying argument lists. :-( */
+#ifndef __INTEL_COMPILER
     using BaseInterface::evaluate;
+#endif
   };
 
 

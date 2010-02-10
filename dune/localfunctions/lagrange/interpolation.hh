@@ -92,6 +92,8 @@ namespace Dune
     typedef typename LagrangePointSetFactory::Key Key;
     typedef const LocalLagrangeInterpolation< LP,dim,F > Object;
     typedef LagrangeInterpolationFactory<LP,dim,F> Factory;
+
+    static const unsigned int dimension = dim;
   };
 
   template< template <class,unsigned int> class LP,

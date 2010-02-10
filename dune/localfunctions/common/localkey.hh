@@ -9,12 +9,6 @@
 
 namespace Dune
 {
-  // the number of the beast ...
-  enum {
-    //! codim that indicates degree of freedom in intersection
-    intersectionCodim=666
-  };
-
   /**@ingroup LocalLayoutInterface
          \brief Describe position of one degree of freedom
 
@@ -26,6 +20,20 @@ namespace Dune
   class LocalKey
   {
   public:
+
+    /** \brief Enumerate 'special values' for the codimension method */
+    enum {
+      /** \brief Codimension returned by LocalKey::codim() for degrees of freedom attached to an intersection
+
+         The standard interface of dune-localfunctions assumes that degrees of freedom are attached to subentities
+         of an element.  This subentities can be described by a codimension and a subentity number.
+         However some elements, like the mimetic finite elements, attach their degrees of freedom to intersections.
+         While intersections do have a codimension, namely 1, having the method codim() return 1 in this case
+         would be ambiguous.  Hence 'intersectionCodim' is returned instead.
+       */
+      intersectionCodim=666
+    };
+
     //! \brief Standard constructor for uninitialized local index
     LocalKey ()
     {}

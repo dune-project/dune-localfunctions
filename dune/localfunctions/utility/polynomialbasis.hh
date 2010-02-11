@@ -199,7 +199,7 @@ namespace Dune
     {
       assert( DVector::size == dimension);
       DomainVector bx;
-      for( int d = 0; d < dimension; ++d )
+      for( unsigned int d = 0; d < dimension; ++d )
         field_cast( x[ d ], bx[ d ] );
       evaluate<deriv, DomainVector, RVector>( bx, values );
     }

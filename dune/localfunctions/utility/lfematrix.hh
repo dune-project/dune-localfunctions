@@ -114,12 +114,12 @@ namespace Dune
             r = i;
           }
         }
-        if (max == 0)
+        if (max == Zero<Field>())
           return false;
         // row swap
         if (r > j)
         {
-          for (unsigned int k=0; k<rows(); ++k)
+          for (unsigned int k=0; k<cols(); ++k)
             std::swap( (*this)(j,k), (*this)(r,k) );
           std::swap( p[j], p[r] );
         }
@@ -128,7 +128,7 @@ namespace Dune
         for (unsigned int i=0; i<rows(); ++i)
           (*this)(i,j) *= hr;
         (*this)(j,j) = hr;
-        for (unsigned int k=0; k<rows(); ++k)
+        for (unsigned int k=0; k<cols(); ++k)
         {
           if (k==j) continue;
           for (unsigned int i=0; i<rows(); ++i)

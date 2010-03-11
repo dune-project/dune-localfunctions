@@ -128,15 +128,61 @@ namespace Dune
     template< unsigned int deriv, class F >
     void evaluate ( const DomainVector &x, F *values ) const
     {
-      coeffMatrix_->mult( eval_.template evaluate<deriv>( x ),
-                          size(), values);
+      coeffMatrix_->mult( eval_.template evaluate<deriv>( x ), size(), values);
     }
-    template< unsigned int deriv, class Vector >
-    void evaluate ( const DomainVector &x, Vector &values ) const
+    template< unsigned int deriv, class DVector, class F >
+    void evaluate ( const DVector &x, F *values ) const
+    {
+      assert( DVector::size == dimension);
+      DomainVector bx;
+      for( int d = 0; d < dimension; ++d )
+        field_cast( x[ d ], bx[ d ] );
+      evaluate<deriv>( bx, values );
+    }
+
+    template <bool dummy,class DVector>
+    struct Convert
+    {
+      static DomainVector apply( const DVector &x )
+      {
+        assert( DVector::size == dimension);
+        DomainVector bx;
+        for( unsigned int d = 0; d < dimension; ++d )
+          field_cast( x[ d ], bx[ d ] );
+        return bx;
+      }
+    };
+    template <bool dummy>
+    struct Convert<dummy,DomainVector>
+    {
+      static const DomainVector &apply( const DomainVector &x )
+      {
+        return x;
+      }
+    };
+    template< unsigned int deriv, class DVector, class RVector >
+    void evaluate ( const DVector &x, RVector &values ) const
     {
       assert(values.size()>=size());
-      coeffMatrix_->mult( eval_.template evaluate<deriv>( x ), values );
+      const DomainVector &bx = Convert<true,DVector>::apply(x);
+      coeffMatrix_->mult( eval_.template evaluate<deriv>( bx ), values );
     }
+
+    template <class Fy>
+    void evaluate ( const DomainVector &x, std::vector<FieldVector<Fy,dimRange> > &values ) const
+    {
+      evaluate<0>(x,values);
+    }
+    template< class DVector, class RVector >
+    void evaluate ( const DVector &x, RVector &values ) const
+    {
+      assert( DVector::size == dimension);
+      DomainVector bx;
+      for( unsigned int d = 0; d < dimension; ++d )
+        field_cast( x[ d ], bx[ d ] );
+      evaluate<0>( bx, values );
+    }
+
     template< unsigned int deriv, class Vector >
     void evaluateSingle ( const DomainVector &x, Vector &values ) const
     {
@@ -155,26 +201,12 @@ namespace Dune
     {
       evaluateSingle<deriv>(x,reinterpret_cast<std::vector< FieldVector<Fy,LFETensor<Fy,dimension,deriv>::size*dimRange> >&>(values));
     }
+
     template <class Fy>
     void jacobian ( const DomainVector &x, std::vector<FieldMatrix<Fy,dimRange,dimension> > &values ) const
     {
       assert(values.size()>=size());
       evaluateSingle<1>(x,reinterpret_cast<std::vector<FieldVector<Fy,dimRange*dimension> >&>(values));
-    }
-    template <class Fy>
-    void evaluate ( const DomainVector &x, std::vector<FieldVector<Fy,dimRange> > &values ) const
-    {
-      evaluateSingle<0>(x,values);
-    }
-
-    template< class DVector, class RVector >
-    void evaluate ( const DVector &x, RVector &values ) const
-    {
-      assert( DVector::size == dimension);
-      DomainVector bx;
-      for( unsigned int d = 0; d < dimension; ++d )
-        field_cast( x[ d ], bx[ d ] );
-      evaluate<0, DomainVector, RVector>( bx, values );
     }
     template< class DVector, class RVector >
     void jacobian ( const DVector &x, RVector &values ) const
@@ -184,24 +216,6 @@ namespace Dune
       for( unsigned int d = 0; d < dimension; ++d )
         field_cast( x[ d ], bx[ d ] );
       jacobian( bx, values );
-    }
-    template< unsigned int deriv, class DVector, class F >
-    void evaluate ( const DVector &x, F *values ) const
-    {
-      assert( DVector::size == dimension);
-      DomainVector bx;
-      for( int d = 0; d < dimension; ++d )
-        field_cast( x[ d ], bx[ d ] );
-      evaluate<deriv>( bx, values );
-    }
-    template< unsigned int deriv, class DVector, class RVector >
-    void evaluate ( const DVector &x, RVector &values ) const
-    {
-      assert( DVector::size == dimension);
-      DomainVector bx;
-      for( unsigned int d = 0; d < dimension; ++d )
-        field_cast( x[ d ], bx[ d ] );
-      evaluate<deriv, DomainVector, RVector>( bx, values );
     }
 
     template <class Fy>

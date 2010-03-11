@@ -262,30 +262,29 @@ namespace Dune
     field_cast( f1[ 0 ], f2[ 0 ] );
   }
 
-
-  template< class F2,class F1 >
-  inline F2 field_cast ( const F1 &f1 )
+  template< class F2,class V >
+  struct FieldCast
   {
-    F2 f2;
-    field_cast( f1, f2 );
-    return f2;
-  }
-
+    typedef F2 type;
+  };
   template< class F2,class F1,int dim >
-  inline Dune::FieldVector<F2,dim> fieldvector_cast ( const Dune::FieldVector<F1,dim> &f1 )
+  struct FieldCast< F2, Dune::FieldVector<F1,dim> >
   {
-    Dune::FieldVector<F2,dim> f2;
+    typedef Dune::FieldVector<F2,dim> type;
+  };
+  template< class F2,class F1,int dim1, int dim2>
+  struct FieldCast< F2, Dune::FieldMatrix<F1,dim1,dim2> >
+  {
+    typedef Dune::FieldMatrix<F2,dim1,dim2> type;
+  };
+  template< class F2,class V >
+  inline typename FieldCast<F2,V>::type field_cast ( const V &f1 )
+  {
+    typename FieldCast<F2,V>::type f2;
     field_cast( f1, f2 );
     return f2;
   }
 
-  template<class F2, class F1,int dim1, int dim2>
-  inline Dune::FieldMatrix<F2,dim1,dim2> fieldmatrix_cast ( const Dune::FieldMatrix<F1,dim1,dim2> &f1 )
-  {
-    Dune::FieldMatrix<F2,dim1,dim2> f2;
-    field_cast( f1, f2 );
-    return f2;
-  }
 
   // Precision
   // this is not a perfect solution to obtain the

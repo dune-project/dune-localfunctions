@@ -109,10 +109,6 @@ struct EvaluateTest
       if (y1[i] != y2[i])
         DUNE_THROW(Dune::Exception, "result of template evaluate<order>() and virtual evaluate() do not coincide");
 
-    std::cout << "order : " << order << std::endl;
-    for(unsigned int i=0; i<y1.size(); ++i)
-      std::cout << y1[i] << std::endl;
-
     EvaluateTest<Interface, order-1>::test(fe);
   }
 };

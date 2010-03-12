@@ -203,7 +203,8 @@ namespace Dune
       const typename Traits::DomainType& in,
       std::vector<typename Traits::RangeType>& out) const
     {
-      const BaseInterface& asBase = *this;
+      typedef LocalBasisVirtualInterfaceBase<typename FixedOrderLocalBasisTraits<T,k>::Traits > OrderKBaseInterface;
+      const OrderKBaseInterface& asBase = *this;
       asBase.evaluate(directions, in, out);
     }
 

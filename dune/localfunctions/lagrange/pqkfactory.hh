@@ -109,10 +109,15 @@ namespace Dune
 
 
 
-  /** \brief A cache that stores all available Pk/Qk like local finite elemens for the given dimension and order
+  /** \brief A cache that stores all available Pk/Qk like local finite elements for the given dimension and order
    *
    * An interface for dealing with different vertex orders is currently missing.
    * So you can in general only use this for order=1,2 or with global DG spaces
+   *
+   * \tparam D Type used for domain coordinates
+   * \tparam R Type used for shape function values
+   * \tparam dim Element dimension
+   * \tparam k Element order
    */
   template<class D, class R, int dim, int k>
   class PQkLocalFiniteElementCache
@@ -123,10 +128,13 @@ namespace Dune
     typedef typename std::map<GeometryType,FE*> FEMap;
 
   public:
+    /** \brief Type of the finite elements stored in this cache */
     typedef FE FiniteElementType;
 
+    /** \brief Default constructor */
     PQkLocalFiniteElementCache() {}
 
+    /** \brief Copy constructor */
     PQkLocalFiniteElementCache(const PQkLocalFiniteElementCache& other)
     {
       typename FEMap::iterator it = other.cache_.begin();

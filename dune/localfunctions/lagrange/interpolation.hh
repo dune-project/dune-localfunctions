@@ -54,7 +54,7 @@ namespace Dune
       for( Iterator it = lagrangePoints_.begin(); it != end; ++it )
       {
         typename Function::RangeType val;
-        function.evaluate( fieldvector_cast<typename Function::DomainType::field_type>(it->point()), val );
+        function.evaluate( field_cast<typename Function::DomainType::field_type>(it->point()), val );
         field_cast( val, coefficients[ index++ ] );
       }
     }

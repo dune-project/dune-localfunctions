@@ -76,7 +76,7 @@ int main(int argc, char** argv) try
 #endif
   std::cout << "Testing DGLagrangeLocalFiniteElement<EquidistantPointSet> on 3d"
             << " cube elements with double precision" << std::endl;
-  for (unsigned int order=1; order<=3; ++order)
+  for (unsigned int order=1; order<=2; ++order)
   {
     std::cout << "order : " << order << std::endl;
     typedef Dune::LagrangeLocalFiniteElement<Dune::EquidistantPointSet,3,double,double> FE;

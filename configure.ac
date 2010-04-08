@@ -61,7 +61,6 @@ AC_CONFIG_FILES([
                 doc/doxygen/Makefile
                 doc/doxygen/Doxyfile
                 doc/Makefile
-                doc/Makefile.dist
                 m4/Makefile
                 dune-localfunctions.pc
 		])

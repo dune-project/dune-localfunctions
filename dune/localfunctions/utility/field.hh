@@ -7,10 +7,7 @@
 #include <alglib/amp.h>
 #endif
 
-#if HAVE_GMP
 #include <dune/common/gmpfield.hh>
-#endif
-
 #include <dune/common/fvector.hh>
 
 namespace Dune
@@ -377,21 +374,8 @@ namespace std
   {
     return amp::abs( a );
   }
-#endif
+#endif // #if HAVE_ALGLIB
 
-#if HAVE_GMP
-  template< unsigned int precision >
-  inline Dune::GMPField< precision > sqrt ( const Dune::GMPField< precision > &a )
-  {
-    return ::sqrt( a );
-  }
-
-  template< unsigned int precision >
-  inline Dune::GMPField< precision > abs ( const Dune::GMPField< precision > &a )
-  {
-    return ::abs( a );
-  }
-#endif
 }
 
 #endif // #ifndef DUNE_FIELD_HH

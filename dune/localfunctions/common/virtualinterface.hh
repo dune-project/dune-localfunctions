@@ -98,7 +98,7 @@ namespace Dune
   // Basis
   // -----------------------------------------------------------------
 
-  // current versions of doxygen (<= 1.6.2) enter an inifinite loop when parsing
+  // current versions of doxygen (<= 1.6.2) enter an infinite loop when parsing
   // the following class
 #ifndef DOXYGEN
   /**

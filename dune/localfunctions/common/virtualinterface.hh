@@ -112,7 +112,7 @@ namespace Dune
    * LocalBasisVirtualInterface that also
    * contains an evaluate with order as template parameter.
    *
-   * This template method can not be defined in the same
+   * This template method cannot be defined in the same
    * class as the virtual method. Otherwise name resolution fails.
    */
   template<class T>

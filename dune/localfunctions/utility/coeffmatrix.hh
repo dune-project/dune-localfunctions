@@ -207,7 +207,7 @@ namespace Dune
       }
       for (unsigned int i=0; i<=numRows_; ++i)
       {
-        int offset = ( rows_[i] - coeff);
+        ptrdiff_t offset = ( rows_[i] - coeff);
         rows_[i] = coeff_ + offset;
       }
 

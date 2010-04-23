@@ -117,10 +117,8 @@ namespace Dune
         {
           val = 0;
           BasisIterator itx = x;
-          unsigned int c = 0;
           for( ; pos != rows_[ row+1 ]; ++pos, ++skipIt )
           {
-            c += *skipIt;
             itx += *skipIt;
             val.axpy(*pos,*itx);
           }
@@ -168,7 +166,7 @@ namespace Dune
       delete [] skip_;
 
       Field* coeff = new Field[ size ];
-      unsigned int *skip = new unsigned int[ size+1 ];
+      unsigned int *skip = new unsigned int[ size ];
       rows_ = new Field*[ numRows_+1 ];
       std::vector<Field> row( numCols_ );
 
@@ -198,14 +196,17 @@ namespace Dune
       assert( size_t(rows_[numRows_]-rows_[0]) <= size_t(size) );
       size = rows_[numRows_]-rows_[0];
       coeff_ = new Field[ size ];
-      skip_ = new unsigned int[ size+1 ];
+      skip_ = new unsigned int[ size ];
       for (unsigned int i=0; i<size; ++i)
       {
         coeff_[i] = coeff[i];
         skip_[i] = skip[i];
       }
       for (unsigned int i=0; i<=numRows_; ++i)
-        rows_[i] += (coeff_-coeff);
+      {
+        int offset = ( rows_[i] - coeff);
+        rows_[i] = coeff_ + offset;
+      }
 
       delete [] coeff;
       delete [] skip;

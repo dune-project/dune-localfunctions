@@ -26,6 +26,10 @@
 
 using namespace Dune;
 
+template <class T>
+void syntax_check( const T& )
+{}
+
 // A test function to test the local interpolation
 template <class DomainType, class RangeType>
 struct TestFunction
@@ -43,8 +47,8 @@ template <class T>
 void testLocalBasis(const LocalBasisVirtualInterface<T>* localBasis)
 {
   // call each method once to test that it's there
+  syntax_check<unsigned int>( localBasis->order() );
   unsigned int size = localBasis->size();
-  unsigned int order = localBasis->order();
 
   // evaluate the local basis at (0,...,0)
   typename T::DomainType in(0);
@@ -69,9 +73,9 @@ void testLocalCoefficients(const LocalCoefficientsVirtualInterface* localCoeffic
 
     // Test the localKey method
     // We just test whether the interface is there.  Correctness is tested elsewhere
-    unsigned int subEntity = localCoefficients->localKey(i).subEntity();
-    unsigned int codim     = localCoefficients->localKey(i).codim();
-    unsigned int index     = localCoefficients->localKey(i).index();
+    syntax_check<unsigned int>( localCoefficients->localKey(i).subEntity() );
+    syntax_check<unsigned int>( localCoefficients->localKey(i).codim() );
+    syntax_check<unsigned int>( localCoefficients->localKey(i).index() );
 
   }
 }

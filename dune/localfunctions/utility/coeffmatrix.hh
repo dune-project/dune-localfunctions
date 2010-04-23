@@ -166,7 +166,10 @@ namespace Dune
       delete [] skip_;
 
       Field* coeff = new Field[ size ];
-      unsigned int *skip = new unsigned int[ size ];
+      // we always initialize the next skip entry to zero,
+      // including the one following the end, so allocate
+      // size+1 entries so we will stay within the bounds.
+      unsigned int *skip = new unsigned int[ size+1 ];
       rows_ = new Field*[ numRows_+1 ];
       std::vector<Field> row( numCols_ );
 
@@ -240,7 +243,7 @@ namespace Dune
       const unsigned int size = other.rows_[numRows_]-other.rows_[0];
       coeff_ = new Field[ size ];
       rows_ = new Field*[ numRows_+1 ];
-      skip_ = new unsigned int[ size+1 ]; // size might do...
+      skip_ = new unsigned int[ size ];
       for (unsigned int i=0; i<size; ++i)
       {
         coeff_[i] = other.coeff_[i];

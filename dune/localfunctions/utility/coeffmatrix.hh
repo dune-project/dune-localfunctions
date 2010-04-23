@@ -117,10 +117,8 @@ namespace Dune
         {
           val = 0;
           BasisIterator itx = x;
-          unsigned int c = 0;
           for( ; pos != rows_[ row+1 ]; ++pos, ++skipIt )
           {
-            c += *skipIt;
             itx += *skipIt;
             val.axpy(*pos,*itx);
           }
@@ -205,7 +203,10 @@ namespace Dune
         skip_[i] = skip[i];
       }
       for (unsigned int i=0; i<=numRows_; ++i)
-        rows_[i] += (coeff_-coeff);
+      {
+        int offset = ( rows_[i] - coeff);
+        rows_[i] = coeff_ + offset;
+      }
 
       delete [] coeff;
       delete [] skip;

@@ -3,7 +3,7 @@
 
 #Name of the module
 Module: dune-localfunctions
-Version: 2.0beta1
+Version: 2.0
 Maintainer: dune@dune-project.org
 #depending on
 # the dune-grid dependency can be downgraded to a Suggests: once the

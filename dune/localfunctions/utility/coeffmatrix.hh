@@ -206,10 +206,7 @@ namespace Dune
         skip_[i] = skip[i];
       }
       for (unsigned int i=0; i<=numRows_; ++i)
-      {
-        ptrdiff_t offset = ( rows_[i] - coeff);
-        rows_[i] = coeff_ + offset;
-      }
+        rows_[ i ] = coeff_ + (rows_[ i ] - coeff);
 
       delete [] coeff;
       delete [] skip;
@@ -236,7 +233,7 @@ namespace Dune
       }
     }
   private:
-    SparseCoeffMatrix(const This &other)
+    SparseCoeffMatrix ( const This &other )
       : numRows_( other.numRows_ ),
         numCols_( other.numCols_ )
     {
@@ -250,8 +247,9 @@ namespace Dune
         skip_[i] = other.skip_[i];
       }
       for (unsigned int i=0; i<=numRows_; ++i)
-        rows_[i] = other.rows_[i]+(coeff_-other.coeff_);
+        rows_[ i ] = coeff_ + (other.rows_[ i ] - other.coeff_);
     }
+
     This &operator= (const This&);
     Field *coeff_;
     Field **rows_;

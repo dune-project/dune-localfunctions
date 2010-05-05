@@ -16,6 +16,7 @@
 #include <dune/localfunctions/lagrange/q22d.hh>
 #include <dune/localfunctions/lagrange/prismp1.hh>
 #include <dune/localfunctions/lagrange/prismp2.hh>
+#include <dune/localfunctions/lagrange/pyramidp1.hh>
 
 namespace Dune
 {

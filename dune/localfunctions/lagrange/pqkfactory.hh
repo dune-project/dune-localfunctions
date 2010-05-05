@@ -65,6 +65,7 @@ namespace Dune
     typedef typename FixedOrderLocalBasisTraits<typename P0LocalFiniteElement<D,R,3>::Traits::LocalBasisType::Traits,0>::Traits T;
     typedef PrismP1LocalFiniteElement<D,R> PrismP1;
     typedef PrismP2LocalFiniteElement<D,R> PrismP2;
+    typedef PyramidP1LocalFiniteElement<D,R> PyramidP1;
 
     //! create finite element for given GeometryType
     static LocalFiniteElementVirtualInterface<T>* create(const GeometryType& gt)
@@ -73,6 +74,8 @@ namespace Dune
         return new LocalFiniteElementVirtualImp<PrismP1>(PrismP1());
       if ((gt.basicType()==GeometryType::prism)and (k==2))
         return new LocalFiniteElementVirtualImp<PrismP2>(PrismP2());
+      if ((gt.basicType()==GeometryType::pyramid)and (k==1))
+        return new LocalFiniteElementVirtualImp<PyramidP1>(PyramidP1());
       return 0;
     }
   };

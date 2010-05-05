@@ -15,6 +15,7 @@
 #include "../lagrange/p1.hh"
 #include "../lagrange/prismp1.hh"
 #include "../lagrange/prismp2.hh"
+#include "../lagrange/pyramidp1.hh"
 #include "../lagrange/q1.hh"
 #include "../lagrange/p23d.hh"
 #include "../lagrange/pq22d.hh"
@@ -146,6 +147,9 @@ int main(int argc, char** argv) try
 
   Dune::PrismP2LocalFiniteElement<double,double> prismp2fem;
   success = testFE(prismp2fem) and success;
+
+  Dune::PyramidP1LocalFiniteElement<double,double> pyramidp1fem;
+  success = testFE(pyramidp1fem) and success;
 
   success = testArbitraryOrderFE<10>() and success;
 

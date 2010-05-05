@@ -9,3 +9,5 @@ Makefile.dist
 Makefile.in
 Makefile
 
+dune-localfunctions-manual.pdf
+

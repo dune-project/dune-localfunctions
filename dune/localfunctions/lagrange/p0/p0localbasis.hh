@@ -3,8 +3,6 @@
 #ifndef DUNE_P0LOCALBASIS_HH
 #define DUNE_P0LOCALBASIS_HH
 
-#include <dune/grid/common/referenceelements.hh>
-
 #include <dune/common/fmatrix.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>

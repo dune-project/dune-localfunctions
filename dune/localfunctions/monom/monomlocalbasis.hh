@@ -7,8 +7,6 @@
 
 #include <dune/common/fmatrix.hh>
 
-#include <dune/grid/common/referenceelements.hh>
-
 #include "../common/localbasis.hh"
 
 namespace Dune

@@ -1,4 +1,4 @@
-edges03ddir = $(includedir)/dune/localfunctions/edges03d
+edges03ddir = $(includedir)/dune/localfunctions/whitney/edges03d
 
 edges03d_HEADERS = edges03dlocalbasis.hh edges03dlocalcoefficients.hh edges03dlocalinterpolation.hh
 

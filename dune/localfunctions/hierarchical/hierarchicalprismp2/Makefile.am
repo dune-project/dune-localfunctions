@@ -1,4 +1,4 @@
-hierarchicalprismp2dir = $(includedir)/dune/localfunctions/hierarchicalprismp2
+hierarchicalprismp2dir = $(includedir)/dune/localfunctions/hierarchical/hierarchicalprismp2
 
 hierarchicalprismp2_HEADERS = hierarchicalprismp2localbasis.hh hierarchicalprismp2localinterpolation.hh
 

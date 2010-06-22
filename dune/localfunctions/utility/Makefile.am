@@ -1,4 +1,4 @@
-utilitydir = $(includedir)/dune/localfunctions/generic/utility
+utilitydir = $(includedir)/dune/localfunctions/utility
 
 utility_HEADERS = basisevaluator.hh       localfiniteelement.hh  \
                   basismatrix.hh          monomialbasis.hh       \

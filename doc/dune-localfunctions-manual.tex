@@ -1,39 +1,17 @@
-\documentclass[11pt]{article}
+\documentclass[a4paper,11pt]{article}
 \usepackage{multicol}
-\usepackage{ifthen}
 %\usepackage{multitoc}
 %\usepackage{german}
 %\usepackage{bibgerm}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{xspace}
-\usepackage[dvips]{epsfig}
-\usepackage[dvips]{graphicx}
-\usepackage[a4paper,body={148mm,240mm,nohead}]{geometry}
+\usepackage[body={148mm,240mm,nohead}]{geometry}
 \usepackage[ansinew]{inputenc}
 \usepackage{listings}
 \usepackage{hyperref}
 \lstset{language=C++, basicstyle=\ttfamily,
   stringstyle=\ttfamily, commentstyle=\it, extendedchars=true}
-
-\newif\ifpdf
-\ifnum\ifx\pdfoutput\undefined0\else\pdfoutput\fi<1
-\pdffalse % we are not running PDFLaTeX
-\else
-\pdftrue % we are running PDFLaTeX
-\fi
-
-\ifpdf
-\usepackage[pdftex]{graphicx}
-\else
-\usepackage{graphicx}
-\fi
-
-\ifpdf
-\DeclareGraphicsExtensions{.pdf, .jpg, .tif}
-\else
-\DeclareGraphicsExtensions{.eps, .jpg}
-\fi
 
 \newcommand{\dune}{\textsc{Dune}\xspace}
 \newcommand{\modulename}[1]{\texttt{#1}\xspace}

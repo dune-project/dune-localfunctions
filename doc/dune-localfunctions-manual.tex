@@ -9,6 +9,7 @@
 \usepackage[body={148mm,240mm,nohead}]{geometry}
 \usepackage[ansinew]{inputenc}
 \usepackage{listings}
+\usepackage{tikz}
 \usepackage{hyperref}
 \lstset{language=C++, basicstyle=\ttfamily,
   stringstyle=\ttfamily, commentstyle=\it, extendedchars=true}
@@ -146,6 +147,214 @@ by the weaker dependency on the new module.
 
 \section{Global Finite Elements}
 
+So far this document has talked about finite elements on reference elements.
+However, the finite element is usually needed on an element of a grid.  To
+evaluate a function represented by a finite element basis on a particular grid
+element $T$ with geometry $\mu$ we can use the following formula:
+\begin{equation}
+  u(x)=\sum_{i=0}^{N_T-1}c_iP_{T,i}\varphi_i(\mu^{-1}(x)) \qquad\forall x\in T
+\end{equation}
+The basis function $\varphi$ on the reference element is provided by the local
+basis which was described previously.  The global basis takes this local basis
+and applies an operator $P_{T,i}$ to the values it returns.  This operator is
+dependent on the grid element $T$ and the number of the basis function $i$.
+The global basis thus provides values of the global basis functions
+\begin{equation}
+  \Phi_i(\hat x)=P_{T,i}\varphi_i(\hat x)
+\end{equation}
+
+For the transformation $P$ the following information about grid element is
+important:
+\begin{enumerate}
+\item The {\em geometry} $\mu$ of a grid element, which handles the
+  transformation of coordinates from the reference element to the grid
+  element.  But {\em values} of the base functions and in particular their
+  derivatives need to be transformed as well in general -- the correct
+  transformation depends on the family of the finite element, the coordinate
+  transformation $\mu$ and the number of the base function $i$.
+\item The {\em topology} $\tau$ of a grid element, which says how the grid
+  elements vertices a globally numbered in comparison to the numbering in the
+  reference element.  This is needed for vector valued finite elements such as
+  Raviar-Thomas and edge-elements.  Here the dofs often have an orientation
+  which can be chosen arbitrary but must match for all shape function of the
+  same dof (but from different grid elements).
+\end{enumerate}
+
+This section explicitly does not deal with the following issues:
+\begin{itemize}
+\item Different geometry types for different grid elements.  This will lead to
+  different number of basis functions and must already be dealt with in the
+  local finite element.
+\item $p$-adaptiviy.  Again, this will lead to different number of basis
+  functions and must already be dealt with in the local finite element.
+\item Renumbering of base functions.  This may be required for things like Q3
+  which have multiple dofs on a given face and assign specific positions
+  inside the face to those dofs.
+\end{itemize}
+
+
+\subsection{Topology}
+
+The topology information is based completely on the global numbering of the
+vertices of a grid element.  To obtain it, we collect the global IDs of the
+vertices in a vector indexed by the indices of the vertices within the
+reference element:
+\begin{lstlisting}
+void collectVertexIds(const Element& e, const GlobalIdSet& idSet,
+                      std::vector<GlobaIdSet::IdType>& ids) {
+  ids.resize(e.geometry().corners());
+  for(int i = 0; i < ids.size(); ++ids)
+    ids[i] = idSet.subId(e, i, Element::dimension);
+}
+\end{lstlisting}
+In the next step the {\em topological reduction} operation is applied: the
+smallest id in the array is replaced by the number 0, the second-smallest is
+replaced by the number 1 etc.
+\begin{lstlisting}
+template<class LessThanComparable>
+void topologicalReduction(const std::vector<LessThanComparable>& ids,
+                          std::vector<std::size_t>& reduced) {
+  std::vector<std::pair<LessThanComparable,std::size_t> > list(ids.size());
+  for(std::size_t i = 0; i < ids.size(); ++i)
+    list[i] = std::make_pair(ids[i], i);
+  std::cout << list << std::endl;
+  std::sort(list.begin(), list.end());
+  std::cout << list << std::endl;
+  reduced.resize(list.size());
+  for(std::size_t i = 0; i <= list.size(); ++i)
+    reduced[list[i].second] = i;
+}
+\end{lstlisting}
+As an example, lets assume we have a quadrilateral or a tetrahedron with the
+global ids of the vertices being 14 for vertex 0, 27 for vertex 1, 3 for
+vertex 2 and 800 for vertex 3.  After topological reduction the reduced vector
+will contain 1, 2, 0 and 3 in that order.
+
+To ensure continuity for vector finite elements, we need to assign an
+orientation to sub-entities shared by neighbouring grid elements.  Ideally,
+this will work even if both neighbouring grid elements are of different
+geometry type.
+
+There is a distinction between local and global orientation: the local
+orientation is the orientation according to the indices of the sub-entity's
+vertices in the reference element.  The global orientation is the orientation
+according to the global ids of the sub-entity's vertices within the grid.  If
+the two orientations differ for a given grid element, the basis functions for
+dofs on that sub-entity must be multiplied by $-1$.
+
+\subsubsection{Line Orientation in 2D}
+
+In 2D, the interface between two neighbouring elements is always a line.  For
+lines in 2D there are however two different meanings of the term orientation,
+depending on the finite element family.  Edge elements orient their dof along
+the line, while Raviar-Thomas elements orient their dof perpendicular to the
+line.  These two meaning are however compatible: the perpendicular orientation
+can be obtained by turning the parallel orientation by $\pi/2$.  The rotation
+must be perpendicular to the 2D-plane and should not flip -- this can be
+achieved even for 2D manifold in a 3D space, unless you use something like a
+Möbius strip.
+
+The orientation of lines in 2D is from the lower index/id to the higher
+index/id.
+
+\subsubsection{Line Orientation in 3D}
+
+In 3D the double-meaning of orientation does not occur.  This is not out of
+principle, but just because I can only come up one family of finite elements
+requiring orientation: edge elements.  The orientation of lines in 3D is
+determined in the same way as for 2D: it is from the lower index/id to the
+higher index/id.
+
+\subsubsection{Triangle Orientation in 3D}
+
+For 2D-entities in a 3D space we choose a face normal vector as the meaning of
+the orientation.  If you look at a triangle and the reduced indices/ids of the
+vertices run clockwise, the orientation vector points away from you, otherwise
+it points towards you:
+
+\begin{tikzpicture}
+  \draw (0,0) node[below left] {0}
+     -- (1,0) node[below right] {2}
+     -- (0,1) node[above left] {1}
+     --cycle;
+  \coordinate (c) at (.29289,.29289);
+  \draw (c) circle (.2);
+  \draw (c) +(45:.2) -- +(45:-.2)
+            +(-45:.2) -- +(-45:-.2);
+\end{tikzpicture}
+\begin{tikzpicture}
+  \draw (0,0) node[below left] {0}
+     -- (1,0) node[below right] {1}
+     -- (0,1) node[above left] {2}
+     --cycle;
+  \coordinate (c) at (.29289,.29289);
+  \draw (c) circle (.2);
+  \fill (c) circle (.05);
+\end{tikzpicture}
+
+\subsubsection{Quadrilateral Orientation in 3D}
+
+For quadrilaterals the numbering can be cyclic or acylic.  For the cyclic case
+we choose the same rule as for the triangles: If you look at a triangle and
+the reduced indices/ids of the vertices run clockwise, the orientation vector
+points away from you, otherwise it points towards you.
+
+\begin{tikzpicture}
+  \draw (0,0) node[below left] {0}
+     -- (1,0) node[below right] {3}
+     -- (1,1) node[above right] {2}
+     -- (0,1) node[above left] {1}
+     --cycle;
+  \coordinate (c) at (.5,.5);
+  \draw (c) circle (.2);
+  \draw (c) +(45:.2) -- +(45:-.2)
+            +(-45:.2) -- +(-45:-.2);
+\end{tikzpicture}
+\begin{tikzpicture}
+  \draw (0,0) node[below left] {0}
+     -- (1,0) node[below right] {1}
+     -- (1,1) node[above right] {2}
+     -- (0,1) node[above left] {3}
+     --cycle;
+  \coordinate (c) at (.5,.5);
+  \draw (c) circle (.2);
+  \fill (c) circle (.05);
+\end{tikzpicture}
+
+The other possiblity is that the indices/ids run in the shape of the letter
+``N'' or in the shape of its image mirrored at the diagonal
+``\reflectbox{\rotatebox{90}{N}}''.  For the former case we choose orientation
+away from the observer.  For the latter case we must then choose orientation
+towards the observer.
+
+\begin{tikzpicture}
+  \draw (0,0) node[below left] {0}
+     -- (1,0) node[below right] {2}
+     -- (1,1) node[above right] {3}
+     -- (0,1) node[above left] {1}
+     --cycle;
+  \coordinate (c) at (.5,.5);
+  \draw (c) circle (.2);
+  \draw (c) +(45:.2) -- +(45:-.2)
+            +(-45:.2) -- +(-45:-.2);
+\end{tikzpicture}
+\begin{tikzpicture}
+  \draw (0,0) node[below left] {0}
+     -- (1,0) node[below right] {1}
+     -- (1,1) node[above right] {3}
+     -- (0,1) node[above left] {2}
+     --cycle;
+  \coordinate (c) at (.5,.5);
+  \draw (c) circle (.2);
+  \fill (c) circle (.05);
+\end{tikzpicture}
+
+Note that if you omit the index/id with the value 3 both the cyclic and the
+acyclic case reduce to the triangle case.
+
+\subsection{Case studies for particular finite element families}
+
+\subsubsection{P1}
 
 \section{Appendix: List of Available Elements}
 

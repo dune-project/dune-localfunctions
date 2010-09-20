@@ -356,6 +356,264 @@ acyclic case reduce to the triangle case.
 
 \subsubsection{P1}
 
+\subsection{API}
+
+The API for global-valued finite elements consists of five interface classes
+({\tt Global\-Value\-Basis\-Interface}, {\tt
+  GlobalValueInterpolationInterface}, {\tt
+  Global\-Value\-Coefficients\-Interface}, {\tt
+  GlobalValueFiniteElementInterface}, and {\tt
+  Global\-Value\-Finite\-Element\-Factory\-Interface}) and two traits classes
+({\tt GlobalValueBasisTraits} and {\tt
+  Global\-Value\-Finite\-Element\-Traits}).  The name prefix ``{\tt
+  GlobalValue}'' was chosen because these finite elements deal with global
+base function values, but still take local coordinates on the reference
+element.
+
+\subsubsection{Finite Element Interface}
+
+\begin{lstlisting}[escapechar=\$]
+struct GlobalValueFiniteElementInterface
+{
+  // types of component objects
+  struct Traits
+  {
+    typedef $\em implementation-defined$ Basis;
+    typedef $\em implementation-defined$ Coefficients;
+    typedef $\em implementation-defined$ Interpolation;
+  };
+
+  // construction
+ private:
+  // constructor *may* be private
+  GlobalValueFiniteElementInterface(...);
+ public:
+  // ... except for the copy constructor
+  GlobalValueFiniteElementInterface
+    (const GlobalValueFiniteElementInterface&);
+
+  // extract component objects
+  const typename Traits::Basis& basis() const;
+  const typename Traits::Coefficients& coefficients() const;
+  const typename Traits::Interpolation& interpolation() const;
+  GeometryType type() const;
+};
+\end{lstlisting}
+The member class {\tt Traits} may be a member typedef instead.  Constructor
+signatures and existence is implementation-defined, except for the copy
+constructor, which must be present and publicly accessible.  Construction is
+generally done by a factory class.  To keep copy-construction efficient it is
+recommended that instanced of this class are light proxy objects.
+
+The reason to mandate copy-construction is as follows: Up to now with local
+finite elements \modulename{dune-pdelab} used the class {\tt FiniteElementMap}
+as a kind of finite element factory.  If the finite element was required in
+different variants for a given grid (i.e.\ because normal continuity was
+required for Raviar-Thomas elements), the {\tt FiniteElementMap} would store
+all the variants internally and return a reference to the correct variant upon
+request.  Since global-valued finite elements depend on the geometry of the
+grid element, this trick is no longer useful, especially if you plan to modify
+the finite element object by ``binding'' it to the geometry.  The problem is
+that more than one finite element for different grid elements may be required
+at the same time (think iterating over the intersections).  If the {\tt
+  FiniteElementMap} returns the same variant for both grid elements the user
+code will first bind the finite element to the inside element and later to the
+outside element, since both of his finite element references point to the same
+object.  Thus when he tries to access the inside finite element, he will in
+reality access the outside element.
+
+\subsubsection{Finite Element Factory Interface}
+
+\begin{lstlisting}[escapechar=\$]
+enum Tristate { maybe = true+1 };
+typedef std::vector<std::size_t> Topology;
+
+template<class Geometry>
+struct GlobalValueFiniteElementFactoryInterface
+{
+  // may also be an inline class
+  typedef $\em implementation-defined$ FiniteElement;
+
+  // construction is implementation-defined
+  GlobalValueFiniteElementFactoryInterface(...);
+
+  // finite element object creation
+  const FiniteElement make();
+  const FiniteElement make(const Topology&);
+  const FiniteElement make(const Geometry&);
+  const FiniteElement make(const Geometry&, const Topology&);
+
+  // compile-time interface selection
+  static const Tristate staticNeedGeometry = $\em implementation-defined$;
+  static const Tristate staticNeedTopology = $\em implementation-defined$;
+
+  // run-time interface selection
+  bool needGeometry() const;
+  bool needTopology() const;
+};
+\end{lstlisting}
+The method to create a finite element object is {\tt make()}.  The created
+object is returned by value ({\tt const FiniteElement}).  The factory
+implementation may choose to return by reference instead ({\tt const
+  FiniteElement\&}).  Because temporaries may be bound to const references in
+C++, this way code using the factory can always bind the returned value to a
+const reference and avoid copy construction if that is not necessary:
+\begin{lstlisting}
+const Factory::FiniteElement& fe = factory.make(geo, topo);
+\end{lstlisting}
+In any case, the returned value or reference must be valid for as long as the
+factory object exists.
+
+The different signatures for {\tt make()} exists for optimisation.  The
+methods {\tt need\-Geometry()} and {\tt needTopology()} exists so code can
+generically decide whether to do the possibly expensive computation geometry
+and/or topology information.  Even if geometry or topology information is not
+needed, it is always valid to provide it, in that case the arguments provided
+to {\tt make()} is ignored.  If geometry or topology information has been
+provided to the constructor of the factory and again to {\tt make()}, the
+information provided to the constructor is used and consistency is not
+checked.  If too little information is provided to make it should throw an
+exception or an assertion.
+
+In addition, some factories may know at compile time whether geometry or
+topology information is needed or not.  They can export this knowledge via
+{\tt staticNeedGeometry} and {\tt staticNeedTopology}.  If that knowledge is
+not available at compile time, these constants must have the value {\tt
+  maybe}.  Even if it can be determined at compile time that geometry and
+topology information is needed, the signatures of {\tt make()} without those
+arguments must still be present (and must throw an exception or assertion).
+
+Implementations must document when geometry and topology information is
+required.
+
+The constructor signature is implementation-defined.
+
+It is recommended that the factory caches as much information as possible.
+For instance, for regular hypercube grids the Jacobian of the geometry does
+not change and is the only thing needed to transform the derivatives.  For
+this case the constructor should take a sample geometry and precompute the
+transformation.  Whether the regular and the general case are distinguished by
+different constructor arguments to the same factory class, or whether there is
+one factory class for the regular and one for the general case is left to the
+implementor of the factory.
+
+\subsubsection{Basis Interface}
+\begin{lstlisting}[escapechar=\$]
+struct GlobalValueBasisInterface
+{
+  struct Traits
+  {
+    // domain properties (local and global)
+    typedef $\em implementation-defined$ DomainField;
+    static const std::size_t dimDomainLocal = $\em implementation-defined$;
+    static const std::size_t dimDomainGlobal = $\em implementation-defined$;
+    typedef $\em implementation-defined$ DomainLocal;
+    typedef $\em implementation-defined$ DomainGlobal;
+
+    // range properties (global range only)
+    typedef $\em implementation-defined$ RangeField;
+    static const std::size_t dimRange = $\em implementation-defined$;
+    typedef $\em implementation-defined$ Range;
+
+    // jacobian properties (dimRange x dimDomainGlobal Matrix with
+    // components of type RangeField)
+    typedef $\em implementation-defined$ Jacobian;
+
+    // maximum number of partial derivatives supported
+    static const std::size_t diffOrder = $\em implementation-defined$;
+  };
+
+  // Number of shape functions
+  std::size_t size () const;
+  // Polynomial order of the shape functions for quadrature
+  std::size_t order () const;
+
+  // Evaluate all shape functions at given position
+  void evaluateFunction
+  ( const typename Traits::LocalDomain& in,
+    std::vector<typename Traits::Range>& out) const;
+
+  // Evaluate jacobian of all shape functions at given position
+  // required for Traits::diffOrder >= 1
+  void evaluateJacobian
+  ( const typename Traits::LocalDomain& in,
+    std::vector<typename Traits::Jacobian>& out) const;
+
+  // Evaluate derivatives of all shape functions at given position
+  // required for Traits::diffOrder >= 2
+  void evaluate
+  ( const array<std::size_t,Traits::dimGlobalDomain>& directions,
+    const typename Traits::LocalDomain& in,
+    std::vector<typename Traits::Range>& out) const;
+};
+\end{lstlisting}
+The basis interface closely follows the local basis interface with some
+notable exceptions.
+
+First the are the types in the traits class.  Since coordinates are sill given
+in the reference elements coordinate system but derivatives are done with
+respect to global coordinates, a distinction must be made between local and
+global domain.  The other change is that the member types of the traits class
+no longer have a suffix ``{\tt Type}'' since it is quite clear from the
+camel-case naming convention that they are types.
+
+Second the method for general derivatives {\tt evaluate()} is no longer a
+template method and its argument {\tt directions} has different semantics.  In
+the local basis interface, {\tt directions} was a list of directions in which
+to take derivatives, i.e.\ {\tt directions=\{0, 1, 0, 2\}} for the derivative
+$\partial_0\partial_1\partial_0\partial_2$.  This is inconvenient since it
+requires {\tt directions} to be a list of variable length, making the length a
+template parameter, and because the order implied in the above derivative does
+not really exist, it can just as well be written as
+$\partial_0^2\partial_1\partial_2$.  So in the global-value interface {\tt
+  directions} lists the exponents in the last expression: {\tt direction=\{2,
+  1, 1\}}.  This way the length of {\tt directions} will always be {\tt
+  Traits::dimDomainGlobal} and {\tt evaluate()} no longer needs to be a
+template.
+
+\subsubsection{Interpolation Interface}
+
+\begin{lstlisting}
+struct GlobalValueInterpolationInterface
+{
+  // Export basis traits
+  typedef GlobalValueBasisInterface::Traits Traits;
+
+  // determine coefficients interpolating a given function
+  template<typename F, typename C>
+  void interpolate (const F& f, std::vector<C>& out) const;
+};
+\end{lstlisting}
+The interface for global-value interpolation objects also has little
+modifications compared to local interpolation objects.  Main addition is the
+member type {\tt Traits} which is the same as in the corresponding basis
+class.  This is to document the parameter types that {\tt interpolate()} will
+use to evaluate the function {\tt f}.
+
+For the member method {\tt evaluate()} the requirements for the function
+object {\tt f} change slightly: it is still required to support the expression
+{\tt f.evaluate(x, y)}, and {\tt x} in that expression is still a local
+coordinate (though the type is named a little bit different: {\tt const
+  Traits::DomainLocal\&}.  The difference is that the returned value {\tt y}
+is now in global coordinates and of the type {\tt Traits::Range}.
+
+\subsection{Coefficients Interface}
+
+\begin{lstlisting}
+struct GlobalValueCoefficientsInterface
+{
+  // number of coefficients
+  std::size_t size() const;
+
+  // get i'th index
+  const LocalKey& localKey(std::size_t i) const;
+};
+\end{lstlisting}
+The interface for the coefficients class is exactly the same as for the local
+coefficients.  If the global-valued finite elements is implemented in term of
+a local finite element it will often be possible to simply reuse the
+coefficients class of the local finite element.
+
 \section{Appendix: List of Available Elements}
 
 

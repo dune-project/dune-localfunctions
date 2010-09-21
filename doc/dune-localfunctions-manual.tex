@@ -14,6 +14,8 @@
 \lstset{language=C++, basicstyle=\ttfamily,
   stringstyle=\ttfamily, commentstyle=\it, extendedchars=true}
 
+\usepgflibrary{arrows}
+
 \newcommand{\dune}{\textsc{Dune}\xspace}
 \newcommand{\modulename}[1]{\texttt{#1}\xspace}
 
@@ -351,6 +353,228 @@ towards the observer.
 
 Note that if you omit the index/id with the value 3 both the cyclic and the
 acyclic case reduce to the triangle case.
+
+\subsection{Geometry}
+
+The geometry information must be provided by a class basically modelling the
+interface of {\tt GenericGeometry::BasicGeometry} -- that includes
+implementations of {\tt Geometry}.  The precise requirements are as follows:
+\begin{lstlisting}[escapechar=\$]
+struct Geometry
+{
+  // type information
+  typedef $\em implementation-defined$ ctype;
+  // local dimension
+  static const std::size_t mydimension = $\em implementation-defined$;
+  // global dimension
+  static const std::size_t coorddimension = $\em implementation-defined$;
+  // some vector type with mydimension components of type ctype
+  typedef $\em implementation-defined$ LocalCoordinate;
+  // some vector type with coorddimension components of type ctype
+  typedef $\em implementation-defined$ GlobalCoordinate;
+  // some matrix type with coorddimension x mydimension
+  // components of type ctype
+  typedef $\em implementation-defined$ JacobianInverseTransposed;
+  // some matrix type with mydimension x coorddimension
+  // components of type ctype
+  typedef $\em implementation-defined$ JacobianTransposed;
+
+  // general properties of the geometry
+  GeometryType type() const;
+  bool affine() const;
+
+  // access to the coordinates of the corners
+  std::size_t corners() const;
+  GlobalCoordinate corner(std::size_t) const;
+
+  // local to global and inverse mapping
+  GlobalCoordinate global(const LocalCoordinate&) const;
+  LocalCoordinate local(const GlobalCoordinate&) const;
+
+  // access to Jacobian of the mapping
+  const JacobianTransposed&
+    jacobianTransposed(const LocalCoordinate&) const;
+  const JacobianInverseTransposed&
+    jacobianInverseTransposed(const LocalCoordinate&) const;
+
+  // other information
+  GlobalCoordinate center() const;
+  ctype integrationElement(const LocalCoordinate&) const;
+  ctype volume() const;
+  GlobalCoordinate normal(std::size_t face,
+                          const LocalCoordinate&) const;
+};
+\end{lstlisting}
+For the exact meaning of these members look in the doxygen documentation for
+{\tt Geometry} or {\tt GenericGeometry::BasicGeometry}.
+
+The coordinate types ({\tt ctype}, {\tt mydimension}, {\tt coorddimension},
+{\tt LocalCoordinate}, and {\tt GlobalCoordinate}) of a {\tt Geometry} object
+provided when creating an instance of a finite element should coincide with
+the coordinate types of that finite element's basis class.
+
+\subsubsection{Gradient Transformation}
+
+The transformation of a scalar function from the reference element to a grid
+element using the geometry $\mu$ is trivial:
+\begin{equation}
+  \hat f(\hat x) = f(\mu(\hat x))
+\end{equation}
+The transformation of the gradient of such a function is a little bit more
+complicated.  First we will need to employ the Jacobian, which we define for a
+function $u$ as:
+\begin{equation}
+  J_u(x)=\begin{pmatrix}
+    \partial_0u_0|_x     & \ldots & \partial_{n-1}u_0|_x \\
+    \vdots               & \ddots & \vdots \\
+    \partial_0u_{m-1}|_x & \ldots & \partial_{n-1}u_{m-1}|_x
+  \end{pmatrix}
+\end{equation}
+This definition of the Jacobian lets us write a linear vector-valued function
+$u$ in terms of its Jacobian $J_u$ as $u(x) = J_u \cdot x$.  For a scalar
+valued function $f$ the gradient is the transpose of the Jacobian:
+\begin{equation}
+  \nabla f|_x = \begin{pmatrix}
+    \partial_0f|_x \\ \vdots \\ \partial_{n-1}f|_x
+  \end{pmatrix} = J_f^T(x)
+\end{equation}
+To do the actual transformation we employ the chain rule
+\begin{equation}
+  \hat J_{\hat f}({\hat x}) = J_f(\mu(\hat x))\cdot \hat J_\mu(\hat x)
+\end{equation}
+After transposing, left-multiplying by $\hat J_\mu^{-T}(\hat x)$ and replacing
+the transposed Jacobians by gradient where applicable, we obtain
+\begin{equation}
+  \nabla f|_{\mu(\hat x)}
+    = \hat J_\mu^{-T}(\hat x) \cdot \hat\nabla\hat f|_{\hat x}
+\end{equation}
+
+\subsubsection{Raviart-Thomas Elements -- Piola Transformation}
+
+Raviart-Thomas elements are finite elements that ensure continuity of the
+normal component across grid elements.  They do allow for jumps in the
+tangential components, however.  For these elements, the degrees-of-freedom
+(dofs) are usually associated with the face (sub-entity of codimension 1) on
+which the normal component is non-zero.
+
+\begin{tikzpicture}[scale=2]
+  \begin{scope}
+    \draw[clip] (0,0) -- (1,0) -- (0,1) --cycle;
+    \foreach \y in {.1,.3,...,.9}
+      \foreach \x in {1,.7,.5,.35,.25,.175,.125,.0875,.0625}
+        \draw[<-] (1-\x,\y*\x) -- +(\x/4,-\y*\x/4);
+  \end{scope}
+  \path (0,0) node[below left] {$x^0$}
+        (1,0) node[below right] {$x^1$}
+        (0,1) node[above left] {$x^2$};
+  \draw[->,thick] (.1,.5) -- (-.1,.5) node[left] {$\hat\varphi^1$};
+  \fill (0,.5) circle (.02);
+\end{tikzpicture}
+
+These elements have the following property:
+\begin{equation}
+  \varphi^i(x)\cdot n^j=\delta_{ij}\quad\forall x\in\text{face $j$}
+\end{equation}
+Here $n^j$ is the outer normal unit vector to face $j$ and $\delta_{ij}$ is
+the Kronecker delta.  Naturally, transforming the basis should preserve that
+property.  This is achieved by the Piola-transformation:
+\begin{equation}
+  \varphi^i(\mu(\hat x)) = \frac{\hat J_\mu(\hat x)}{|\hat J_\mu(\hat x)|}
+    \hat\varphi^i(\hat x)
+\end{equation}
+
+\subsubsection{Edge Elements}
+
+Edge elements are used in finite element electro-magnetics.  In the lowest
+order, their dofs are associated with edges, i.e.\ sub-entities of dimension
+1.  They can be expressed in terms of first order node-based Lagrange finite
+elements $L^i$ as follows:
+\begin{equation}
+  N^i = \ell^i(L^{i_0} \nabla L^{i_1} - L^{i_1} \nabla L^{i_0})
+\end{equation}
+Here $i_0$ and $i_1$ are the indices of the nodes at the endpoints of edge $i$ and
+$\ell^i$ is the length of edge $i$.
+
+\begin{tikzpicture}[scale=2]
+  \begin{scope}
+    \draw[clip] (0,0) -- (1,0) -- (0,1) --cycle;
+    \foreach \x in {.1,.3,...,1.5}
+      \foreach \a in {2.5,17.5,32.5}
+        \draw[->] (1,0) +(180-\a:\x) arc(180-\a:170-\a:\x);
+  \end{scope}
+  \path (0,0) node[below left] {$x^0$}
+        (1,0) node[below right] {$x^1$}
+        (0,1) node[above left] {$x^2$};
+  \draw[->,thick] (0,.4) -- (0,.6);
+  \fill (0,.5) circle (.02) node[left] {$\hat N^1$};
+\end{tikzpicture}
+
+Edge elements have a similar property as Raviart-Thomas elements: the
+tangential component is 1 on the associated edge and 0 on all other edges:
+\begin{equation}
+  N^i(x)\cdot t^j=\delta_{ij}\quad\forall x\in\text{edge $j$}
+\end{equation}
+
+For the transformation we make the ansatz
+\begin{equation}
+  N^i(\mu(\hat x)) = \alpha^iA\hat N^i(\hat x)
+\end{equation}
+with the scalars $\alpha^i$ and a matrix $A$.  We express $N^i$ and $\hat N^i$
+in terms of the corresponding P1 bases
+\begin{equation}
+  \ell^i\{L^{i_0}(\mu(\hat x)) \cdot \nabla L^{i_1}|_{\mu(\hat x)}
+          - L^{i_1}(\mu(\hat x)) \cdot \nabla L^{i_0}|_{\mu(\hat x)}\}
+  = \alpha^iA\hat\ell^i\{
+          \hat L^{i_0}(\hat x) \cdot \hat\nabla\hat L^{i_1}|_{\hat x}
+        - \hat L^{i_1}(\hat x) \cdot \hat\nabla\hat L^{i_0}|_{\hat x}\}
+\end{equation}
+By replacing the global P1 bases by the their transformations
+\begin{align}
+  L^i(\mu(\hat x)) &= \hat L^i(\hat x) \\
+  \nabla L^i|_{\mu(\hat x)} &= \hat J_\mu^{-T}(\hat x) \hat\nabla\hat L^i|_{\hat x}
+\end{align}
+we obtain
+\begin{multline}
+  \ell^i\hat J_\mu^{-T}(\hat x)\{
+          \hat L^{i_0}(\hat x) \cdot \hat\nabla\hat L^{i_1}|_{\hat x}
+        - \hat L^{i_1}(\hat x) \cdot \hat\nabla\hat L^{i_0}|_{\hat x}\} \\
+  = \alpha^iA\hat\ell^i\{
+          \hat L^{i_0}(\hat x) \cdot \hat\nabla\hat L^{i_1}|_{\hat x}
+        - \hat L^{i_1}(\hat x) \cdot \hat\nabla\hat L^{i_0}|_{\hat x}\}
+\end{multline}
+The expression inside the curly braces on both sides is the same.  We identify
+\begin{align}
+  A &= \hat J_\mu^{-T}(\hat x) \\
+  \alpha^i &= \ell^i/\hat\ell^i
+\end{align}
+The full transformation then looks like this:
+\begin{equation}
+  N^i(\mu(\hat x)) = \frac{\ell^i}{\hat\ell^i}
+    \hat J_\mu^{-T}(\hat x) \cdot \hat N^i(\hat x)
+\end{equation}
+Note that this transformation only works for the base functions, not for
+superpositions of them.  Each base function $N^i$ has a different
+transformation because the base multiplier $\alpha^i$ depends on the number of
+the base function.
+
+\subsubsection{Conclusions}
+
+From the examples above we can conclude that the following information is
+needed from a {\tt Geometry} class.  It is quite possible that the list below
+is incomplete since the examples above may have missed some piece of
+information that may be needed in general.
+\begin{itemize}
+\item The inverse transposed of the Jacobian $\hat J_\mu^{-T}(\hat x)$.
+\item The Jacobian itself $\hat J_\mu(\hat x)$.
+\item The determinant of the Jacobian $|\hat J_\mu(\hat x)|$.
+\item The lengths of the edges of the grid element $\ell^i$.
+\item The lengths of the edges of the reference element $\hat\ell^i$.
+\end{itemize}
+When local coordinates $\hat x$ are provided the local-to-global map $\mu(\hat
+x)$ and its inverse $\mu^{-1}(x)$ as well as the corner coordinates $x^i$
+themselves are never needed.  This makes the required information independent
+of a shift in the global coordinates and opens an optimisation possibility for
+regular grids.
 
 \subsection{Case studies for particular finite element families}
 

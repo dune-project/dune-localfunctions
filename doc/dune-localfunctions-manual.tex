@@ -9,6 +9,7 @@
 \usepackage[body={148mm,240mm,nohead}]{geometry}
 \usepackage[ansinew]{inputenc}
 \usepackage{listings}
+\usepackage{relsize}
 \usepackage{tikz}
 \usepackage{hyperref}
 \lstset{language=C++, basicstyle=\ttfamily,
@@ -453,6 +454,14 @@ global ids of the vertices being 14 for vertex 0, 27 for vertex 1, 3 for
 vertex 2 and 800 for vertex 3.  After topological reduction the reduced vector
 will contain 1, 2, 0 and 3 in that order.
 
+When determining the topology for a sub-entity, the reduced indices
+corresponding to the vertices sub-entity are extracted into a smaller vector
+and the reduction is applied again, at least conceptually.  In reality, the
+reduction is mostly only necessary because the type of the global ids may be a
+complicated non-integral struct, an we want to keep the topology information
+as lean as possible.  The actual information is always contain in the relative
+ordering of the indices/ids, and the reduction preserves that.
+
 To ensure continuity for vector finite elements, we need to assign an
 orientation to sub-entities shared by neighbouring grid elements.  Ideally,
 this will work even if both neighbouring grid elements are of different
@@ -462,23 +471,178 @@ There is a distinction between local and global orientation: the local
 orientation is the orientation according to the indices of the sub-entity's
 vertices in the reference element.  The global orientation is the orientation
 according to the global ids of the sub-entity's vertices within the grid.  If
-the two orientations differ for a given grid element, the basis functions for
-dofs on that sub-entity must be multiplied by $-1$.
+the two orientations differ for a given grid element, and if the basis
+requires it, the basis functions for dofs on that sub-entity must be reordered
+and/or flipped to match the global orientation.
 
-\subsubsection{Line Orientation in 2D}
+\subsection{Flipping of Base Function Values}
 
-In 2D, the interface between two neighbouring elements is always a line.  For
-lines in 2D there are however two different meanings of the term orientation,
-depending on the finite element family.  Edge elements orient their dof along
-the line, while Raviar-Thomas elements orient their dof perpendicular to the
-line.  These two meaning are however compatible: the perpendicular orientation
-can be obtained by turning the parallel orientation by $\pi/2$.  The rotation
-must be perpendicular to the 2D-plane and should not flip -- this can be
-achieved even for 2D manifold in a 3D space, unless you use something like a
-Möbius strip.
+Some finite element families, most notably Raviart-Thomas and edge elements,
+assign an orientation to (some of) their dofs.  That is, the value of the dof
+$a^i$ is interpolated from a function $u$ as the functions value at the dofs
+position $x^i$ projected onto some unit vector $e^i$:
+\begin{equation}
+  a^i = u(x^i)\cdot e^i
+\end{equation}
+The direction of that unit vector is the orientation of the dof.  For
+Raviart-Thomas $e^i$ is the unit vector normal to the face (codimension 1
+sub-entity), for edge elements $e^i$ is the unit vector tangential to the edge
+(dimension 1 sub-entity) on which the dof is located.
 
-The orientation of lines in 2D is from the lower index/id to the higher
-index/id.
+\subsubsection{Line Orientation in 2D -- Edge Elements}
+
+In 2D both Raviart-Thomas and edge elements have their dofs on the line
+between two grid elements.  Edge elements have their dofs oriented along the
+line; this can easily be achieved by orienting the line from the lower to the
+higher index.  Consider the following grid with two elements:
+
+\tikzset{node in line/.style={every node/.style={font=\smaller[2]}}}
+\tikzset{node in elem/.style={every node/.style={font=\smaller,fill,rectangle,text=white,inner sep=.2ex}}}
+\tikzset{line in elem/.style={every node/.style={font=\smaller,draw,rectangle,inner sep=.2ex}}}
+\tikzset{node in grid/.style={every node/.style={fill,circle,text=white,inner sep=.2ex}}}
+\tikzset{elem in grid/.style={every node/.style={draw,circle,inner sep=.2ex}}}
+\newcommand\elemingrid[1]{\text{\tikz[baseline={(0,0)},anchor=base,elem in grid]\node{#1};}}
+\newcommand\nodeingrid[1]{\text{\tikz[baseline={(0,0)},anchor=base,node in grid]\node{#1};}}
+\newcommand\lineinelem[1]{\text{\tikz[baseline={(0,0)},anchor=base,line in elem]\node{#1};}}
+\newcommand\nodeinelem[1]{\text{\tikz[baseline={(0,0)},anchor=base,node in elem]\node{#1};}}
+\newcommand\nodeinline[1]{\text{\tikz[baseline={(0,0)},anchor=base,node in line]\node{#1};}}
+\newcommand\drawbox{\draw (0,0) -- (1,0) -- (1,1) -- (0,1) --cycle;}
+\newcommand\drawlinesinelem[4]{\path[line in elem]
+  (0,0) -- node[above] {#3}
+  (1,0) -- node[left]  {#2}
+  (1,1) -- node[below] {#4}
+  (0,1) -- node[right] {#1}
+  (0,0);}
+\newcommand\drawnodesinelem[4]{\path[node in elem]
+      (0,0) node[above right] {#1}
+      (1,0) node[above left]  {#2}
+      (1,1) node[below left]  {#4}
+      (0,1) node[below right] {#3};}
+\newcommand\drawnodesinlineshelper[4]{\path[node in line]
+  #1 {#3}
+  #2 {#4};}
+\newcommand\drawnodesinlines[4]{
+  \drawnodesinlineshelper{(0,0) node[above left] }{(0,1) node[below left] }#1
+  \drawnodesinlineshelper{(1,0) node[above right]}{(1,1) node[below right]}#2
+  \drawnodesinlineshelper{(0,0) node[below right]}{(1,0) node[below left] }#3
+  \drawnodesinlineshelper{(0,1) node[above right]}{(1,1) node[above left] }#4
+}
+\newcommand\drawelemingrid[1]{\path[elem in grid] (.5,.5) node {#1};}
+\begin{tikzpicture}[scale=2]
+  \foreach \p/\eig in {{(0,0)}/0,{(1.4,0)}/1} {\begin{scope}[shift=\p]
+    \drawbox
+    \drawlinesinelem0123
+    \drawnodesinelem0123
+    \drawnodesinlines{01}{01}{01}{01}
+    \drawelemingrid\eig
+  \end{scope}}
+  \path[node in grid]
+    (-.2,-.2) node {0}
+    (1.2,-.2) node {1}
+    (2.6,-.2) node {2}
+    (-.2,1.2) node {3}
+    (1.2,1.2) node {4}
+    (2.6,1.2) node {5};
+  \node[right,rectangle,draw] at (2.8,.5) {
+    \begin{minipage}{.5\linewidth}
+      \begin{itemize}
+      \item[\elemingrid0] Global id of an element in the grid.
+      \item[\nodeingrid0] Global id of a node in the grid.
+      \item[\lineinelem0] Index of a line inside the element.
+      \item[\nodeinelem0] Index of a node inside the element.
+      \item[\nodeinline0] Index of a node inside a line.
+      \end{itemize}
+    \end{minipage}
+  };
+\end{tikzpicture}
+
+The orientations of the line in both elements are
+\begin{align}
+  l_{\elemingrid0}&:[\nodeinelem1,\nodeinelem3]\rightarrow[0,1] &
+  g_{\elemingrid0}&:[\nodeingrid1,\nodeingrid4]\rightarrow[0,1] \\
+  l_{\elemingrid1}&:[\nodeinelem0,\nodeinelem2]\rightarrow[0,1] &
+  g_{\elemingrid1}&:[\nodeingrid1,\nodeingrid4]\rightarrow[0,1]
+\end{align}
+To the left of the $\rightarrow$ we have noted the raw topology
+information, to the right of it the topology information after applying the
+reduction operation.  Local and global orientation a equal for both elements
+so nothing needs to be done.  Visually, the dof is always oriented upward:
+
+\begin{tikzpicture}[scale=2]
+  \foreach \p/\eig in {{(0,0)}/0,{(1.4,0)}/1} {\begin{scope}[shift=\p]
+    \drawbox
+    \drawnodesinelem0123
+    \drawnodesinlines{01}{01}{01}{01}
+    \drawelemingrid\eig
+  \end{scope}}
+  \path[node in grid]
+    (-.2,-.2) node {0}
+    (1.2,-.2) node {1}
+    (2.6,-.2) node {2}
+    (-.2,1.2) node {3}
+    (1.2,1.2) node {4}
+    (2.6,1.2) node {5};
+  \draw[thick,->] (.95,.5) +(0,-.1) -- node[circle,draw,fill,inner sep=0pt] {} +(0,.1);
+  \draw[thick,->] (1.2,.5) +(0,-.1) -- node[circle,draw,fill,inner sep=0pt] {} +(0,.1);
+  \draw[thick,->] (1.45,.5) +(0,-.1) -- node[circle,draw,fill,inner sep=0pt] {} +(0,.1);
+\end{tikzpicture}
+
+This works also when we flip element \elemingrid1 along a horizontal line:
+
+\begin{tikzpicture}[scale=2]
+  \drawbox
+  \drawlinesinelem0123
+  \drawnodesinelem0123
+  \drawnodesinlines{01}{01}{01}{01}
+  \drawelemingrid0
+  \begin{scope}[shift={(1.4,0)}]
+    \drawbox
+    \drawlinesinelem0132
+    \drawnodesinelem2301
+    \drawnodesinlines{10}{10}{01}{01}
+    \drawelemingrid1
+  \end{scope}
+  \path[node in grid]
+    (-.2,-.2) node {0}
+    (1.2,-.2) node {1}
+    (2.6,-.2) node {2}
+    (-.2,1.2) node {3}
+    (1.2,1.2) node {4}
+    (2.6,1.2) node {5};
+\end{tikzpicture}\hfill
+\begin{tikzpicture}[scale=2]
+  \drawbox
+  \drawnodesinelem0123
+  \drawnodesinlines{01}{01}{01}{01}
+  \drawelemingrid0
+  \begin{scope}[shift={(1.4,0)}]
+    \drawbox
+    \drawnodesinelem2301
+    \drawnodesinlines{10}{10}{01}{01}
+    \drawelemingrid1
+  \end{scope}
+  \path[node in grid]
+    (-.2,-.2) node {0}
+    (1.2,-.2) node {1}
+    (2.6,-.2) node {2}
+    (-.2,1.2) node {3}
+    (1.2,1.2) node {4}
+    (2.6,1.2) node {5};
+  \draw[thick,->] (.95,.5) +(0,-.1) -- node[circle,draw,fill,inner sep=0pt] {} +(0,.1);
+  \draw[thick,->] (1.2,.5) +(0,-.1) -- node[circle,draw,fill,inner sep=0pt] {} +(0,.1);
+  \draw[thick,->] (1.45,.5) +(0,.1) -- node[circle,draw,fill,inner sep=0pt] {} +(0,-.1);
+\end{tikzpicture}
+
+Now the orientations are
+\begin{align}
+  l_{\elemingrid0}&:[\nodeinelem1,\nodeinelem3]\rightarrow[0,1] &
+  g_{\elemingrid0}&:[\nodeingrid1,\nodeingrid4]\rightarrow[0,1] \\
+  l_{\elemingrid1}&:[\nodeinelem0,\nodeinelem2]\rightarrow[0,1] &
+  g_{\elemingrid1}&:[\nodeingrid4,\nodeingrid1]\rightarrow[1,0]
+\end{align}
+For element \elemingrid1 local and global orientations differ so we know that
+the tangential unit vector must be flipped which is equivalent to scaling the
+corresponding base function by $-1$.
 
 \subsubsection{Line Orientation in 3D}
 

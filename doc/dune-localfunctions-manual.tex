@@ -19,6 +19,7 @@
 
 \newcommand{\dune}{\textsc{Dune}\xspace}
 \newcommand{\modulename}[1]{\texttt{#1}\xspace}
+\DeclareMathOperator\sgn{sgn}
 
 \title{The dune-localfunctions module}
 
@@ -507,6 +508,11 @@ higher index.  Consider the following grid with two elements:
 \newcommand\nodeinelem[1]{\text{\tikz[baseline={(0,0)},anchor=base,node in elem]\node{#1};}}
 \newcommand\nodeinline[1]{\text{\tikz[baseline={(0,0)},anchor=base,node in line]\node{#1};}}
 \newcommand\drawbox{\draw (0,0) -- (1,0) -- (1,1) -- (0,1) --cycle;}
+\newcommand\doflength{.15}
+\newcommand\dofup{+(0,-.5*\doflength) -- node[circle,draw,fill,inner sep=0pt] {} +(0,.5*\doflength)}
+\newcommand\dofright{+(-.5*\doflength,0) -- node[circle,draw,fill,inner sep=0pt] {} +(.5*\doflength,0)}
+\newcommand\dofdown{+(0,.5*\doflength) -- node[circle,draw,fill,inner sep=0pt] {} +(0,-.5*\doflength)}
+\newcommand\dofleft{+(.5*\doflength,0) -- node[circle,draw,fill,inner sep=0pt] {} +(-.5*\doflength,0)}
 \newcommand\drawlinesinelem[4]{\path[line in elem]
   (0,0) -- node[above] {#3}
   (1,0) -- node[left]  {#2}
@@ -582,10 +588,18 @@ so nothing needs to be done.  Visually, the dof is always oriented upward:
     (-.2,1.2) node {3}
     (1.2,1.2) node {4}
     (2.6,1.2) node {5};
-  \draw[thick,->] (.95,.5) +(0,-.1) -- node[circle,draw,fill,inner sep=0pt] {} +(0,.1);
-  \draw[thick,->] (1.2,.5) +(0,-.1) -- node[circle,draw,fill,inner sep=0pt] {} +(0,.1);
-  \draw[thick,->] (1.45,.5) +(0,-.1) -- node[circle,draw,fill,inner sep=0pt] {} +(0,.1);
+  \draw[thick,->] (.9,.5) \dofup;
+  \draw[thick,->] (1.1,.5) \dofup;
+  \draw[thick,->] (1.3,.5) \dofup;
+  \draw[thick,->] (1.5,.5) \dofup;
 \end{tikzpicture}
+
+Here the arrows next to the edge just inside the element denote the local
+orientation of the dof and the arrows just outside the element denote the
+global orientation of the dof for that element.  The global orientations as
+determined by the different elements should be the same, but as we shall see
+later in the case of Raviart-Thomas elements this can be difficult to achieve,
+so both are drawn here for clarity.
 
 This works also when we flip element \elemingrid1 along a horizontal line:
 
@@ -628,9 +642,10 @@ This works also when we flip element \elemingrid1 along a horizontal line:
     (-.2,1.2) node {3}
     (1.2,1.2) node {4}
     (2.6,1.2) node {5};
-  \draw[thick,->] (.95,.5) +(0,-.1) -- node[circle,draw,fill,inner sep=0pt] {} +(0,.1);
-  \draw[thick,->] (1.2,.5) +(0,-.1) -- node[circle,draw,fill,inner sep=0pt] {} +(0,.1);
-  \draw[thick,->] (1.45,.5) +(0,.1) -- node[circle,draw,fill,inner sep=0pt] {} +(0,-.1);
+  \draw[thick,->] (.9,.5) \dofup;
+  \draw[thick,->] (1.1,.5) \dofup;
+  \draw[thick,->] (1.3,.5) \dofup;
+  \draw[thick,->] (1.5,.5) \dofdown;
 \end{tikzpicture}
 
 Now the orientations are
@@ -643,6 +658,159 @@ Now the orientations are
 For element \elemingrid1 local and global orientations differ so we know that
 the tangential unit vector must be flipped which is equivalent to scaling the
 corresponding base function by $-1$.
+
+\subsubsection{Line Orientation in 2D -- Raviart-Thomas}
+
+For Raviart-Thomas we need to orient the normal components of the edges.  This
+is a lot more complicated and can not be done by ordering the indices/ids of
+the nodes alone.  To obtain the normal orientation vector, we rotate the
+tangential orientation vector by $90°$, for instance:
+\begin{equation}
+  t=\begin{pmatrix}a\\b\end{pmatrix} \rightarrow
+  n=\begin{pmatrix}b\\-a\end{pmatrix}
+\end{equation}
+This works with some restrictions.  Let us first consider a working example,
+the first grid we considered for edge elements:
+
+\begin{tikzpicture}[scale=2]
+  \foreach \p/\eig in {{(0,0)}/0,{(1.4,0)}/1} {\begin{scope}[shift=\p]
+    \drawbox
+    \drawlinesinelem0123
+    \drawnodesinelem0123
+    \drawnodesinlines{01}{01}{01}{01}
+    \drawelemingrid\eig
+  \end{scope}}
+  \path[node in grid]
+    (-.2,-.2) node {0}
+    (1.2,-.2) node {1}
+    (2.6,-.2) node {2}
+    (-.2,1.2) node {3}
+    (1.2,1.2) node {4}
+    (2.6,1.2) node {5};
+\end{tikzpicture}\hfill
+\begin{tikzpicture}[scale=2]
+  \foreach \p/\eig in {{(0,0)}/0,{(1.4,0)}/1} {\begin{scope}[shift=\p]
+    \drawbox
+    \drawnodesinelem0123
+    \drawnodesinlines{01}{01}{01}{01}
+    \drawelemingrid\eig
+  \end{scope}}
+  \path[node in grid]
+    (-.2,-.2) node {0}
+    (1.2,-.2) node {1}
+    (2.6,-.2) node {2}
+    (-.2,1.2) node {3}
+    (1.2,1.2) node {4}
+    (2.6,1.2) node {5};
+  \draw[help lines,thick,->] (.9,.5) \dofup;
+  \draw[thick,->] (.9,.5) \dofright;
+  \draw[help lines,thick,->] (1.1,.5) \dofup;
+  \draw[thick,->] (1.1,.5) \dofright;
+  \draw[help lines,thick,->] (1.3,.5) \dofup;
+  \draw[thick,->] (1.3,.5) \dofright;
+  \draw[help lines,thick,->] (1.5,.5) \dofup;
+  \draw[thick,->] (1.5,.5) \dofright;
+\end{tikzpicture}
+
+Here everything is fine: applying the above transformation to the tangential
+orientation yields a consistent normal orientation.  The second example from
+the edge elements however does not work anymore:
+
+\begin{tikzpicture}[scale=2]
+  \drawbox
+  \drawlinesinelem0123
+  \drawnodesinelem0123
+  \drawnodesinlines{01}{01}{01}{01}
+  \drawelemingrid0
+  \begin{scope}[shift={(1.4,0)}]
+    \drawbox
+    \drawlinesinelem0132
+    \drawnodesinelem2301
+    \drawnodesinlines{10}{10}{01}{01}
+    \drawelemingrid1
+  \end{scope}
+  \path[node in grid]
+    (-.2,-.2) node {0}
+    (1.2,-.2) node {1}
+    (2.6,-.2) node {2}
+    (-.2,1.2) node {3}
+    (1.2,1.2) node {4}
+    (2.6,1.2) node {5};
+\end{tikzpicture}\hfill
+\begin{tikzpicture}[scale=2]
+  \drawbox
+  \drawnodesinelem0123
+  \drawnodesinlines{01}{01}{01}{01}
+  \drawelemingrid0
+  \begin{scope}[shift={(1.4,0)}]
+    \drawbox
+    \drawnodesinelem2301
+    \drawnodesinlines{10}{10}{01}{01}
+    \drawelemingrid1
+  \end{scope}
+  \path[node in grid]
+    (-.2,-.2) node {0}
+    (1.2,-.2) node {1}
+    (2.6,-.2) node {2}
+    (-.2,1.2) node {3}
+    (1.2,1.2) node {4}
+    (2.6,1.2) node {5};
+  \draw[help lines,thick,->] (.9,.5) \dofup;
+  \draw[thick,->] (.9,.5) \dofright;
+  \draw[help lines,thick,->] (1.1,.5) \dofup;
+  \draw[thick,->] (1.1,.5) \dofright;
+  \draw[help lines,thick,->] (1.3,.5) \dofup;
+  \draw[thick,->] (1.3,.5) \dofleft;
+  \draw[help lines,thick,->] (1.5,.5) \dofdown;
+  \draw[thick,->] (1.5,.5) \dofright;
+\end{tikzpicture}
+
+What has happened here?  Element \elemingrid1's coordinate system is mirrored
+compared to the global coordinate system.  So if we turn a vector to the right
+in element \elemingrid1's coordinate system, that vector turns left in the
+global coordinate system.  That leads to the fact that the global orientation
+as determined by element \elemingrid0 is different from the global orientation
+as determined by element \elemingrid1.
+
+The way around this, at least for a 2D grid in a 2D world, is to consider the
+determinant of the Jacobian of the geometry of the element.  In the above
+example it will be positive for element \elemingrid0 and negative for element
+\elemingrid1.  We can take sign of the determinant of the Jacobian $\sgn|\hat
+J_\mu|$ into account when doing the transformation the {\em global}
+orientation:
+\begin{equation}
+  t=\begin{pmatrix}a\\b\end{pmatrix} \rightarrow
+  n=\sgn|\hat J_\mu|\cdot\begin{pmatrix}b\\-a\end{pmatrix}
+\end{equation}
+This is equivalent to determining the orientation as before, but additionally
+multiplying the base function values by $\sgn|\hat J_\mu|$.
+
+For a 2D grid in a 3D world this does not work, because $\hat J_\mu$ is a
+non-quadratic matrix and thus does not have a determinant.  To make define a
+transformation from tangential to normal orientation you need to define a
+rotation axis perpendicular to the grid.  This axis must not flip from element
+to element otherwise you would again have the problem that neighbouring
+elements turn their orientations in opposite directions.  Now consider a grid
+in the form of a Möbius-strip.  Start with an arbitrary element and choose the
+rotation axis arbitrarily.  The also determines the rotation axis of the next
+element along the strip.  You can move along the strip this way always fixing
+the rotation axes for the elements you encounter, until you arrive at the
+originating element again.  But now, because of the properties of the
+Möbius-strip, you will arrive with an rotation axis opposite to the one you
+started with!
+
+One way to deal with this would be to just forbid the Möbius-strip and similar
+grid topologies.  However, practical problems still remain: we would like to
+avoid having to remember the direction of the rotation axis for each element.
+That means we need to derive some quantity (like $\sgn|\hat J_\mu|$ in the
+2D-2D case) which can be computed with only information from the element.  On
+a Möbius-strip, any such quantity must become zero somewhere and thus is
+useless.  Now we have said that the Möbius strip is forbidden, but that still
+allows a Möbius strip which has been cut somewhere along its length, possibly
+by removing one column of elements, but otherwise has the same geometry.  If
+our quantity becomes zero just at the column of elements that we removed,
+everything is fine.  It may however become zero anywhere else, and it is
+difficult to guarantee that this does not happen, so we still have a problem.
 
 \subsubsection{Line Orientation in 3D}
 

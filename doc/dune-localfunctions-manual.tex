@@ -490,422 +490,150 @@ Raviart-Thomas $e^i$ is the unit vector normal to the face (codimension 1
 sub-entity), for edge elements $e^i$ is the unit vector tangential to the edge
 (dimension 1 sub-entity) on which the dof is located.
 
-\subsubsection{Line Orientation in 2D -- Edge Elements}
+To be continuous over element borders, elements connected to a common
+sub-entity must agree upon a common global orientation for that sub-entity.
+If their local orientation differs from the global orientation, the {\tt
+  GlobalValueBasis} must multiply the value of the corresponding basis
+function by $-1$.  The tricky part is the to determine the global orientation
+for the common sub-entity correctly.
 
-In 2D both Raviart-Thomas and edge elements have their dofs on the line
-between two grid elements.  Edge elements have their dofs oriented along the
-line; this can easily be achieved by orienting the line from the lower to the
-higher index.  Consider the following grid with two elements:
+\subsubsection{Tangential Orientation for Lines}
 
-\tikzset{node in line/.style={every node/.style={font=\smaller[2]}}}
-\tikzset{node in elem/.style={every node/.style={font=\smaller,fill,rectangle,text=white,inner sep=.2ex}}}
-\tikzset{line in elem/.style={every node/.style={font=\smaller,draw,rectangle,inner sep=.2ex}}}
-\tikzset{node in grid/.style={every node/.style={fill,circle,text=white,inner sep=.2ex}}}
-\tikzset{elem in grid/.style={every node/.style={draw,circle,inner sep=.2ex}}}
-\newcommand\elemingrid[1]{\text{\tikz[baseline={(0,0)},anchor=base,elem in grid]\node{#1};}}
-\newcommand\nodeingrid[1]{\text{\tikz[baseline={(0,0)},anchor=base,node in grid]\node{#1};}}
-\newcommand\lineinelem[1]{\text{\tikz[baseline={(0,0)},anchor=base,line in elem]\node{#1};}}
-\newcommand\nodeinelem[1]{\text{\tikz[baseline={(0,0)},anchor=base,node in elem]\node{#1};}}
-\newcommand\nodeinline[1]{\text{\tikz[baseline={(0,0)},anchor=base,node in line]\node{#1};}}
-\newcommand\drawbox{\draw (0,0) -- (1,0) -- (1,1) -- (0,1) --cycle;}
-\newcommand\doflength{.15}
-\newcommand\dofup{+(0,-.5*\doflength) -- node[circle,draw,fill,inner sep=0pt] {} +(0,.5*\doflength)}
-\newcommand\dofright{+(-.5*\doflength,0) -- node[circle,draw,fill,inner sep=0pt] {} +(.5*\doflength,0)}
-\newcommand\dofdown{+(0,.5*\doflength) -- node[circle,draw,fill,inner sep=0pt] {} +(0,-.5*\doflength)}
-\newcommand\dofleft{+(.5*\doflength,0) -- node[circle,draw,fill,inner sep=0pt] {} +(-.5*\doflength,0)}
-\newcommand\drawlinesinelem[4]{\path[line in elem]
-  (0,0) -- node[above] {#3}
-  (1,0) -- node[left]  {#2}
-  (1,1) -- node[below] {#4}
-  (0,1) -- node[right] {#1}
-  (0,0);}
-\newcommand\drawnodesinelem[4]{\path[node in elem]
-      (0,0) node[above right] {#1}
-      (1,0) node[above left]  {#2}
-      (1,1) node[below left]  {#4}
-      (0,1) node[below right] {#3};}
-\newcommand\drawnodesinlineshelper[4]{\path[node in line]
-  #1 {#3}
-  #2 {#4};}
-\newcommand\drawnodesinlines[4]{
-  \drawnodesinlineshelper{(0,0) node[above left] }{(0,1) node[below left] }#1
-  \drawnodesinlineshelper{(1,0) node[above right]}{(1,1) node[below right]}#2
-  \drawnodesinlineshelper{(0,0) node[below right]}{(1,0) node[below left] }#3
-  \drawnodesinlineshelper{(0,1) node[above right]}{(1,1) node[above left] }#4
+Lines have two vertices which can be used to choose the orientation of the
+line: the orientation vector points from the vertex with the lower index/id to
+the vertex with the higher index/id.  That is the geometric interpretation, we
+actually don't want to compare coordinates, but preferably just integers.
+
+To obtain the local orientation, of an edge in an element, collect the
+indices of the edges vertices, and here we mean {\em indices inside the
+  reference element} of the element:
+\begin{lstlisting}
+unsigned local_orientation[2];
+local_orientation[0] = refelem.subEntity(edge_index, dim-1, 0, dim);
+local_orientation[1] = refelem.subEntity(edge_index, dim-1, 1, dim);
+\end{lstlisting}
+
+For the global orientation we do basically the same.  However, this time we
+use the topological information derived from the global ids of the vertices of
+the element instead of vertex indices inside the reference element:
+\begin{lstlisting}
+unsigned global_orientation[2];
+global_orientation[0] = topo[local_orientation[0]];
+global_orientation[1] = topo[local_orientation[1]];
+\end{lstlisting}
+
+The ordering of the index values determines the local and global orientation:
+\begin{lstlisting}
+if((local_orientation[0] < local_orientation[1])
+   == (global_orientation[0] < global_orientation[1]))
+{
+  // local and global orientation are identical; nothing to do
+} else {
+  // local and global orientation differ; flip base function value
 }
-\newcommand\drawelemingrid[1]{\path[elem in grid] (.5,.5) node {#1};}
-\begin{tikzpicture}[scale=2]
-  \foreach \p/\eig in {{(0,0)}/0,{(1.4,0)}/1} {\begin{scope}[shift=\p]
-    \drawbox
-    \drawlinesinelem0123
-    \drawnodesinelem0123
-    \drawnodesinlines{01}{01}{01}{01}
-    \drawelemingrid\eig
-  \end{scope}}
-  \path[node in grid]
-    (-.2,-.2) node {0}
-    (1.2,-.2) node {1}
-    (2.6,-.2) node {2}
-    (-.2,1.2) node {3}
-    (1.2,1.2) node {4}
-    (2.6,1.2) node {5};
-  \node[right,rectangle,draw] at (2.8,.5) {
-    \begin{minipage}{.5\linewidth}
-      \begin{itemize}
-      \item[\elemingrid0] Global id of an element in the grid.
-      \item[\nodeingrid0] Global id of a node in the grid.
-      \item[\lineinelem0] Index of a line inside the element.
-      \item[\nodeinelem0] Index of a node inside the element.
-      \item[\nodeinline0] Index of a node inside a line.
-      \end{itemize}
-    \end{minipage}
-  };
-\end{tikzpicture}
+\end{lstlisting}
 
-The orientations of the line in both elements are
-\begin{align}
-  l_{\elemingrid0}&:[\nodeinelem1,\nodeinelem3]\rightarrow[0,1] &
-  g_{\elemingrid0}&:[\nodeingrid1,\nodeingrid4]\rightarrow[0,1] \\
-  l_{\elemingrid1}&:[\nodeinelem0,\nodeinelem2]\rightarrow[0,1] &
-  g_{\elemingrid1}&:[\nodeingrid1,\nodeingrid4]\rightarrow[0,1]
-\end{align}
-To the left of the $\rightarrow$ we have noted the raw topology
-information, to the right of it the topology information after applying the
-reduction operation.  Local and global orientation a equal for both elements
-so nothing needs to be done.  Visually, the dof is always oriented upward:
+\subsubsection{Normal Orientation for Codimension 1 Sub-Entities}
 
-\begin{tikzpicture}[scale=2]
-  \foreach \p/\eig in {{(0,0)}/0,{(1.4,0)}/1} {\begin{scope}[shift=\p]
-    \drawbox
-    \drawnodesinelem0123
-    \drawnodesinlines{01}{01}{01}{01}
-    \drawelemingrid\eig
-  \end{scope}}
-  \path[node in grid]
-    (-.2,-.2) node {0}
-    (1.2,-.2) node {1}
-    (2.6,-.2) node {2}
-    (-.2,1.2) node {3}
-    (1.2,1.2) node {4}
-    (2.6,1.2) node {5};
-  \draw[thick,->] (.9,.5) \dofup;
-  \draw[thick,->] (1.1,.5) \dofup;
-  \draw[thick,->] (1.3,.5) \dofup;
-  \draw[thick,->] (1.5,.5) \dofup;
-\end{tikzpicture}
+Normal orientation for sub-entities of codimension 1 is important for
+Raviart-Thomas elements.  Normal orientation is more tricky and cannot be done
+using the ordering of the indices/id of the corners alone.  Some additional
+information is needed, such as the sign of the determinant of the Jacobian of
+the geometry map $\sgn(\det(\hat J_\mu))$.  This is however not enough for
+lower dimensional grids in a higher dimensional world, since then the Jacobian
+is no longer quadratic and has no determinant.
 
-Here the arrows next to the edge just inside the element denote the local
-orientation of the dof and the arrows just outside the element denote the
-global orientation of the dof for that element.  The global orientations as
-determined by the different elements should be the same, but as we shall see
-later in the case of Raviart-Thomas elements this can be difficult to achieve,
-so both are drawn here for clarity.
+The reason why the information about the vertex ids is not enough is roughly
+that to construct the normal orientation there is alway some kind of rotation
+involved.  In 2D the codimension 1 sub-entities are edges.  We can obtain a
+normal orientation by rotating the tangential orientation by $90°$.  To get a
+consistent result however, this rotation must be done in the global coordinate
+system for the global orientation and in the respective local coordinate
+systems for the local orientations.  Locally on the element we have only the
+local coordinate system available, however.  If the geometric transformation
+$\mu$ involves mirroring, then the sense of the rotation will be different for
+the local and the global coordinate system.  The sign of the Jacobian's
+determinant can tell us whether there is mirroring involved or not.
 
-This works also when we flip element \elemingrid1 along a horizontal line:
+In 3D the construction of the orientation differs: for triangles we walk
+through the indices/ids in ascending order and determine the direction of the
+normal vector by the right-hand rule:
+\\\hspace*{\fill}
+  \begin{tikzpicture}
+    \draw (0,0) node[below left] {0}
+       -- (1,0) node[below right] {1}
+       -- (0,1) node[above left] {2}
+       --cycle;
+    \coordinate (c) at (.29289,.29289);
+    \draw (c) circle (.2);
+    \fill (c) circle (.05);
+  \end{tikzpicture}
+  \begin{tikzpicture}
+    \draw (0,0) node[below left] {0}
+       -- (1,0) node[below right] {2}
+       -- (0,1) node[above left] {1}
+       --cycle;
+    \coordinate (c) at (.29289,.29289);
+    \draw (c) circle (.2);
+    \draw (c) +(45:.2) -- +(45:-.2)
+              +(-45:.2) -- +(-45:-.2);
+  \end{tikzpicture}
+\hspace*{\fill}\\
+Similar for quadrilaterals, although if their indices/ids are acyclic we just
+have to pick and orientation (here we chose to ignore the highest index/id and
+determine the orientation from the remaining indices/ids as for triangles):
+\\\hspace*{\fill}
+  \begin{tikzpicture}
+    \draw (0,0) node[below left] {0}
+       -- (1,0) node[below right] {1}
+       -- (1,1) node[above right] {3}
+       -- (0,1) node[above left] {2}
+       --cycle;
+    \coordinate (c) at (.5,.5);
+    \draw (c) circle (.2);
+    \fill (c) circle (.05);
+  \end{tikzpicture}
+  \begin{tikzpicture}
+    \draw (0,0) node[below left] {0}
+       -- (1,0) node[below right] {2}
+       -- (1,1) node[above right] {3}
+       -- (0,1) node[above left] {1}
+       --cycle;
+    \coordinate (c) at (.5,.5);
+    \draw (c) circle (.2);
+    \draw (c) +(45:.2) -- +(45:-.2)
+              +(-45:.2) -- +(-45:-.2);
+  \end{tikzpicture}
+  \begin{tikzpicture}
+    \draw (0,0) node[below left] {0}
+       -- (1,0) node[below right] {1}
+       -- (1,1) node[above right] {2}
+       -- (0,1) node[above left] {3}
+       --cycle;
+    \coordinate (c) at (.5,.5);
+    \draw (c) circle (.2);
+    \fill (c) circle (.05);
+  \end{tikzpicture}
+  \begin{tikzpicture}
+    \draw (0,0) node[below left] {0}
+       -- (1,0) node[below right] {3}
+       -- (1,1) node[above right] {2}
+       -- (0,1) node[above left] {1}
+       --cycle;
+    \coordinate (c) at (.5,.5);
+    \draw (c) circle (.2);
+    \draw (c) +(45:.2) -- +(45:-.2)
+              +(-45:.2) -- +(-45:-.2);
+  \end{tikzpicture}
+\hspace*{\fill}
 
-\begin{tikzpicture}[scale=2]
-  \drawbox
-  \drawlinesinelem0123
-  \drawnodesinelem0123
-  \drawnodesinlines{01}{01}{01}{01}
-  \drawelemingrid0
-  \begin{scope}[shift={(1.4,0)}]
-    \drawbox
-    \drawlinesinelem0132
-    \drawnodesinelem2301
-    \drawnodesinlines{10}{10}{01}{01}
-    \drawelemingrid1
-  \end{scope}
-  \path[node in grid]
-    (-.2,-.2) node {0}
-    (1.2,-.2) node {1}
-    (2.6,-.2) node {2}
-    (-.2,1.2) node {3}
-    (1.2,1.2) node {4}
-    (2.6,1.2) node {5};
-\end{tikzpicture}\hfill
-\begin{tikzpicture}[scale=2]
-  \drawbox
-  \drawnodesinelem0123
-  \drawnodesinlines{01}{01}{01}{01}
-  \drawelemingrid0
-  \begin{scope}[shift={(1.4,0)}]
-    \drawbox
-    \drawnodesinelem2301
-    \drawnodesinlines{10}{10}{01}{01}
-    \drawelemingrid1
-  \end{scope}
-  \path[node in grid]
-    (-.2,-.2) node {0}
-    (1.2,-.2) node {1}
-    (2.6,-.2) node {2}
-    (-.2,1.2) node {3}
-    (1.2,1.2) node {4}
-    (2.6,1.2) node {5};
-  \draw[thick,->] (.9,.5) \dofup;
-  \draw[thick,->] (1.1,.5) \dofup;
-  \draw[thick,->] (1.3,.5) \dofup;
-  \draw[thick,->] (1.5,.5) \dofdown;
-\end{tikzpicture}
-
-Now the orientations are
-\begin{align}
-  l_{\elemingrid0}&:[\nodeinelem1,\nodeinelem3]\rightarrow[0,1] &
-  g_{\elemingrid0}&:[\nodeingrid1,\nodeingrid4]\rightarrow[0,1] \\
-  l_{\elemingrid1}&:[\nodeinelem0,\nodeinelem2]\rightarrow[0,1] &
-  g_{\elemingrid1}&:[\nodeingrid4,\nodeingrid1]\rightarrow[1,0]
-\end{align}
-For element \elemingrid1 local and global orientations differ so we know that
-the tangential unit vector must be flipped which is equivalent to scaling the
-corresponding base function by $-1$.
-
-\subsubsection{Line Orientation in 2D -- Raviart-Thomas}
-
-For Raviart-Thomas we need to orient the normal components of the edges.  This
-is a lot more complicated and can not be done by ordering the indices/ids of
-the nodes alone.  To obtain the normal orientation vector, we rotate the
-tangential orientation vector by $90°$, for instance:
-\begin{equation}
-  t=\begin{pmatrix}a\\b\end{pmatrix} \rightarrow
-  n=\begin{pmatrix}b\\-a\end{pmatrix}
-\end{equation}
-This works with some restrictions.  Let us first consider a working example,
-the first grid we considered for edge elements:
-
-\begin{tikzpicture}[scale=2]
-  \foreach \p/\eig in {{(0,0)}/0,{(1.4,0)}/1} {\begin{scope}[shift=\p]
-    \drawbox
-    \drawlinesinelem0123
-    \drawnodesinelem0123
-    \drawnodesinlines{01}{01}{01}{01}
-    \drawelemingrid\eig
-  \end{scope}}
-  \path[node in grid]
-    (-.2,-.2) node {0}
-    (1.2,-.2) node {1}
-    (2.6,-.2) node {2}
-    (-.2,1.2) node {3}
-    (1.2,1.2) node {4}
-    (2.6,1.2) node {5};
-\end{tikzpicture}\hfill
-\begin{tikzpicture}[scale=2]
-  \foreach \p/\eig in {{(0,0)}/0,{(1.4,0)}/1} {\begin{scope}[shift=\p]
-    \drawbox
-    \drawnodesinelem0123
-    \drawnodesinlines{01}{01}{01}{01}
-    \drawelemingrid\eig
-  \end{scope}}
-  \path[node in grid]
-    (-.2,-.2) node {0}
-    (1.2,-.2) node {1}
-    (2.6,-.2) node {2}
-    (-.2,1.2) node {3}
-    (1.2,1.2) node {4}
-    (2.6,1.2) node {5};
-  \draw[help lines,thick,->] (.9,.5) \dofup;
-  \draw[thick,->] (.9,.5) \dofright;
-  \draw[help lines,thick,->] (1.1,.5) \dofup;
-  \draw[thick,->] (1.1,.5) \dofright;
-  \draw[help lines,thick,->] (1.3,.5) \dofup;
-  \draw[thick,->] (1.3,.5) \dofright;
-  \draw[help lines,thick,->] (1.5,.5) \dofup;
-  \draw[thick,->] (1.5,.5) \dofright;
-\end{tikzpicture}
-
-Here everything is fine: applying the above transformation to the tangential
-orientation yields a consistent normal orientation.  The second example from
-the edge elements however does not work anymore:
-
-\begin{tikzpicture}[scale=2]
-  \drawbox
-  \drawlinesinelem0123
-  \drawnodesinelem0123
-  \drawnodesinlines{01}{01}{01}{01}
-  \drawelemingrid0
-  \begin{scope}[shift={(1.4,0)}]
-    \drawbox
-    \drawlinesinelem0132
-    \drawnodesinelem2301
-    \drawnodesinlines{10}{10}{01}{01}
-    \drawelemingrid1
-  \end{scope}
-  \path[node in grid]
-    (-.2,-.2) node {0}
-    (1.2,-.2) node {1}
-    (2.6,-.2) node {2}
-    (-.2,1.2) node {3}
-    (1.2,1.2) node {4}
-    (2.6,1.2) node {5};
-\end{tikzpicture}\hfill
-\begin{tikzpicture}[scale=2]
-  \drawbox
-  \drawnodesinelem0123
-  \drawnodesinlines{01}{01}{01}{01}
-  \drawelemingrid0
-  \begin{scope}[shift={(1.4,0)}]
-    \drawbox
-    \drawnodesinelem2301
-    \drawnodesinlines{10}{10}{01}{01}
-    \drawelemingrid1
-  \end{scope}
-  \path[node in grid]
-    (-.2,-.2) node {0}
-    (1.2,-.2) node {1}
-    (2.6,-.2) node {2}
-    (-.2,1.2) node {3}
-    (1.2,1.2) node {4}
-    (2.6,1.2) node {5};
-  \draw[help lines,thick,->] (.9,.5) \dofup;
-  \draw[thick,->] (.9,.5) \dofright;
-  \draw[help lines,thick,->] (1.1,.5) \dofup;
-  \draw[thick,->] (1.1,.5) \dofright;
-  \draw[help lines,thick,->] (1.3,.5) \dofup;
-  \draw[thick,->] (1.3,.5) \dofleft;
-  \draw[help lines,thick,->] (1.5,.5) \dofdown;
-  \draw[thick,->] (1.5,.5) \dofright;
-\end{tikzpicture}
-
-What has happened here?  Element \elemingrid1's coordinate system is mirrored
-compared to the global coordinate system.  So if we turn a vector to the right
-in element \elemingrid1's coordinate system, that vector turns left in the
-global coordinate system.  That leads to the fact that the global orientation
-as determined by element \elemingrid0 is different from the global orientation
-as determined by element \elemingrid1.
-
-The way around this, at least for a 2D grid in a 2D world, is to consider the
-determinant of the Jacobian of the geometry of the element.  In the above
-example it will be positive for element \elemingrid0 and negative for element
-\elemingrid1.  We can take sign of the determinant of the Jacobian $\sgn|\hat
-J_\mu|$ into account when doing the transformation the {\em global}
-orientation:
-\begin{equation}
-  t=\begin{pmatrix}a\\b\end{pmatrix} \rightarrow
-  n=\sgn|\hat J_\mu|\cdot\begin{pmatrix}b\\-a\end{pmatrix}
-\end{equation}
-This is equivalent to determining the orientation as before, but additionally
-multiplying the base function values by $\sgn|\hat J_\mu|$.
-
-For a 2D grid in a 3D world this does not work, because $\hat J_\mu$ is a
-non-quadratic matrix and thus does not have a determinant.  To make define a
-transformation from tangential to normal orientation you need to define a
-rotation axis perpendicular to the grid.  This axis must not flip from element
-to element otherwise you would again have the problem that neighbouring
-elements turn their orientations in opposite directions.  Now consider a grid
-in the form of a Möbius-strip.  Start with an arbitrary element and choose the
-rotation axis arbitrarily.  The also determines the rotation axis of the next
-element along the strip.  You can move along the strip this way always fixing
-the rotation axes for the elements you encounter, until you arrive at the
-originating element again.  But now, because of the properties of the
-Möbius-strip, you will arrive with an rotation axis opposite to the one you
-started with!
-
-One way to deal with this would be to just forbid the Möbius-strip and similar
-grid topologies.  However, practical problems still remain: we would like to
-avoid having to remember the direction of the rotation axis for each element.
-That means we need to derive some quantity (like $\sgn|\hat J_\mu|$ in the
-2D-2D case) which can be computed with only information from the element.  On
-a Möbius-strip, any such quantity must become zero somewhere and thus is
-useless.  Now we have said that the Möbius strip is forbidden, but that still
-allows a Möbius strip which has been cut somewhere along its length, possibly
-by removing one column of elements, but otherwise has the same geometry.  If
-our quantity becomes zero just at the column of elements that we removed,
-everything is fine.  It may however become zero anywhere else, and it is
-difficult to guarantee that this does not happen, so we still have a problem.
-
-\subsubsection{Line Orientation in 3D}
-
-In 3D the double-meaning of orientation does not occur.  This is not out of
-principle, but just because I can only come up one family of finite elements
-requiring orientation: edge elements.  The orientation of lines in 3D is
-determined in the same way as for 2D: it is from the lower index/id to the
-higher index/id.
-
-\subsubsection{Triangle Orientation in 3D}
-
-For 2D-entities in a 3D space we choose a face normal vector as the meaning of
-the orientation.  If you look at a triangle and the reduced indices/ids of the
-vertices run clockwise, the orientation vector points away from you, otherwise
-it points towards you:
-
-\begin{tikzpicture}
-  \draw (0,0) node[below left] {0}
-     -- (1,0) node[below right] {2}
-     -- (0,1) node[above left] {1}
-     --cycle;
-  \coordinate (c) at (.29289,.29289);
-  \draw (c) circle (.2);
-  \draw (c) +(45:.2) -- +(45:-.2)
-            +(-45:.2) -- +(-45:-.2);
-\end{tikzpicture}
-\begin{tikzpicture}
-  \draw (0,0) node[below left] {0}
-     -- (1,0) node[below right] {1}
-     -- (0,1) node[above left] {2}
-     --cycle;
-  \coordinate (c) at (.29289,.29289);
-  \draw (c) circle (.2);
-  \fill (c) circle (.05);
-\end{tikzpicture}
-
-\subsubsection{Quadrilateral Orientation in 3D}
-
-For quadrilaterals the numbering can be cyclic or acylic.  For the cyclic case
-we choose the same rule as for the triangles: If you look at a triangle and
-the reduced indices/ids of the vertices run clockwise, the orientation vector
-points away from you, otherwise it points towards you.
-
-\begin{tikzpicture}
-  \draw (0,0) node[below left] {0}
-     -- (1,0) node[below right] {3}
-     -- (1,1) node[above right] {2}
-     -- (0,1) node[above left] {1}
-     --cycle;
-  \coordinate (c) at (.5,.5);
-  \draw (c) circle (.2);
-  \draw (c) +(45:.2) -- +(45:-.2)
-            +(-45:.2) -- +(-45:-.2);
-\end{tikzpicture}
-\begin{tikzpicture}
-  \draw (0,0) node[below left] {0}
-     -- (1,0) node[below right] {1}
-     -- (1,1) node[above right] {2}
-     -- (0,1) node[above left] {3}
-     --cycle;
-  \coordinate (c) at (.5,.5);
-  \draw (c) circle (.2);
-  \fill (c) circle (.05);
-\end{tikzpicture}
-
-The other possiblity is that the indices/ids run in the shape of the letter
-``N'' or in the shape of its image mirrored at the diagonal
-``\reflectbox{\rotatebox{90}{N}}''.  For the former case we choose orientation
-away from the observer.  For the latter case we must then choose orientation
-towards the observer.
-
-\begin{tikzpicture}
-  \draw (0,0) node[below left] {0}
-     -- (1,0) node[below right] {2}
-     -- (1,1) node[above right] {3}
-     -- (0,1) node[above left] {1}
-     --cycle;
-  \coordinate (c) at (.5,.5);
-  \draw (c) circle (.2);
-  \draw (c) +(45:.2) -- +(45:-.2)
-            +(-45:.2) -- +(-45:-.2);
-\end{tikzpicture}
-\begin{tikzpicture}
-  \draw (0,0) node[below left] {0}
-     -- (1,0) node[below right] {1}
-     -- (1,1) node[above right] {3}
-     -- (0,1) node[above left] {2}
-     --cycle;
-  \coordinate (c) at (.5,.5);
-  \draw (c) circle (.2);
-  \fill (c) circle (.05);
-\end{tikzpicture}
-
-Note that if you omit the index/id with the value 3 both the cyclic and the
-acyclic case reduce to the triangle case.
+This is all rather tedious and in fact there is a much simpler way, which will
+even work in the case of lower-dimensional grids in a higher-dimensional
+world.  Sub-entities of codimension 1 are always situated between two
+Elements.  Choosing a normal orientation for the sub-entity means to choose a
+vector that points from one element into the other.  The global orientation
+can thus be chosen by comparing the ids of the elements: it points outward in
+the element with the lower id and inward in the element with the higher id.
 
 \subsection{API}
 

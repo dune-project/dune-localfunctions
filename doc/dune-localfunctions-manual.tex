@@ -178,10 +178,13 @@ important:
   transformation $\mu$ and the number of the base function $i$.
 \item The {\em topology} $\tau$ of a grid element, which says how the grid
   elements vertices a globally numbered in comparison to the numbering in the
-  reference element.  This is needed for vector valued finite elements such as
-  Raviar-Thomas and edge-elements.  Here the dofs often have an orientation
-  which can be chosen arbitrary but must match for all shape function of the
-  same dof (but from different grid elements).
+  reference element.  This is needed to match multiple dofs on a common
+  sub-entity between two grid elements.  Another use is to choose a consistent
+  tangential orientation of edges for edge elements.
+\item The {\em normal orientation} of faces of a grid element.  This is useful
+  for instance for Raviart-Thomas elements: their dofs orientation points from
+  one of the neighbouring elements into the other.  This information can
+  generally not be extracted from the topology and geometry information alone.
 \end{enumerate}
 
 This section explicitly does not deal with the following issues:
@@ -191,9 +194,6 @@ This section explicitly does not deal with the following issues:
   local finite element.
 \item $p$-adaptiviy.  Again, this will lead to different number of basis
   functions and must already be dealt with in the local finite element.
-\item Renumbering of base functions.  This may be required for things like Q3
-  which have multiple dofs on a given face and assign specific positions
-  inside the face to those dofs.
 \end{itemize}
 
 \subsection{Geometry}
@@ -475,6 +475,23 @@ according to the global ids of the sub-entity's vertices within the grid.  If
 the two orientations differ for a given grid element, and if the basis
 requires it, the basis functions for dofs on that sub-entity must be reordered
 and/or flipped to match the global orientation.
+
+\subsection{Matching Multiple Dofs on a Common Sub-Entity}
+
+Some finite elements have more than one dof on a given sub-entity of an
+element, and assign a position inside the sub-entity to that dof (i.e.\ Pk
+$k\geq4$, Qk $k\geq3$).  For conforming schemes the ordering of the dofs on a
+sub-entity shared by two or more elements must match such that the dofs on the
+same position can be identified.
+
+A similar situation arises with edge elements of order $1.5$: For simplices
+they have three base functions on a face but only two of them are independent.
+A finite element implementation must make sure to pick the same two base
+functions for the face in neighbouring elements so their dofs can be
+identified.
+
+Both issues can be addressed using the information provided by the ordering of
+the global ids of the vertices.
 
 \subsection{Flipping of Base Function Values}
 

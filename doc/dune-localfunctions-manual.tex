@@ -688,6 +688,14 @@ vector that points from one element into the other.  The global orientation
 can thus be chosen by comparing the ids of the elements: it points outward in
 the element with the lower id and inward in the element with the higher id.
 
+The face orientation should be passed as a bool vector:
+\begin{lstlisting}
+typedef std::vector<bool> FaceOrientation;
+\end{lstlisting}
+The vector is indexed by the index of the face in the reference element.  A
+value of {\tt true} means the global orientation of the face is outward, {\tt
+  false} means it is inward.
+
 \subsection{API}
 
 The API for global-valued finite elements consists of five interface classes
@@ -794,15 +802,15 @@ ordering
 directly.  Any extra information should be given after these arguments.  The
 possible signatures for make thus are:
 \begin{lstlisting}
-make(const Geometry&, const VertexOrder&, const FaceOrient&, ...);
+make(const Geometry&, const VertexOrder&, const FaceOrientation&, ...);
 make(const Geometry&, const VertexOrder&, ...);
-make(const Geometry&, const FaceOrient&, ...);
+make(const Geometry&, const FaceOrientation&, ...);
 make(const Geometry&, ...);
-make(const VertexOrder&, const FaceOrient&, ...);
+make(const VertexOrder&, const FaceOrientation&, ...);
 make(const VertexOrder&, ...);
-make(const GeometryType&, const FaceOrient&, ...);
+make(const GeometryType&, const FaceOrientation&, ...);
 make(const GeometryType&, ...);
-make(const FaceOrient&, ...);
+make(const FaceOrientation&, ...);
 make(...);
 \end{lstlisting}
 Implementation must document what kind of arguments are required for {\tt

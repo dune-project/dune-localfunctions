@@ -467,6 +467,50 @@ information as lean as possible.  The actual information is always contained
 in the relative
 ordering of the indices/ids, and the reduction preserves that.
 
+The ordering information can always be obtained from the global ids of the
+vertices.  However, for some grids, such as ALUGrid, using the global ids is
+quiet expensive.  On the other hand, ALUGrid already stores a twist of the
+faces, which can be easily extracted and contains the same information as the
+vertex ordering, just encoded in a different way.  Though this does not
+provide vertex ordering information for the whole element, this information is
+seldom needed.
+
+To accommodate all sides, we define an interface class {\tt
+  VertexOrderingInterface}.  Implementations of this interface can be used to
+provide vertex ordering information.  Grids that store the vertex ordering
+internally for certain sub-entities can provide an optimised implementation.
+These implementations may omit vertex ordering information for sub-entities
+where such information is not readily available; they should throw {\tt
+  NotImplemented} if such information is requested anyway.
+
+Note that the information is still required to be consistent for those
+sub-entities where information is available: Consider a tetrahedron and pick
+two triangular faces $A$ and $B$ with a common edge.  If someone requests
+vertex ordering information for one of the faces and reduces that information
+to the edge, the result must be the same no matter whether face $A$ or $B$ was
+used or whether the ordering was requested directly for the edge itself.
+
+The interface for the class is as follows:
+\begin{lstlisting}
+struct VertexOrderingInterface {
+  // dimension of the entity this applies to
+  static const std::size_t dimension;
+  // geometry type of the entity this applies to
+  const GeometryType type() const;
+
+  // get vertex id for a vertex inside the specified sub-entity
+  std::size_t get(std::size_t codim, std::size_t subEntity,
+                  std::size_t vertex) const;
+  // get reduced vertex ordering for the specified sub-entity
+  void getReduced(std::size_t codim, std::size_t subEntity,
+                  std::vector<std::size_t>& order) const;
+};
+\end{lstlisting}
+Information about the dimension and the geometry type is included because it
+determines the limits for the parameters (via the {\tt
+  GenericReferenceElements}).  The {\tt getReduced()} method shall resize the
+vector passed in the {\tt order} parameter to the suitable size.
+
 \subsection{Matching Multiple Dofs on a Common Sub-Entity}
 
 Some finite elements have more than one dof on a given sub-entity of an

@@ -463,19 +463,6 @@ complicated non-integral struct, an we want to keep the topology information
 as lean as possible.  The actual information is always contain in the relative
 ordering of the indices/ids, and the reduction preserves that.
 
-To ensure continuity for vector finite elements, we need to assign an
-orientation to sub-entities shared by neighbouring grid elements.  Ideally,
-this will work even if both neighbouring grid elements are of different
-geometry type.
-
-There is a distinction between local and global orientation: the local
-orientation is the orientation according to the indices of the sub-entity's
-vertices in the reference element.  The global orientation is the orientation
-according to the global ids of the sub-entity's vertices within the grid.  If
-the two orientations differ for a given grid element, and if the basis
-requires it, the basis functions for dofs on that sub-entity must be reordered
-and/or flipped to match the global orientation.
-
 \subsection{Matching Multiple Dofs on a Common Sub-Entity}
 
 Some finite elements have more than one dof on a given sub-entity of an

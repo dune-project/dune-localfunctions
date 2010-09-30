@@ -176,15 +176,17 @@ important:
   derivatives need to be transformed as well in general -- the correct
   transformation depends on the family of the finite element, the coordinate
   transformation $\mu$ and the number of the base function $i$.
-\item The {\em topology} $\tau$ of a grid element, which says how the grid
-  elements vertices a globally numbered in comparison to the numbering in the
+\item The {\em vertex ordering} $\tau$ of a grid element, which says how the
+  grid elements vertices are globally numbered in comparison to the numbering
+  in the
   reference element.  This is needed to match multiple dofs on a common
   sub-entity between two grid elements.  Another use is to choose a consistent
   tangential orientation of edges for edge elements.
 \item The {\em normal orientation} of faces of a grid element.  This is useful
   for instance for Raviart-Thomas elements: their dofs orientation points from
   one of the neighbouring elements into the other.  This information can
-  generally not be extracted from the topology and geometry information alone.
+  generally not be extracted from the vertex ordering and geometry information
+  alone.
 \end{enumerate}
 
 This section explicitly does not deal with the following issues:
@@ -418,9 +420,10 @@ themselves are never needed.  This makes the required information independent
 of a shift in the global coordinates and opens an optimisation possibility for
 regular grids.
 
-\subsection{Topology}
+\subsection{Vertex Ordering}
 
-The topology information is based completely on the global numbering of the
+The vertex ordering information is based completely on the global numbering of
+the
 vertices of a grid element.  To obtain it, we collect the global IDs of the
 vertices in a vector indexed by the indices of the vertices within the
 reference element:
@@ -432,13 +435,13 @@ void collectVertexIds(const Element& e, const GlobalIdSet& idSet,
     ids[i] = idSet.subId(e, i, Element::dimension);
 }
 \end{lstlisting}
-In the next step the {\em topological reduction} operation is applied: the
+In the next step the {\em ordering reduction} operation is applied: the
 smallest id in the array is replaced by the number 0, the second-smallest is
 replaced by the number 1 etc.
 \begin{lstlisting}
 template<class LessThanComparable>
-void topologicalReduction(const std::vector<LessThanComparable>& ids,
-                          std::vector<std::size_t>& reduced) {
+void orderingReduction(const std::vector<LessThanComparable>& ids,
+                       std::vector<std::size_t>& reduced) {
   std::vector<std::pair<LessThanComparable,std::size_t> > list(ids.size());
   for(std::size_t i = 0; i < ids.size(); ++i)
     list[i] = std::make_pair(ids[i], i);
@@ -452,15 +455,16 @@ void topologicalReduction(const std::vector<LessThanComparable>& ids,
 \end{lstlisting}
 As an example, lets assume we have a quadrilateral or a tetrahedron with the
 global ids of the vertices being 14 for vertex 0, 27 for vertex 1, 3 for
-vertex 2 and 800 for vertex 3.  After topological reduction the reduced vector
+vertex 2 and 800 for vertex 3.  After ordering reduction the reduced vector
 will contain 1, 2, 0 and 3 in that order.
 
-When determining the topology for a sub-entity, the reduced indices
+When determining the vertex ordering for a sub-entity, the reduced indices
 corresponding to the vertices sub-entity are extracted into a smaller vector
 and the reduction is applied again, at least conceptually.  In reality, the
 reduction is mostly only necessary because the type of the global ids may be a
-complicated non-integral struct, an we want to keep the topology information
-as lean as possible.  The actual information is always contain in the relative
+complicated non-integral struct, and we want to keep the vertex ordering
+information as lean as possible.  The actual information is always contained
+in the relative
 ordering of the indices/ids, and the reduction preserves that.
 
 \subsection{Matching Multiple Dofs on a Common Sub-Entity}
@@ -518,12 +522,13 @@ local_orientation[1] = refelem.subEntity(edge_index, dim-1, 1, dim);
 \end{lstlisting}
 
 For the global orientation we do basically the same.  However, this time we
-use the topological information derived from the global ids of the vertices of
+use the vertex ordering information derived from the global ids of the
+vertices of
 the element instead of vertex indices inside the reference element:
 \begin{lstlisting}
 unsigned global_orientation[2];
-global_orientation[0] = topo[local_orientation[0]];
-global_orientation[1] = topo[local_orientation[1]];
+global_orientation[0] = vertex_order[local_orientation[0]];
+global_orientation[1] = vertex_order[local_orientation[1]];
 \end{lstlisting}
 
 The ordering of the index values determines the local and global orientation:
@@ -735,20 +740,22 @@ Since each finite element family will need different information to create a
 finite element object tailored to a particular grid element, the actual
 argument of the {\tt male()} are implementation-defined.  Earlier in this
 section we have seen different types of information which may be needed to
-create a tailored finite element: geometry, topology and face orientation.
+create a tailored finite element: geometry, vertex ordering and face
+orientation.
 If they are needed for a given finite element implementation, that finite
 element should require necessary items in the order given above and in the
-encoding given earlier.  If neither geometry nor topology is required, but the
-geometry type is, that should be given in place of geometry and topology
+encoding given earlier.  If neither geometry nor vertex ordering is required,
+but the geometry type is, that should be given in place of geometry and vertex
+ordering
 directly.  Any extra information should be given after these arguments.  The
 possible signatures for make thus are:
 \begin{lstlisting}
-make(const Geometry&, const Topology&, const FaceOrient&, ...);
-make(const Geometry&, const Topology&, ...);
+make(const Geometry&, const VertexOrder&, const FaceOrient&, ...);
+make(const Geometry&, const VertexOrder&, ...);
 make(const Geometry&, const FaceOrient&, ...);
 make(const Geometry&, ...);
-make(const Topology&, const FaceOrient&, ...);
-make(const Topology&, ...);
+make(const VertexOrder&, const FaceOrient&, ...);
+make(const VertexOrder&, ...);
 make(const GeometryType&, const FaceOrient&, ...);
 make(const GeometryType&, ...);
 make(const FaceOrient&, ...);

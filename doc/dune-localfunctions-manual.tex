@@ -679,11 +679,8 @@ struct GlobalValueFiniteElementInterface
     typedef $\em implementation-defined$ Interpolation;
   };
 
-  // construction
- private:
-  // constructor *may* be private
+  // constructor arguments a implementation specific
   GlobalValueFiniteElementInterface(...);
- public:
   // ... except for the copy constructor
   GlobalValueFiniteElementInterface
     (const GlobalValueFiniteElementInterface&);
@@ -699,7 +696,7 @@ The member class {\tt Traits} may be a member typedef instead.  Constructor
 signatures and existence is implementation-defined, except for the copy
 constructor, which must be present and publicly accessible.  Construction is
 generally done by a factory class.  To keep copy-construction efficient it is
-recommended that instanced of this class are light proxy objects.
+recommended that instances of this class are light proxy objects.
 
 The reason to mandate copy-construction is as follows: Up to now with local
 finite elements \modulename{dune-pdelab} used the class {\tt FiniteElementMap}
@@ -721,9 +718,6 @@ reality access the outside element.
 \subsubsection{Finite Element Factory Interface}
 
 \begin{lstlisting}[escapechar=\$]
-enum Tristate { maybe = true+1 };
-typedef std::vector<std::size_t> Topology;
-
 template<class Geometry>
 struct GlobalValueFiniteElementFactoryInterface
 {
@@ -734,18 +728,8 @@ struct GlobalValueFiniteElementFactoryInterface
   GlobalValueFiniteElementFactoryInterface(...);
 
   // finite element object creation
-  const FiniteElement make();
-  const FiniteElement make(const Topology&);
-  const FiniteElement make(const Geometry&);
-  const FiniteElement make(const Geometry&, const Topology&);
-
-  // compile-time interface selection
-  static const Tristate staticNeedGeometry = $\em implementation-defined$;
-  static const Tristate staticNeedTopology = $\em implementation-defined$;
-
-  // run-time interface selection
-  bool needGeometry() const;
-  bool needTopology() const;
+  // arguments are implementation defined
+  const FiniteElement make(...);
 };
 \end{lstlisting}
 The method to create a finite element object is {\tt make()}.  The created
@@ -755,32 +739,36 @@ implementation may choose to return by reference instead ({\tt const
 C++, this way code using the factory can always bind the returned value to a
 const reference and avoid copy construction if that is not necessary:
 \begin{lstlisting}
-const Factory::FiniteElement& fe = factory.make(geo, topo);
+const Factory::FiniteElement& fe = factory.make();
 \end{lstlisting}
 In any case, the returned value or reference must be valid for as long as the
 factory object exists.
 
-The different signatures for {\tt make()} exists for optimisation.  The
-methods {\tt need\-Geometry()} and {\tt needTopology()} exists so code can
-generically decide whether to do the possibly expensive computation geometry
-and/or topology information.  Even if geometry or topology information is not
-needed, it is always valid to provide it, in that case the arguments provided
-to {\tt make()} is ignored.  If geometry or topology information has been
-provided to the constructor of the factory and again to {\tt make()}, the
-information provided to the constructor is used and consistency is not
-checked.  If too little information is provided to make it should throw an
-exception or an assertion.
-
-In addition, some factories may know at compile time whether geometry or
-topology information is needed or not.  They can export this knowledge via
-{\tt staticNeedGeometry} and {\tt staticNeedTopology}.  If that knowledge is
-not available at compile time, these constants must have the value {\tt
-  maybe}.  Even if it can be determined at compile time that geometry and
-topology information is needed, the signatures of {\tt make()} without those
-arguments must still be present (and must throw an exception or assertion).
-
-Implementations must document when geometry and topology information is
-required.
+Since each finite element family will need different information to create a
+finite element object tailored to a particular grid element, the actual
+argument of the {\tt male()} are implementation-defined.  Earlier in this
+section we have seen different types of information which may be needed to
+create a tailored finite element: geometry, topology and face orientation.
+If they are needed for a given finite element implementation, that finite
+element should require necessary items in the order given above and in the
+encoding given earlier.  If neither geometry nor topology is required, but the
+geometry type is, that should be given in place of geometry and topology
+directly.  Any extra information should be given after these arguments.  The
+possible signatures for make thus are:
+\begin{lstlisting}
+make(const Geometry&, const Topology&, const FaceOrient&, ...);
+make(const Geometry&, const Topology&, ...);
+make(const Geometry&, const FaceOrient&, ...);
+make(const Geometry&, ...);
+make(const Topology&, const FaceOrient&, ...);
+make(const Topology&, ...);
+make(const GeometryType&, const FaceOrient&, ...);
+make(const GeometryType&, ...);
+make(const FaceOrient&, ...);
+make(...);
+\end{lstlisting}
+Implementation must document what kind of arguments are required for {\tt
+  make()}.
 
 The constructor signature is implementation-defined.
 
@@ -909,6 +897,10 @@ The interface for the coefficients class is exactly the same as for the local
 coefficients.  If the global-valued finite elements is implemented in term of
 a local finite element it will often be possible to simply reuse the
 coefficients class of the local finite element.
+
+If there is some dof-matching required for common sub-entities of neighbouring
+elements however, and this dof-matching can be done entirely by reordering the
+dofs on the sub-entity, then the coefficients class is the place to do it.
 
 \section{Appendix: List of Available Elements}
 

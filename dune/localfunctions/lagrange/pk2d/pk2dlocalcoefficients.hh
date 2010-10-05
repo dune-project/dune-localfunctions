@@ -47,9 +47,13 @@ namespace Dune
 
         \param vertexmap The permutation of the vertices.  This
         can for instance be generated from the global indices of
-        the vertices by reducing those to the integers 0...2
+        the vertices by reducing those to the integers 0...2.  This may be any
+        object which for which the expression \c vertexmap[i] is defined
+        apropriately (like an array, a pointer, a std::vector, or a
+        random-access iterator.
      */
-    Pk2DLocalCoefficients (const unsigned int vertexmap[3]) : li(N)
+    template<class VertexMap>
+    explicit Pk2DLocalCoefficients(const VertexMap &vertexmap) : li(N)
     {
       fill_default();
       bool flip[3];

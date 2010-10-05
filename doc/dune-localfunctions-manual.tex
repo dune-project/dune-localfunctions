@@ -439,20 +439,26 @@ In the next step the {\em ordering reduction} operation is applied: the
 smallest id in the array is replaced by the number 0, the second-smallest is
 replaced by the number 1 etc.
 \begin{lstlisting}
-template<class LessThanComparable>
-void orderingReduction(const std::vector<LessThanComparable>& ids,
-                       std::vector<std::size_t>& reduced) {
-  std::vector<std::pair<LessThanComparable,std::size_t> > list(ids.size());
-  for(std::size_t i = 0; i < ids.size(); ++i)
-    list[i] = std::make_pair(ids[i], i);
-  std::cout << list << std::endl;
-  std::sort(list.begin(), list.end());
-  std::cout << list << std::endl;
-  reduced.resize(list.size());
-  for(std::size_t i = 0; i <= list.size(); ++i)
-    reduced[list[i].second] = i;
+template<class InIterator, class OutIterator>
+void reduceOrder(const InIterator& inBegin, const InIterator& inEnd,
+                 OutIterator outIt)
+{
+  static const std::less<
+    typename std::iterator_traits<InIterator>::value_type
+    > less;
+
+  for(InIterator inIt = inBegin; inIt != inEnd; ++inIt, ++outIt)
+    *outIt = std::count(inBegin, inEnd, std::bind2nd(less, *inIt));
 }
 \end{lstlisting}
+To obtain an actual vector of reduced indices one can use the following code:
+\begin{lstlisting}
+std::vector<typename GlobalIdSet::IdType> ids;
+collectVertexIds(elem, globalIdSet, ids);
+std::vector<std::size_t> reduced_indices(ids.size());
+reduceOrder(ids.begin(), ids.end(), reduced_indices.begin());
+\end{lstlisting}
+
 As an example, lets assume we have a quadrilateral or a tetrahedron with the
 global ids of the vertices being 14 for vertex 0, 27 for vertex 1, 3 for
 vertex 2 and 800 for vertex 3.  After ordering reduction the reduced vector
@@ -498,9 +504,15 @@ struct VertexOrderingInterface {
   // geometry type of the entity this applies to
   const GeometryType type() const;
 
-  // get vertex id for a vertex inside the specified sub-entity
-  std::size_t get(std::size_t codim, std::size_t subEntity,
-                  std::size_t vertex) const;
+  // iterate over some sub-entity's vertex indices
+  // must be a RandomAccess iterator, value_type may be constant
+  class iterator;
+
+  // get begin iterator for the vertex indices of some sub-entity
+  iterator begin(std::size_t codim, std::size_t subEntity) const;
+  // get end iterator for the vertex indices of some sub-entity
+  iterator begin(std::size_t codim, std::size_t subEntity) const;
+
   // get reduced vertex ordering for the specified sub-entity
   void getReduced(std::size_t codim, std::size_t subEntity,
                   std::vector<std::size_t>& order) const;

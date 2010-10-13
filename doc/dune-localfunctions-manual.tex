@@ -136,15 +136,116 @@ into a separate module \modulename{dune-geometry} (or similar).  The dependence 
 by the weaker dependency on the new module.
 
 
-\section{The LocalFiniteElement Interface}
+\section{The \lstinline!LocalFiniteElement! Interface}
 \label{sec:static_interface}
+The static interface for a \lstinline!LocalFiniteElement! looks like this:
+\begin{lstlisting}
+class LocalFiniteElementInterface
+{
+   // export traits 
+   typedef LocalFiniteElementTraits<LocalBasisImpl,
+ 	LocalCoefficientsImpl, LocalInterpolationImpl> Traits;
 
-\subsection{The LocalBasis Classes}
+   // access to the local basis implementation
+   const Traits::LocalBasisType& localBasis() const;
 
-\subsection{The LocalCoefficients Classes}
+   // access to the local coefficient implementation
+   const Traits::LocalCoefficientsType& localCoefficients() const;
 
-\subsection{The LocalInterpolation Classes}
+   // access to the local interpolation implementation
+   const Traits::LocalInterpolationType& localInterpolation() const;
+   
+   // geometry type the local basis lives on
+   GeometryType type() const;
+};
+\end{lstlisting}
+The \lstinline!LocalFiniteElementTraits! class is a simple traits helper struct that can be used for the export of the class traits.
 
+Each local finite element has to provide an implementation of the three classes that are described in the next sections.
+
+\subsection{The \lstinline!LocalBasis! Classes}
+The \lstinline!LocalBasis! class represents the set of shape functions:
+\begin{lstlisting}
+class LocalBasisInterface
+{
+   // export type traits for shape function signature
+   typedef LocalBasisTraits<DF,n,D,RF,m,R,J> Traits;
+
+   //number of shape functions
+   unsigned int size () const;
+
+   // evaluate all shape functions at a given position 
+   inline void 
+   evaluateFunction(const typename Traits::DomainType& in,    
+             std::vector<typename Traits::RangeType>& out) const;
+\end{lstlisting}
+\newpage
+\begin{lstlisting}
+   // evaluate Jacobian of all shape functions at a given position
+   inline void 
+   evaluateJacobian(const typename Traits::DomainType& in,  
+             std::vector<typename Traits::JacobianType>& out) const; 
+
+   // evaluate general derivative of k-th order of all shape functions
+   template<unsigned int k>
+   inline void 
+   evaluate (const typename Dune::array<int,k>& directions,  
+             const typename Traits::DomainType& in,    
+             std::vector<typename Traits::RangeType>& out) const;
+
+   // polynomial order of the shape functions
+   unsigned int order () const;
+};
+\end{lstlisting}
+The \texttt{LocalBasisTraits} class is a traits helper class which holds information on how the signature
+of the shape functions is represented in C++ types. A description of the template parameter above can
+be found in the doxygen documentation of the traits class. 
+
+\subsection{The \lstinline!LocalCoefficients! Classes}
+To describe the position of the degrees of freedom (shape functions) of a \lstinline!LocalFiniteElement!
+it is assumed that each degree of freedom can be attached to a subentity of the underlying reference element.
+For every degree of freedom we thus have
+\begin{enumerate}
+\item the local number of the associated subentity \texttt{s},
+\item the codimension of the subentity \texttt{c},
+\item the index in the set of all shape functions associated to this subentity \texttt{t}.
+\end{enumerate} 
+These informations are stored in the \lstinline!LocalKey! class, which allows
+access to the entries by the methods \lstinline!subentity()!, \lstinline!codim()!, and \lstinline!index()!.
+For the correct local numbering of the subentities see the documentation of the \lstinline!GenericReferenceElements!
+at \url{http://dune-project.org}.
+
+The \lstinline!LocalCoefficient! class now associates the indices of the shape function with
+their corresponding \lstinline!LocalKey!s.
+\begin{lstlisting}
+class LocalCoefficientsInterface
+{
+   // number of coefficients
+   std::size_t size () const;
+
+   // get i-th index
+   const LocalKey& localKey (std::size_t i) const;
+
+};
+\end{lstlisting}
+
+\subsection{The \lstinline!LocalInterpolation! Classes}
+\begin{lstlisting}
+class LocalInterpolationInterface 
+{
+// export local basis traits
+LocalBasisInterface::Traits Traits;
+
+// local interpolation of a function
+template<typename F, typename C>
+void interpolate (const F& f, std::vector<C>& out) const;
+};
+\end{lstlisting}
+The \lstinline!LocalInterpolation! class provides a method to interpolate a given function
+and that returns a coefficient vector for the shape functions. The function  class
+to interpolate must provide a method
+\lstinline!evaluate(const Traits::DomainType& x, Traits::RangeType& y)!,
+which is used to evaluate the function on the reference element of the corresponding geometry type.
 
 \section{The Dynamic Interface}
 \label{sec:dynamic_interface}
@@ -892,7 +993,7 @@ struct GlobalValueBasisInterface
 The basis interface closely follows the local basis interface with some
 notable exceptions.
 
-First the are the types in the traits class.  Since coordinates are sill given
+First there are the types in the traits class.  Since coordinates are still given
 in the reference elements coordinate system but derivatives are done with
 respect to global coordinates, a distinction must be made between local and
 global domain.  The other change is that the member types of the traits class

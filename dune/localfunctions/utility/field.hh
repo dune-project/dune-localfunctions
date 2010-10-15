@@ -9,6 +9,7 @@
 
 #include <dune/common/gmpfield.hh>
 #include <dune/common/fvector.hh>
+#include <dune/common/fmatrix.hh>
 
 namespace Dune
 {

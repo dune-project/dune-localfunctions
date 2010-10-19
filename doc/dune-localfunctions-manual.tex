@@ -138,7 +138,23 @@ by the weaker dependency on the new module.
 
 \section{The \lstinline!LocalFiniteElement! Interface}
 \label{sec:static_interface}
-The static interface for a \lstinline!LocalFiniteElement! looks like this:
+The interface of a \lstinline!LocalFiniteElement! is designed to provide the user
+with all the functionality needed for the implementation of finite element methods.
+The functionality consists of three subtasks.  These are handled by separate classes
+which can be obtained from the \lstinline!LocalFiniteElement! class.
+\begin{enumerate}
+\item The assembly of the local stiffness matrices usually requires the evaluation
+   of the shape functions and/or their derivatives of a certain order $k$ on the
+   reference element.  These features are collected in a \lstinline!LocalBasis! class. 
+\item For the correct distribution of the local matrices to the global stiffness matrix
+   one needs to associate the individual shape functions to subentities (i.e., vertices,
+   faces, elements,\dots) of the reference element.  This information is provided
+   by a \lstinline!LocalCoefficients! class.  An \lstinline!IndexSet! class can
+   then be used to obtain global indices for each shape function.
+\item Finally one needs to interpolate given functions by the shape functions.
+   This functionality is provided by the \lstinline!LocalInterpolation! class.
+\end{enumerate}
+Motivated by these points the  interface of a \lstinline!LocalFiniteElement! is given by:
 \begin{lstlisting}
 class LocalFiniteElementInterface
 {
@@ -178,9 +194,7 @@ class LocalBasisInterface
    inline void 
    evaluateFunction(const typename Traits::DomainType& in,    
              std::vector<typename Traits::RangeType>& out) const;
-\end{lstlisting}
-\newpage
-\begin{lstlisting}
+
    // evaluate Jacobian of all shape functions at a given position
    inline void 
    evaluateJacobian(const typename Traits::DomainType& in,  

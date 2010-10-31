@@ -11,7 +11,7 @@
 
 #if HAVE_ALGLIB
 #include <alglib/amp.h>
-#include <alglib/inv.h>
+#include <alglib/matinv.h>
 #endif
 
 namespace Dune
@@ -235,7 +235,10 @@ namespace Dune
     bool invert ()
     {
       assert( rows() == cols() );
-      return inv::rmatrixinverse< precision >( matrix_, rows() );
+      int info;
+      matinv::matinvreport< precision > report;
+      matinv::rmatrixinverse< precision >( matrix_, rows(), info, report );
+      return (info >= 0);
     }
 
   private:

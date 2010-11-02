@@ -264,6 +264,286 @@ which is used to evaluate the function on the reference element of the correspon
 \section{The Dynamic Interface}
 \label{sec:dynamic_interface}
 
+In some situations one doesn't know at compile time which shape function set is needed.
+This happens for example when grids with several element types are involved or $p$-adaptive
+methods are used. For this case \modulename{dune-localfunctions} provides a way to select
+shape functions at run-time.   As already described above the implementations
+of \lstinline!LocalFiniteElement!s are not organized in a hierarchy. Thus,
+to use dynamic polymorphism we first need a virtual interface and to avoid 
+copying the code we also need a way to re-arrange the existing shape function implementations
+in a hierarchy. This re-arrangement is done with the help of virtual wrapper classes
+which take a static implementation as template parameter and forward the dynamic function
+calls to that implementation. 
+
+\subsection{The Virtual Interface}
+From Section \ref{sec:static_interface} we know that in \modulename{dune-localfunctions}
+a \lstinline!LocalFiniteElement! consists of a \lstinline!LocalBasis!,
+\lstinline!LocalCoefficients!, and \lstinline!LocalInterpolation! class.  So if we want
+to design a virtual interface for a \lstinline!LocalFiniteElement! we first need
+to define abstract base classes for these three classes.
+
+\paragraph{\lstinline!LocalBasisVirtualInterface!}
+The \lstinline!LocalBasisVirtualInterface! is organized in a recursive hierarchy of the form
+\begin{lstlisting}
+template<class T>
+class LocalBasisVirtualInterface :
+ public virtual LocalBasisVirtualInterface<LowerOrderLocalBasisTraits<T> >
+{
+ typedef LocalBasisVirtualInterface<LowerOrderLocalBasisTraits<T> > Base;
+public:   
+ typedef T Traits;
+ using Base::size;
+ using Base::order;
+ using Base::evaluateFunction;
+ using Base::evaluateJacobian;
+  
+ virtual void evaluate (
+  const typename Dune::template array<int,Traits::diffOrder>& directions,
+  const typename Traits::DomainType& in,
+  std::vector<typename Traits::RangeType>& out) const = 0;
+  
+};
+\end{lstlisting}
+The \lstinline!LowerOrderLocalBasisTraits! defines a \lstinline!LocalBasisTraits! class
+(see \ref{sec:static_interface}) with \lstinline!diffOrder! reduced by one
+(the \lstinline!diffOrder! of a \lstinline!LocalBasis! specifies the maximal order of
+implemented partial derivatives). 
+This hierarchy is needed because each \lstinline!LocalBasis! implementation is assumed
+to have a template method
+\lstinline!evaluate<unsigned int k>(Dune::array<int,k> directions,...)!  where 
+\lstinline!k! denotes the total order of mixed partial derivatives to be computed. 
+In the dynamic case this method has to be replaced by non-template methods
+\lstinline!evaluate(Dune::array<int,fixedOrder> directions,...)! and the hierarchy
+just makes sure that there will be a corresponding method for all 
+$0 \leq $\lstinline!fixedOrder! $\leq$ \lstinline!diffOrder!. Finally a template specialization
+for the case \lstinline{diffOrder = 0} provides all pure virtual methods that belong
+to a \lstinline{LocalBasis}.
+In the online class documentation of \modulename{dune-localfunctions} you will find another
+interface class called \lstinline{LocalBasisVirtualInterfaceBase}:  
+The virtual interface additionally provides a non-virtual template method
+\lstinline{evaluate} which internally calls the non-template \lstinline!evaluate! method.
+For name resolution reasons this method can thus not be defined in the same class,
+so there is a second base class, the \lstinline{LocalBasisVirtualInterfaceBase},
+which lies between two \lstinline!diffOrder! - levels and that contains this
+additional method. Note that in applications you should always use the standard
+\lstinline!LocalBasisVirtualInterface! class.
+
+\paragraph{\lstinline!LocalCoefficientsVirtualInterface!}
+The \lstinline!LocalCoefficientsVirtualInterface! is just the straightforward base class
+containing the pure virtual methods:
+\begin{lstlisting}
+class LocalCoefficientsVirtualInterface
+{
+public:
+
+  virtual ~LocalCoefficientsVirtualInterface() {}
+
+  //! number of coefficients
+  virtual std::size_t size () const = 0;
+
+  //! get i'th index
+  const virtual LocalKey& localKey (std::size_t i) const = 0;
+};
+\end{lstlisting}
+
+\paragraph{\lstinline!LocalInterpolationVirtualInterface!}
+For the \lstinline!LocalInterpolationVirtualInterface! we need a similar construction
+as for the \lstinline!LocalBasisVirtualInterface!. Again we have a template method in the static 
+\lstinline!LocalInterpolation! interface, namely  \lstinline!interpolate<typename F, typename C> ()!,
+which has to be replaced by a non-template method in the dynamic interface. Since we also
+want to define some non-virtual template methods \lstinline!interpolate! in the interface
+we again need another abstract base class because of name resolution. 
+\begin{lstlisting}
+template<class DomainType, class RangeType>
+class LocalInterpolationVirtualInterfaceBase
+{
+public:
+
+  //! type of virtual function to interpolate
+  typedef Dune::VirtualFunction<DomainType, RangeType> FunctionType;
+
+  //! type of the coefficient vector in the interpolate method
+  typedef typename RangeType::field_type CoefficientType;
+
+  virtual ~LocalInterpolationVirtualInterfaceBase() {}
+  
+  virtual void interpolate (const FunctionType& f, 
+                            std::vector<CoefficientType>& out) const = 0;
+};
+\end{lstlisting} 
+Now the \lstinline!LocalInterpolationVirtualInterface! derives from this class and additionally 
+contains non-virtual template versions of the \lstinline!interpolate! method which wrap the template parameter \lstinline!FunctionType! into a \lstinline!VirtualFunction!  and then call the virtual base method.
+
+You can get a proper \lstinline!type! for functions to use with \lstinline!LocalInterpolation! by using\\\lstinline!LocalFiniteElementFunctionBase<class FE>::type! which is the \lstinline!VirtualFunction! interface class if \lstinline!FE! implements the virtual interface and the \lstinline!Function! base class otherwise. \\
+
+Due to the \lstinline!LocalBasisVirtualInterface! structure the \lstinline!LocalFiniteElementVirtualInterface!  is also organized in a hierarchy differing in the order of implemented derivatives. 
+\begin{lstlisting}
+template<class T>
+class LocalFiniteElementVirtualInterface
+  : public virtual LocalFiniteElementVirtualInterface<typename 
+           LowerOrderLocalBasisTraits<T>::Traits >
+{
+typedef LocalFiniteElementVirtualInterface<typename 
+           LowerOrderLocalBasisTraits<T>::Traits > BaseInterface;
+
+public:
+  typedef LocalFiniteElementTraits<
+      LocalBasisVirtualInterface<T>,
+      LocalCoefficientsVirtualInterface,
+      LocalInterpolationVirtualInterface<
+        typename T::DomainType,
+        typename T::RangeType> > Traits;
+        
+  virtual const typename Traits::LocalBasisType& localBasis () const = 0;
+
+  using BaseInterface::localCoefficients;
+  using BaseInterface::localInterpolation;
+  using BaseInterface::type;
+
+  virtual LocalFiniteElementVirtualInterface<T>* clone() const = 0;
+};
+\end{lstlisting}
+While all other member functions are forwarded to the uppermost base class (a template specialization
+for the case \lstinline!diffOrder=0!) the \lstinline!localBasis()! method has to be provided
+by every class in the hierarchy since the \lstinline!LocalBasisType! depends on the \lstinline!diffOrder!. 
+The ``virtual copy constructor'' \lstinline!clone! is needed whenever you want to copy
+a \lstinline!LocalFiniteElement! which derives from the virtual interface and thus
+the declared type is not equal to the real type. 
+
+\subsection {The Virtual Wrappers}
+As already described above in \modulename{dune-localfunctions} the shape functions are not
+organized in a hierarchy and so since we want to use dynamic polymorphism we would need
+other shape functions that derive from the virtual interface.  Now instead of implementing
+all the \lstinline!LocalFiniteElement!s a second time we use virtual wrapper class that are
+statically parametrized by a \lstinline!LocalFiniteElement! (resp. \lstinline!LocalBasis!, etc.)
+and that derive from the virtual interface. The wrapper classes implement the virtual functions
+by forwarding them to the static functions. The classes look all very similar and so
+we only state the \lstinline!LocalCoefficientsVirtualImp!---the wrapper for the
+\lstinline!LocalCoefficient! class:  
+
+\begin{lstlisting}
+template<class Imp>
+class LocalCoefficientsVirtualImp
+  : public LocalCoefficientsVirtualInterface
+{
+  template<class FEImp>
+  friend class LocalFiniteElementVirtualImp;
+
+protected:
+
+  // constructor taking an implementation of the 
+  // Dune::LocalCoefficientsVirtualInterface
+  LocalCoefficientsVirtualImp( const Imp &imp )
+    : impl_(imp)
+  {}
+
+public:
+
+  std::size_t size () const
+  {
+    return impl_.size();
+  }
+
+  const LocalKey& localKey (std::size_t i) const
+  {
+    return impl_.localKey(i);
+  }
+
+protected:
+  const Imp& impl_;
+};
+\end{lstlisting}
+Of course the \lstinline!LocalBasisVirtualImpl! classes must again be organized in a
+hierarchy differing in the \lstinline!diffOrder! and each class forwards the \lstinline!evaluate!
+method to the template function of the static implementation: \\
+\lstinline!impl_.template evaluate<Traits::diffOrder>(directions, in, out)! 
+or in the case \lstinline!diffOrder=0! to the \lstinline!evaluateFunction! method. 
+
+Finally the wrapper class for the \lstinline!LocalFiniteElement! is given by
+
+\begin{lstlisting}
+template<class Imp>
+  class LocalFiniteElementVirtualImp
+    : public virtual LocalFiniteElementVirtualInterface<typename 
+             Imp::Traits::LocalBasisType::Traits>
+{
+typedef typename Imp::Traits::LocalBasisType::Traits T;
+typedef LocalFiniteElementVirtualInterface<T> Interface;
+
+public:
+ typedef typename Interface::Traits Traits;
+
+ LocalFiniteElementVirtualImp( const Imp &imp )
+   : impl_(LocalFiniteElementCloneFactory<Imp>::clone(imp)),
+     localBasisImp_(impl_->localBasis()),
+     localCoefficientsImp_(impl_->localCoefficients()),
+     localInterpolationImp_(impl_->localInterpolation())
+ {}
+
+ // Default constructor.  
+ // Assumes that the implementation class is default constructible
+ LocalFiniteElementVirtualImp()
+   : impl_(LocalFiniteElementCloneFactory<Imp>::create()),
+     localBasisImp_(impl_->localBasis()),
+     localCoefficientsImp_(impl_->localCoefficients()),
+     localInterpolationImp_(impl_->localInterpolation())
+ {}
+
+ // Copy contructor needed for deep copy
+ LocalFiniteElementVirtualImp(const LocalFiniteElementVirtualImp& other)
+   : impl_(LocalFiniteElementCloneFactory<Imp>::clone(*other.impl_)),
+     localBasisImp_(impl_->localBasis()),
+     localCoefficientsImp_(impl_->localCoefficients()),
+     localInterpolationImp_(impl_->localInterpolation())
+ {}
+
+ ~LocalFiniteElementVirtualImp()
+ {
+   delete impl_;
+ }
+
+const typename Traits::LocalBasisType& localBasis () const
+{
+  return localBasisImp_;
+}
+
+const typename Traits::LocalCoefficientsType& localCoefficients () const
+{
+  return localCoefficientsImp_;
+}
+
+const typename Traits::LocalInterpolationType& localInterpolation () const
+{
+  return localInterpolationImp_;
+}
+
+const GeometryType type () const
+{
+  return impl_->type();
+}
+
+virtual LocalFiniteElementVirtualImp<Imp>* clone() const
+{
+  return new LocalFiniteElementVirtualImp<Imp>(*this);
+}
+
+protected:
+ const Imp* impl_;
+ const LocalBasisVirtualImp<T,
+     typename Imp::Traits::LocalBasisType> localBasisImp_;
+ const LocalCoefficientsVirtualImp<
+     typename Imp::Traits::LocalCoefficientsType> localCoefficientsImp_;
+ const LocalInterpolationVirtualImp<typename T::DomainType,
+     typename T::RangeType,
+     typename Imp::Traits::LocalInterpolationType> localInterpolationImp_;
+};
+\end{lstlisting}
+The \lstinline!LocalFiniteElementCloneFactory! class uses the \lstinline!clone! method
+if the implementation derives from the virtual interface and otherwise uses the copy constructor.
+An example on how the dynamic shape functions are used in applications can be found
+in the \lstinline!PQkLocalFiniteElementCache! class which is a factory for
+Lagrangian shape functions of different order and type.
+
 \section{Global Finite Elements}
 
 So far this document has talked about finite elements on reference elements.

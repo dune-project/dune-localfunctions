@@ -78,7 +78,7 @@ namespace Dune
     MimeticLocalCoefficients (unsigned int variant_)
       : variant(variant_), li(variant_)
     {
-      for (int i=0; i<variant; i++)
+      for (unsigned int i=0; i<variant; i++)
         li[i] = Dune::LocalKey(i,Dune::LocalKey::intersectionCodim,0);
     }
 

@@ -58,7 +58,7 @@ namespace Dune
 
   /** \brief Factory that only creates dimension specific local finite elements
    *
-   * Specialization for dim=2
+   * Specialization for dim=3
    */
   template<class D, class R, int k>
   struct DimSpecificPQkLocalFiniteElementFactory<D,R,3,k>

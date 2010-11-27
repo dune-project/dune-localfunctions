@@ -85,9 +85,12 @@ namespace Dune
      */
     GeometryType type () const
     {
-      if ( GenericGeometry::hasGeometryType( topologyId_, dimDomain ) )
-        return GenericGeometry::geometryType( topologyId_, dimDomain );
-      return GeometryType();
+      return GeometryType(topologyId_,dimDomain);
+      /*
+         if ( GenericGeometry::hasGeometryType( topologyId_, dimDomain ) )
+         return GenericGeometry::geometryType( topologyId_, dimDomain );
+         return GeometryType();
+       */
     }
 
     /** \todo Please doc me !

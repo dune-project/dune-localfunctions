@@ -50,7 +50,7 @@ namespace Dune
     //! create finite element for given GeometryType
     static LocalFiniteElementVirtualInterface<T>* create(const GeometryType& gt)
     {
-      if ((gt.basicType()==GeometryType::cube)and (k==2))
+      if ((gt.isCube())and (k==2))
         return new LocalFiniteElementVirtualImp<Q22D>(Q22D());
       return 0;
     }
@@ -71,11 +71,11 @@ namespace Dune
     //! create finite element for given GeometryType
     static LocalFiniteElementVirtualInterface<T>* create(const GeometryType& gt)
     {
-      if ((gt.basicType()==GeometryType::prism)and (k==1))
+      if ((gt.isPrism())and (k==1))
         return new LocalFiniteElementVirtualImp<PrismP1>(PrismP1());
-      if ((gt.basicType()==GeometryType::prism)and (k==2))
+      if ((gt.isPrism())and (k==2))
         return new LocalFiniteElementVirtualImp<PrismP2>(PrismP2());
-      if ((gt.basicType()==GeometryType::pyramid)and (k==1))
+      if ((gt.isPyramid())and (k==1))
         return new LocalFiniteElementVirtualImp<PyramidP1>(PyramidP1());
       return 0;
     }
@@ -101,10 +101,10 @@ namespace Dune
       if (k==0)
         return new LocalFiniteElementVirtualImp<P0>(P0(gt.basicType()));
 
-      if (gt.basicType()==GeometryType::simplex)
+      if (gt.isSimplex())
         return new LocalFiniteElementVirtualImp<Pk>(Pk());
 
-      if ((gt.basicType()==GeometryType::cube)and (k==1))
+      if ((gt.isCube())and (k==1))
         return new LocalFiniteElementVirtualImp<Q1>(Q1());
 
       return DimSpecificPQkLocalFiniteElementFactory<D,R,dim,k>::create(gt);

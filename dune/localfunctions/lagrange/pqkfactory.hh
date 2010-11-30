@@ -99,7 +99,7 @@ namespace Dune
     static FiniteElementType* create(const GeometryType& gt)
     {
       if (k==0)
-        return new LocalFiniteElementVirtualImp<P0>(P0(gt.basicType()));
+        return new LocalFiniteElementVirtualImp<P0>(P0(gt));
 
       if (gt.isSimplex())
         return new LocalFiniteElementVirtualImp<Pk>(Pk());

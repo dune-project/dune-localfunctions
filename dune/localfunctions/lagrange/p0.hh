@@ -13,7 +13,10 @@
 namespace Dune
 {
 
-  /** \todo Please doc me !
+  /** \todo The local p0 finite element on all types of reference elements
+      \tparam D Domain data type
+      \tparam R Range data type
+      \tparam d Dimension of the reference element
    */
   template<class D, class R, int d>
   class P0LocalFiniteElement

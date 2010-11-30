@@ -27,11 +27,16 @@ namespace Dune
     typedef LocalFiniteElementTraits<P0LocalBasis<D,R,d>, P0LocalCoefficients,
         P0LocalInterpolation<P0LocalBasis<D,R,d> > > Traits;
 
+    /** \todo Please doc me !
+     */
+    P0LocalFiniteElement (const GeometryType& type)
+      : interpolation(type), gt(type)
+    {}
 
     /** \todo Please doc me !
      */
-    P0LocalFiniteElement (GeometryType::BasicType basicType)
-      : interpolation(basicType,d), gt(basicType,d)
+    P0LocalFiniteElement (GeometryType::BasicType basicType) DUNE_DEPRECATED
+      : interpolation(GeometryType(basicType,d)), gt(basicType,d)
     {}
 
     /** \todo Please doc me !

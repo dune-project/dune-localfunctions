@@ -14,7 +14,7 @@ namespace Dune
   class P0LocalInterpolation
   {
   public:
-    P0LocalInterpolation (GeometryType::BasicType basicType, int d) : gt(basicType,d)
+    P0LocalInterpolation (const GeometryType& gt) : gt_(gt)
     {}
 
     //! determine coefficients interpolating a given function
@@ -26,7 +26,7 @@ namespace Dune
       typedef typename LB::Traits::DomainFieldType DF;
       const int dim=LB::Traits::dimDomain;
 
-      DomainType x = Dune::GenericReferenceElements<DF,dim>::general(gt).position(0,0);
+      DomainType x = Dune::GenericReferenceElements<DF,dim>::general(gt_).position(0,0);
       RangeType y;
 
       out.resize(1);
@@ -34,7 +34,7 @@ namespace Dune
     }
 
   private:
-    GeometryType gt;
+    GeometryType gt_;
   };
 
 }

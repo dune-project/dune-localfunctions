@@ -20,6 +20,7 @@ check_PROGRAMS = $(TESTS)
 #AM_CXXFLAGS = @AM_CPPFLAGS@ -fprofile-arcs -ftest-coverage
 
 noinst_HEADERS =				\
+	test-fe.hh				\
 	test-localfe.hh				\
 	testfemglobal.hh
 
@@ -48,6 +49,9 @@ refinedp1test_LDADD =				\
 	$(DUNEMPILIBS)				\
 	$(LDADD)
 endif
+
+TESTS += test-edges0.5
+test_edges0_5_SOURCES = test-edges0.5.cc
 
 TESTS += test-localfe
 test_localfe_SOURCES = test-localfe.cc

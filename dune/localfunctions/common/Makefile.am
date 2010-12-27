@@ -1,6 +1,7 @@
 commondir = $(includedir)/dune/localfunctions/common
 common_HEADERS =				\
 	interface.hh				\
+	interfaceswitch.hh			\
 	localbasis.hh				\
 	localkey.hh      			\
 	localfiniteelementtraits.hh		\

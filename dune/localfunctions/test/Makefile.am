@@ -57,6 +57,9 @@ test_localfe_SOURCES = test-localfe.cc
 TESTS += test-pk2d
 test_pk2d_SOURCES = test-pk2d.cc
 
+TESTS += test-q1
+test_q1_SOURCES = test-q1.cc
+
 TESTS += test-q22d
 test_q22d_SOURCES = test-q22d.cc
 

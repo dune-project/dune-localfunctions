@@ -5,7 +5,9 @@
 #define DUNE_Q1_LOCALFINITEELEMENT_HH
 
 #include <dune/common/geometrytype.hh>
+
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
+#include <dune/localfunctions/common/localtoglobaladaptors.hh>
 #include <dune/localfunctions/lagrange/q1/q1localbasis.hh>
 #include <dune/localfunctions/lagrange/q1/q1localcoefficients.hh>
 #include <dune/localfunctions/lagrange/q1/q1localinterpolation.hh>
@@ -71,6 +73,36 @@ namespace Dune
     GeometryType gt;
   };
 
+  //! Factory for global-valued Q1 elements
+  /**
+   * \tparam Geometry Type of the geometry.  Used to extract the domain field
+   *                  type and the dimension.
+   * \tparam RF       Range field type.
+   */
+  template<class Geometry, class RF>
+  class Q1FiniteElementFactory :
+    public ScalarLocalToGlobalFiniteElementAdaptorFactory<
+        Q1LocalFiniteElement<
+            typename Geometry::ctype, RF, Geometry::mydimension
+            >,
+        Geometry
+        >
+  {
+    typedef Q1LocalFiniteElement<
+        typename Geometry::ctype, RF, Geometry::mydimension
+        > LFE;
+    typedef ScalarLocalToGlobalFiniteElementAdaptorFactory<LFE, Geometry> Base;
+
+    static const LFE lfe;
+
+  public:
+    //! default constructor
+    Q1FiniteElementFactory() : Base(lfe) {}
+  };
+
+  template<class Geometry, class RF>
+  const typename Q1FiniteElementFactory<Geometry, RF>::LFE
+  Q1FiniteElementFactory<Geometry, RF>::lfe;
 }
 
 #endif

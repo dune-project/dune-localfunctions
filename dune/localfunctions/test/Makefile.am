@@ -5,8 +5,7 @@ if ALUGRID
 endif
 
 # which tests to run
-TESTS = testfem					\
-	lagrangeshapefunctiontest		\
+TESTS = lagrangeshapefunctiontest		\
 	monomshapefunctiontest			\
 	test-edges03dinterpolate		\
 	virtualshapefunctiontest		\
@@ -21,12 +20,11 @@ check_PROGRAMS = $(TESTS)
 #AM_CXXFLAGS = @AM_CPPFLAGS@ -fprofile-arcs -ftest-coverage
 
 noinst_HEADERS =				\
-	testfem.hh				\
+	test-localfe.hh				\
 	testfemglobal.hh
 
 # define the programs
 
-testfem_SOURCES = testfem.cc
 testgenericfem_SOURCES = testgenericfem.cc
 testgenericfem_CPPFLAGS = $(AM_CPPFLAGS) $(GMP_CPPFLAGS) $(ALGLIB_CPPFLAGS)
 testgenericfem_LDADD = $(GMP_LIBS) $(GMP_LDFLAGS) $(ALGLIB_LIBS) $(ALGLIB_LDFLAGS)
@@ -51,7 +49,7 @@ refinedp1test_LDADD =				\
 	$(LDADD)
 endif
 
-
-
+TESTS += test-localfe
+test_localfe_SOURCES = test-localfe.cc
 
 include $(top_srcdir)/am/global-rules

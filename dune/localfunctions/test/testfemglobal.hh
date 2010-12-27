@@ -11,7 +11,7 @@
 #include <dune/grid/genericgeometry/geometry.hh>
 #include <dune/localfunctions/common/virtualinterface.hh>
 
-#include "testfem.hh"
+#include "test-localfe.hh"
 
 // Identity geometry matching general reference elements
 template<typename ctype, unsigned dim>

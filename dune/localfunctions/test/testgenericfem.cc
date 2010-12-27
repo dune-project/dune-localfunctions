@@ -26,7 +26,7 @@
 // Raviart Thomas type elements
 #include <dune/localfunctions/raviartthomas.hh>
 
-#include "testfem.hh"
+#include "test-localfe.hh"
 
 
 int main(int argc, char** argv) try

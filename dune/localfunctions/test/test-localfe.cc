@@ -39,7 +39,7 @@
 #include <dune/localfunctions/common/virtualinterface.hh>
 #include <dune/localfunctions/common/virtualwrappers.hh>
 
-#include "testfem.hh"
+#include "test-localfe.hh"
 #include "testfemglobal.hh"
 
 // tmp for testing arbitrary order finite elements

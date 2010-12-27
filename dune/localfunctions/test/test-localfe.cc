@@ -33,8 +33,6 @@
 #include "../raviartthomas/raviartthomas0q2d.hh"
 #include "../raviartthomas/raviartthomas0q3d.hh"
 #include "../monom.hh"
-#include "../whitney/edges02d.hh"
-#include "../whitney/edges03d.hh"
 
 #include <dune/localfunctions/common/virtualinterface.hh>
 #include <dune/localfunctions/common/virtualwrappers.hh>
@@ -155,12 +153,6 @@ int main(int argc, char** argv) try
 
   Dune::Q22DLocalFiniteElement<double,double> q22dlfem;
   success = testFE(q22dlfem) and success;
-
-  Dune::EdgeS02DLocalFiniteElement<double,double> edges02dlfem;
-  success = testFEGlobal(edges02dlfem) and success;
-
-  Dune::EdgeS03DLocalFiniteElement<double,double> edges03dlfem;
-  success = testFEGlobal(edges03dlfem) and success;
 
   Dune::RT02DLocalFiniteElement<double,double> rt02dlfem(1);
   success = testFE(rt02dlfem) and success;

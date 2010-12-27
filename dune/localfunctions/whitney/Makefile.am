@@ -1,12 +1,8 @@
 whitneydir = $(includedir)/dune/localfunctions/whitney
 whitney_HEADERS =				\
-	edges0.5.hh				\
-	edges02d.hh				\
-	edges03d.hh
+	edges0.5.hh
 
 SUBDIRS =					\
-	edges0.5				\
-	edges02d				\
-	edges03d
+	edges0.5
 
 include $(top_srcdir)/am/global-rules

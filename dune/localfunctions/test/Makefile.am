@@ -7,7 +7,6 @@ endif
 # which tests to run
 TESTS = lagrangeshapefunctiontest		\
 	monomshapefunctiontest			\
-	test-edges03dinterpolate		\
 	virtualshapefunctiontest		\
 	testgenericfem              \
 	$(ALUPROG)
@@ -31,7 +30,6 @@ testgenericfem_CPPFLAGS = $(AM_CPPFLAGS) $(GMP_CPPFLAGS) $(ALGLIB_CPPFLAGS)
 testgenericfem_LDADD = $(GMP_LIBS) $(GMP_LDFLAGS) $(ALGLIB_LIBS) $(ALGLIB_LDFLAGS)
 lagrangeshapefunctiontest_SOURCES = lagrangeshapefunctiontest.cc
 monomshapefunctiontest_SOURCES = monomshapefunctiontest.cc
-test_edges03dinterpolate_SOURCES = test-edges03dinterpolate.cc
 
 virtualshapefunctiontest_SOURCES = virtualshapefunctiontest.cc
 virtualshapefunctiontest_CPPFLAGS = $(AM_CPPFLAGS)

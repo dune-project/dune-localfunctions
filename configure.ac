@@ -54,6 +54,7 @@ AC_CONFIG_FILES([
                 dune/localfunctions/raviartthomas/raviartthomas0q2d/Makefile
                 dune/localfunctions/raviartthomas/raviartthomas0q3d/Makefile
                 dune/localfunctions/whitney/Makefile
+                dune/localfunctions/whitney/edges0.5/Makefile
                 dune/localfunctions/whitney/edges02d/Makefile
                 dune/localfunctions/whitney/edges03d/Makefile
                 dune/localfunctions/test/Makefile

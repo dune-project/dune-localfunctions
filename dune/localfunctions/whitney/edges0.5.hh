@@ -1,0 +1,142 @@
+// -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+// vi: set et ts=4 sw=2 sts=2:
+
+#ifndef DUNE_LOCALFUNCTIONS_WHITNEY_EDGES0_5_HH
+#define DUNE_LOCALFUNCTIONS_WHITNEY_EDGES0_5_HH
+
+// #include <cstddef>
+// #include <vector>
+
+// #include <dune/common/fmatrix.hh>
+// #include <dune/common/fvector.hh>
+#include <dune/common/geometrytype.hh>
+
+// #include <dune/grid/common/genericreferenceelements.hh>
+
+// #include <dune/localfunctions/common/localkey.hh>
+// #include <dune/localfunctions/common/localtoglobaladaptors.hh>
+// #include <dune/localfunctions/lagrange/p1/p1localbasis.hh>
+#include <dune/localfunctions/whitney/edges0.5/basis.hh>
+#include <dune/localfunctions/whitney/edges0.5/coefficients.hh>
+#include <dune/localfunctions/whitney/edges0.5/interpolation.hh>
+
+namespace Dune {
+
+  //////////////////////////////////////////////////////////////////////
+  //
+  //  FiniteElement
+  //
+
+  //! FiniteElement for lowest order edge elements on simplices
+  /**
+   * Uses the representation
+   * \f[
+   *    \mathbf N^i=(L^{i_0}\nabla L^{i_1}-
+   *                 L^{i_1}\nabla L^{i_0})\ell^i
+   * \f]
+   * where \f$L^k\f$ is the P1 shape function for vertex \f$k\f$, \f$i_0\f$
+   * and \f$i_1\f$ are the indices of the vertices of edge \f$i\f$ and
+   * \f$\ell^i\f$ is the length of edge \f$i\f$.
+   *
+   * \tparam D   Type to represent the field in the domain.
+   * \tparam R   Type to represent the field in the range.
+   * \tparam dim Dimension of both domain and range.
+   *
+   * \nosubgrouping
+   */
+  template<class Geometry, class RF>
+  class EdgeS0_5FiniteElement {
+  public:
+    /**
+     * \implements FiniteElementInterface::Traits
+     */
+    struct Traits {
+      typedef EdgeS0_5Basis<Geometry, RF> Basis;
+      typedef EdgeS0_5Interpolation<Geometry,
+          typename Basis::Traits> Interpolation;
+      typedef EdgeS0_5Coefficients<Geometry::mydimension> Coefficients;
+    };
+
+  private:
+    typename Traits::Basis basis_;
+    typename Traits::Interpolation interpolation_;
+    static const typename Traits::Coefficients& coefficients_;
+    static const GeometryType gt;
+
+  public:
+    //! Constructor
+    /**
+     * \param geo
+     * \param orient Orientation of this element
+     */
+    template<class VertexOrder>
+    EdgeS0_5FiniteElement(const Geometry& geo,
+                          const VertexOrder& vertexOrder) :
+      basis_(geo, vertexOrder), interpolation_(geo, vertexOrder)
+    { }
+
+    //! return reference to the basis object
+    const typename Traits::Basis& basis() const { return basis_; }
+    //! return reference to the interpolation object
+    const typename Traits::Interpolation& interpolation() const
+    { return interpolation_; }
+    //! return reference to the coefficients object
+    const typename Traits::Coefficients& coefficients() const
+    { return coefficients_; }
+    //! return geometry type of this element
+    const GeometryType& type() const { return gt; }
+  };
+
+  template<class Geometry, class RF>
+  const typename EdgeS0_5FiniteElement<Geometry, RF>::Traits::Coefficients&
+  EdgeS0_5FiniteElement<Geometry, RF>::coefficients_ =
+    typename Traits::Coefficients();
+
+  template<class Geometry, class RF>
+  const GeometryType
+  EdgeS0_5FiniteElement<Geometry, RF>::gt(GeometryType::simplex,
+                                          Geometry::mydimension);
+
+  ////////////////////////////////////////////////////////////////////////
+  //
+  // Factory
+  //
+
+  //! Factory for EdgeS0_5FiniteElement objects
+  /**
+   * Constructs EdgeS0_5FiniteElement objects given a geometry and a vertex
+   * ordering.
+   *
+   * \tparam Geometry Geometry for the local to global transformation.
+   * \tparam RF       Field type of the range.
+   *
+   * \implements FiniteElementFactoryInterface
+   */
+  template<class Geometry, class RF>
+  struct EdgeS0_5FiniteElementFactory {
+    typedef EdgeS0_5FiniteElement<Geometry, RF> FiniteElement;
+
+    //! construct the factory
+    /**
+     * \param geometry    The geometry object to use for adaption.
+     * \param vertexOrder The global ordering of the vertices within the grid,
+     *                    used to determine orientation of the edges.  This
+     *                    vertexOrder object must support codim=0.
+     *
+     * \note The returned object stores the reference to the geometry passed
+     *       here.  Any use of the returned value after this references has
+     *       become invalid results in undefined behaviour.  The exception is
+     *       that the destructor of this class may still be called.  The
+     *       information contained in the vertexOrder object is extracted and
+     *       the object is no longer needed after the contructor returns.  No
+     *       reference to internal data of the factory is stored.
+     */
+    template<class VertexOrder>
+    const FiniteElement make(const Geometry& geometry,
+                             const VertexOrder& vertexOrder)
+    { return FiniteElement(geometry, vertexOrder); }
+  };
+
+} // namespace Dune
+
+#endif // DUNE_LOCALFUNCTIONS_WHITNEY_EDGES0_5_HH

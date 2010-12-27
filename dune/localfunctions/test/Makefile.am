@@ -56,4 +56,7 @@ test_edges0_5_SOURCES = test-edges0.5.cc
 TESTS += test-localfe
 test_localfe_SOURCES = test-localfe.cc
 
+TESTS += test-pk2d
+test_pk2d_SOURCES = test-pk2d.cc
+
 include $(top_srcdir)/am/global-rules

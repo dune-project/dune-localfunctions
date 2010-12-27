@@ -1,0 +1,75 @@
+// -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+// vi: set et ts=4 sw=2 sts=2:
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include <cstddef>
+#include <iostream>
+#include <ostream>
+
+#include <dune/common/exceptions.hh>
+#include <dune/common/forloop.hh>
+#include <dune/common/fvector.hh>
+#include <dune/common/geometrytype.hh>
+
+#include <dune/grid/genericgeometry/geometry.hh>
+#include <dune/grid/genericgeometry/geometrytraits.hh>
+#include <dune/grid/utility/vertexorder.hh>
+
+#include <dune/localfunctions/lagrange/pk2d.hh>
+
+#include "test-fe.hh"
+
+template<int k>
+struct Test {
+  // tolerance for floating-point comparisons
+  static const double eps = 1e-9;
+  // stepsize for numerical differentiation
+  static const double delta = 1e-5;
+
+  static void apply(int &result) {
+    std::cout << "== Checking global-valued Pk2D elements (with k=" << k << ")"
+              << std::endl;
+
+    Dune::GeometryType gt;
+    gt.makeTriangle();
+
+    Dune::FieldVector<double, 2> corners[3];
+    corners[0][0] = -.5; corners[0][1] = -.5;
+    corners[1][0] =  .5; corners[1][1] = -.5;
+    corners[2][0] = 0  ; corners[2][1] =  .5;
+    typedef Dune::GenericGeometry::BasicGeometry<
+        2, Dune::GenericGeometry::DefaultGeometryTraits<double, 2, 2>
+        > Geometry;
+    Geometry geo(gt, corners);
+
+    std::size_t vertexIds[] = {0, 1, 2};
+    Dune::GeneralVertexOrder<2, std::size_t>
+    vo(gt, vertexIds+0, vertexIds+3);
+
+    Dune::Pk2DFiniteElementFactory<Geometry, double, k> feFactory;
+    bool success = testFE(geo, feFactory.make(geo, vo), eps, delta);
+
+    if(success && result != 1)
+      result = 0;
+    else
+      result = 1;
+  }
+};
+
+int main(int argc, char** argv) {
+  try {
+    int result = 77;
+
+    static const std::size_t max_k = 20;
+    Dune::ForLoop<Test, 0, max_k>::apply(result);
+
+    return result;
+  }
+  catch (const Dune::Exception& e) {
+    std::cerr << e << std::endl;
+    throw;
+  }
+}

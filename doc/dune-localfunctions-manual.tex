@@ -544,7 +544,7 @@ An example on how the dynamic shape functions are used in applications can be fo
 in the \lstinline!PQkLocalFiniteElementCache! class which is a factory for
 Lagrangian shape functions of different order and type.
 
-\section{Global Finite Elements}
+\section{Global-valued Finite Elements}
 
 So far this document has talked about finite elements on reference elements.
 However, the finite element is usually needed on an element of a grid.  To
@@ -952,9 +952,9 @@ sub-entity), for edge elements $e^i$ is the unit vector tangential to the edge
 To be continuous over element borders, elements connected to a common
 sub-entity must agree upon a common global orientation for that sub-entity.
 If their local orientation differs from the global orientation, the {\tt
-  GlobalValueBasis} must multiply the value of the corresponding basis
-function by $-1$.  The tricky part is the to determine the global orientation
-for the common sub-entity correctly.
+  Basis} must multiply the value of the corresponding basis function by $-1$.
+The tricky part is the to determine the global orientation for the common
+sub-entity correctly.
 
 \subsubsection{Tangential Orientation for Lines}
 
@@ -1106,21 +1106,19 @@ value of {\tt true} means the global orientation of the face is outward, {\tt
 \subsection{API}
 
 The API for global-valued finite elements consists of five interface classes
-({\tt Global\-Value\-Basis\-Interface}, {\tt
-  GlobalValueInterpolationInterface}, {\tt
-  Global\-Value\-Coefficients\-Interface}, {\tt
-  GlobalValueFiniteElementInterface}, and {\tt
-  Global\-Value\-Finite\-Element\-Factory\-Interface}) and two traits classes
-({\tt GlobalValueBasisTraits} and {\tt
-  Global\-Value\-Finite\-Element\-Traits}).  The name prefix ``{\tt
-  GlobalValue}'' was chosen because these finite elements deal with global
-base function values, but still take local coordinates on the reference
-element.
+({\tt Basis\-Interface}, {\tt InterpolationInterface}, {\tt
+  Coefficients\-Interface}, {\tt FiniteElementInterface}, and {\tt
+  Finite\-Element\-Factory\-Interface}) and two traits classes ({\tt
+  BasisTraits} and {\tt Finite\-Element\-Traits}).  In contrast to the local
+interface which prefixes all its names with ``{\tt Local}'' we do not use any
+prefix here.  ``{\tt Local}'' is already taken, ``{\tt Global}'' would suggest
+that this interface is completely in global coordinates, ``{\tt GlobalValue}''
+is too clumsy and adds too much to the lengths of names.
 
 \subsubsection{Finite Element Interface}
 
 \begin{lstlisting}[escapechar=\$]
-struct GlobalValueFiniteElementInterface
+struct FiniteElementInterface
 {
   // types of component objects
   struct Traits
@@ -1130,11 +1128,10 @@ struct GlobalValueFiniteElementInterface
     typedef $\em implementation-defined$ Interpolation;
   };
 
-  // constructor arguments a implementation specific
-  GlobalValueFiniteElementInterface(...);
+  // constructor arguments are implementation specific
+  FiniteElementInterface(...);
   // ... except for the copy constructor
-  GlobalValueFiniteElementInterface
-    (const GlobalValueFiniteElementInterface&);
+  FiniteElementInterface(const FiniteElementInterface&);
 
   // extract component objects
   const typename Traits::Basis& basis() const;
@@ -1169,14 +1166,13 @@ reality access the outside element.
 \subsubsection{Finite Element Factory Interface}
 
 \begin{lstlisting}[escapechar=\$]
-template<class Geometry>
-struct GlobalValueFiniteElementFactoryInterface
+struct FiniteElementFactoryInterface
 {
   // may also be an inline class
   typedef $\em implementation-defined$ FiniteElement;
 
   // construction is implementation-defined
-  GlobalValueFiniteElementFactoryInterface(...);
+  FiniteElementFactoryInterface(...);
 
   // finite element object creation
   // arguments are implementation defined
@@ -1236,7 +1232,7 @@ implementor of the factory.
 
 \subsubsection{Basis Interface}
 \begin{lstlisting}[escapechar=\$]
-struct GlobalValueBasisInterface
+struct BasisInterface
 {
   struct Traits
   {
@@ -1267,20 +1263,20 @@ struct GlobalValueBasisInterface
 
   // Evaluate all shape functions at given position
   void evaluateFunction
-  ( const typename Traits::LocalDomain& in,
+  ( const typename Traits::DomainLocal& in,
     std::vector<typename Traits::Range>& out) const;
 
   // Evaluate jacobian of all shape functions at given position
   // required for Traits::diffOrder >= 1
   void evaluateJacobian
-  ( const typename Traits::LocalDomain& in,
+  ( const typename Traits::DomainLocal& in,
     std::vector<typename Traits::Jacobian>& out) const;
 
   // Evaluate derivatives of all shape functions at given position
   // required for Traits::diffOrder >= 2
   void evaluate
   ( const array<std::size_t,Traits::dimGlobalDomain>& directions,
-    const typename Traits::LocalDomain& in,
+    const typename Traits::DomainLocal& in,
     std::vector<typename Traits::Range>& out) const;
 };
 \end{lstlisting}
@@ -1311,10 +1307,10 @@ template.
 \subsubsection{Interpolation Interface}
 
 \begin{lstlisting}
-struct GlobalValueInterpolationInterface
+struct InterpolationInterface
 {
   // Export basis traits
-  typedef GlobalValueBasisInterface::Traits Traits;
+  typedef BasisInterface::Traits Traits;
 
   // determine coefficients interpolating a given function
   template<typename F, typename C>
@@ -1337,7 +1333,7 @@ is now in global coordinates and of the type {\tt Traits::Range}.
 \subsection{Coefficients Interface}
 
 \begin{lstlisting}
-struct GlobalValueCoefficientsInterface
+struct CoefficientsInterface
 {
   // number of coefficients
   std::size_t size() const;

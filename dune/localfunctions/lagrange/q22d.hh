@@ -7,6 +7,7 @@
 #include <dune/common/geometrytype.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
+#include <dune/localfunctions/common/localtoglobaladaptors.hh>
 #include "q22d/q22dlocalbasis.hh"
 #include "q22d/q22dlocalcoefficients.hh"
 #include "q22d/q22dlocalinterpolation.hh"
@@ -67,6 +68,31 @@ namespace Dune
     GeometryType gt;
   };
 
+  //! Factory for global-valued Q22D elements
+  /**
+   * \tparam Geometry Type of the geometry.  Used to extract the domain field
+   *                  type.
+   * \tparam RF       Range field type.
+   */
+  template<class Geometry, class RF>
+  class Q22DFiniteElementFactory :
+    public ScalarLocalToGlobalFiniteElementAdaptorFactory<
+        Q22DLocalFiniteElement<typename Geometry::ctype, RF>, Geometry
+        >
+  {
+    typedef Q22DLocalFiniteElement<typename Geometry::ctype, RF> LFE;
+    typedef ScalarLocalToGlobalFiniteElementAdaptorFactory<LFE, Geometry> Base;
+
+    static const LFE lfe;
+
+  public:
+    //! default constructor
+    Q22DFiniteElementFactory() : Base(lfe) {}
+  };
+
+  template<class Geometry, class RF>
+  const typename Q22DFiniteElementFactory<Geometry, RF>::LFE
+  Q22DFiniteElementFactory<Geometry, RF>::lfe;
 }
 
 #endif

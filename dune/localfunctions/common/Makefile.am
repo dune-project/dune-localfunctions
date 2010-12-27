@@ -5,6 +5,7 @@ common_HEADERS =				\
 	localbasis.hh				\
 	localkey.hh      			\
 	localfiniteelementtraits.hh		\
+	localtoglobaladaptors.hh		\
 	virtualinterface.hh 	\
 	virtualwrappers.hh
 

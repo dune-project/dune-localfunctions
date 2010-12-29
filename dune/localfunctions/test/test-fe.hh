@@ -11,7 +11,6 @@
 #include <iomanip>
 #include <iostream>
 #include <ostream>
-// #include <typeinfo>
 #include <vector>
 
 #include <dune/common/classname.hh>

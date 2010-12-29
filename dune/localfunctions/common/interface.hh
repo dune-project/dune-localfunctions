@@ -114,7 +114,7 @@ namespace Dune {
     struct ImplementationDefined;
 
   public:
-    //! Type of the fintie element
+    //! Type of the finite element
     /**
      * Should be an implementation of FiniteElementIterface
      *

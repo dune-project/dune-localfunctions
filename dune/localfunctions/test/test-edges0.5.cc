@@ -13,8 +13,7 @@
 #include <dune/common/fvector.hh>
 #include <dune/common/geometrytype.hh>
 
-#include <dune/grid/genericgeometry/geometry.hh>
-#include <dune/grid/genericgeometry/geometrytraits.hh>
+#include <dune/grid/utility/mockgeometry.hh>
 #include <dune/grid/utility/vertexorder.hh>
 
 #include <dune/localfunctions/whitney/edges0.5.hh>
@@ -41,9 +40,7 @@ int main(int argc, char** argv) {
       corners[0][0] = -.5; corners[0][1] = -.5;
       corners[1][0] =  .5; corners[1][1] = -.5;
       corners[2][0] = 0  ; corners[2][1] =  .5;
-      typedef Dune::GenericGeometry::BasicGeometry<
-          2, Dune::GenericGeometry::DefaultGeometryTraits<double, 2, 2>
-          > Geometry;
+      typedef Dune::MockGeometry<double, 2, 2> Geometry;
       Geometry geo(gt, corners);
 
       std::size_t vertexIds[] = {0, 1, 2};
@@ -71,9 +68,7 @@ int main(int argc, char** argv) {
       corners[1][0] =  .5; corners[1][1] = -.5; corners[1][2] = -.5;
       corners[2][0] = 0  ; corners[2][1] =  .5; corners[2][2] = -.5;
       corners[3][0] = 0  ; corners[3][1] =  0 ; corners[3][2] =  .5;
-      typedef Dune::GenericGeometry::BasicGeometry<
-          3, Dune::GenericGeometry::DefaultGeometryTraits<double, 3, 3>
-          > Geometry;
+      typedef Dune::MockGeometry<double, 3, 3> Geometry;
       Geometry geo(gt, corners);
 
       std::size_t vertexIds[] = {0, 1, 2, 3};

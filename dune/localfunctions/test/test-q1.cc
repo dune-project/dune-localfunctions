@@ -13,8 +13,7 @@
 #include <dune/common/fvector.hh>
 #include <dune/common/geometrytype.hh>
 
-#include <dune/grid/genericgeometry/geometry.hh>
-#include <dune/grid/genericgeometry/geometrytraits.hh>
+#include <dune/grid/utility/mockgeometry.hh>
 
 #include <dune/localfunctions/lagrange/q1.hh>
 
@@ -39,9 +38,7 @@ int main(int argc, char** argv) {
       Dune::FieldVector<double, 1> corners[2];
       corners[0][0] = -.5;
       corners[1][0] =  .5;
-      typedef Dune::GenericGeometry::BasicGeometry<
-          1, Dune::GenericGeometry::DefaultGeometryTraits<double, 1, 1>
-          > Geometry;
+      typedef Dune::MockGeometry<double, 1, 1> Geometry;
       Geometry geo(gt, corners);
 
       Dune::Q1FiniteElementFactory<Geometry, double> feFactory;
@@ -65,9 +62,7 @@ int main(int argc, char** argv) {
       corners[1][0] = 0  ; corners[1][1] = -.5;
       corners[2][0] =  .5; corners[2][1] = 0;
       corners[3][0] = 0  ; corners[3][1] =  .5;
-      typedef Dune::GenericGeometry::BasicGeometry<
-          2, Dune::GenericGeometry::DefaultGeometryTraits<double, 2, 2>
-          > Geometry;
+      typedef Dune::MockGeometry<double, 2, 2> Geometry;
       Geometry geo(gt, corners);
 
       Dune::Q1FiniteElementFactory<Geometry, double> feFactory;
@@ -95,9 +90,7 @@ int main(int argc, char** argv) {
       corners[5][0] =  .7; corners[5][1] = -.6; corners[5][2] =  .5;
       corners[6][0] = -.4; corners[6][1] =  .3; corners[6][2] =  .7;
       corners[7][0] =  .6; corners[7][1] =  .5; corners[7][2] =  .4;
-      typedef Dune::GenericGeometry::BasicGeometry<
-          3, Dune::GenericGeometry::DefaultGeometryTraits<double, 3, 3>
-          > Geometry;
+      typedef Dune::MockGeometry<double, 3, 3> Geometry;
       Geometry geo(gt, corners);
 
       Dune::Q1FiniteElementFactory<Geometry, double> feFactory;

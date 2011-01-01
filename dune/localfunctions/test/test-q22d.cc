@@ -13,8 +13,7 @@
 #include <dune/common/fvector.hh>
 #include <dune/common/geometrytype.hh>
 
-#include <dune/grid/genericgeometry/geometry.hh>
-#include <dune/grid/genericgeometry/geometrytraits.hh>
+#include <dune/grid/utility/mockgeometry.hh>
 
 #include <dune/localfunctions/lagrange/q22d.hh>
 
@@ -40,9 +39,7 @@ int main(int argc, char** argv) {
       corners[1][0] = 0  ; corners[1][1] = -.5;
       corners[2][0] =  .5; corners[2][1] = 0;
       corners[3][0] = 0  ; corners[3][1] =  .5;
-      typedef Dune::GenericGeometry::BasicGeometry<
-          2, Dune::GenericGeometry::DefaultGeometryTraits<double, 2, 2>
-          > Geometry;
+      typedef Dune::MockGeometry<double, 2, 2> Geometry;
       Geometry geo(gt, corners);
 
       Dune::Q22DFiniteElementFactory<Geometry, double> feFactory;

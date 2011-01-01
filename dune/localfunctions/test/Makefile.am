@@ -20,8 +20,7 @@ check_PROGRAMS = $(TESTS)
 
 noinst_HEADERS =				\
 	test-fe.hh				\
-	test-localfe.hh				\
-	testfemglobal.hh
+	test-localfe.hh
 
 # define the programs
 

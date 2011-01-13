@@ -60,6 +60,9 @@ test_monom_SOURCES = test-monom.cc
 TESTS += test-pk2d
 test_pk2d_SOURCES = test-pk2d.cc
 
+TESTS += test-power-monom
+test_power_monom_SOURCES = test-power-monom.cc
+
 TESTS += test-q1
 test_q1_SOURCES = test-q1.cc
 

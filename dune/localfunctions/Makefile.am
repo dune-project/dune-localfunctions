@@ -13,6 +13,7 @@ SUBDIRS =					\
 	common					\
 	hierarchical				\
 	lagrange				\
+	meta					\
 	mimetic					\
 	monom					\
 	orthonormal				\

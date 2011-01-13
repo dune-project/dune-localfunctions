@@ -22,7 +22,7 @@ template <int dim, int order>
 void testShapeFunctionDerivative(const GeometryType& type)
 {
 
-  MonomLocalFiniteElement<double,double,dim,order> shapeFunctionSet(type.basicType());
+  MonomLocalFiniteElement<double,double,dim,order> shapeFunctionSet(type);
   typedef typename MonomLocalFiniteElement<double,double,dim,order>::Traits::LocalBasisType::Traits LBTraits;
 
   // ////////////////////////////////////////////////////////////
@@ -84,18 +84,18 @@ void testShapeFunctionDerivative(const GeometryType& type)
 }
 
 template<int dim, int order>
-void testShapeFunctionValue(const GeometryType::BasicType& basicType,
+void testShapeFunctionValue(const GeometryType& gt,
                             const Dune::FieldVector<double, dim> &pos,
                             int comp, double expected)
 {
-  MonomLocalFiniteElement<double,double,dim,order> shapeFunctionSet(basicType);
+  MonomLocalFiniteElement<double,double,dim,order> shapeFunctionSet(gt);
   std::vector<Dune::FieldVector<double,1> > out;
   shapeFunctionSet.localBasis().evaluateFunction(pos, out);
 
   if(std::abs(out[comp][0]-expected) > epsilon) {
     std::cerr << "Bug in shape function of dimension " << dim
               << " and order " << order << " for "
-              << GeometryType(basicType,dim) << "." << std::endl;
+              << gt << "." << std::endl;
     std::cerr << "Value of shape function number " << comp << " at position "
               << pos << " is " << out[comp][0] << " but " << expected
               << " was expected." << std::endl;
@@ -103,64 +103,75 @@ void testShapeFunctionValue(const GeometryType::BasicType& basicType,
   }
 }
 
-int main (int argc, char *argv[]) try
-{
-  { // dim=1
-    Dune::FieldVector<double, 1> pos;
+int main (int argc, char *argv[]) {
+  try {
+    GeometryType gt;
 
-    pos[0] = 0;
-    testShapeFunctionValue<1,2>(GeometryType::cube, pos, 0, 1);
-    testShapeFunctionValue<1,2>(GeometryType::cube, pos, 1, 0);
-    testShapeFunctionValue<1,2>(GeometryType::cube, pos, 2, 0);
+    {     // dim=1
+      Dune::FieldVector<double, 1> pos;
+      gt.makeLine();
 
-    pos[0] = .5;
-    testShapeFunctionValue<1,2>(GeometryType::cube, pos, 0, 1);
-    testShapeFunctionValue<1,2>(GeometryType::cube, pos, 1, .5);
-    testShapeFunctionValue<1,2>(GeometryType::cube, pos, 2, .25);
+      pos[0] = 0;
+      testShapeFunctionValue<1,2>(gt, pos, 0, 1);
+      testShapeFunctionValue<1,2>(gt, pos, 1, 0);
+      testShapeFunctionValue<1,2>(gt, pos, 2, 0);
 
-    pos[0] = 1;
-    testShapeFunctionValue<1,2>(GeometryType::cube, pos, 0, 1);
-    testShapeFunctionValue<1,2>(GeometryType::cube, pos, 1, 1);
-    testShapeFunctionValue<1,2>(GeometryType::cube, pos, 2, 1);
+      pos[0] = .5;
+      testShapeFunctionValue<1,2>(gt, pos, 0, 1);
+      testShapeFunctionValue<1,2>(gt, pos, 1, .5);
+      testShapeFunctionValue<1,2>(gt, pos, 2, .25);
+
+      pos[0] = 1;
+      testShapeFunctionValue<1,2>(gt, pos, 0, 1);
+      testShapeFunctionValue<1,2>(gt, pos, 1, 1);
+      testShapeFunctionValue<1,2>(gt, pos, 2, 1);
+    }
+
+    {     // dim=2
+      Dune::FieldVector<double, 2> pos;
+      gt.makeQuadrilateral();
+
+      pos[0] = 0; pos[1] = 0;
+      testShapeFunctionValue<2,1>(gt, pos, 0, 1);
+      testShapeFunctionValue<2,1>(gt, pos, 1, 0);
+      testShapeFunctionValue<2,1>(gt, pos, 2, 0);
+
+      pos[0] = .5; pos[1] = .5;
+      testShapeFunctionValue<2,1>(gt, pos, 0, 1);
+      testShapeFunctionValue<2,1>(gt, pos, 1, .5);
+      testShapeFunctionValue<2,1>(gt, pos, 2, .5);
+
+      pos[0] = 1; pos[1] = 1;
+      testShapeFunctionValue<2,1>(gt, pos, 0, 1);
+      testShapeFunctionValue<2,1>(gt, pos, 1, 1);
+      testShapeFunctionValue<2,1>(gt, pos, 2, 1);
+    }
+
+    // Test shape functions for the 1d segment
+    gt.makeLine();
+    testShapeFunctionDerivative<1,1>(gt);
+    testShapeFunctionDerivative<1,2>(gt);
+
+    gt.makeTriangle();
+    testShapeFunctionDerivative<2,1>(gt);
+    gt.makeQuadrilateral();
+    testShapeFunctionDerivative<2,1>(gt);
+
+    gt.makeTetrahedron();
+    testShapeFunctionDerivative<3,1>(gt);
+    gt.makeHexahedron();
+    testShapeFunctionDerivative<3,1>(gt);
+    gt.makePyramid();
+    testShapeFunctionDerivative<3,1>(gt);
+    gt.makePrism();
+    testShapeFunctionDerivative<3,1>(gt);
+
+    // gt.makeCube(4);
+    // testShapeFunctionDerivative<4,1>(gt);
+
+    return success ? 0 : 1;
+  } catch (const Exception &e) {
+    std::cout << e << std::endl;
+    throw;
   }
-
-  { // dim=2
-    Dune::FieldVector<double, 2> pos;
-
-    pos[0] = 0; pos[1] = 0;
-    testShapeFunctionValue<2,1>(GeometryType::cube, pos, 0, 1);
-    testShapeFunctionValue<2,1>(GeometryType::cube, pos, 1, 0);
-    testShapeFunctionValue<2,1>(GeometryType::cube, pos, 2, 0);
-
-    pos[0] = .5; pos[1] = .5;
-    testShapeFunctionValue<2,1>(GeometryType::cube, pos, 0, 1);
-    testShapeFunctionValue<2,1>(GeometryType::cube, pos, 1, .5);
-    testShapeFunctionValue<2,1>(GeometryType::cube, pos, 2, .5);
-
-    pos[0] = 1; pos[1] = 1;
-    testShapeFunctionValue<2,1>(GeometryType::cube, pos, 0, 1);
-    testShapeFunctionValue<2,1>(GeometryType::cube, pos, 1, 1);
-    testShapeFunctionValue<2,1>(GeometryType::cube, pos, 2, 1);
-  }
-
-  // Test shape functions for the 1d segment
-  testShapeFunctionDerivative<1,1>(GeometryType(1));
-  testShapeFunctionDerivative<1,2>(GeometryType(1));
-
-  testShapeFunctionDerivative<2,1>(GeometryType(GeometryType::simplex,2));
-  testShapeFunctionDerivative<2,1>(GeometryType(GeometryType::cube,2));
-
-  testShapeFunctionDerivative<3,1>(GeometryType(GeometryType::simplex,3));
-  testShapeFunctionDerivative<3,1>(GeometryType(GeometryType::cube,3));
-  testShapeFunctionDerivative<3,1>(GeometryType(GeometryType::pyramid,3));
-  testShapeFunctionDerivative<3,1>(GeometryType(GeometryType::prism,3));
-
-  //   testShapeFunctionDerivative<4,1>(GeometryType(GeometryType::cube,4));
-
-  return success ? 0 : 1;
-}
-catch (Exception e) {
-
-  std::cout << e << std::endl;
-  return 1;
 }

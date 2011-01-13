@@ -54,6 +54,9 @@ test_edges0_5_SOURCES = test-edges0.5.cc
 TESTS += test-localfe
 test_localfe_SOURCES = test-localfe.cc
 
+TESTS += test-monom
+test_monom_SOURCES = test-monom.cc
+
 TESTS += test-pk2d
 test_pk2d_SOURCES = test-pk2d.cc
 

@@ -19,6 +19,7 @@ check_PROGRAMS = $(TESTS)
 #AM_CXXFLAGS = @AM_CPPFLAGS@ -fprofile-arcs -ftest-coverage
 
 noinst_HEADERS =				\
+	geometries.hh				\
 	test-fe.hh				\
 	test-localfe.hh
 

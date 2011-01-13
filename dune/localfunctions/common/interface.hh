@@ -53,12 +53,12 @@ namespace Dune {
       typedef ImplementationDefined Interpolation;
     };
 
-    //! Contruct a finite element
+    //! Construct a finite element
     /**
      * \note The arguments of the constructor are implementation specific.  In
      *       fact, finite element implementations are not required to be
-     *       contructible by the user at all (except for copy-construction).
-     *       The official way to contruct a finite element is to use its
+     *       constructible by the user at all (except for copy-construction).
+     *       The official way to construct a finite element is to use its
      *       factory.
      */
     FiniteElementInterface(...);
@@ -122,7 +122,7 @@ namespace Dune {
      */
     typedef ImplementationDefined FiniteElement;
 
-    //! Contruct a finite element factory
+    //! Construct a finite element factory
     /**
      * \note The arguments of the constructor are implementation specific.
      */

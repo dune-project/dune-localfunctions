@@ -1,16 +1,26 @@
 localfunctionsdir = $(includedir)/dune/localfunctions
 
-localfunctions_HEADERS = lagrange.hh orthonormal.hh raviartthomas.hh rannacherturek.hh \
-        monom.hh mimetic.hh \
+localfunctions_HEADERS =			\
+	lagrange.hh				\
+	mimetic.hh				\
+	monom.hh				\
+	orthonormal.hh				\
+	rannacherturek.hh			\
+	raviartthomas.hh			\
 	refined.hh
 
-SUBDIRS = common utility test \
-          lagrange orthonormal \
+SUBDIRS =					\
+	common					\
+	hierarchical				\
+	lagrange				\
 	mimetic					\
 	monom					\
-	rannacherturek			\
-        raviartthomas				\
-          whitney                               \
-          hierarchical refined
+	orthonormal				\
+	rannacherturek				\
+	raviartthomas				\
+	refined					\
+	test					\
+	utility					\
+	whitney
 
 include $(top_srcdir)/am/global-rules

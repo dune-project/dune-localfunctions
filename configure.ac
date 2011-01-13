@@ -23,11 +23,15 @@ LIBS="$DUNE_LIBS"
 
 AC_CONFIG_FILES([
 		Makefile
-                dune/Makefile
+                doc/doxygen/Doxyfile
+                doc/doxygen/Makefile
+                doc/Makefile
+                dune-localfunctions.pc
                 dune/localfunctions/common/Makefile
-                dune/localfunctions/Makefile
-                dune/localfunctions/monom/Makefile
-                dune/localfunctions/mimetic/Makefile
+                dune/localfunctions/hierarchical/hierarchicalp2/Makefile
+                dune/localfunctions/hierarchical/hierarchicalp2withelementbubble/Makefile
+                dune/localfunctions/hierarchical/hierarchicalprismp2/Makefile
+                dune/localfunctions/hierarchical/Makefile
                 dune/localfunctions/lagrange/Makefile
                 dune/localfunctions/lagrange/p0/Makefile
                 dune/localfunctions/lagrange/p1/Makefile
@@ -39,30 +43,26 @@ AC_CONFIG_FILES([
                 dune/localfunctions/lagrange/pyramidp1/Makefile
                 dune/localfunctions/lagrange/q1/Makefile
                 dune/localfunctions/lagrange/q22d/Makefile
-                dune/localfunctions/hierarchical/Makefile
-                dune/localfunctions/hierarchical/hierarchicalp2/Makefile
-                dune/localfunctions/hierarchical/hierarchicalprismp2/Makefile
-                dune/localfunctions/hierarchical/hierarchicalp2withelementbubble/Makefile
-                dune/localfunctions/refined/Makefile
-                dune/localfunctions/refined/common/Makefile
-                dune/localfunctions/refined/refinedp1/Makefile
-                dune/localfunctions/refined/refinedp0/Makefile
+                dune/localfunctions/Makefile
+                dune/localfunctions/mimetic/Makefile
+                dune/localfunctions/monom/Makefile
+                dune/localfunctions/orthonormal/Makefile
                 dune/localfunctions/rannacherturek/Makefile
                 dune/localfunctions/rannacherturek/rannacherturek2d/Makefile
                 dune/localfunctions/raviartthomas/Makefile
                 dune/localfunctions/raviartthomas/raviartthomas02d/Makefile
                 dune/localfunctions/raviartthomas/raviartthomas0q2d/Makefile
                 dune/localfunctions/raviartthomas/raviartthomas0q3d/Makefile
-                dune/localfunctions/whitney/Makefile
-                dune/localfunctions/whitney/edges0.5/Makefile
+                dune/localfunctions/refined/common/Makefile
+                dune/localfunctions/refined/Makefile
+                dune/localfunctions/refined/refinedp0/Makefile
+                dune/localfunctions/refined/refinedp1/Makefile
                 dune/localfunctions/test/Makefile
                 dune/localfunctions/utility/Makefile
-                dune/localfunctions/orthonormal/Makefile
-                doc/doxygen/Makefile
-                doc/doxygen/Doxyfile
-                doc/Makefile
+                dune/localfunctions/whitney/edges0.5/Makefile
+                dune/localfunctions/whitney/Makefile
+                dune/Makefile
                 m4/Makefile
-                dune-localfunctions.pc
 		])
 AC_OUTPUT
 # finally print the summary information

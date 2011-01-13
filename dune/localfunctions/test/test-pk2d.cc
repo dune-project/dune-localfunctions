@@ -19,6 +19,7 @@
 
 #include <dune/localfunctions/lagrange/pk2d.hh>
 
+#include "geometries.hh"
 #include "test-fe.hh"
 
 template<int k>
@@ -35,12 +36,11 @@ struct Test {
     Dune::GeometryType gt;
     gt.makeTriangle();
 
-    Dune::FieldVector<double, 2> corners[3];
-    corners[0][0] = -.5; corners[0][1] = -.5;
-    corners[1][0] =  .5; corners[1][1] = -.5;
-    corners[2][0] = 0  ; corners[2][1] =  .5;
-    typedef Dune::MockGeometry<double, 2, 2> Geometry;
-    Geometry geo(gt, corners);
+    typedef TestGeometries<double, 2> TestGeos;
+    static const TestGeos testGeos;
+
+    typedef TestGeos::Geometry Geometry;
+    const Geometry &geo = testGeos.get(gt);
 
     std::size_t vertexIds[] = {0, 1, 2};
     Dune::GeneralVertexOrder<2, std::size_t>

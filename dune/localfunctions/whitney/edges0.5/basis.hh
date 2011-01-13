@@ -22,12 +22,12 @@ namespace Dune {
 
   //////////////////////////////////////////////////////////////////////
   //
-  //  LocalBasis
+  //  Basis
   //
 
-  //! LocalBasis for order 0.5 (lowest order) edge elements on simplices
+  //! Basis for order 0.5 (lowest order) edge elements on simplices
   /**
-   * @ingroup LocalBasisImplementation
+   * @ingroup BasisImplementation
    *
    * \tparam Geometry Type of the local-to-global map.
    * \tparam RF       Type to represent the field in the range.

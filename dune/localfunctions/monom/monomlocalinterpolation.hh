@@ -5,6 +5,7 @@
 
 #include <vector>
 
+#include <dune/common/deprecated.hh>
 #include <dune/common/geometrytype.hh>
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
@@ -25,14 +26,10 @@ namespace Dune
     typedef QuadratureRule<DF,dimD> QR;
     typedef typename QR::iterator QRiterator;
 
-  public:
-    MonomLocalInterpolation (const GeometryType::BasicType &bt_,
-                             const LB &lb_)
-      : bt(bt_), lb(lb_), Minv(0)
-        , qr(QuadratureRules<DF,dimD>::rule(bt, 2*lb.order()))
-    {
+    void init() {
       if(size != lb.size())
-        DUNE_THROW(Exception, "size template parameter does not match size of local basis");
+        DUNE_THROW(Exception, "size template parameter does not match size of "
+                   "local basis");
 
       const QRiterator qrend = qr.end();
       for(QRiterator qrit = qr.begin(); qrit != qrend; ++qrit) {
@@ -45,6 +42,19 @@ namespace Dune
       }
       Minv.invert();
     }
+
+  public:
+    MonomLocalInterpolation (const GeometryType::BasicType &bt_,
+                             const LB &lb_) DUNE_DEPRECATED
+      : gt(bt_, dimD), lb(lb_), Minv(0)
+        , qr(QuadratureRules<DF,dimD>::rule(gt, 2*lb.order()))
+    { init(); }
+
+    MonomLocalInterpolation (const GeometryType &gt_,
+                             const LB &lb_)
+      : gt(gt_), lb(lb_), Minv(0)
+        , qr(QuadratureRules<DF,dimD>::rule(gt, 2*lb.order()))
+    { init(); }
 
     //! determine coefficients interpolating a given function
     template<typename F, typename C>
@@ -69,7 +79,7 @@ namespace Dune
     }
 
   private:
-    GeometryType::BasicType bt;
+    GeometryType gt;
     const LB &lb;
     FieldMatrix<RF, size, size> Minv;
     const QR &qr;

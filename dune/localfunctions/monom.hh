@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <vector>
 
+#include <dune/common/deprecated.hh>
 #include <dune/common/geometrytype.hh>
 #include <dune/common/shared_ptr.hh>
 #include <dune/common/static_assert.hh>
@@ -45,8 +46,13 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    MonomLocalFiniteElement (GeometryType::BasicType basicType)
+    MonomLocalFiniteElement (GeometryType::BasicType basicType) DUNE_DEPRECATED
       : basis(), interpolation(basicType, basis), gt(basicType,d)
+    {}
+
+    //! Construct a MonomLocalFiniteElement
+    MonomLocalFiniteElement (const GeometryType &gt_)
+      : basis(), interpolation(gt_, basis), gt(gt_)
     {}
 
     /** \todo Please doc me !
@@ -110,7 +116,7 @@ namespace Dune
       std::size_t index = gt.id() >> 1;
       if(localFEs.size() <= index)
         localFEs.resize(index+1);
-      localFEs[index].reset(new LocalFE(gt.basicType()));
+      localFEs[index].reset(new LocalFE(gt));
     }
 
   public:

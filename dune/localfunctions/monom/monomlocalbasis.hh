@@ -27,6 +27,10 @@ namespace Dune
     struct Size<0, k> {
       enum { val = 1 };
     };
+    template<>
+    struct Size<0, 0> {
+      enum { val = 1 };
+    };
 
     template<class T>
     T ipow(T base, int exp)

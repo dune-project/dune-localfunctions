@@ -179,7 +179,7 @@ int main (int argc, char *argv[]) try
   testLocalFiniteElement<C2LBTraits>(&p1VVFE);
 
   typedef Dune::MonomLocalFiniteElement<double, double, 2, 7> Monom7;
-  const Monom7 monom7FE(Dune::GeometryType::cube);
+  const Monom7 monom7FE(Dune::GeometryType(Dune::GeometryType::cube, 2));
   const Dune::LocalFiniteElementVirtualImp<Monom7> monom7VFE(monom7FE);
   const Dune::LocalFiniteElementVirtualImp<
       Dune::LocalFiniteElementVirtualImp<Monom7> > monom7VVFE(monom7VFE);

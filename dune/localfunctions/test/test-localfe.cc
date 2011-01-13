@@ -65,14 +65,18 @@ template<int k>
 bool testMonomials()
 {
   bool success = true;
+  Dune::GeometryType gt;
 
-  Dune::MonomLocalFiniteElement<double,double,1,k> monom1d(Dune::GeometryType::simplex);
+  gt.makeLine();
+  Dune::MonomLocalFiniteElement<double,double,1,k> monom1d(gt);
   success = testFE(monom1d) and success;
 
-  Dune::MonomLocalFiniteElement<double,double,2,k> monom2d(Dune::GeometryType::simplex);
+  gt.makeTriangle();
+  Dune::MonomLocalFiniteElement<double,double,2,k> monom2d(gt);
   success = testFE(monom2d) and success;
 
-  Dune::MonomLocalFiniteElement<double,double,3,k> monom3d(Dune::GeometryType::simplex);
+  gt.makeTetrahedron();
+  Dune::MonomLocalFiniteElement<double,double,3,k> monom3d(gt);
   success = testFE(monom3d) and success;
 
   return testMonomials<k-1>() and success;

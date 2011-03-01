@@ -10,7 +10,7 @@
 #include <dune/common/forloop.hh>
 
 #include <dune/grid/common/quadraturerules/gaussquadrature.hh>
-#include <dune/grid/genericgeometry/referencemappings.hh>
+#include <dune/grid/common/genericreferenceelements.hh>
 #include <dune/grid/genericgeometry/referenceelements.hh>
 
 #include <dune/localfunctions/common/localkey.hh>
@@ -269,7 +269,7 @@ namespace Dune
     template< class Func, class Container, bool type >
     void interpolate ( typename Base::template Helper<Func,Container,type> &func ) const
     {
-      const unsigned int topologyId = builder_.topologyId();
+      const Dune::GeometryType geoType( builder_.topologyId(), dimension );
 
       std::vector< Field > testBasisVal;
 
@@ -282,9 +282,12 @@ namespace Dune
       // boundary dofs:
       typedef Dune::GenericGeometry::GaussQuadratureProvider< dimension-1, Field >
       FaceQuadratureProvider;
-      typedef Dune::GenericGeometry::ReferenceMappings< Field, dimension > RefMappings;
-      typedef typename RefMappings::Container::
-      template Codim< 1 >::Mapping Mapping;
+
+      typedef Dune::GenericReferenceElements< Field, dimension > RefElements;
+      typedef Dune::GenericReferenceElement< Field, dimension > RefElement;
+      typedef typename RefElement::template Codim< 1 >::Mapping Mapping;
+
+      const RefElement &refElement = RefElements::general( geoType );
 
       for (unsigned int f=0; f<builder_.faceSize(); ++f)
       {
@@ -292,10 +295,9 @@ namespace Dune
           continue;
         testBasisVal.resize(builder_.testFaceBasis(f)->size());
 
-        const Mapping& mapping = RefMappings::container( topologyId ).
-                                 template mapping< 1 >( f );
-        const unsigned int subTopologyId = mapping.topologyId();
-        const typename FaceQuadratureProvider::Object *faceQuad = FaceQuadratureProvider::create( subTopologyId, 2*order_+2 );
+        const Mapping &mapping = refElement.template mapping< 1 >( f );
+        const Dune::GeometryType subGeoType( mapping.topologyId(), dimension-1 );
+        const typename FaceQuadratureProvider::Object *faceQuad = FaceQuadratureProvider::create( subGeoType, 2*order_+2 );
 
         const unsigned int quadratureSize = faceQuad->size();
         for( unsigned int qi = 0; qi < quadratureSize; ++qi )
@@ -317,7 +319,7 @@ namespace Dune
         testBasisVal.resize(builder_.testBasis()->size());
 
         typedef Dune::GenericGeometry::GaussQuadratureProvider< dimension, Field > QuadratureProvider;
-        const typename QuadratureProvider::Object *elemQuad = QuadratureProvider::create(topologyId,2*order_+1);
+        const typename QuadratureProvider::Object *elemQuad = QuadratureProvider::create( geoType, 2*order_+1 );
 
         const unsigned int quadratureSize = elemQuad->size();
         for( unsigned int qi = 0; qi < quadratureSize; ++qi )

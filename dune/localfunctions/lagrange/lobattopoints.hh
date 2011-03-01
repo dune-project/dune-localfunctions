@@ -9,8 +9,8 @@
 
 #include <dune/grid/common/topologyfactory.hh>
 #include <dune/grid/common/quadraturerules/lobattoquadrature.hh>
+#include <dune/grid/common/genericreferenceelements.hh>
 #include <dune/grid/genericgeometry/referenceelements.hh>
-#include <dune/grid/genericgeometry/referencemappings.hh>
 
 #include <dune/localfunctions/utility/lfematrix.hh>
 #include <dune/localfunctions/utility/field.hh>
@@ -281,9 +281,11 @@ namespace Dune
       struct Init
       {
         static const unsigned int codimension = dimension - SubTopology::dimension;
-        typedef GenericGeometry::ReferenceMappings< Field, dimension > RefMappings;
-        typedef typename RefMappings::Container RefMappingsContainer;
-        typedef typename RefMappingsContainer::template Codim< codimension >::Mapping Mapping;
+
+        typedef GenericReferenceElements< Field, dimension > RefElements;
+        typedef GenericReferenceElement< Field, dimension > RefElement;
+        typedef typename RefElement::template Codim< codimension >::Mapping Mapping;
+
         typedef LobattoInnerPoints<Field,SubTopology> InnerPoints;
         template <unsigned int subEntity>
         static void apply(const unsigned int order,
@@ -299,8 +301,9 @@ namespace Dune
 
           InnerPoints::template setup<dimension-codimension>( points1D,&(subPoints[0]) );
 
-          const RefMappingsContainer &refMappings = RefMappings::container( Topology::id );
-          const Mapping &mapping = refMappings.template mapping< codimension >( subEntity );
+          const GeometryType geoType( Topology::id, dimension );
+          const RefElement &refElement = RefElements::general( geoType );
+          const Mapping &mapping = refElement.template mapping< codimension >( subEntity );
 
           LagrangePoint<Field,dimension> *p = &(points[oldSize]);
           for ( unsigned int nr = 0; nr<size; ++nr, ++p)

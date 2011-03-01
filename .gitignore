@@ -13,6 +13,7 @@ config.status
 configure
 dependencies.m4
 depcomp
+dune.summary
 dune-localfunctions.pc
 install-sh
 lib

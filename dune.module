@@ -1,5 +1,5 @@
 Module: dune-localfunctions
-Version: 2.1-svn
+Version: 2.1.0
 Maintainer: dune@dune-project.org
 #depending on
 # the dune-grid dependency can be downgraded to a Suggests: once the

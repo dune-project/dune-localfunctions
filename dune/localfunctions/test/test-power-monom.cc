@@ -25,7 +25,9 @@ struct DimD {
     template<int p>
     struct Order {
       // tolerance for floating-point comparisons
-      static const double eps = 1e-9;
+      // be a little bit more lenient here than usual, the momom local basis
+      // is known to become more and more unstable with increasing order
+      static const double eps = 1e-8;
       // stepsize for numerical differentiation
       static const double delta = 1e-5;
 

@@ -1,7 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_FIELD_HH
-#define DUNE_FIELD_HH
+#ifndef DUNE_LOCALFUNCTIONS_UTILITY_FIELD_HH
+#define DUNE_LOCALFUNCTIONS_UTILITY_FIELD_HH
 
 #if HAVE_ALGLIB
 #include <alglib/amp.h>
@@ -349,7 +349,7 @@ namespace Dune
     typedef GMPField<precision+sum> Type;
   };
 #endif
-}
+} // namespace Dune
 
 // to be moved to different location...
 namespace std
@@ -377,6 +377,32 @@ namespace std
   }
 #endif // #if HAVE_ALGLIB
 
-}
+} // namespace std
 
-#endif // #ifndef DUNE_FIELD_HH
+namespace Dune
+{
+
+  namespace GenericGeometry
+  {
+
+    // FieldHelper
+    // -----------
+
+    template< class Field >
+    struct FieldHelper;
+
+#if HAVE_ALGLIB
+    template< unsigned int precision >
+    struct FieldHelper< amp::ampf< precision > >
+    {
+      typedef amp::ampf< precision > Field;
+
+      static Field abs ( const Field &x ) { return amp::abs( x ); }
+    };
+#endif // #if HAVE_ALGLIB
+
+  } // namespace GenericGeometry
+
+} // namespace Dune
+
+#endif // #ifndef DUNE_LOCALFUNCTIONS_UTILITY_FIELD_HH

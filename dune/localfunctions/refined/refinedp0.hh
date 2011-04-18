@@ -18,7 +18,7 @@
 namespace Dune
 {
 
-  /** \brief Local finite element that is piecewise P0 on a the once unifromly refined reference geometry
+  /** \brief Local finite element that is piecewise P0 on a once uniformly refined reference geometry
    */
   template<class D, class R, int dim>
   class RefinedP0LocalFiniteElement
@@ -27,11 +27,11 @@ namespace Dune
 
   public:
     // We steal the p0 traits since they exist for all dim.
-    // This allows to instanciate the type and access the Traits.
+    // This allows to instantiate the type and access the Traits.
     typedef typename P0LocalFiniteElement<D,R,dim>::Traits Traits;
   };
 
-  /** \brief Local finite element that is piecewise P0 on a the once unifromly refined reference geometry
+  /** \brief Local finite element that is piecewise P0 on a once uniformly refined reference geometry
    */
   template<class D, class R>
   class RefinedP0LocalFiniteElement<D,R,2>
@@ -88,6 +88,66 @@ namespace Dune
     RefinedP0LocalBasis<D,R,2> basis_;
     RefinedP0LocalCoefficients<2> coefficients_;
     RefinedP0LocalInterpolation<RefinedP0LocalBasis<D,R,2> > interpolation_;
+    GeometryType gt;
+  };
+
+  /** \brief Local finite element that is piecewise P0 on a once uniformly refined reference geometry
+   */
+  template<class D, class R>
+  class RefinedP0LocalFiniteElement<D,R,3>
+  {
+  public:
+    /** \todo Please doc me !
+     */
+    typedef LocalFiniteElementTraits<
+        RefinedP0LocalBasis<D,R,3>,
+        RefinedP0LocalCoefficients<3>,
+        RefinedP0LocalInterpolation<RefinedP0LocalBasis<D,R,3> > > Traits;
+
+    /** \todo Please doc me !
+     */
+    RefinedP0LocalFiniteElement ()
+    {
+      gt.makeTetrahedron();
+    }
+
+    /** \todo Please doc me !
+     */
+    const typename Traits::LocalBasisType& localBasis () const
+    {
+      return basis_;
+    }
+
+    /** \todo Please doc me !
+     */
+    const typename Traits::LocalCoefficientsType& localCoefficients () const
+    {
+      return coefficients_;
+    }
+
+    /** \todo Please doc me !
+     */
+    const typename Traits::LocalInterpolationType& localInterpolation () const
+    {
+      return interpolation_;
+    }
+
+    /** \todo Please doc me !
+     */
+    GeometryType type () const
+    {
+      return gt;
+    }
+
+    RefinedP0LocalFiniteElement * clone () const
+    {
+      return new RefinedP0LocalFiniteElement(*this);
+    }
+
+  private:
+    RefinedP0LocalBasis<D,R,3> basis_;
+    RefinedP0LocalCoefficients<3> coefficients_;
+    RefinedP0LocalInterpolation<RefinedP0LocalBasis<D,R,3> > interpolation_;
     GeometryType gt;
   };
 

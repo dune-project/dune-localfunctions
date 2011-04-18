@@ -4,7 +4,7 @@
 #define DUNE_REFINED_SIMPLEX_LOCALBASIS_HH
 
 /** \file
-    \brief Contains a base class for a LocalBasis classes based on uniform refinement
+    \brief Contains a base class for LocalBasis classes based on uniform refinement
  */
 
 #include <dune/common/fvector.hh>
@@ -24,22 +24,7 @@ namespace Dune
   };
 
   /**@ingroup LocalBasisImplementation
-     \brief Uniformly refined linear Lagrange shape functions in 1D.
-
-     1D IMPLEMENTATION IS NOT TESTED (the LocalElement for 1D does not exist due to lack of P21D elements)
-
-     This shape function set mimicks the P1 shape functions that you would get on
-     a uniformly refined grid.  Hence these shape functions are only piecewise
-     linear!  The data layout is identical to P2 shape functions.
-
-     Shape functions like these are necessary for hierarchical error estimators
-     for certain nonlinear problems.
-
-     The functions are associated to points by:
-
-     f_0 ~ (0.0)
-     f_1 ~ (1.0)
-     f_2 ~ (0.5)
+     \brief Base class for LocalBasis classes based on uniform refinement in 1D; provides numbering and local coordinates of subelements
 
      \tparam D Type to represent the field in the domain.
 
@@ -53,11 +38,31 @@ namespace Dune
     /** \brief Protected default constructor so this class can only be instantiated as a base class. */
     RefinedSimplexLocalBasis() {}
 
-    /** \brief Get local coordinates in the subtriangle
+    /** \brief Get the number of the subelement containing a given point.
+     *
+     * The subelements are ordered according to
+     *
+     *     0       1
+     * |-------:-------|
+     *
+     * \param[in] global Coordinates in the reference element
+     * \returns Number of the subtriangle containing <tt>global</tt>
+     */
+    static int getSubElement(const FieldVector<D,2>& global)
+    {
+      if (global[0] <= 0.5)
+        return 0;
+      else if (global[0] <= 1.0)
+        return 1;
 
-       \param[in] global Coordinates in the reference triangle
-       \param[out] subElement Which of the four subtriangles is global in?
-       \param[out] local The local coordinates in the subtriangle
+      DUNE_THROW(InvalidStateException, "no subelement defined");
+    }
+
+    /** \brief Get local coordinates in the subelement
+
+       \param[in] global Coordinates in the reference element
+       \param[out] subElement Number of the subelement containing <tt>global</tt>
+       \param[out] local The local coordinates in the subelement
      */
     static void getSubElement(const FieldVector<D,1>& global,
                               int& subElement,
@@ -71,28 +76,16 @@ namespace Dune
 
       subElement = 1;
       local[0] = 2.0 * global[0] - 1.0;
-
     }
 
   };
 
 
   /**@ingroup LocalBasisImplementation
-     \brief Uniformly refined constant shape functions on the triangle.
-
-     This shape function set mimicks the P0 shape functions that you would get on
-     a uniformly refined grid.  Hence these shape functions are only piecewise
-     constant!
+     \brief Base class for LocalBasis classes based on uniform refinement in 2D; provides numbering and local coordinates of subelements
 
      Shape functions like these are necessary for hierarchical error estimators
      for certain nonlinear problems.
-
-     The functions are associated with the simplices having the following centers:
-
-     f_0 ~ (1/6, 1/6)
-     f_1 ~ (4/6, 1/6)
-     f_2 ~ (1/6, 4/6)
-     f_3 ~ (2/6, 2/6)
 
      \tparam D Type to represent the field in the domain.
 
@@ -106,7 +99,7 @@ namespace Dune
     /** \brief Protected default constructor so this class can only be instantiated as a base class. */
     RefinedSimplexLocalBasis() {}
 
-    /** \brief Get local coordinates in the subtriangle.
+    /** \brief Get the number of the subtriangle containing a given point.
      *
      * The triangles are ordered according to
      *
@@ -118,7 +111,7 @@ namespace Dune
      * ------
      *
      * \param[in] global Coordinates in the reference triangle
-     * \returns Number of the subtriangles containing in
+     * \returns Number of the subtriangle containing <tt>global</tt>
      */
     static int getSubElement(const FieldVector<D,2>& global)
     {
@@ -128,13 +121,14 @@ namespace Dune
         return 1;
       else if (global[1] >= 0.5)
         return 2;
+
       return 3;
     }
 
     /** \brief Get local coordinates in the subtriangle
 
        \param[in] global Coordinates in the reference triangle
-       \param[out] subElement Which of the four subtriangles is global in?
+       \param[out] subElement Number of the subtriangle containing <tt>global</tt>
        \param[out] local The local coordinates in the subtriangle
      */
     static void getSubElement(const FieldVector<D,2>& global,
@@ -168,27 +162,10 @@ namespace Dune
   };
 
   /**@ingroup LocalBasisImplementation
-     \brief Uniformly refined linear Lagrange shape functions on the 3D-simplex (tetrahedron).
-
-     This shape function set mimicks the P1 shape functions that you would get on
-     a uniformly refined grid.  Hence these shape functions are only piecewise
-     linear!  The data layout is identical to P2 shape functions.
+     \brief Base class for LocalBasis classes based on uniform refinement in 3D; provides numbering and local coordinates of subelements
 
      Shape functions like these are necessary for hierarchical error estimators
      for certain nonlinear problems.
-
-     The functions are associated to points by:
-
-     f_0 ~ (0.0, 0.0, 0.0)
-     f_1 ~ (1.0, 0.0, 0.0)
-     f_2 ~ (0.0, 1.0, 0.0)
-     f_3 ~ (0.0, 0.0, 1.0)
-     f_4 ~ (0.5, 0.0, 0.0)
-     f_5 ~ (0.5, 0.5, 0.0)
-     f_6 ~ (0.0, 0.5, 0.0)
-     f_7 ~ (0.0, 0.0, 0.5)
-     f_8 ~ (0.5, 0.0, 0.5)
-     f_9 ~ (0.0, 0.5, 0.5)
 
      \tparam D Type to represent the field in the domain.
 
@@ -202,10 +179,62 @@ namespace Dune
     /** \brief Protected default constructor so this class can only be instantiated as a base class. */
     RefinedSimplexLocalBasis() {}
 
+    /** \brief Get the number of the subsimplex containing a given point in the reference element
+     *
+     * Defining the following points in the reference simplex
+     *
+     * 0: (0.0, 0.0, 0.0)
+     * 1: (1.0, 0.0, 0.0)
+     * 2: (0.0, 1.0, 0.0)
+     * 3: (0.0, 0.0, 1.0)
+     * 4: (0.5, 0.0, 0.0)
+     * 5: (0.5, 0.5, 0.0)
+     * 6: (0.0, 0.5, 0.0)
+     * 7: (0.0, 0.0, 0.5)
+     * 8: (0.5, 0.0, 0.5)
+     * 9: (0.0, 0.5, 0.5)
+     *
+     * The subsimplices are numbered according to
+     *
+     * 0: 0467  -
+     * 1: 4158   |_ "cut off" vertices
+     * 2: 6529   |
+     * 3: 7893  -
+     *
+     * 4: 6487  -
+     * 5: 4568   |_  octahedron partition
+     * 6: 6897   |
+     * 7: 6895  -
+     *
+     * \param[in] global Coordinates in the reference simplex
+     * \returns Number of the subsimplex containing <tt>global</tt>
+     */
+    static int getSubElement(const FieldVector<D,3>& global)
+    {
+      if (global[0] + global[1] + global[2] <= 0.5)
+        return 0;
+      else if (global[0] >= 0.5)
+        return 1;
+      else if (global[1] >= 0.5)
+        return 2;
+      else if (global[2] >= 0.5)
+        return 3;
+      else if ((global[0] + global[1] <= 0.5)and (global[1] + global[2] <= 0.5))
+        return 4;
+      else if ((global[0] + global[1] >= 0.5)and (global[1] + global[2] <= 0.5))
+        return 5;
+      else if ((global[0] + global[1] <= 0.5)and (global[1] + global[2] >= 0.5))
+        return 6;
+      else if ((global[0] + global[1] >= 0.5)and (global[1] + global[2] >= 0.5))
+        return 7;
+
+      DUNE_THROW(InvalidStateException, "no subelement defined");
+
+    }
     /** \brief Get local coordinates in the subsimplex
 
        \param[in] global Coordinates in the reference simplex
-       \param[out] subElement Which of the subsimplice is global in?
+       \param[out] subElement Number of the subsimplex containing <tt>global</tt>
        \param[out] local The local coordinates in the subsimplex
      */
     static void getSubElement(const FieldVector<D,3>& global,

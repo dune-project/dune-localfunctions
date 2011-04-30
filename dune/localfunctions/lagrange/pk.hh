@@ -11,7 +11,12 @@
 namespace Dune
 {
 
-  /** \todo Please doc me !
+  /** \brief General Lagrange finite element with arbitrary dimension and polynomial order
+   *
+   * \tparam D type used for domain coordinates
+   * \tparam R type used for function values
+   * \tparam d dimension of the reference element
+   * \tparam k polynomial order
    */
   template<class D, class R, int d, int k>
   class PkLocalFiniteElement
@@ -30,7 +35,10 @@ namespace Dune
     {}
   };
 
-  /** \todo Please doc me !
+  /** \brief General Lagrange finite element -- specialization for first-order on a 1d reference element
+   *
+   * \tparam D type used for domain coordinates
+   * \tparam R type used for function values
    */
   template<class D, class R>
   class PkLocalFiniteElement<D, R, 1, 1>
@@ -44,7 +52,11 @@ namespace Dune
     {}
   };
 
-  /** \todo Please doc me !
+  /** \brief General Lagrange finite element -- specialization for a 2d reference element
+   *
+   * \tparam D type used for domain coordinates
+   * \tparam R type used for function values
+   * \tparam k polynomial order
    */
   template<class D, class R, int k>
   class PkLocalFiniteElement<D, R, 2, k>
@@ -59,7 +71,11 @@ namespace Dune
     {}
   };
 
-  /** \todo Please doc me !
+  /** \brief General Lagrange finite element -- specialization for a 3d reference element
+   *
+   * \tparam D type used for domain coordinates
+   * \tparam R type used for function values
+   * \tparam k polynomial order
    */
   template<class D, class R, int k>
   class PkLocalFiniteElement<D, R, 3, k>

@@ -69,4 +69,7 @@ test_q1_SOURCES = test-q1.cc
 TESTS += test-q22d
 test_q22d_SOURCES = test-q22d.cc
 
+TESTS += test-q23d
+test_q23d_SOURCES = test-q23d.cc
+
 include $(top_srcdir)/am/global-rules

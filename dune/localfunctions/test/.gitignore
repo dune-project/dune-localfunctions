@@ -15,6 +15,7 @@ test-monom
 test-pk2d
 test-power-monom
 test-q1
+test-q2
 test-q22d
 
 *.swp

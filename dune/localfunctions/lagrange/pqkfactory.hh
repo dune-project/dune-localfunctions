@@ -13,7 +13,7 @@
 #include <dune/localfunctions/lagrange/p0.hh>
 #include <dune/localfunctions/lagrange/pk.hh>
 #include <dune/localfunctions/lagrange/q1.hh>
-#include <dune/localfunctions/lagrange/q22d.hh>
+#include <dune/localfunctions/lagrange/q2.hh>
 #include <dune/localfunctions/lagrange/prismp1.hh>
 #include <dune/localfunctions/lagrange/prismp2.hh>
 #include <dune/localfunctions/lagrange/pyramidp1.hh>
@@ -45,7 +45,7 @@ namespace Dune
   struct DimSpecificPQkLocalFiniteElementFactory<D,R,2,k>
   {
     typedef typename FixedOrderLocalBasisTraits<typename P0LocalFiniteElement<D,R,2>::Traits::LocalBasisType::Traits,0>::Traits T;
-    typedef Q22DLocalFiniteElement<D,R> Q22D;
+    typedef Q2LocalFiniteElement<D,R,2> Q22D;
 
     //! create finite element for given GeometryType
     static LocalFiniteElementVirtualInterface<T>* create(const GeometryType& gt)

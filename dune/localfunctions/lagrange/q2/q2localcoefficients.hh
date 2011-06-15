@@ -28,6 +28,14 @@ namespace Dune
     {
       switch (dim) {
 
+      case 2 : {
+
+        for (std::size_t i=0; i<9; i++)
+          li[i] = LocalKey(i%4,2-i/4,0);
+
+        break;
+      }
+
       case 3 : {
 
         for (std::size_t i = 0; i < 8; i++)

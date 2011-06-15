@@ -14,7 +14,7 @@
 
 #include <dune/grid/utility/mockgeometry.hh>
 
-#include <dune/localfunctions/lagrange/q23d.hh>
+#include <dune/localfunctions/lagrange/q2.hh>
 
 #include "geometries.hh"
 #include "test-fe.hh"
@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
       typedef TestGeos::Geometry Geometry;
       const Geometry &geo = testGeos.get(gt);
 
-      Dune::Q23DFiniteElementFactory<Geometry, double> feFactory;
+      Dune::Q2FiniteElementFactory<Geometry, double> feFactory;
       bool success = testFE(geo, feFactory.make(geo), eps, delta);
 
       if(success && result != 1)

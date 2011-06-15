@@ -29,7 +29,28 @@ int main(int argc, char** argv) {
     int result = 77;
 
     {
-      std::cout << "== Checking global-valued Q23D elements" << std::endl;
+      std::cout << "== Checking global-valued Q2 2D elements" << std::endl;
+
+      Dune::GeometryType gt;
+      gt.makeQuadrilateral();
+
+      typedef TestGeometries<double, 2> TestGeos;
+      static const TestGeos testGeos;
+
+      typedef TestGeos::Geometry Geometry;
+      const Geometry &geo = testGeos.get(gt);
+
+      Dune::Q2FiniteElementFactory<Geometry, double> feFactory;
+      bool success = testFE(geo, feFactory.make(geo), eps, delta);
+
+      if(success && result != 1)
+        result = 0;
+      else
+        result = 1;
+    }
+
+    {
+      std::cout << "== Checking global-valued Q2 3D elements" << std::endl;
 
       Dune::GeometryType gt;
       gt.makeHexahedron();

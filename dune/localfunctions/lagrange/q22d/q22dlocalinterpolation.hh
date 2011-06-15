@@ -3,6 +3,9 @@
 #ifndef DUNE_Q22DLOCALINTERPOLATION_HH
 #define DUNE_Q22DLOCALINTERPOLATION_HH
 
+#warning This file is deprecated and will be removed after Dune 2.2.\
+  Please use q2localinterpolation.hh instead!
+
 #include <vector>
 
 namespace Dune

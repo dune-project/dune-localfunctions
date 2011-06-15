@@ -3,6 +3,9 @@
 #ifndef DUNE_Q22DLOCALBASIS_HH
 #define DUNE_Q22DLOCALBASIS_HH
 
+#warning This file is deprecated and will be removed after Dune 2.2.\
+  Please use q2localbasis.hh instead!
+
 #include <dune/common/fmatrix.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>

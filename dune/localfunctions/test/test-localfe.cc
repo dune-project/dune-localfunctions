@@ -20,8 +20,7 @@
 #include "../lagrange/q1.hh"
 #include "../lagrange/p23d.hh"
 #include "../lagrange/pq22d.hh"
-#include "../lagrange/pk2d.hh"
-#include "../lagrange/pk3d.hh"
+#include "../lagrange/pk.hh"
 #include "../lagrange/q22d.hh"
 
 #include "../refined/refinedp1.hh"
@@ -46,10 +45,10 @@ bool testArbitraryOrderFE()
 {
   bool success = true;
 
-  Dune::Pk2DLocalFiniteElement<double,double,k> pk2dlfem(1);
+  Dune::PkLocalFiniteElement<double,double,2,k> pk2dlfem;
   success = testFE(pk2dlfem) and success;
 
-  Dune::Pk3DLocalFiniteElement<double,double,k> pk3dlfem;
+  Dune::PkLocalFiniteElement<double,double,3,k> pk3dlfem;
   success = testFE(pk3dlfem) and success;
 
   return testArbitraryOrderFE<k-1>() and success;

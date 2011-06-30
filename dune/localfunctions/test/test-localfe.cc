@@ -40,25 +40,28 @@
 #include "test-localfe.hh"
 
 // tmp for testing arbitrary order finite elements
-template<int k>
-bool testArbitraryOrderFE()
+template<unsigned int d, int k>
+struct PkLocalFiniteElementTest
 {
-  bool success = true;
+  static bool test()
+  {
+    bool success = true;
 
-  Dune::PkLocalFiniteElement<double,double,2,k> pk2dlfem;
-  success = testFE(pk2dlfem) and success;
+    Dune::PkLocalFiniteElement<double,double,d,k> pklfem;
+    success = testFE(pklfem) and success;
 
-  Dune::PkLocalFiniteElement<double,double,3,k> pk3dlfem;
-  success = testFE(pk3dlfem) and success;
+    return PkLocalFiniteElementTest<d, k-1>::test() and success;
+  }
+};
 
-  return testArbitraryOrderFE<k-1>() and success;
-}
-
-template<>
-bool testArbitraryOrderFE<-1>()
+template<unsigned int d>
+struct PkLocalFiniteElementTest<d, -1>
 {
-  return true;
-}
+  static bool test()
+  {
+    return true;
+  }
+};
 
 template<int k>
 bool testMonomials()
@@ -152,7 +155,11 @@ int main(int argc, char** argv) try
   Dune::PyramidP1LocalFiniteElement<double,double> pyramidp1fem;
   success = testFE(pyramidp1fem) and success;
 
-  success = testArbitraryOrderFE<10>() and success;
+  success = PkLocalFiniteElementTest<1, 1>::test() and success;
+
+  success = PkLocalFiniteElementTest<2, 10>::test() and success;
+
+  success = PkLocalFiniteElementTest<3, 10>::test() and success;
 
   Dune::Q22DLocalFiniteElement<double,double> q22dlfem;
   success = testFE(q22dlfem) and success;

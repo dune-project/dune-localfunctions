@@ -53,19 +53,19 @@ namespace Dune
     {}
   };
 
-  /** \brief General Lagrange finite element -- specialization for zero-th order
+  /** \brief General Lagrange finite element -- specialization for zero-th order on a 1d reference element
    *
    * \tparam D type used for domain coordinates
    * \tparam R type used for function values
    * \tparam d dimension of the reference element
    */
-  template<class D, class R, int d>
-  class PkLocalFiniteElement<D, R, d, 0>
-    : public P0LocalFiniteElement<D, R, d>
+  template<class D, class R>
+  class PkLocalFiniteElement<D, R, 1, 0>
+    : public P0LocalFiniteElement<D, R, 1>
   {
   public:
     PkLocalFiniteElement()
-      : P0LocalFiniteElement<D,R,d>(GeometryType(0,d))
+      : P0LocalFiniteElement<D,R,1>(GeometryType(0,1))
     {}
 
     PkLocalFiniteElement(const unsigned int vertexmap[2])

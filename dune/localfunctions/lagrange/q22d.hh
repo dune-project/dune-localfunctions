@@ -5,7 +5,7 @@
 #define DUNE_Q22DLOCALFINITEELEMENT_HH
 
 #warning This file is deprecated and will be removed after Dune 2.2.\
-  Please use q2localfiniteelement.hh instead!
+  Please use q2.hh instead!
 
 #include <dune/common/geometrytype.hh>
 

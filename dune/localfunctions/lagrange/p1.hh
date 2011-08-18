@@ -13,7 +13,7 @@
 namespace Dune
 {
 
-  /** \todo The local p1 finite element on simplices
+  /** \brief The local p1 finite element on simplices
       \tparam D Domain data type
       \tparam R Range data type
       \tparam dim Dimension of the simplex

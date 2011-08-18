@@ -15,7 +15,10 @@
 namespace Dune
 {
 
-  /** \todo Please doc me !
+  /** \brief The local Q1 finite element on cubes
+      \tparam D Domain data type
+      \tparam R Range data type
+      \tparam dim Dimension of the simplex
    */
   template<class D, class R, int dim>
   class Q1LocalFiniteElement

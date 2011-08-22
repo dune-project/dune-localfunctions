@@ -19,6 +19,29 @@
 #include "geometries.hh"
 #include "test-fe.hh"
 
+template <int dim>
+void test(const double& eps, const double& delta, int& result)
+{
+  std::cout << "== Checking global-valued Q2 " << dim << "D elements" << std::endl;
+
+  Dune::GeometryType gt;
+  gt.makeCube(dim);
+
+  typedef TestGeometries<double, dim> TestGeos;
+  static const TestGeos testGeos;
+
+  typedef typename TestGeos::Geometry Geometry;
+  const Geometry &geo = testGeos.get(gt);
+
+  Dune::Q2FiniteElementFactory<Geometry, double> feFactory;
+  bool success = testFE(geo, feFactory.make(geo), eps, delta);
+
+  if(success && result != 1)
+    result = 0;
+  else
+    result = 1;
+}
+
 int main(int argc, char** argv) {
   try {
     // tolerance for floating-point comparisons
@@ -28,47 +51,9 @@ int main(int argc, char** argv) {
 
     int result = 77;
 
-    {
-      std::cout << "== Checking global-valued Q2 2D elements" << std::endl;
-
-      Dune::GeometryType gt;
-      gt.makeQuadrilateral();
-
-      typedef TestGeometries<double, 2> TestGeos;
-      static const TestGeos testGeos;
-
-      typedef TestGeos::Geometry Geometry;
-      const Geometry &geo = testGeos.get(gt);
-
-      Dune::Q2FiniteElementFactory<Geometry, double> feFactory;
-      bool success = testFE(geo, feFactory.make(geo), eps, delta);
-
-      if(success && result != 1)
-        result = 0;
-      else
-        result = 1;
-    }
-
-    {
-      std::cout << "== Checking global-valued Q2 3D elements" << std::endl;
-
-      Dune::GeometryType gt;
-      gt.makeHexahedron();
-
-      typedef TestGeometries<double, 3> TestGeos;
-      static const TestGeos testGeos;
-
-      typedef TestGeos::Geometry Geometry;
-      const Geometry &geo = testGeos.get(gt);
-
-      Dune::Q2FiniteElementFactory<Geometry, double> feFactory;
-      bool success = testFE(geo, feFactory.make(geo), eps, delta);
-
-      if(success && result != 1)
-        result = 0;
-      else
-        result = 1;
-    }
+    test<1>(eps, delta, result);
+    test<2>(eps, delta, result);
+    test<3>(eps, delta, result);
 
     return result;
   }

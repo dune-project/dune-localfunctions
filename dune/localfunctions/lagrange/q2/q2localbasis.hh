@@ -44,6 +44,13 @@ namespace Dune
 
       switch (dim) {
 
+      case 1 : {
+        out[0] =  2 * (in[0]-0.5) * (in[0] - 1);
+        out[1] = -4 *  in[0]      * (in[0] - 1);
+        out[2] =  2 *  in[0]      * (in[0] - 0.5);
+        break;
+      }
+
       case 2 : {
 
         R x=in[0], y=in[1];
@@ -118,6 +125,14 @@ namespace Dune
       out.resize(size());
 
       switch (dim) {
+
+      case 1 : {
+
+        out[0][0][0] =  4*in[0] - 3;
+        out[1][0][0] = -8*in[0] + 4;
+        out[2][0][0] =  4*in[0] - 1;
+        break;
+      }
 
       case 2 : {
 

@@ -28,6 +28,13 @@ namespace Dune
     {
       switch (dim) {
 
+      case 1 : {
+        li[0] = LocalKey(0,1,0);       // left vertex
+        li[1] = LocalKey(0,0,0);       // element
+        li[2] = LocalKey(1,1,0);       // right vertex
+        break;
+      }
+
       case 2 : {
 
         for (std::size_t i=0; i<9; i++)

@@ -22,6 +22,15 @@ namespace Dune
 
       switch (dim) {
 
+      case 1 : {
+
+        out.resize(3);
+        x[0] = 0.0; f.evaluate(x,y); out[0] = y;
+        x[0] = 0.5; f.evaluate(x,y); out[1] = y;
+        x[0] = 1.0; f.evaluate(x,y); out[2] = y;
+        break;
+      }
+
       case 2 : {
 
         out.resize(9);

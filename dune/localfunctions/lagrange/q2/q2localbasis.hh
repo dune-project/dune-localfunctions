@@ -57,17 +57,18 @@ namespace Dune
         R X0=2*x*x-3*x+1, X1=-4*x*x+4*x, X2=2*x*x-x;
         R Y0=2*y*y-3*y+1, Y1=-4*y*y+4*y, Y2=2*y*y-y;
 
-        out[2] = X0*Y2;
-        out[7] = X1*Y2;
-        out[3] = X2*Y2;
+        out[0] = X0*Y0;
+        out[1] = X1*Y0;
+        out[2] = X2*Y0;
 
-        out[4] = X0*Y1;
-        out[8] = X1*Y1;
+        out[3] = X0*Y1;
+        out[4] = X1*Y1;
         out[5] = X2*Y1;
 
-        out[0] = X0*Y0;
-        out[6] = X1*Y0;
-        out[1] = X2*Y0;
+        out[6] = X0*Y2;
+        out[7] = X1*Y2;
+        out[8] = X2*Y2;
+
         break;
       }
 
@@ -142,14 +143,14 @@ namespace Dune
         R DX0=4*x-3, DX1=-8*x+4, DX2=4*x-1;
         R DY0=4*y-3, DY1=-8*y+4, DY2=4*y-1;
 
-        out[2][0][0] = DX0*Y2; out[7][0][0] = DX1*Y2; out[3][0][0] = DX2*Y2;
-        out[2][0][1] = X0*DY2; out[7][0][1] = X1*DY2; out[3][0][1] = X2*DY2;
+        out[6][0][0] = DX0*Y2; out[7][0][0] = DX1*Y2; out[8][0][0] = DX2*Y2;
+        out[6][0][1] = X0*DY2; out[7][0][1] = X1*DY2; out[8][0][1] = X2*DY2;
 
-        out[4][0][0] = DX0*Y1; out[8][0][0] = DX1*Y1; out[5][0][0] = DX2*Y1;
-        out[4][0][1] = X0*DY1; out[8][0][1] = X1*DY1; out[5][0][1] = X2*DY1;
+        out[3][0][0] = DX0*Y1; out[4][0][0] = DX1*Y1; out[5][0][0] = DX2*Y1;
+        out[3][0][1] = X0*DY1; out[4][0][1] = X1*DY1; out[5][0][1] = X2*DY1;
 
-        out[0][0][0] = DX0*Y0; out[6][0][0] = DX1*Y0; out[1][0][0] = DX2*Y0;
-        out[0][0][1] = X0*DY0; out[6][0][1] = X1*DY0; out[1][0][1] = X2*DY0;
+        out[0][0][0] = DX0*Y0; out[1][0][0] = DX1*Y0; out[2][0][0] = DX2*Y0;
+        out[0][0][1] = X0*DY0; out[1][0][1] = X1*DY0; out[2][0][1] = X2*DY0;
         break;
       }
 

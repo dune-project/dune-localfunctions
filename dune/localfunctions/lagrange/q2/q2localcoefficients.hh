@@ -37,8 +37,15 @@ namespace Dune
 
       case 2 : {
 
-        for (std::size_t i=0; i<9; i++)
-          li[i] = LocalKey(i%4,2-i/4,0);
+        li[0] = LocalKey(0,2,0);
+        li[1] = LocalKey(2,1,0);
+        li[2] = LocalKey(1,2,0);
+        li[3] = LocalKey(0,1,0);
+        li[4] = LocalKey(0,0,0);
+        li[5] = LocalKey(1,1,0);
+        li[6] = LocalKey(2,2,0);
+        li[7] = LocalKey(3,1,0);
+        li[8] = LocalKey(3,2,0);
 
         break;
       }

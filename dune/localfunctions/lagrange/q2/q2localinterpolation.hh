@@ -20,29 +20,36 @@ namespace Dune
       typename LB::Traits::RangeType y;
       static const int dim = LB::Traits::dimDomain;
 
+      // Compute number of Lagrange points
+      size_t size = 1;
+      for (int i=0; i<dim; i++)
+        size *= 3;
+
       switch (dim) {
 
-      case 1 : {
-
-        out.resize(3);
-        x[0] = 0.0; f.evaluate(x,y); out[0] = y;
-        x[0] = 0.5; f.evaluate(x,y); out[1] = y;
-        x[0] = 1.0; f.evaluate(x,y); out[2] = y;
-        break;
-      }
-
+      case 1 :
       case 2 : {
 
-        out.resize(9);
-        x[0] = 0.0; x[1] = 0.0; f.evaluate(x,y); out[0] = y;
-        x[0] = 0.5; x[1] = 0.0; f.evaluate(x,y); out[1] = y;
-        x[0] = 1.0; x[1] = 0.0; f.evaluate(x,y); out[2] = y;
-        x[0] = 0.0; x[1] = 0.5; f.evaluate(x,y); out[3] = y;
-        x[0] = 0.5; x[1] = 0.5; f.evaluate(x,y); out[4] = y;
-        x[0] = 1.0; x[1] = 0.5; f.evaluate(x,y); out[5] = y;
-        x[0] = 0.0; x[1] = 1.0; f.evaluate(x,y); out[6] = y;
-        x[0] = 0.5; x[1] = 1.0; f.evaluate(x,y); out[7] = y;
-        x[0] = 1.0; x[1] = 1.0; f.evaluate(x,y); out[8] = y;
+        out.resize(size);
+
+        for (size_t i=0; i<size; i++) {
+
+          // Construct the i-th Lagrange point
+          size_t ternary = i;
+          for (int j=0; j<dim; j++) {
+
+            int digit = ternary%3;
+            ternary /= 3;
+
+            x[j] = digit*0.5;
+
+          }
+
+          // Evaluate the function at this point
+          f.evaluate(x,y);
+          out[i] = y;
+
+        }
 
         break;
       }

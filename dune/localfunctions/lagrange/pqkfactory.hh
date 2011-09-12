@@ -17,6 +17,7 @@
 #include <dune/localfunctions/lagrange/prismp1.hh>
 #include <dune/localfunctions/lagrange/prismp2.hh>
 #include <dune/localfunctions/lagrange/pyramidp1.hh>
+#include <dune/localfunctions/lagrange/pyramidp2.hh>
 
 namespace Dune
 {
@@ -67,6 +68,7 @@ namespace Dune
     typedef PrismP1LocalFiniteElement<D,R> PrismP1;
     typedef PrismP2LocalFiniteElement<D,R> PrismP2;
     typedef PyramidP1LocalFiniteElement<D,R> PyramidP1;
+    typedef PyramidP2LocalFiniteElement<D,R> PyramidP2;
 
     //! create finite element for given GeometryType
     static LocalFiniteElementVirtualInterface<T>* create(const GeometryType& gt)

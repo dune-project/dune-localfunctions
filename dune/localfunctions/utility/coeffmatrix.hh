@@ -132,7 +132,7 @@ namespace Dune
     {
       typedef typename Vector::value_type YDerivatives;
       typedef typename BasisIterator::Derivatives XDerivatives;
-      typedef FieldVector<typename XDerivatives::Field,YDerivatives::size> XLFETensor;
+      typedef FieldVector<typename XDerivatives::Field,YDerivatives::dimension> XLFETensor;
       size_t numLsg = y.size();
       assert( numLsg*blockSize <= (size_t)numRows_ );
       unsigned int row = 0;

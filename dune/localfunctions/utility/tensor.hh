@@ -636,7 +636,7 @@ namespace Dune
       typedef LFETensor<F1,dimD,deriv> LFETensorType;
       const unsigned int rr = r*LFETensorType::size;
       const FieldVector<F1,LFETensorType::size> &xx = x.template block<deriv>();
-      for (int i=0; i<xx.size; ++i)
+      for (int i=0; i<FieldVector<F1,LFETensorType::size>::dimension; ++i)
         y[rr+i] += xx[i]*a;
     }
   };

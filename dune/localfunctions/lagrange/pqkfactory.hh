@@ -77,6 +77,8 @@ namespace Dune
         return new LocalFiniteElementVirtualImp<PrismP2>(PrismP2());
       if ((gt.isPyramid())and (k==1))
         return new LocalFiniteElementVirtualImp<PyramidP1>(PyramidP1());
+      if ((gt.isPyramid())and (k==2))
+        return new LocalFiniteElementVirtualImp<PyramidP2>(PyramidP2());
       return 0;
     }
   };

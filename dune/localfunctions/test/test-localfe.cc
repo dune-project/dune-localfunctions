@@ -17,6 +17,7 @@
 #include "../lagrange/prismp1.hh"
 #include "../lagrange/prismp2.hh"
 #include "../lagrange/pyramidp1.hh"
+#include "../lagrange/pyramidp2.hh"
 #include "../lagrange/q1.hh"
 #include "../lagrange/p23d.hh"
 #include "../lagrange/pq22d.hh"
@@ -154,6 +155,9 @@ int main(int argc, char** argv) try
 
   Dune::PyramidP1LocalFiniteElement<double,double> pyramidp1fem;
   success = testFE(pyramidp1fem) and success;
+
+  Dune::PyramidP2LocalFiniteElement<double,double> pyramidp2fem;
+  success = testFE(pyramidp2fem) and success;
 
   success = PkLocalFiniteElementTest<1, 1>::test() and success;
 

@@ -42,37 +42,17 @@ namespace Dune
     {
       out.resize(size());
 
-      switch (dim) {
+      // Evaluate the Lagrange functions
+      array<array<R,3>, dim> X;
 
-      case 1 : {
-        out[0] =  2 * (in[0]-0.5) * (in[0] - 1);
-        out[1] = -4 *  in[0]      * (in[0] - 1);
-        out[2] =  2 *  in[0]      * (in[0] - 0.5);
-        break;
+      for (size_t i=0; i<dim; i++) {
+        X[i][0] =  2*in[i]*in[i] - 3*in[i]+1;
+        X[i][1] = -4*in[i]*in[i] + 4*in[i];
+        X[i][2] =  2*in[i]*in[i] -   in[i];
       }
 
-      case 2 : {
-
-        R x=in[0], y=in[1];
-        R X0=2*x*x-3*x+1, X1=-4*x*x+4*x, X2=2*x*x-x;
-        R Y0=2*y*y-3*y+1, Y1=-4*y*y+4*y, Y2=2*y*y-y;
-
-        out[0] = X0*Y0;
-        out[1] = X1*Y0;
-        out[2] = X2*Y0;
-
-        out[3] = X0*Y1;
-        out[4] = X1*Y1;
-        out[5] = X2*Y1;
-
-        out[6] = X0*Y2;
-        out[7] = X1*Y2;
-        out[8] = X2*Y2;
-
-        break;
-      }
-
-      case 3 : {
+      // legacy special case
+      if (dim==3) {
 
         R x=in[0], y=in[1], z=in[2];
         R X0=2*x*x-3*x+1, X1=-4*x*x+4*x, X2=2*x*x-x;
@@ -111,11 +91,27 @@ namespace Dune
         out[19] = X1*Y2*Z2;
         out[7]  = X2*Y2*Z2;
 
-        break;
+        return;
       }
-      default :
-        DUNE_THROW(NotImplemented, "Q2LocalBasis for dim==" << dim);
+
+      for (size_t i=0; i<out.size(); i++) {
+
+        out[i] = 1;
+
+        // Construct the i-th Lagrange point
+        size_t ternary = i;
+        for (int j=0; j<dim; j++) {
+
+          int digit = ternary%3;
+          ternary /= 3;
+
+          // Multiply the 1d Lagrange shape functions together
+          out[i] *= X[j][digit];
+
+        }
+
       }
+
     }
 
     //! \brief Evaluate Jacobian of all shape functions

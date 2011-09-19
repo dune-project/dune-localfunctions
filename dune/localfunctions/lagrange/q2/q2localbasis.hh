@@ -46,18 +46,18 @@ namespace Dune
       array<array<R,3>, dim> X;
 
       for (size_t i=0; i<dim; i++) {
-        X[i][0] =  2*in[i]*in[i] - 3*in[i]+1;
-        X[i][1] = -4*in[i]*in[i] + 4*in[i];
-        X[i][2] =  2*in[i]*in[i] -   in[i];
+        X[i][0] =  R(2)*in[i]*in[i] - R(3)*in[i]+R(1);
+        X[i][1] = -R(4)*in[i]*in[i] + R(4)*in[i];
+        X[i][2] =  R(2)*in[i]*in[i] -   in[i];
       }
 
       // legacy special case
       if (dim==3) {
 
         R x=in[0], y=in[1], z=in[2];
-        R X0=2*x*x-3*x+1, X1=-4*x*x+4*x, X2=2*x*x-x;
-        R Y0=2*y*y-3*y+1, Y1=-4*y*y+4*y, Y2=2*y*y-y;
-        R Z0=2*z*z-3*z+1, Z1=-4*z*z+4*z, Z2=2*z*z-z;
+        R X0=R(2)*x*x-R(3)*x+R(1), X1=-R(4)*x*x+R(4)*x, X2=R(2)*x*x-x;
+        R Y0=R(2)*y*y-R(3)*y+R(1), Y1=-R(4)*y*y+R(4)*y, Y2=R(2)*y*y-y;
+        R Z0=R(2)*z*z-R(3)*z+R(1), Z1=-R(4)*z*z+R(4)*z, Z2=R(2)*z*z-z;
 
         // numbering: first in descending codim order,
         // second according to the reference element numbering
@@ -125,19 +125,19 @@ namespace Dune
 
       case 1 : {
 
-        out[0][0][0] =  4*in[0] - 3;
-        out[1][0][0] = -8*in[0] + 4;
-        out[2][0][0] =  4*in[0] - 1;
+        out[0][0][0] =  R(4)*in[0] - R(3);
+        out[1][0][0] = -R(8)*in[0] + R(4);
+        out[2][0][0] =  R(4)*in[0] - R(1);
         break;
       }
 
       case 2 : {
 
         R x=in[0], y=in[1];
-        R X0=2*x*x-3*x+1, X1=-4*x*x+4*x, X2=2*x*x-x;
-        R Y0=2*y*y-3*y+1, Y1=-4*y*y+4*y, Y2=2*y*y-y;
-        R DX0=4*x-3, DX1=-8*x+4, DX2=4*x-1;
-        R DY0=4*y-3, DY1=-8*y+4, DY2=4*y-1;
+        R X0=R(2)*x*x-R(3)*x+R(1), X1=-R(4)*x*x+R(4)*x, X2=R(2)*x*x-x;
+        R Y0=R(2)*y*y-R(3)*y+R(1), Y1=-R(4)*y*y+R(4)*y, Y2=R(2)*y*y-y;
+        R DX0=R(4)*x-R(3), DX1=-R(8)*x+R(4), DX2=R(4)*x-R(1);
+        R DY0=R(4)*y-R(3), DY1=-R(8)*y+R(4), DY2=R(4)*y-R(1);
 
         out[6][0][0] = DX0*Y2; out[7][0][0] = DX1*Y2; out[8][0][0] = DX2*Y2;
         out[6][0][1] = X0*DY2; out[7][0][1] = X1*DY2; out[8][0][1] = X2*DY2;
@@ -152,12 +152,12 @@ namespace Dune
 
       case 3 : {
         R x=in[0], y=in[1], z=in[2];
-        R X0=2*x*x-3*x+1, X1=-4*x*x+4*x, X2=2*x*x-x;
-        R Y0=2*y*y-3*y+1, Y1=-4*y*y+4*y, Y2=2*y*y-y;
-        R Z0=2*z*z-3*z+1, Z1=-4*z*z+4*z, Z2=2*z*z-z;
-        R DX0=4*x-3, DX1=-8*x+4, DX2=4*x-1;
-        R DY0=4*y-3, DY1=-8*y+4, DY2=4*y-1;
-        R DZ0=4*z-3, DZ1=-8*z+4, DZ2=4*z-1;
+        R X0=R(2)*x*x-R(3)*x+R(1), X1=-R(4)*x*x+R(4)*x, X2=R(2)*x*x-x;
+        R Y0=R(2)*y*y-R(3)*y+R(1), Y1=-R(4)*y*y+R(4)*y, Y2=R(2)*y*y-y;
+        R Z0=R(2)*z*z-R(3)*z+R(1), Z1=-R(4)*z*z+R(4)*z, Z2=R(2)*z*z-z;
+        R DX0=R(4)*x-R(3), DX1=-R(8)*x+R(4), DX2=R(4)*x-R(1);
+        R DY0=R(4)*y-R(3), DY1=-R(8)*y+R(4), DY2=R(4)*y-R(1);
+        R DZ0=R(4)*z-R(3), DZ1=-R(8)*z+R(4), DZ2=R(4)*z-R(1);
 
         out[0][0][0]  = DX0*Y0*Z0; out[0][0][1]  = X0*DY0*Z0; out[0][0][2]  = X0*Y0*DZ0;
         out[14][0][0] = DX1*Y0*Z0; out[14][0][1] = X1*DY0*Z0; out[14][0][2] = X1*Y0*DZ0;

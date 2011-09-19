@@ -121,7 +121,7 @@ namespace Dune
     {
       out.resize(size());
 
-      // Evaluate the Lagrange functions
+      // Evaluate the 1d Lagrange functions and their derivatives
       array<array<R,3>, dim> X, DX;
 
       for (size_t i=0; i<dim; i++) {
@@ -134,32 +134,8 @@ namespace Dune
         DX[i][2] =  R(4)*in[i] - R(1);
       }
 
+      if (dim==3) {
 
-
-      switch (dim) {
-
-      case 1 : {
-
-        out[0][0][0] = DX[0][0];
-        out[1][0][0] = DX[0][1];
-        out[2][0][0] = DX[0][2];
-        break;
-      }
-
-      case 2 : {
-
-        out[6][0][0] = DX[0][0]*X[1][2]; out[7][0][0] = DX[0][1]*X[1][2]; out[8][0][0] = DX[0][2]*X[1][2];
-        out[6][0][1] = X[0][0]*DX[1][2]; out[7][0][1] = X[0][1]*DX[1][2]; out[8][0][1] = X[0][2]*DX[1][2];
-
-        out[3][0][0] = DX[0][0]*X[1][1]; out[4][0][0] = DX[0][1]*X[1][1]; out[5][0][0] = DX[0][2]*X[1][1];
-        out[3][0][1] = X[0][0]*DX[1][1]; out[4][0][1] = X[0][1]*DX[1][1]; out[5][0][1] = X[0][2]*DX[1][1];
-
-        out[0][0][0] = DX[0][0]*X[1][0]; out[1][0][0] = DX[0][1]*X[1][0]; out[2][0][0] = DX[0][2]*X[1][0];
-        out[0][0][1] = X[0][0]*DX[1][0]; out[1][0][1] = X[0][1]*DX[1][0]; out[2][0][1] = X[0][2]*DX[1][0];
-        break;
-      }
-
-      case 3 : {
         R x=in[0], y=in[1], z=in[2];
         R X0=R(2)*x*x-R(3)*x+R(1), X1=-R(4)*x*x+R(4)*x, X2=R(2)*x*x-x;
         R Y0=R(2)*y*y-R(3)*y+R(1), Y1=-R(4)*y*y+R(4)*y, Y2=R(2)*y*y-y;
@@ -198,12 +174,34 @@ namespace Dune
         out[19][0][0] = DX1*Y2*Z2; out[19][0][1] = X1*DY2*Z2; out[19][0][2] = X1*Y2*DZ2;
         out[7][0][0]  = DX2*Y2*Z2; out[7][0][1]  = X2*DY2*Z2; out[7][0][2]  = X2*Y2*DZ2;
 
-        break;
+        return;
       }
-      default :
-        DUNE_THROW(NotImplemented, "Q2LocalBasis for dim==" << dim);
+
+      // Compute the derivatives by deriving the products of 1d Lagrange functions
+      for (size_t i=0; i<out.size(); i++) {
+
+        // Computing the j-th partial derivative
+        for (int j=0; j<dim; j++) {
+
+          out[i][0][j] = 1;
+
+          // Loop over the 'dim' terms in the product rule
+          size_t ternary = i;
+          for (int k=0; k<dim; k++) {
+
+            int digit = ternary%3;
+            ternary /= 3;
+
+            out[i][0][j] *= (k==j) ? DX[k][digit] : X[k][digit];
+
+          }
+
+        }
 
       }
+
+
+
     }
 
     //! \brief Polynomial order of the shape functions

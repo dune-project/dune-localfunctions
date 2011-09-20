@@ -51,49 +51,8 @@ namespace Dune
         X[i][2] =  R(2)*in[i]*in[i] -   in[i];
       }
 
-      // legacy special case
-      if (dim==3) {
 
-        R x=in[0], y=in[1], z=in[2];
-        R X0=R(2)*x*x-R(3)*x+R(1), X1=-R(4)*x*x+R(4)*x, X2=R(2)*x*x-x;
-        R Y0=R(2)*y*y-R(3)*y+R(1), Y1=-R(4)*y*y+R(4)*y, Y2=R(2)*y*y-y;
-        R Z0=R(2)*z*z-R(3)*z+R(1), Z1=-R(4)*z*z+R(4)*z, Z2=R(2)*z*z-z;
-
-        // numbering: first in descending codim order,
-        // second according to the reference element numbering
-        out[0]  = X0*Y0*Z0;
-        out[14] = X1*Y0*Z0;
-        out[1]  = X2*Y0*Z0;
-        out[12] = X0*Y1*Z0;
-        out[24] = X1*Y1*Z0;
-        out[13] = X2*Y1*Z0;
-        out[2]  = X0*Y2*Z0;
-        out[15] = X1*Y2*Z0;
-        out[3]  = X2*Y2*Z0;
-
-        out[8]  = X0*Y0*Z1;
-        out[22] = X1*Y0*Z1;
-        out[9]  = X2*Y0*Z1;
-        out[20] = X0*Y1*Z1;
-        out[26] = X1*Y1*Z1;
-        out[21] = X2*Y1*Z1;
-        out[10] = X0*Y2*Z1;
-        out[23] = X1*Y2*Z1;
-        out[11] = X2*Y2*Z1;
-
-        out[4]  = X0*Y0*Z2;
-        out[18] = X1*Y0*Z2;
-        out[5]  = X2*Y0*Z2;
-        out[16] = X0*Y1*Z2;
-        out[25] = X1*Y1*Z2;
-        out[17] = X2*Y1*Z2;
-        out[6]  = X0*Y2*Z2;
-        out[19] = X1*Y2*Z2;
-        out[7]  = X2*Y2*Z2;
-
-        return;
-      }
-
+      // Compute function values: they are products of 1d Lagrange function values
       for (size_t i=0; i<out.size(); i++) {
 
         out[i] = 1;
@@ -134,48 +93,6 @@ namespace Dune
         DX[i][2] =  R(4)*in[i] - R(1);
       }
 
-      if (dim==3) {
-
-        R x=in[0], y=in[1], z=in[2];
-        R X0=R(2)*x*x-R(3)*x+R(1), X1=-R(4)*x*x+R(4)*x, X2=R(2)*x*x-x;
-        R Y0=R(2)*y*y-R(3)*y+R(1), Y1=-R(4)*y*y+R(4)*y, Y2=R(2)*y*y-y;
-        R Z0=R(2)*z*z-R(3)*z+R(1), Z1=-R(4)*z*z+R(4)*z, Z2=R(2)*z*z-z;
-        R DX0=R(4)*x-R(3), DX1=-R(8)*x+R(4), DX2=R(4)*x-R(1);
-        R DY0=R(4)*y-R(3), DY1=-R(8)*y+R(4), DY2=R(4)*y-R(1);
-        R DZ0=R(4)*z-R(3), DZ1=-R(8)*z+R(4), DZ2=R(4)*z-R(1);
-
-        out[0][0][0]  = DX0*Y0*Z0; out[0][0][1]  = X0*DY0*Z0; out[0][0][2]  = X0*Y0*DZ0;
-        out[14][0][0] = DX1*Y0*Z0; out[14][0][1] = X1*DY0*Z0; out[14][0][2] = X1*Y0*DZ0;
-        out[1][0][0]  = DX2*Y0*Z0; out[1][0][1]  = X2*DY0*Z0; out[1][0][2]  = X2*Y0*DZ0;
-        out[12][0][0] = DX0*Y1*Z0; out[12][0][1] = X0*DY1*Z0; out[12][0][2] = X0*Y1*DZ0;
-        out[24][0][0] = DX1*Y1*Z0; out[24][0][1] = X1*DY1*Z0; out[24][0][2] = X1*Y1*DZ0;
-        out[13][0][0] = DX2*Y1*Z0; out[13][0][1] = X2*DY1*Z0; out[13][0][2] = X2*Y1*DZ0;
-        out[2][0][0]  = DX0*Y2*Z0; out[2][0][1]  = X0*DY2*Z0; out[2][0][2]  = X0*Y2*DZ0;
-        out[15][0][0] = DX1*Y2*Z0; out[15][0][1] = X1*DY2*Z0; out[15][0][2] = X1*Y2*DZ0;
-        out[3][0][0]  = DX2*Y2*Z0; out[3][0][1]  = X2*DY2*Z0; out[3][0][2]  = X2*Y2*DZ0;
-
-        out[8][0][0]  = DX0*Y0*Z1; out[8][0][1]  = X0*DY0*Z1; out[8][0][2]  = X0*Y0*DZ1;
-        out[22][0][0] = DX1*Y0*Z1; out[22][0][1] = X1*DY0*Z1; out[22][0][2] = X1*Y0*DZ1;
-        out[9][0][0]  = DX2*Y0*Z1; out[9][0][1]  = X2*DY0*Z1; out[9][0][2]  = X2*Y0*DZ1;
-        out[20][0][0] = DX0*Y1*Z1; out[20][0][1] = X0*DY1*Z1; out[20][0][2] = X0*Y1*DZ1;
-        out[26][0][0] = DX1*Y1*Z1; out[26][0][1] = X1*DY1*Z1; out[26][0][2] = X1*Y1*DZ1;
-        out[21][0][0] = DX2*Y1*Z1; out[21][0][1] = X2*DY1*Z1; out[21][0][2] = X2*Y1*DZ1;
-        out[10][0][0] = DX0*Y2*Z1; out[10][0][1] = X0*DY2*Z1; out[10][0][2] = X0*Y2*DZ1;
-        out[23][0][0] = DX1*Y2*Z1; out[23][0][1] = X1*DY2*Z1; out[23][0][2] = X1*Y2*DZ1;
-        out[11][0][0] = DX2*Y2*Z1; out[11][0][1] = X2*DY2*Z1; out[11][0][2] = X2*Y2*DZ1;
-
-        out[4][0][0]  = DX0*Y0*Z2; out[4][0][1]  = X0*DY0*Z2; out[4][0][2]  = X0*Y0*DZ2;
-        out[18][0][0] = DX1*Y0*Z2; out[18][0][1] = X1*DY0*Z2; out[18][0][2] = X1*Y0*DZ2;
-        out[5][0][0]  = DX2*Y0*Z2; out[5][0][1]  = X2*DY0*Z2; out[5][0][2]  = X2*Y0*DZ2;
-        out[16][0][0] = DX0*Y1*Z2; out[16][0][1] = X0*DY1*Z2; out[16][0][2] = X0*Y1*DZ2;
-        out[25][0][0] = DX1*Y1*Z2; out[25][0][1] = X1*DY1*Z2; out[25][0][2] = X1*Y1*DZ2;
-        out[17][0][0] = DX2*Y1*Z2; out[17][0][1] = X2*DY1*Z2; out[17][0][2] = X2*Y1*DZ2;
-        out[6][0][0]  = DX0*Y2*Z2; out[6][0][1]  = X0*DY2*Z2; out[6][0][2]  = X0*Y2*DZ2;
-        out[19][0][0] = DX1*Y2*Z2; out[19][0][1] = X1*DY2*Z2; out[19][0][2] = X1*Y2*DZ2;
-        out[7][0][0]  = DX2*Y2*Z2; out[7][0][1]  = X2*DY2*Z2; out[7][0][2]  = X2*Y2*DZ2;
-
-        return;
-      }
 
       // Compute the derivatives by deriving the products of 1d Lagrange functions
       for (size_t i=0; i<out.size(); i++) {

@@ -25,73 +25,27 @@ namespace Dune
       for (int i=0; i<dim; i++)
         size *= 3;
 
-      switch (dim) {
+      out.resize(size);
 
-      case 1 :
-      case 2 : {
+      for (size_t i=0; i<size; i++) {
 
-        out.resize(size);
+        // Construct the i-th Lagrange point
+        size_t ternary = i;
+        for (int j=0; j<dim; j++) {
 
-        for (size_t i=0; i<size; i++) {
+          int digit = ternary%3;
+          ternary /= 3;
 
-          // Construct the i-th Lagrange point
-          size_t ternary = i;
-          for (int j=0; j<dim; j++) {
-
-            int digit = ternary%3;
-            ternary /= 3;
-
-            x[j] = digit*0.5;
-
-          }
-
-          // Evaluate the function at this point
-          f.evaluate(x,y);
-          out[i] = y;
+          x[j] = digit*0.5;
 
         }
 
-        break;
+        // Evaluate the function at this point
+        f.evaluate(x,y);
+        out[i] = y;
+
       }
 
-      case 3 : {
-
-        out.resize(27);
-        x[0] = 0.0; x[1] = 0.0; x[2] = 0.0; f.evaluate(x,y); out[0] = y;
-        x[0] = 0.5; x[1] = 0.0; x[2] = 0.0; f.evaluate(x,y); out[14] = y;
-        x[0] = 1.0; x[1] = 0.0; x[2] = 0.0; f.evaluate(x,y); out[1] = y;
-        x[0] = 0.0; x[1] = 0.5; x[2] = 0.0; f.evaluate(x,y); out[12] = y;
-        x[0] = 0.5; x[1] = 0.5; x[2] = 0.0; f.evaluate(x,y); out[24] = y;
-        x[0] = 1.0; x[1] = 0.5; x[2] = 0.0; f.evaluate(x,y); out[13] = y;
-        x[0] = 0.0; x[1] = 1.0; x[2] = 0.0; f.evaluate(x,y); out[2] = y;
-        x[0] = 0.5; x[1] = 1.0; x[2] = 0.0; f.evaluate(x,y); out[15] = y;
-        x[0] = 1.0; x[1] = 1.0; x[2] = 0.0; f.evaluate(x,y); out[3] = y;
-
-        x[0] = 0.0; x[1] = 0.0; x[2] = 0.5; f.evaluate(x,y); out[8] = y;
-        x[0] = 0.5; x[1] = 0.0; x[2] = 0.5; f.evaluate(x,y); out[22] = y;
-        x[0] = 1.0; x[1] = 0.0; x[2] = 0.5; f.evaluate(x,y); out[9] = y;
-        x[0] = 0.0; x[1] = 0.5; x[2] = 0.5; f.evaluate(x,y); out[20] = y;
-        x[0] = 0.5; x[1] = 0.5; x[2] = 0.5; f.evaluate(x,y); out[26] = y;
-        x[0] = 1.0; x[1] = 0.5; x[2] = 0.5; f.evaluate(x,y); out[21] = y;
-        x[0] = 0.0; x[1] = 1.0; x[2] = 0.5; f.evaluate(x,y); out[10] = y;
-        x[0] = 0.5; x[1] = 1.0; x[2] = 0.5; f.evaluate(x,y); out[23] = y;
-        x[0] = 1.0; x[1] = 1.0; x[2] = 0.5; f.evaluate(x,y); out[11] = y;
-
-        x[0] = 0.0; x[1] = 0.0; x[2] = 1.0; f.evaluate(x,y); out[4] = y;
-        x[0] = 0.5; x[1] = 0.0; x[2] = 1.0; f.evaluate(x,y); out[18] = y;
-        x[0] = 1.0; x[1] = 0.0; x[2] = 1.0; f.evaluate(x,y); out[5] = y;
-        x[0] = 0.0; x[1] = 0.5; x[2] = 1.0; f.evaluate(x,y); out[16] = y;
-        x[0] = 0.5; x[1] = 0.5; x[2] = 1.0; f.evaluate(x,y); out[25] = y;
-        x[0] = 1.0; x[1] = 0.5; x[2] = 1.0; f.evaluate(x,y); out[17] = y;
-        x[0] = 0.0; x[1] = 1.0; x[2] = 1.0; f.evaluate(x,y); out[6] = y;
-        x[0] = 0.5; x[1] = 1.0; x[2] = 1.0; f.evaluate(x,y); out[19] = y;
-        x[0] = 1.0; x[1] = 1.0; x[2] = 1.0; f.evaluate(x,y); out[7] = y;
-
-        break;
-      }
-      default :
-        DUNE_THROW(NotImplemented, "Q2LocalInterpolation for dim==" << dim);
-      }
     }
   };
 }

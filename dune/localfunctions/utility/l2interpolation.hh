@@ -93,8 +93,8 @@ namespace Dune
     typedef LocalL2InterpolationBase<B,Q> Base;
     template< class BasisFactory, bool onb >
     friend class LocalL2InterpolationFactory;
-    using Base::Basis;
-    using Base::Quadrature;
+    using typename Base::Basis;
+    using typename Base::Quadrature;
   private:
     LocalL2Interpolation ( const typename Base::Basis &basis, const typename Base::Quadrature &quadrature )
       : Base(basis,quadrature)
@@ -107,8 +107,8 @@ namespace Dune
     typedef LocalL2InterpolationBase<B,Q> Base;
     template< class BasisFactory, bool onb >
     friend class LocalL2InterpolationFactory;
-    using Base::Basis;
-    using Base::Quadrature;
+    using typename Base::Basis;
+    using typename Base::Quadrature;
     template< class Function, class DofField >
     void interpolate ( const Function &function, std::vector< DofField > &coefficients ) const
     {

@@ -31,7 +31,7 @@ namespace Dune
         RaviartThomasCoefficientsFactory< dimDomain >,
         RaviartThomasL2InterpolationFactory< dimDomain, SF > > Base;
   public:
-    using Base::Traits;
+    using typename Base::Traits;
 
     /** \todo Please doc me !
      */

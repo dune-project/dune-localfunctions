@@ -36,7 +36,7 @@ namespace Dune
         DGLocalCoefficientsFactory< OrthonormalBasisFactory< dimDomain, SF, CF > >,
         LocalL2InterpolationFactory< OrthonormalBasisFactory< dimDomain, SF, CF >,true > > Base;
   public:
-    using Base::Traits;
+    using typename Base::Traits;
 
     /** \todo Please doc me !
      */

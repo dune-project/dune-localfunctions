@@ -22,12 +22,13 @@
 #include "geometries.hh"
 #include "test-fe.hh"
 
+// tolerance for floating-point comparisons
+static const double eps = 1e-9;
+// stepsize for numerical differentiation
+static const double delta = 1e-5;
+
 template<int k>
 struct Test {
-  // tolerance for floating-point comparisons
-  static const double eps = 1e-9;
-  // stepsize for numerical differentiation
-  static const double delta = 1e-5;
 
   static void apply(int &result) {
     std::cout << "== Checking global-valued Pk2D elements (with k=" << k << ")"

@@ -3,8 +3,9 @@
 #ifndef DUNE_VIRTUALINTERFACE_HH
 #define DUNE_VIRTUALINTERFACE_HH
 
-#include <dune/common/geometrytype.hh>
 #include <dune/common/function.hh>
+
+#include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
 #include <dune/localfunctions/common/localkey.hh>

@@ -6,8 +6,9 @@
 
 #include <cstddef>
 
-#include <dune/common/geometrytype.hh>
 #include <dune/common/shared_ptr.hh>
+
+#include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/meta/power/basis.hh>
 #include <dune/localfunctions/meta/power/coefficients.hh>

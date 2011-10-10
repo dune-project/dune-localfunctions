@@ -4,6 +4,7 @@
 # include "config.h"
 #endif
 
+#if HAVE_ALUGRID
 #include <cstddef>
 #include <iostream>
 
@@ -152,3 +153,5 @@ catch (Dune::Exception e)
 {
   std::cout << e << std::endl;
 }
+
+#endif // HAVE_ALUGRID

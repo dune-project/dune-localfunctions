@@ -6,13 +6,13 @@
 #include <vector>
 
 #include <dune/common/fvector.hh>
-#include <dune/localfunctions/utility/field.hh>
 #include <dune/common/forloop.hh>
-#include <dune/grid/common/topologyfactory.hh>
 
-#include <dune/grid/genericgeometry/topologytypes.hh>
-#include <dune/grid/genericgeometry/subtopologies.hh>
+#include <dune/geometry/topologyfactory.hh>
+#include <dune/geometry/genericgeometry/topologytypes.hh>
+#include <dune/geometry/genericgeometry/subtopologies.hh>
 
+#include <dune/localfunctions/utility/field.hh>
 #include <dune/localfunctions/common/localkey.hh>
 
 namespace Dune

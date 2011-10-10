@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-#include <dune/grid/common/quadraturerules.hh>
+#include <dune/geometry/quadraturerules.hh>
 
 #include <dune/localfunctions/monom.hh>
 

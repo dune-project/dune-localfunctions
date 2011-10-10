@@ -3,7 +3,7 @@
 #ifndef DUNE_PRISM2_3DLOCALFINITEELEMENT_HH
 #define DUNE_PRISM2_3DLOCALFINITEELEMENT_HH
 
-#include <dune/common/geometrytype.hh>
+#include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include "prismp2/prismp2localbasis.hh"

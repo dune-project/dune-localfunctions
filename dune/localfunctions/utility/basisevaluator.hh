@@ -10,12 +10,10 @@
 #include <dune/common/fvector.hh>
 #include <dune/common/typetraits.hh>
 
-#include <dune/grid/genericgeometry/topologytypes.hh>
+#include <dune/geometry/genericgeometry/topologytypes.hh>
 
 #include <dune/localfunctions/utility/field.hh>
-
 #include <dune/localfunctions/utility/multiindex.hh>
-
 #include <dune/localfunctions/utility/tensor.hh>
 
 namespace Dune

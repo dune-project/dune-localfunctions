@@ -6,7 +6,7 @@
 #include <cassert>
 #include <vector>
 
-#include <dune/grid/common/topologyfactory.hh>
+#include <dune/geometry/topologyfactory.hh>
 #include <dune/localfunctions/common/localkey.hh>
 
 namespace Dune

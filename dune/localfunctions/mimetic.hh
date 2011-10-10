@@ -3,7 +3,7 @@
 #ifndef DUNE_MIMETICLOCALFINITEELEMENT_HH
 #define DUNE_MIMETICLOCALFINITEELEMENT_HH
 
-#include <dune/common/geometrytype.hh>
+#include <dune/geometry/type.hh>
 
 #include "common/localfiniteelementtraits.hh"
 #include "mimetic/mimeticall.hh"

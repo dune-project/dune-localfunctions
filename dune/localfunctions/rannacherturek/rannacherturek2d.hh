@@ -3,7 +3,7 @@
 #ifndef DUNE_RANNACHER_TUREK2DLOCALFINITEELEMENT_HH
 #define DUNE_RANNACHER_TUREK2DLOCALFINITEELEMENT_HH
 
-#include <dune/common/geometrytype.hh>
+#include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 

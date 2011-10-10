@@ -5,7 +5,7 @@
 
 #include <sstream>
 
-#include <dune/grid/common/topologyfactory.hh>
+#include <dune/geometry/topologyfactory.hh>
 
 #include <dune/localfunctions/utility/polynomialbasis.hh>
 #include <dune/localfunctions/orthonormal/orthonormalcompute.hh>

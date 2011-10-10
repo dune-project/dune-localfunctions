@@ -10,12 +10,13 @@
 #include <vector>
 
 #include <dune/common/deprecated.hh>
-#include <dune/common/geometrytype.hh>
 #include <dune/common/shared_ptr.hh>
 #include <dune/common/static_assert.hh>
 
+#include <dune/geometry/type.hh>
+
 #include "common/localfiniteelementtraits.hh"
-#include <dune/localfunctions/common/localtoglobaladaptors.hh>
+#include "common/localtoglobaladaptors.hh"
 #include "monom/monomlocalbasis.hh"
 #include "monom/monomlocalcoefficients.hh"
 #include "monom/monomlocalinterpolation.hh"

@@ -7,10 +7,10 @@
 
 #include <dune/common/forloop.hh>
 
-#include <dune/grid/common/topologyfactory.hh>
-#include <dune/grid/common/quadraturerules/lobattoquadrature.hh>
-#include <dune/grid/common/genericreferenceelements.hh>
-#include <dune/grid/genericgeometry/referenceelements.hh>
+#include <dune/geometry/topologyfactory.hh>
+#include <dune/geometry/quadraturerules/lobattoquadrature.hh>
+#include <dune/geometry/genericreferenceelements.hh>
+#include <dune/geometry/genericgeometry/referenceelements.hh>
 
 #include <dune/localfunctions/utility/lfematrix.hh>
 #include <dune/localfunctions/utility/field.hh>

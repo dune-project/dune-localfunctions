@@ -11,11 +11,11 @@
 
 #include <dune/common/exceptions.hh>
 #include <dune/common/fvector.hh>
-#include <dune/common/geometrytype.hh>
 #include <dune/common/static_assert.hh>
 
-#include <dune/grid/utility/mockgeometry.hh>
-#include <dune/grid/utility/vertexorder.hh>
+#include <dune/geometry/type.hh>
+#include <dune/geometry/mockgeometry.hh>
+#include <dune/geometry/vertexorder.hh>
 
 #include <dune/localfunctions/whitney/edges0.5.hh>
 

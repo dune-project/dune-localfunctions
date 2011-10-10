@@ -5,9 +5,9 @@
 
 #include <fstream>
 #include <dune/common/exceptions.hh>
+#include <dune/geometry/topologyfactory.hh>
 
 #include <dune/localfunctions/utility/basismatrix.hh>
-#include <dune/grid/common/topologyfactory.hh>
 
 namespace Dune
 {

@@ -9,9 +9,10 @@
 
 #include <dune/common/fmatrix.hh>
 #include <dune/common/fvector.hh>
-#include <dune/common/geometrytype.hh>
 #include <dune/common/static_assert.hh>
 #include <dune/common/typetraits.hh>
+
+#include <dune/geometry/type.hh>
 
 namespace Dune {
 

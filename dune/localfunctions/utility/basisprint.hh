@@ -31,7 +31,7 @@ namespace Dune {
     typedef typename Basis::CoefficientMatrix CMatrix;
     typedef PolynomialBasis<StandardEvaluator<MIBasis>, CMatrix > PrintBasis;
 
-    MIBasis *miBasis = MIBasisFactory::create(basis.basis().topologyId(),basis.basis().order());
+    MIBasis *miBasis = MIBasisFactory::create( Dune::GeometryType( basis.basis().topologyId(),dimension ),basis.basis().order());
     PrintBasis printBasis(*miBasis,basis.matrix(),basis.size());
 
     unsigned int size = printBasis.size();
@@ -54,10 +54,10 @@ namespace Dune {
     printBasis.template evaluateSingle<deriv>( x, y );
     for (unsigned int i=0; i<size; ++i)
     {
-      out << "func_" << i << ":" << std::endl;
+      out << "$\\varphi_" << i << "(a,b,c)$&$=$&$" << std::endl;
       out << "( ";
       for (unsigned int r=0; r<PrintBasis::dimRange; ++r)
-        out << y[i][r] << (r<PrintBasis::dimRange-1 ? " , " : " )");
+        out << y[i][r] << (r<PrintBasis::dimRange-1 ? " , $ \\\\ && $" : " )$ \\\\");
       out << std::endl;
     }
     MIBasisFactory::release(miBasis);

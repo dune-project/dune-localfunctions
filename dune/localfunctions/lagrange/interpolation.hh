@@ -115,6 +115,11 @@ namespace Dune
       else
         return new Object( *lagrangeCoeff );
     }
+    template< class Topology >
+    static bool supports ( const typename Traits::Key &key )
+    {
+      return true;
+    }
     static void release( Object *object)
     {
       Traits::LagrangePointSetFactory::release( object->points() );

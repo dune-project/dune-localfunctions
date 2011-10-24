@@ -27,9 +27,9 @@ struct DimD {
       // tolerance for floating-point comparisons
       // be a little bit more lenient here than usual, the momom local basis
       // is known to become more and more unstable with increasing order
-      static const double eps = 1e-8;
+      static constexpr double eps = 1e-8;
       // stepsize for numerical differentiation
-      static const double delta = 1e-5;
+      static constexpr double delta = 1e-5;
 
       static void apply(int &result) {
         std::cout << "== Checking global-valued Power elements (with "

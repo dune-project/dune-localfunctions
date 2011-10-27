@@ -3,6 +3,7 @@
 #ifndef DUNE_Q2_LOCALINTERPOLATION_HH
 #define DUNE_Q2_LOCALINTERPOLATION_HH
 
+#include <cstddef>
 #include <vector>
 
 namespace Dune

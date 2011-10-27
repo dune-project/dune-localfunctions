@@ -6,6 +6,8 @@
 #include <cstddef>
 #include <vector>
 
+#include <dune/common/exceptions.hh>
+
 #include <dune/localfunctions/common/localkey.hh>
 
 namespace Dune

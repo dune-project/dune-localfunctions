@@ -728,7 +728,7 @@ namespace Dune
     template< class DVector, class RVector >
     void evaluate ( const DVector &x, RVector &values ) const
     {
-      assert( DVector::size == dimension);
+      assert( DVector::dimension == dimension);
       DomainVector bx;
       for( int d = 0; d < dimension; ++d )
         field_cast( x[ d ], bx[ d ] );
@@ -870,7 +870,7 @@ namespace Dune
     template< class DVector, class RVector >
     void evaluate ( const DVector &x, RVector &values ) const
     {
-      assert( DVector::size == dimension);
+      assert( DVector::dimension == dimension);
       DomainVector bx;
       for( int d = 0; d < dimension; ++d )
         field_cast( x[ d ], bx[ d ] );
@@ -879,7 +879,7 @@ namespace Dune
     template< unsigned int deriv, class DVector, class RVector >
     void evaluate ( const DVector &x, RVector &values ) const
     {
-      assert( DVector::size == dimension);
+      assert( DVector::dimension == dimension);
       DomainVector bx;
       for( int d = 0; d < dimension; ++d )
         field_cast( x[ d ], bx[ d ] );

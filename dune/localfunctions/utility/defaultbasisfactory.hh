@@ -11,6 +11,14 @@
 
 namespace Dune
 {
+  struct Identity
+  {
+    template <class T>
+    static T apply( const T &t )
+    {
+      return t;
+    }
+  };
   /************************************************
   * Class for providing a factory for basis
   * functions over the set of reference elements.
@@ -23,13 +31,15 @@ namespace Dune
   template< class PreBFactory,
       class InterpolFactory,
       unsigned int dim, unsigned int dimR,
-      class SF, class CF >
+      class SF, class CF,
+      class PreBasisKeyExtractor = Identity >
   struct DefaultBasisFactory;
 
   template< class PreBFactory,
       class InterpolFactory,
       unsigned int dim, unsigned int dimR,
-      class SF, class CF >
+      class SF, class CF,
+      class PreBasisKeyExtractor >
   struct DefaultBasisFactoryTraits
   {
     static const unsigned int dimension = dim;
@@ -46,24 +56,27 @@ namespace Dune
     typedef PolynomialBasisWithMatrix< Evaluator, SparseCoeffMatrix< SF, dimRange > > Basis;
 
     typedef const Basis Object;
-    typedef typename PreBasisFactory::Key Key;  // should be more flexible
-    typedef DefaultBasisFactory<PreBFactory,InterpolFactory,dim,dimR,SF,CF> Factory;
+    typedef typename InterpolationFactory::Key Key;
+    typedef DefaultBasisFactory<PreBFactory,InterpolFactory,dim,dimR,SF,CF,PreBasisKeyExtractor> Factory;
   };
 
   template< class PreBFactory,
       class InterpolFactory,
       unsigned int dim, unsigned int dimR,
-      class SF, class CF >
+      class SF, class CF,
+      class PreBasisKeyExtractor >
   struct DefaultBasisFactory
     : public TopologyFactory<
-          DefaultBasisFactoryTraits< PreBFactory,InterpolFactory,dim,dimR,SF,CF >
+          DefaultBasisFactoryTraits< PreBFactory,InterpolFactory,dim,dimR,SF,CF,PreBasisKeyExtractor >
           >
   {
-    typedef DefaultBasisFactoryTraits< PreBFactory,InterpolFactory,dim,dimR,SF,CF > Traits;
-    static const unsigned int dimension = dim;
+    typedef DefaultBasisFactoryTraits< PreBFactory,InterpolFactory,dim,dimR,SF,CF,PreBasisKeyExtractor > Traits;
+    static const unsigned int dimension = Traits::dimension;
+    static const unsigned int dimRange  = Traits::dimRange;
     typedef SF StorageField;
     typedef CF ComputeField;
     typedef typename Traits::Basis Basis;
+    typedef typename Traits::PreBasisFactory PreBasisFactory;
 
     typedef typename Traits::Object Object;
     typedef typename Traits::Key Key;
@@ -77,7 +90,8 @@ namespace Dune
     template< class Topology >
     static Object *createObject ( const Key &key )
     {
-      const typename Traits::PreBasis *preBasis = Traits::PreBasisFactory::template create<Topology>( key );
+      const typename PreBasisFactory::Key preBasisKey = PreBasisKeyExtractor::apply(key);
+      const typename Traits::PreBasis *preBasis = Traits::PreBasisFactory::template create<Topology>( preBasisKey );
       const typename Traits::Interpolation *interpol = Traits::InterpolationFactory::template create<Topology>( key );
       BasisMatrix< typename Traits::PreBasis,
           typename Traits::Interpolation,

@@ -50,7 +50,7 @@ namespace Dune
     inline void evaluateFunction (const typename Traits::DomainType& in,
                                   std::vector<typename Traits::RangeType>& out) const
     {
-      int subElement = getSubElement(in);
+      int subElement = this->getSubElement(in);
       out.resize(N);
       for(int i=0; i<N; ++i)
         out[i] = (i==subElement) ? 1 : 0;

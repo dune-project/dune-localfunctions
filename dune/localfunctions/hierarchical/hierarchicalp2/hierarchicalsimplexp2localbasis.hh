@@ -29,9 +29,9 @@ namespace Dune
 
      The shape functions are associated to the following points:
 
-     f_0 ~ (0.0)   // linear function
-     f_1 ~ (1.0)   // linear function
-     f_2 ~ (0.5)   // quadratic bubble
+     - \f$ f_0 \f$ ~ (0.0)   // linear function
+     - \f$ f_1 \f$ ~ (1.0)   // linear function
+     - \f$ f_2 \f$ ~ (0.5)   // quadratic bubble
 
      \tparam D Type to represent the field in the domain.
      \tparam R Type to represent the field in the range.
@@ -91,12 +91,12 @@ namespace Dune
 
      The functions are associated to points by:
 
-     f_0 ~ (0.0, 0.0)
-     f_1 ~ (0.5, 0.0)
-     f_2 ~ (1.0, 0.0)
-     f_3 ~ (0.0, 0.5)
-     f_4 ~ (0.5, 0.5)
-     f_5 ~ (0.0, 1.0)
+     - \f$ f_0 \f$ ~ (0.0, 0.0)
+     - \f$ f_1 \f$ ~ (0.5, 0.0)
+     - \f$ f_2 \f$ ~ (1.0, 0.0)
+     - \f$ f_3 \f$ ~ (0.0, 0.5)
+     - \f$ f_4 \f$ ~ (0.5, 0.5)
+     - \f$ f_5 \f$ ~ (0.0, 1.0)
 
      \tparam D Type to represent the field in the domain.
      \tparam R Type to represent the field in the range.
@@ -163,16 +163,16 @@ namespace Dune
 
      The functions are associated to points by:
 
-     f_0 ~ (0.0, 0.0, 0.0)
-     f_1 ~ (0.5, 0.0, 0.0)
-     f_2 ~ (1.0, 0.0, 0.0)
-     f_3 ~ (0.0, 0.5, 0.0)
-     f_4 ~ (0.5, 0.5, 0.0)
-     f_5 ~ (0.0, 1.0, 0.0)
-     f_6 ~ (0.0, 0.0, 0.5)
-     f_7 ~ (0.5, 0.0, 0.5)
-     f_8 ~ (0.0, 0.5, 0.5)
-     f_9 ~ (0.0, 0.0, 1.0)
+     - \f$ f_0 \f$ ~ (0.0, 0.0, 0.0)
+     - \f$ f_1 \f$ ~ (0.5, 0.0, 0.0)
+     - \f$ f_2 \f$ ~ (1.0, 0.0, 0.0)
+     - \f$ f_3 \f$ ~ (0.0, 0.5, 0.0)
+     - \f$ f_4 \f$ ~ (0.5, 0.5, 0.0)
+     - \f$ f_5 \f$ ~ (0.0, 1.0, 0.0)
+     - \f$ f_6 \f$ ~ (0.0, 0.0, 0.5)
+     - \f$ f_7 \f$ ~ (0.5, 0.0, 0.5)
+     - \f$ f_8 \f$ ~ (0.0, 0.5, 0.5)
+     - \f$ f_9 \f$ ~ (0.0, 0.0, 1.0)
 
      \tparam D Type to represent the field in the domain.
      \tparam R Type to represent the field in the range.

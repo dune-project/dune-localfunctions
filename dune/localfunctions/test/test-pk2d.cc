@@ -29,6 +29,7 @@ static const double delta = 1e-5;
 
 template<int k>
 struct Test {
+
   static void apply(int &result) {
     std::cout << "== Checking global-valued Pk2D elements (with k=" << k << ")"
               << std::endl;

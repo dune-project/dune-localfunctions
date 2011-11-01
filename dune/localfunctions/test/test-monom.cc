@@ -23,14 +23,15 @@
 #include "test-fe.hh"
 
 // tolerance for floating-point comparisons
-static const double eps = 1e-9;
+const double eps = 1e-9;
 // stepsize for numerical differentiation
-static const double delta = 1e-5;
+const double delta = 1e-5;
 
 template<int dim>
 struct Dim {
   template<int p>
   struct Order {
+
     static void apply(int &result) {
       std::cout << "== Checking global-valued Monom elements (with "
                 << "dim=" << dim << ", p=" << p << ")" << std::endl;

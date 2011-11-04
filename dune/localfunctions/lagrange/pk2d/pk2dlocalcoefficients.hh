@@ -5,7 +5,6 @@
 #define DUNE_PK2DLOCALCOEFFICIENTS_HH
 
 #include <cstddef>
-#include <iostream>
 #include <vector>
 
 #include <dune/localfunctions/common/localkey.hh>

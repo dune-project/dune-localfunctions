@@ -55,6 +55,12 @@ namespace Dune
                                   std::vector<typename Traits::RangeType>& out) const
     {
       out.resize(N);
+      // specialization for k==0, not clear whether that is needed
+      if (k==0) {
+        out[0] = 1;
+        return;
+      }
+
       int n=0;
       for (unsigned int j=0; j<=k; j++)
         for (unsigned int i=0; i<=k-j; i++)
@@ -76,6 +82,13 @@ namespace Dune
                       std::vector<typename Traits::JacobianType>& out) const                        // return value
     {
       out.resize(N);
+
+      // specialization for k==0, not clear whether that is needed
+      if (k==0) {
+        out[0][0][0] = 0; out[0][0][1] = 0;
+        return;
+      }
+
       int n=0;
       for (unsigned int j=0; j<=k; j++)
         for (unsigned int i=0; i<=k-j; i++)
@@ -143,8 +156,6 @@ namespace Dune
           n++;
         }
 
-      //        for (int i=0; i<N; i++)
-      //          std::cout << i << " " << out[i][0][0] << " " << out[i][0][1] << std::endl;
     }
 
     //! \brief Polynomial order of the shape functions
@@ -157,55 +168,5 @@ namespace Dune
     R pos[k+1]; // positions on the interval
   };
 
-
-  //Specialization for k=0
-  template<class D, class R>
-  class Pk2DLocalBasis<D,R,0>
-  {
-  public:
-    typedef LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldMatrix<R,1,2> > Traits;
-
-    /** \brief Export the number of degrees of freedom */
-    enum {N = 1};
-
-    /** \brief Export the element order */
-    enum {O = 0};
-
-    unsigned int size () const
-    {
-      return 1;
-    }
-
-    inline void evaluateFunction (const typename Traits::DomainType& in,
-                                  std::vector<typename Traits::RangeType>& out) const
-    {
-      out.resize(1);
-      out[0] = 1;
-    }
-
-    // evaluate derivative of a single component
-    inline void
-    evaluateJacobian (const typename Traits::DomainType& in,     // position
-                      std::vector<typename Traits::JacobianType>& out) const                  // return value
-    {
-      out.resize(1);
-      out[0][0][0] = 0; out[0][0][1] = 0;
-    }
-
-    // local interpolation of a function
-    template<typename E, typename F, typename C>
-    void interpolate (const E& e, const F& f, std::vector<C>& out) const
-    {
-      typename Traits::DomainType x;
-      typename Traits::RangeType y;
-      x[0] = 1.0/3.0; x[1] = 1.0/3.0; f.eval_local(e,x,y); out[0] = y;
-    }
-
-    unsigned int order () const
-    {
-      return 0;
-    }
-  };
 }
 #endif

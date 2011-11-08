@@ -3,8 +3,8 @@
 #ifndef DUNE_GENERIC_LOCALFINITEELEMENT_HH
 #define DUNE_GENERIC_LOCALFINITEELEMENT_HH
 
-#include <dune/common/geometrytype.hh>
-#include <dune/grid/genericgeometry/conversion.hh>
+#include <dune/geometry/type.hh>
+#include <dune/geometry/genericgeometry/conversion.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include <dune/localfunctions/utility/l2interpolation.hh>

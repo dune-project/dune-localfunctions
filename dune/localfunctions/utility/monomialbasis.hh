@@ -8,11 +8,10 @@
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
 
-#include <dune/grid/genericgeometry/topologytypes.hh>
+#include <dune/geometry/topologyfactory.hh>
+#include <dune/geometry/genericgeometry/topologytypes.hh>
 
 #include <dune/localfunctions/utility/field.hh>
-
-#include <dune/grid/common/topologyfactory.hh>
 #include <dune/localfunctions/utility/multiindex.hh>
 #include <dune/localfunctions/utility/tensor.hh>
 

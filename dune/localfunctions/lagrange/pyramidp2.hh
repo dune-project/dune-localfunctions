@@ -3,7 +3,7 @@
 #ifndef DUNE_PYRAMIDP2_3DLOCALFINITEELEMENT_HH
 #define DUNE_PYRAMIDP2_3DLOCALFINITEELEMENT_HH
 
-#include <dune/common/geometrytype.hh>
+#include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include "pyramidp2/pyramidp2localbasis.hh"

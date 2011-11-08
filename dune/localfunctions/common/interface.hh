@@ -12,7 +12,8 @@
 #include <vector>
 
 #include <dune/common/array.hh>
-#include <dune/common/geometrytype.hh>
+
+#include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/common/localkey.hh>
 

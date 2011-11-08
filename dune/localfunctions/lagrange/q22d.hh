@@ -7,7 +7,7 @@
 #warning This file is deprecated and will be removed after Dune 2.2.\
   Please use q2.hh instead!
 
-#include <dune/common/geometrytype.hh>
+#include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include <dune/localfunctions/common/localtoglobaladaptors.hh>

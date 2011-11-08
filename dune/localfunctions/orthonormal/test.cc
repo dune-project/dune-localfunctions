@@ -2,9 +2,10 @@
 // vi: set et ts=4 sw=2 sts=2:
 #include <config.h>
 
+#include <dune/geometry/quadraturerules/gaussquadrature.hh>
+
 #include <dune/localfunctions/utility/field.hh>
 #include <dune/localfunctions/orthonormal/orthonormalbasis.hh>
-#include <dune/grid/common/quadraturerules/gaussquadrature.hh>
 
 #if HAVE_ALGLIB
 typedef amp::ampf< 128 > StorageField;

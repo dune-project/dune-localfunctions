@@ -6,7 +6,7 @@
 
 #include <cstddef>
 
-#include <dune/grid/common/genericreferenceelements.hh>
+#include <dune/geometry/genericreferenceelements.hh>
 
 namespace Dune {
 

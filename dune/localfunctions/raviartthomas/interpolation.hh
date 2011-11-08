@@ -9,12 +9,12 @@
 #include <dune/common/exceptions.hh>
 #include <dune/common/forloop.hh>
 
-#include <dune/grid/common/quadraturerules/gaussquadrature.hh>
-#include <dune/grid/common/genericreferenceelements.hh>
-#include <dune/grid/genericgeometry/referenceelements.hh>
+#include <dune/geometry/topologyfactory.hh>
+#include <dune/geometry/genericreferenceelements.hh>
+#include <dune/geometry/genericgeometry/referenceelements.hh>
+#include <dune/geometry/quadraturerules/gaussquadrature.hh>
 
 #include <dune/localfunctions/common/localkey.hh>
-#include <dune/grid/common/topologyfactory.hh>
 #include <dune/localfunctions/utility/interpolationhelper.hh>
 #include <dune/localfunctions/utility/lfematrix.hh>
 #include <dune/localfunctions/utility/polynomialbasis.hh>

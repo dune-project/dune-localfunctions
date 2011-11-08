@@ -2,15 +2,14 @@
 // vi: set et ts=4 sw=2 sts=2:
 #include <config.h>
 
+#include <dune/geometry/quadraturerules/genericquadrature.hh>
+
 #include <dune/localfunctions/utility/field.hh>
+#include <dune/localfunctions/utility/basisprint.hh>
 
 #include <dune/localfunctions/lagrange/equidistantpoints.hh>
-
 #include <dune/localfunctions/lagrange/lobattopoints.hh>
-
 #include <dune/localfunctions/lagrange/lagrangebasis.hh>
-#include <dune/grid/common/quadraturerules/genericquadrature.hh>
-#include <dune/localfunctions/utility/basisprint.hh>
 
 #if HAVE_ALGLIB
 typedef amp::ampf< 128 > StorageField;

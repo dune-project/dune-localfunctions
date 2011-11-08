@@ -3,7 +3,7 @@
 #ifndef DUNE_RAVIARTTHOMAS02DLOCALFINITEELEMENT_HH
 #define DUNE_RAVIARTTHOMAS02DLOCALFINITEELEMENT_HH
 
-#include <dune/common/geometrytype.hh>
+#include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include "raviartthomas02d/raviartthomas02dlocalbasis.hh"

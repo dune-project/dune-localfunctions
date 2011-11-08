@@ -8,7 +8,7 @@
 #include <cstddef>
 #include <iostream>
 
-#include <dune/common/geometrytype.hh>
+#include <dune/geometry/type.hh>
 #include <dune/localfunctions/common/virtualinterface.hh>
 
 #include <dune/localfunctions/lagrange/p0.hh>

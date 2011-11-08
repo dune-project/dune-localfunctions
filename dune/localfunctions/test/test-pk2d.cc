@@ -12,10 +12,10 @@
 #include <dune/common/exceptions.hh>
 #include <dune/common/forloop.hh>
 #include <dune/common/fvector.hh>
-#include <dune/common/geometrytype.hh>
 
-#include <dune/grid/utility/mockgeometry.hh>
-#include <dune/grid/utility/vertexorder.hh>
+#include <dune/geometry/type.hh>
+#include <dune/geometry/mockgeometry.hh>
+#include <dune/geometry/generalvertexorder.hh>
 
 #include <dune/localfunctions/lagrange/pk2d.hh>
 

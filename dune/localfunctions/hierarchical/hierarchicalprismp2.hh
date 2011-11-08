@@ -3,14 +3,13 @@
 #ifndef DUNE_HIERARCHICAL_PRISM_P2_LOCALFINITEELEMENT_HH
 #define DUNE_HIERARCHICAL_PRISM_P2_LOCALFINITEELEMENT_HH
 
-#include <dune/common/geometrytype.hh>
+#include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
+#include <dune/localfunctions/lagrange/prismp2/prismp2localcoefficients.hh>
 
 #include "hierarchicalprismp2/hierarchicalprismp2localbasis.hh"
 #include "hierarchicalprismp2/hierarchicalprismp2localinterpolation.hh"
-
-#include <dune/localfunctions/lagrange/prismp2/prismp2localcoefficients.hh>
 
 
 namespace Dune

@@ -3,7 +3,7 @@
 #ifndef DUNE_P1LOCALFINITEELEMENT_HH
 #define DUNE_P1LOCALFINITEELEMENT_HH
 
-#include <dune/common/geometrytype.hh>
+#include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include "p1/p1localbasis.hh"

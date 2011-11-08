@@ -3,7 +3,7 @@
 #ifndef DUNE_HIERARCHICAL_P2_WITH_ELEMENTBUBBLE_LOCALFINITEELEMENT_HH
 #define DUNE_HIERARCHICAL_P2_WITH_ELEMENTBUBBLE_LOCALFINITEELEMENT_HH
 
-#include <dune/common/geometrytype.hh>
+#include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include <dune/localfunctions/hierarchical/hierarchicalp2withelementbubble/hierarchicalsimplexp2withelementbubble.hh>

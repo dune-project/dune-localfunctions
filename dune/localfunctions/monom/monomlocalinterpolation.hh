@@ -6,10 +6,11 @@
 #include <vector>
 
 #include <dune/common/deprecated.hh>
-#include <dune/common/geometrytype.hh>
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
-#include <dune/grid/common/quadraturerules.hh>
+
+#include <dune/geometry/type.hh>
+#include <dune/geometry/quadraturerules.hh>
 
 namespace Dune
 {

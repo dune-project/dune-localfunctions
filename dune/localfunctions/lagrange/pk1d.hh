@@ -1,7 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_PK2DLOCALFINITEELEMENT_HH
-#define DUNE_PK2DLOCALFINITEELEMENT_HH
+#ifndef DUNE_PK1DLOCALFINITEELEMENT_HH
+#define DUNE_PK1DLOCALFINITEELEMENT_HH
 
 #include <cstddef>
 
@@ -9,9 +9,9 @@
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include <dune/localfunctions/common/localtoglobaladaptors.hh>
-#include "pk2d/pk2dlocalbasis.hh"
-#include "pk2d/pk2dlocalcoefficients.hh"
-#include "pk2d/pk2dlocalinterpolation.hh"
+#include "pk1d/pk1dlocalbasis.hh"
+#include "pk1d/pk1dlocalcoefficients.hh"
+#include "pk1d/pk1dlocalinterpolation.hh"
 
 namespace Dune
 {
@@ -19,38 +19,36 @@ namespace Dune
   /** \todo Please doc me !
    */
   template<class D, class R, unsigned int k>
-  class Pk2DLocalFiniteElement
+  class Pk1DLocalFiniteElement
   {
   public:
     /** \todo Please doc me !
      */
-    typedef LocalFiniteElementTraits<Pk2DLocalBasis<D,R,k>,
-        Pk2DLocalCoefficients<k>,
-        Pk2DLocalInterpolation<Pk2DLocalBasis<D,R,k> > > Traits;
+    typedef LocalFiniteElementTraits<Pk1DLocalBasis<D,R,k>,
+        Pk1DLocalCoefficients<k>,
+        Pk1DLocalInterpolation<Pk1DLocalBasis<D,R,k> > > Traits;
 
     /** \todo Please doc me !
      */
-    Pk2DLocalFiniteElement ()
+    Pk1DLocalFiniteElement ()
     {
-      gt.makeTriangle();
+      gt.makeLine();
     }
 
     /** \todo Please doc me !
      */
-    Pk2DLocalFiniteElement (int variant) : coefficients(variant)
+    Pk1DLocalFiniteElement (int variant) : coefficients(variant)
     {
-      gt.makeTriangle();
+      gt.makeLine();
     }
 
-    /** Constructor for six variants with permuted vertices.
+    /** Constructor for two variants with permuted vertices.
 
-        \param vertexmap The permutation of the vertices.  This
-        can for instance be generated from the global indices of
-        the vertices by reducing those to the integers 0...2
+        \param vertexmap The permutation of the vertices.
      */
-    Pk2DLocalFiniteElement (const unsigned int vertexmap[3]) : coefficients(vertexmap)
+    Pk1DLocalFiniteElement (const unsigned int vertexmap[3]) : coefficients(vertexmap)
     {
-      gt.makeTriangle();
+      gt.makeLine();
     }
 
     /** \todo Please doc me !
@@ -81,15 +79,15 @@ namespace Dune
       return gt;
     }
 
-    Pk2DLocalFiniteElement* clone () const
+    Pk1DLocalFiniteElement* clone () const
     {
-      return new Pk2DLocalFiniteElement(*this);
+      return new Pk1DLocalFiniteElement(*this);
     }
 
   private:
-    Pk2DLocalBasis<D,R,k> basis;
-    Pk2DLocalCoefficients<k> coefficients;
-    Pk2DLocalInterpolation<Pk2DLocalBasis<D,R,k> > interpolation;
+    Pk1DLocalBasis<D,R,k> basis;
+    Pk1DLocalCoefficients<k> coefficients;
+    Pk1DLocalInterpolation<Pk1DLocalBasis<D,R,k> > interpolation;
     GeometryType gt;
   };
 
@@ -102,10 +100,10 @@ namespace Dune
    * \implements FiniteElementInterface
    */
   template<class Geometry, class RF, std::size_t k>
-  class Pk2DFiniteElement {
+  class Pk1DFiniteElement {
     typedef typename Geometry::ctype DF;
-    typedef Pk2DLocalBasis<DF,RF,k> LocalBasis;
-    typedef Pk2DLocalInterpolation<LocalBasis> LocalInterpolation;
+    typedef Pk1DLocalBasis<DF,RF,k> LocalBasis;
+    typedef Pk1DLocalInterpolation<LocalBasis> LocalInterpolation;
 
   public:
     /**
@@ -117,7 +115,7 @@ namespace Dune
           LocalInterpolation,
           typename Basis::Traits
           > Interpolation;
-      typedef Pk2DLocalCoefficients<k> Coefficients;
+      typedef Pk1DLocalCoefficients<k> Coefficients;
     };
 
   private:
@@ -130,7 +128,7 @@ namespace Dune
     typename Traits::Coefficients coefficients_;
 
   public:
-    //! construct a Pk2DFiniteElement
+    //! construct a Pk1DFiniteElement
     /**
      * \param geometry    The geometry object to use for adaption.
      * \param vertexOrder The global ordering of the vertices within the grid,
@@ -145,7 +143,7 @@ namespace Dune
      *       is no longer needed after the contructor returns.
      */
     template<class VertexOrder>
-    Pk2DFiniteElement(const Geometry &geometry,
+    Pk1DFiniteElement(const Geometry &geometry,
                       const VertexOrder& vertexOrder) :
       basis_(localBasis, geometry), interpolation_(localInterpolation),
       coefficients_(vertexOrder.begin(0, 0))
@@ -161,20 +159,20 @@ namespace Dune
 
   template<class Geometry, class RF, std::size_t k>
   const GeometryType
-  Pk2DFiniteElement<Geometry, RF, k>::gt(GeometryType::simplex, 2);
+  Pk1DFiniteElement<Geometry, RF, k>::gt(GeometryType::simplex, 2);
 
   template<class Geometry, class RF, std::size_t k>
-  const typename Pk2DFiniteElement<Geometry, RF, k>::LocalBasis
-  Pk2DFiniteElement<Geometry, RF, k>::localBasis = LocalBasis();
+  const typename Pk1DFiniteElement<Geometry, RF, k>::LocalBasis
+  Pk1DFiniteElement<Geometry, RF, k>::localBasis = LocalBasis();
 
   template<class Geometry, class RF, std::size_t k>
-  const typename Pk2DFiniteElement<Geometry, RF, k>::LocalInterpolation
-  Pk2DFiniteElement<Geometry, RF, k>::localInterpolation =
+  const typename Pk1DFiniteElement<Geometry, RF, k>::LocalInterpolation
+  Pk1DFiniteElement<Geometry, RF, k>::localInterpolation =
     LocalInterpolation();
 
-  //! Factory for Pk2DFiniteElement objects
+  //! Factory for Pk1DFiniteElement objects
   /**
-   * Constructs Pk2DFiniteElement objects given a geometry and a vertex
+   * Constructs Pk1DFiniteElement objects given a geometry and a vertex
    * ordering.
    *
    * \tparam Geometry Geometry for the local to global transformation.
@@ -184,10 +182,10 @@ namespace Dune
    * \implements FiniteElementFactoryInterface
    */
   template<class Geometry, class RF, std::size_t k>
-  struct Pk2DFiniteElementFactory {
-    typedef Pk2DFiniteElement<Geometry, RF, k> FiniteElement;
+  struct Pk1DFiniteElementFactory {
+    typedef Pk1DFiniteElement<Geometry, RF, k> FiniteElement;
 
-    //! construct Pk2DFiniteElementFactory
+    //! construct Pk1DFiniteElementFactory
     /**
      * \param geometry    The geometry object to use for adaption.
      * \param vertexOrder The global ordering of the vertices within the grid,
@@ -199,7 +197,7 @@ namespace Dune
      *       become invalid results in undefined behaviour.  The exception is
      *       that the destructor of this class may still be called.  The
      *       information contained in the vertexOrder object is extracted and
-     *       the object is no longer needed after the contructor returns.  No
+     *       the object is no longer needed after the constructor returns.  No
      *       reference to internal data of the factory is stored.
      */
     template<class VertexOrder>

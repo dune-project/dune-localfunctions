@@ -161,6 +161,8 @@ int main(int argc, char** argv) try
 
   success = PkLocalFiniteElementTest<1, 1>::test() and success;
 
+  success = PkLocalFiniteElementTest<1, 2>::test() and success;
+
   success = PkLocalFiniteElementTest<2, 10>::test() and success;
 
   success = PkLocalFiniteElementTest<3, 10>::test() and success;

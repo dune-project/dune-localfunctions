@@ -36,6 +36,7 @@ AC_CONFIG_FILES([
                 dune/localfunctions/lagrange/p0/Makefile
                 dune/localfunctions/lagrange/p1/Makefile
                 dune/localfunctions/lagrange/p23d/Makefile
+                dune/localfunctions/lagrange/pk1d/Makefile
                 dune/localfunctions/lagrange/pk2d/Makefile
                 dune/localfunctions/lagrange/pk3d/Makefile
                 dune/localfunctions/lagrange/prismp1/Makefile

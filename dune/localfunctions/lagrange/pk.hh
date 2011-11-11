@@ -6,6 +6,7 @@
 
 #include "p0.hh"
 #include "p1.hh"
+#include "pk1d.hh"
 #include "pk2d.hh"
 #include "pk3d.hh"
 
@@ -35,7 +36,7 @@ namespace Dune
     PkLocalFiniteElement(const unsigned int vertexmap[k+1])
     {}
   };
-
+#if 0
   /** \brief General Lagrange finite element -- specialization for first-order on a 1d reference element
    *
    * \tparam D type used for domain coordinates
@@ -69,6 +70,25 @@ namespace Dune
     {}
 
     PkLocalFiniteElement(const unsigned int vertexmap[2])
+    {}
+  };
+#endif
+  /** \brief General Lagrange finite element -- specialization for a 2d reference element
+   *
+   * \tparam D type used for domain coordinates
+   * \tparam R type used for function values
+   * \tparam k polynomial order
+   */
+  template<class D, class R, int k>
+  class PkLocalFiniteElement<D, R, 1, k>
+    : public Pk1DLocalFiniteElement<D, R, k>
+  {
+  public:
+    PkLocalFiniteElement()
+    {}
+
+    PkLocalFiniteElement(const unsigned int vertexmap[2]) :
+      Pk1DLocalFiniteElement<D, R, k>(vertexmap)
     {}
   };
 

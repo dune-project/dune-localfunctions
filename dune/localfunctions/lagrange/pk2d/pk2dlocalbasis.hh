@@ -41,7 +41,7 @@ namespace Dune
     Pk2DLocalBasis ()
     {
       for (unsigned int i=0; i<=k; i++)
-        pos[i] = (1.0*i)/k;
+        pos[i] = (1.0*i)/std::max(k,(unsigned int)1);
     }
 
     //! \brief number of shape functions

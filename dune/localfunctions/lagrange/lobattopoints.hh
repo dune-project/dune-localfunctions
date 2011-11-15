@@ -9,7 +9,7 @@
 
 #include <dune/geometry/topologyfactory.hh>
 #include <dune/geometry/quadraturerules/lobattoquadrature.hh>
-#include <dune/geometry/genericreferenceelements.hh>
+#include <dune/geometry/referenceelements.hh>
 #include <dune/geometry/genericgeometry/referenceelements.hh>
 
 #include <dune/localfunctions/utility/lfematrix.hh>

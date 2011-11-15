@@ -4,7 +4,7 @@
 #define DUNE_P0LOCALINTERPOLATION_HH
 
 #include <vector>
-#include <dune/geometry/genericreferenceelements.hh>
+#include <dune/geometry/referenceelements.hh>
 
 
 namespace Dune

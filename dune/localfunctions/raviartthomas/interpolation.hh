@@ -10,7 +10,7 @@
 #include <dune/common/forloop.hh>
 
 #include <dune/geometry/topologyfactory.hh>
-#include <dune/geometry/genericreferenceelements.hh>
+#include <dune/geometry/referenceelements.hh>
 #include <dune/geometry/genericgeometry/referenceelements.hh>
 #include <dune/geometry/quadraturerules/gaussquadrature.hh>
 

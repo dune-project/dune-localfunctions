@@ -30,8 +30,9 @@ namespace Dune
      \tparam R Type used for shape function values
      \tparam d Dimension of the element
      \tparam p Order of the basis
+     \tparam diffOrder Maximum differentiation order to report in the traits.
    */
-  template<class D, class R, int d, int p>
+  template<class D, class R, int d, int p, int diffOrder = p>
   class MonomLocalFiniteElement
   {
     enum { static_size = MonomImp::Size<d,p>::val };
@@ -40,9 +41,9 @@ namespace Dune
     /** Traits class
      */
     typedef LocalFiniteElementTraits<
-        MonomLocalBasis<D,R,d,p>,
+        MonomLocalBasis<D,R,d,p, diffOrder>,
         MonomLocalCoefficients<static_size>,
-        MonomLocalInterpolation<MonomLocalBasis<D,R,d,p>,static_size>
+        MonomLocalInterpolation<MonomLocalBasis<D,R,d,p, diffOrder>,static_size>
         > Traits;
 
     /** \todo Please doc me !
@@ -85,9 +86,9 @@ namespace Dune
     }
 
   private:
-    MonomLocalBasis<D,R,d,p> basis;
+    MonomLocalBasis<D,R,d,p, diffOrder> basis;
     MonomLocalCoefficients<static_size> coefficients;
-    MonomLocalInterpolation<MonomLocalBasis<D,R,d,p>,static_size> interpolation;
+    MonomLocalInterpolation<MonomLocalBasis<D,R,d,p, diffOrder>,static_size> interpolation;
     GeometryType gt;
   };
 

@@ -10,6 +10,7 @@ localfunctions_HEADERS =			\
 	refined.hh
 
 SUBDIRS =					\
+	brezzidouglasmarini			\
 	common					\
 	hierarchical				\
 	lagrange				\

@@ -27,6 +27,9 @@ AC_CONFIG_FILES([
                 doc/doxygen/Makefile
                 doc/Makefile
                 dune-localfunctions.pc
+                dune/localfunctions/brezzidouglasmarini/Makefile
+                dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini12d/Makefile
+                dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini1q2d/Makefile
                 dune/localfunctions/common/Makefile
                 dune/localfunctions/hierarchical/hierarchicalp2/Makefile
                 dune/localfunctions/hierarchical/hierarchicalp2withelementbubble/Makefile
@@ -58,6 +61,10 @@ AC_CONFIG_FILES([
                 dune/localfunctions/raviartthomas/raviartthomas02d/Makefile
                 dune/localfunctions/raviartthomas/raviartthomas0q2d/Makefile
                 dune/localfunctions/raviartthomas/raviartthomas0q3d/Makefile
+                dune/localfunctions/raviartthomas/raviartthomas12d/Makefile
+                dune/localfunctions/raviartthomas/raviartthomas1q2d/Makefile
+                dune/localfunctions/raviartthomas/raviartthomas1q3d/Makefile
+                dune/localfunctions/raviartthomas/raviartthomas2q2d/Makefile
                 dune/localfunctions/refined/common/Makefile
                 dune/localfunctions/refined/Makefile
                 dune/localfunctions/refined/refinedp0/Makefile

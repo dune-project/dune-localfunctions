@@ -9,12 +9,24 @@
 namespace Dune
 {
 
-  /** \todo Please doc me !
+  /**
+   * \brief Lowest order Raviart-Thomas shape functions on quadrilaterals.
+   *
+   * The dimensions d=2 and dim=3 are supported. This is a convenience class
+   * to include the Raviart-Thomas-0 basis elements on quadrilaterals.
+   *
+   * \tparam D Type to represent the field in the domain.
+   * \tparam R Type to represent the field in the range.
+   * \tparam dim Dimension.
    */
-  template<class D, class R, int d>
+  template<class D, class R, int dim>
   class RT0QLocalFiniteElement;
 
-  /** \todo Please doc me !
+  /**
+   * \brief Specialization on 2d quadrilaterals for lowest order Raviart-Thomas shape functions.
+   *
+   * \tparam D Type to represent the field in the domain.
+   * \tparam R Type to represent the field in the range.
    */
   template<class D, class R>
   class RT0QLocalFiniteElement<D, R, 2>
@@ -28,7 +40,11 @@ namespace Dune
     {}
   };
 
-  /** \todo Please doc me !
+  /**
+   * \brief Specialization on 3d quadrilaterals for lowest order Raviart-Thomas shape functions.
+   *
+   * \tparam D Type to represent the field in the domain.
+   * \tparam R Type to represent the field in the range.
    */
   template<class D, class R>
   class RT0QLocalFiniteElement<D, R, 3>

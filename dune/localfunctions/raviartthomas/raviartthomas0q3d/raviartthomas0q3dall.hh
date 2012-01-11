@@ -121,7 +121,9 @@ namespace Dune
 
     //! \brief Standard constructor
     RT0Q3DLocalInterpolation ()
-    {}
+    {
+      sign0 = sign1 = sign2 = sign3 = sign4 = sign5 = 1.0;
+    }
 
     //! \brief Make set numer s, where 0<=s<64
     RT0Q3DLocalInterpolation (unsigned int s)

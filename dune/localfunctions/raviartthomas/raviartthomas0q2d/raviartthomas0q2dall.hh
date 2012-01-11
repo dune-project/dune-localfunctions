@@ -105,7 +105,9 @@ namespace Dune
 
     //! \brief Standard constructor
     RT0Q2DLocalInterpolation ()
-    {}
+    {
+      sign0 = sign1 = sign2 = sign3 = 1.0;
+    }
 
     //! \brief Make set numer s, where 0<=s<8
     RT0Q2DLocalInterpolation (unsigned int s)

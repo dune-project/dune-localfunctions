@@ -28,7 +28,9 @@ namespace Dune
       typename LB::Traits::RangeType y;
       typedef typename LB::Traits::DomainFieldType D;
       out.resize(N);
+#if DUNE_COMMON_FIELDVECTOR_SIZE_IS_METHOD
       assert(x.size()==1);
+#endif
       for (int i=0; i<N; i++)
       {
         x[0] = ((D)i)/((D)kdiv);

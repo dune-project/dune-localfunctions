@@ -76,15 +76,15 @@ namespace Dune
       case 0 :
 
         out[0] = 1 - local[0];
-        out[1] = 0;
-        out[2] = local[0];
+        out[1] = local[0];
+        out[2] = 0;
         break;
 
       case 1 :
 
         out[0] = 0;
-        out[1] = local[0];
-        out[2] = 1 - local[0];
+        out[1] = 1 - local[0];
+        out[2] = local[0];
         break;
 
       }
@@ -106,15 +106,15 @@ namespace Dune
       case 0 :
 
         out[0][0][0] = -2;
-        out[1][0][0] =  0;
-        out[2][0][0] =  2;
+        out[1][0][0] =  2;
+        out[2][0][0] =  0;
         break;
 
       case 1 :
 
         out[0][0][0] =  0;
-        out[1][0][0] =  2;
-        out[2][0][0] = -2;
+        out[1][0][0] = -2;
+        out[2][0][0] =  2;
         break;
 
       }

@@ -126,6 +126,9 @@ int main(int argc, char** argv) try
     Dune::GeometryType( Dune::GeometryType::simplex,2) );
   success = testFE(pq22dlfem) and success;
 
+  Dune::RefinedP1LocalFiniteElement<double,double,1> refp11dlfem;
+  success = testFE(refp11dlfem) and success;
+
   Dune::RefinedP1LocalFiniteElement<double,double,2> refp12dlfem;
   success = testFE(refp12dlfem) and success;
 

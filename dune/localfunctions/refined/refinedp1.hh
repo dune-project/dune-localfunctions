@@ -24,13 +24,61 @@ namespace Dune
   template<class D, class R, int dim>
   class RefinedP1LocalFiniteElement
   {
-    RefinedP1LocalFiniteElement() {}
-
   public:
-    // We steal the p0 traits since they exist for all dim.
-    // This allows to instanciate the type and access the Traits.
-    typedef typename P0LocalFiniteElement<D,R,dim>::Traits Traits;
+    /** \todo Please doc me !
+     */
+    typedef LocalFiniteElementTraits<RefinedP1LocalBasis<D,R,1>,
+        Pk1DLocalCoefficients<2>,
+        Pk1DLocalInterpolation<Pk1DLocalBasis<D,R,2> > > Traits;
+
+    /** \todo Please doc me !
+     */
+    RefinedP1LocalFiniteElement ()
+    {
+      gt.makeLine();
+    }
+
+    /** \todo Please doc me !
+     */
+    const typename Traits::LocalBasisType& localBasis () const
+    {
+      return basis;
+    }
+
+    /** \todo Please doc me !
+     */
+    const typename Traits::LocalCoefficientsType& localCoefficients () const
+    {
+      return coefficients;
+    }
+
+    /** \todo Please doc me !
+     */
+    const typename Traits::LocalInterpolationType& localInterpolation () const
+    {
+      return interpolation;
+    }
+
+    /** \todo Please doc me !
+     */
+    GeometryType type () const
+    {
+      return gt;
+    }
+
+    RefinedP1LocalFiniteElement * clone () const
+    {
+      return new RefinedP1LocalFiniteElement(*this);
+    }
+
+  private:
+    RefinedP1LocalBasis<D,R,1> basis;
+    Pk1DLocalCoefficients<2> coefficients;
+    Pk1DLocalInterpolation<Pk1DLocalBasis<D,R,2> > interpolation;
+    GeometryType gt;
   };
+
+
 
   /** \todo Please doc me !
    */

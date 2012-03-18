@@ -5,6 +5,7 @@
 
 #if HAVE_ALGLIB
 #include <alglib/amp.h>
+#warning ALGLIB support is deprecated and will be dropped after DUNE 2.2 (cf. FS#931)
 #endif
 
 #include <dune/common/gmpfield.hh>

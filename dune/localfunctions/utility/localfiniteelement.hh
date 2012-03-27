@@ -38,23 +38,32 @@ namespace Dune
     dune_static_assert( (Conversion<Key,typename InterpolF::Key>::sameType),
                         "incompatible keys between BasisCreator and InterpolationCreator" );
 
-    /** \todo Please doc me !
-     */
-    GenericLocalFiniteElement ( unsigned int topologyId,
-                                const Key &key )
-      : topologyId_(topologyId),
-        key_(key),
-        finiteElement_( )
+    /** \todo Please doc me */
+    GenericLocalFiniteElement ( unsigned int topologyId, const Key &key ) DUNE_DEPRECATED
+      : topologyId_( topologyId ),
+        key_( key ),
+        finiteElement_()
     {
       GenericGeometry::IfTopology< FiniteElement::template Maker, dimDomain >::apply( topologyId_, key_, finiteElement_ );
     }
+
+    /** \todo Please doc me */
+    GenericLocalFiniteElement ( const GeometryType &gt, const Key &key )
+      : topologyId_( gt.id() ),
+        key_( key ),
+        finiteElement_()
+    {
+      GenericGeometry::IfTopology< FiniteElement::template Maker, dimDomain >::apply( topologyId_, key_, finiteElement_ );
+    }
+
     GenericLocalFiniteElement ( const GenericLocalFiniteElement &other )
-      : topologyId_(other.topologyId_),
-        key_(other.key_),
-        finiteElement_( )
+      : topologyId_( other.topologyId_ ),
+        key_( other.key_ ),
+        finiteElement_()
     {
       GenericGeometry::IfTopology< FiniteElement::template Maker, dimDomain >::apply( topologyId_, key_, finiteElement_ );
     }
+
     ~GenericLocalFiniteElement()
     {
       finiteElement_.release();

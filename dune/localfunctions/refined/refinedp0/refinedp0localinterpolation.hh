@@ -41,7 +41,7 @@ namespace Dune
     {
       typename LB::Traits::RangeType y;
       out.resize(interpolationPoints_.size());
-      for (int i = 0; i < out.size(); ++i)
+      for (size_t i = 0; i < out.size(); ++i)
       {
         f.evaluate(interpolationPoints_[i], y);
         out[i] = y;
@@ -102,7 +102,7 @@ namespace Dune
     {
       typename LB::Traits::RangeType y;
       out.resize(interpolationPoints_.size());
-      for (int i = 0; i < out.size(); ++i)
+      for (size_t i = 0; i < out.size(); ++i)
       {
         f.evaluate(interpolationPoints_[i], y);
         out[i] = y;

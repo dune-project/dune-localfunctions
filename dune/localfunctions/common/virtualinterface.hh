@@ -311,7 +311,7 @@ namespace Dune
       const LocalInterpolationVirtualInterfaceBase<DomainType, RangeType>& asBase = *this;
       asBase.interpolate(VirtualFunctionWrapper<F>(f),outDummy);
       out.resize(outDummy.size());
-      for(std::size_t i=0; i<outDummy.size(); ++i)
+      for(typename std::vector<CoefficientType>::size_type i=0; i<outDummy.size(); ++i)
         out[i] = outDummy[i];
     }
 

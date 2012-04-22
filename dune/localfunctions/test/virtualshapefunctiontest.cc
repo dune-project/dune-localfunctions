@@ -157,7 +157,7 @@ int main (int argc, char *argv[]) try
   typedef Dune::FixedOrderLocalBasisTraits<LBTraits,1>::Traits C1LBTraits;
   typedef Dune::FixedOrderLocalBasisTraits<LBTraits,2>::Traits C2LBTraits;
 
-  const Dune::P0LocalFiniteElement<double, double, 2> p0FE(Dune::GeometryType::cube);
+  const Dune::P0LocalFiniteElement<double, double, 2> p0FE(Dune::GeometryType(Dune::GeometryType::cube, 2));
   const Dune::LocalFiniteElementVirtualImp<Dune::P0LocalFiniteElement<double, double, 2> > p0VFE(p0FE);
   testLocalFiniteElement<C0LBTraits>(&p0VFE);
 

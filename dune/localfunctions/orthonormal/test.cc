@@ -2,6 +2,7 @@
 // vi: set et ts=4 sw=2 sts=2:
 #include <config.h>
 
+#include <dune/geometry/type.hh>
 #include <dune/geometry/quadraturerules/gaussquadrature.hh>
 
 #include <dune/localfunctions/utility/field.hh>
@@ -77,12 +78,14 @@ bool test(unsigned int order)
 template <unsigned int dimension>
 bool test(unsigned int topologyId, unsigned int order)
 {
+  Dune::GeometryType gt(topologyId, dimension);
+
   bool ret = true;
   for (unsigned int o=order; o<=order; --o)
   {
     std::cout << "Testing " << topologyId << " in dimension " << dimension << " with order " << o << std::endl;
     typedef Dune::OrthonormalBasisFactory<dimension,StorageField,ComputeField> BasisFactory;
-    const typename BasisFactory::Object &basis = *BasisFactory::create(topologyId,o);
+    const typename BasisFactory::Object &basis = *BasisFactory::create(gt, o);
 
     const unsigned int size = basis.size( );
 
@@ -95,7 +98,7 @@ bool test(unsigned int topologyId, unsigned int order)
     // typedef typename Dune::GenericGeometry::GaussQuadratureProvider<dimension,double,ComputeField> QuadratureProvider;
     typedef typename Dune::GenericGeometry::GaussQuadratureProvider<dimension,double,double> QuadratureProvider;
     typedef typename QuadratureProvider::Object Quadrature;
-    const Quadrature &quadrature = *QuadratureProvider::create(topologyId,2*order+1);
+    const Quadrature &quadrature = *QuadratureProvider::create(gt, 2*order+1);
     const unsigned int quadratureSize = quadrature.size();
     for( unsigned int qi = 0; qi < quadratureSize; ++qi )
     {

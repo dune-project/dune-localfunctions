@@ -55,8 +55,14 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    LagrangeLocalFiniteElement ( unsigned int topologyId, unsigned int order )
+    LagrangeLocalFiniteElement ( unsigned int topologyId, unsigned int order ) DUNE_UNUSED
       : Base( topologyId, order )
+    {}
+
+    /** \todo Please doc me !
+     */
+    LagrangeLocalFiniteElement ( const GeometryType &gt, unsigned int order )
+      : Base( gt, order )
     {}
   };
 }

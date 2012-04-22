@@ -56,6 +56,7 @@ namespace Dune
       GenericGeometry::IfTopology< FiniteElement::template Maker, dimDomain >::apply( topologyId_, key_, finiteElement_ );
     }
 
+    /** \todo Please doc me */
     GenericLocalFiniteElement ( const GenericLocalFiniteElement &other )
       : topologyId_( other.topologyId_ ),
         key_( other.key_ ),
@@ -169,8 +170,14 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    DGLocalFiniteElement ( unsigned int topologyId, const typename Base::Key &key  )
+    DGLocalFiniteElement ( unsigned int topologyId, const typename Base::Key &key  ) DUNE_DEPRECATED
       : Base( topologyId, key )
+    {}
+
+    /** \todo Please doc me !
+     */
+    DGLocalFiniteElement ( const GeometryType &gt, const typename Base::Key &key  )
+      : Base( gt, key )
     {}
   };
   /**
@@ -194,8 +201,14 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    L2LocalFiniteElement ( unsigned int topologyId, const typename Base::Key &key  )
+    L2LocalFiniteElement ( unsigned int topologyId, const typename Base::Key &key  ) DUNE_DEPRECATED
       : Base( topologyId, key )
+    {}
+
+    /** \todo Please doc me !
+     */
+    L2LocalFiniteElement ( const GeometryType &gt, const typename Base::Key &key  )
+      : Base( gt, key )
     {}
   };
 }

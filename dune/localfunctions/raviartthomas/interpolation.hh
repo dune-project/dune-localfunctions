@@ -296,7 +296,7 @@ namespace Dune
         testBasisVal.resize(builder_.testFaceBasis(f)->size());
 
         const Mapping &mapping = refElement.template mapping< 1 >( f );
-        const Dune::GeometryType subGeoType( mapping.topologyId(), dimension-1 );
+        const Dune::GeometryType subGeoType( mapping.type().id(), dimension-1 );
         const typename FaceQuadratureProvider::Object *faceQuad = FaceQuadratureProvider::create( subGeoType, 2*order_+2 );
 
         const unsigned int quadratureSize = faceQuad->size();

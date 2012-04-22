@@ -39,7 +39,7 @@ int main(int argc, char** argv) try
   {
     std::cout << "order : " << order << std::endl;
     Dune::LagrangeLocalFiniteElement<Dune::EquidistantPointSet,3,double,double>
-    lagrangeSimplex(0,order);
+    lagrangeSimplex(Dune::GeometryType(Dune::GeometryType::simplex, 3), order);
     success &= testFE(lagrangeSimplex);
   }
   std::cout << "Testing LagrangeLocalFiniteElement<EquidistantPointSet> on 2d"
@@ -48,7 +48,7 @@ int main(int argc, char** argv) try
   {
     std::cout << "order : " << order << std::endl;
     Dune::LagrangeLocalFiniteElement<Dune::EquidistantPointSet,2,double,double>
-    lagrangeCube(3,order);
+    lagrangeCube(Dune::GeometryType(Dune::GeometryType::cube, 2), order);
     success &= testFE(lagrangeCube);
   }
 #if HAVE_GMP
@@ -81,7 +81,7 @@ int main(int argc, char** argv) try
   {
     std::cout << "order : " << order << std::endl;
     typedef Dune::LagrangeLocalFiniteElement<Dune::EquidistantPointSet,3,double,double> FE;
-    Dune::DGLocalFiniteElement<FE> dglagrangeCube(7,order);
+    Dune::DGLocalFiniteElement<FE> dglagrangeCube(Dune::GeometryType(Dune::GeometryType::cube, 3), order);
     success &= testFE(dglagrangeCube);
   }
   std::cout << "Testing L2LagrangeLocalFiniteElement<EquidistantPointSet> on 3d"
@@ -90,7 +90,7 @@ int main(int argc, char** argv) try
   {
     std::cout << "order : " << order << std::endl;
     typedef Dune::LagrangeLocalFiniteElement<Dune::EquidistantPointSet,3,double,double> FE;
-    Dune::L2LocalFiniteElement<FE> dglagrangeCube(7,order);
+    Dune::L2LocalFiniteElement<FE> dglagrangeCube(Dune::GeometryType(Dune::GeometryType::cube, 3), order);
     success &= testFE(dglagrangeCube);
   }
 #if HAVE_GMP
@@ -111,7 +111,7 @@ int main(int argc, char** argv) try
   {
     std::cout << "order : " << order << std::endl;
     Dune::OrthonormalLocalFiniteElement<3,double,double>
-    onbPrism(5,order);
+    onbPrism(Dune::GeometryType(Dune::GeometryType::prism, 3), order);
     success &= testFE(onbPrism);
   }
   std::cout << "Testing RaviartThomasFiniteElement on 3d"
@@ -120,7 +120,7 @@ int main(int argc, char** argv) try
   {
     std::cout << "order : " << order << std::endl;
     Dune::RaviartThomasLocalFiniteElement<3,double,double>
-    lagrangeCube(0,order);
+    lagrangeCube(Dune::GeometryType(Dune::GeometryType::simplex, 3), order);
     success &= testFE(lagrangeCube);
   }
   return success ? 0 : 1;

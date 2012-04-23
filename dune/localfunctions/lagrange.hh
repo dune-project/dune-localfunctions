@@ -55,7 +55,7 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    LagrangeLocalFiniteElement ( unsigned int topologyId, unsigned int order ) DUNE_UNUSED
+    LagrangeLocalFiniteElement ( unsigned int topologyId, unsigned int order ) DUNE_DEPRECATED
       : Base( topologyId, order )
     {}
 

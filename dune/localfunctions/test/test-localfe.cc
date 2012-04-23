@@ -101,7 +101,8 @@ int main(int argc, char** argv) try
 {
   bool success = true;
 
-  Dune::P0LocalFiniteElement<double,double,2> p0lfem(Dune::GeometryType::simplex);
+  Dune::P0LocalFiniteElement<double,double,2> p0lfem(
+    Dune::GeometryType(Dune::GeometryType::simplex, 2));
   success = testFE(p0lfem) and success;
 
   Dune::P1LocalFiniteElement<double,double,1> p11dlfem;

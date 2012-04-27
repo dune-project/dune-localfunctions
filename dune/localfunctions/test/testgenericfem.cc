@@ -59,7 +59,7 @@ int main(int argc, char** argv) try
     std::cout << "order : " << order << std::endl;
     Dune::LagrangeLocalFiniteElement<Dune::EquidistantPointSet,2,double,double,
         Dune::GMPField<64>,Dune::GMPField<256> >
-    lagrangeSimplex(0,order);
+    lagrangeSimplex(Dune::GeometryType(Dune::GeometryType::simplex, 2), order);
     success &= testFE(lagrangeSimplex);
   }
 #endif
@@ -99,9 +99,9 @@ int main(int argc, char** argv) try
   for (unsigned int order=7; order>=4; --order)
   {
     std::cout << "order : " << order << std::endl;
-    Dune::OrthonormalLocalFiniteElement<2,double,double,
+    Dune::OrthonormalLocalFiniteElement<3,double,double,
         Dune::GMPField<64>,Dune::GMPField<256> >
-    onbPrism(0,order);
+    onbPrism(Dune::GeometryType(Dune::GeometryType::prism, 3), order);
     success &= testFE(onbPrism);
   }
 #endif

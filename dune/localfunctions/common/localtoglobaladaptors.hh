@@ -208,7 +208,7 @@ namespace Dune {
     //! construct a ScalarLocalToGlobalFiniteElementAdaptor
     /**
      * \param localFE_  The local finite element object to adapt.
-     * \param geometry_ The geometry object to use for adaption.
+     * \param geometry  The geometry object to use for adaption.
      *
      * \note This class stores the references passed here.  Any use of this
      *       class after these references have become invalid results in

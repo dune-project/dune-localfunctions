@@ -167,6 +167,7 @@ namespace Dune
      * out[i][j][k] is \f$\partial_k \hat\phi_j^i \f$, when \f$\hat\phi^i \f$ is the
      *		i'th shape function.
      *
+     * \param [in]  in  The position where evaluated
      * \param [out] out The result
      */
     virtual void evaluateJacobian(const typename Traits::DomainType& in,         // position

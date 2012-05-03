@@ -66,8 +66,7 @@ namespace Dune {
   public:
     //! Constructor
     /**
-     * \param geo
-     * \param orient Orientation of this element
+     * \copydetails EdgeS0_5Basis::EdgeS0_5Basis(const Geometry& geo, const VertexOrder& vertexOrder)
      */
     template<class VertexOrder>
     EdgeS0_5FiniteElement(const Geometry& geo,

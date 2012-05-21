@@ -3,7 +3,9 @@ raviartthomasdir = $(includedir)/dune/localfunctions/raviartthomas
 raviartthomas_HEADERS = raviartthomas02d.hh raviartthomas0q2d.hh raviartthomas0q3d.hh raviartthomas0q.hh \
                         interpolation.hh  raviartthomasbasis.hh  raviartthomasprebasis.hh
 
-SUBDIRS = raviartthomas02d raviartthomas0q2d raviartthomas0q3d
+SUBDIRS = raviartthomas02d raviartthomas0q2d raviartthomas0q3d \
+          raviartthomas12d raviartthomas1q2d raviartthomas1q3d \
+          raviartthomas2q2d
 
 check_PROGRAMS = test
 EXTRA_PROGRAMS = test-all

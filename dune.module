@@ -1,7 +1,7 @@
 Module: dune-localfunctions
-Version: 2.2-svn
+Version: 2.3-svn
 Maintainer: dune@dune-project.org
 #depending on
-Depends: dune-geometry (>= 2.2)
+Depends: dune-geometry (>= 2.3)
 # Needed for the debugging vtk output program
-Suggests: dune-grid (>= 2.2)
+Suggests: dune-grid (>= 2.3)

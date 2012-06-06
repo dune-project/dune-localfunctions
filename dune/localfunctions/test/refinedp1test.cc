@@ -24,8 +24,7 @@ int testForDim()
   // Generate a grid consisting of a single simplex
   // //////////////////////////////////////////////////////
 
-  typedef typename Dune::ALUGrid<dim,dim,Dune::ALUGridElementType::simplex,
-      Dune::ALUGridRefinementType::nonconforming> GridType;
+  typedef typename Dune::ALUGrid<dim,dim,Dune::simplex,Dune::nonconforming> GridType;
 
   Dune::GridFactory<GridType> gridFactory;
 

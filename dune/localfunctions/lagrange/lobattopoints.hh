@@ -29,11 +29,7 @@ namespace Dune
       if( order < 2 )
         return;
       points_.resize(order-1);
-#if HAVE_ALGLIB
-      typedef amp::ampf< Precision< Field >::value > MPField;
-#else
       typedef Field MPField;
-#endif
       GenericGeometry::LobattoPoints<MPField> lobatto(order+1);
 
       for (unsigned int i=1; i<order; ++i) {

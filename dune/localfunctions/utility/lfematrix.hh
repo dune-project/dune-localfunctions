@@ -1,19 +1,13 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_ALGLIB_MATRIX_HH
-#define DUNE_ALGLIB_MATRIX_HH
+#ifndef DUNE_LOCALFUNCTIONS_UTILITY_LFEMATRIX_HH
+#define DUNE_LOCALFUNCTIONS_UTILITY_LFEMATRIX_HH
 
 #include <cassert>
 #include <vector>
 
 #include <dune/localfunctions/utility/field.hh>
 // #include <dune/localfunctions/utility/vector.hh>
-
-#if HAVE_ALGLIB
-#include <alglib/amp.h>
-#include <alglib/matinv.h>
-#warning ALGLIB support is deprecated and will be dropped after DUNE 2.2 (cf. FS#931)
-#endif
 
 namespace Dune
 {
@@ -157,96 +151,6 @@ namespace Dune
     unsigned int cols_,rows_;
   };
 
-#if HAVE_ALGLIB
-  template< unsigned int precision, bool aligned >
-  class LFEMatrix< amp::ampf< precision >, aligned >
-  {
-  public:
-    typedef amp::ampf< precision > Field;
-  private:
-    typedef LFEMatrix< amp::ampf< precision >, aligned > This;
-    typedef ap::template_2d_array< Field, aligned > RealMatrix;
-
-  public:
-    operator const RealMatrix & () const
-    {
-      return matrix_;
-    }
-
-    operator RealMatrix & ()
-    {
-      return matrix_;
-    }
-
-    template <class Vector>
-    void row( const unsigned int row, Vector &vec ) const
-    {
-      assert(row<rows());
-      for (unsigned int i=0; i<cols(); ++i)
-        field_cast(matrix_(row,i), vec[i]);
-    }
-
-    const Field &operator() ( const unsigned int row, const unsigned int col ) const
-    {
-      assert(row<rows());
-      assert(col<cols());
-      return matrix_( row, col );
-    }
-
-    Field &operator() ( const unsigned int row, const unsigned int col )
-    {
-      assert(row<rows());
-      assert(col<cols());
-      return matrix_( row, col );
-    }
-
-    unsigned int rows () const
-    {
-      return matrix_.gethighbound( 1 )+1;
-    }
-
-    unsigned int cols () const
-    {
-      return matrix_.gethighbound( 2 )+1;
-    }
-
-    const Field *rowPtr ( const unsigned int row ) const
-    {
-      assert(row<rows());
-      const int lastCol = matrix_.gethighbound( 2 );
-      ap::const_raw_vector< Field > rowVector = matrix_.getrow( row, 0, lastCol );
-      assert( (rowVector.GetStep() == 1) && (rowVector.GetLength() == lastCol+1) );
-      return rowVector.GetData();
-    }
-
-    Field *rowPtr ( const unsigned int row )
-    {
-      assert(row<rows());
-      const int lastCol = matrix_.gethighbound( 2 );
-      ap::raw_vector< Field > rowVector = matrix_.getrow( row, 0, lastCol );
-      assert( (rowVector.GetStep() == 1) && (rowVector.GetLength() == lastCol+1) );
-      return rowVector.GetData();
-    }
-
-    void resize ( const unsigned int rows, const unsigned int cols )
-    {
-      matrix_.setbounds( 0, rows-1, 0, cols-1 );
-    }
-
-    bool invert ()
-    {
-      assert( rows() == cols() );
-      int info;
-      matinv::matinvreport< precision > report;
-      matinv::rmatrixinverse< precision >( matrix_, rows(), info, report );
-      return (info >= 0);
-    }
-
-  private:
-    RealMatrix matrix_;
-  };
-#endif
-
   template< class Field, bool aligned >
   inline std::ostream &operator<<(std::ostream &out, const LFEMatrix<Field,aligned> &mat)
   {
@@ -263,4 +167,4 @@ namespace Dune
   }
 }
 
-#endif // #ifndef DUNE_ALGLIB_MATRIX_HH
+#endif // #ifndef DUNE_LOCALFUNCTIONS_UTILITY_LFEMATRIX_HH

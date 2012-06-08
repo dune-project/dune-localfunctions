@@ -11,10 +11,7 @@
 #include <dune/localfunctions/lagrange/lobattopoints.hh>
 #include <dune/localfunctions/lagrange/lagrangebasis.hh>
 
-#if HAVE_ALGLIB
-typedef amp::ampf< 128 > StorageField;
-typedef amp::ampf< 512 > ComputeField;
-#elif HAVE_GMP
+#if HAVE_GMP
 typedef Dune::GMPField< 128 > StorageField;
 typedef Dune::GMPField< 512 > ComputeField;
 #else

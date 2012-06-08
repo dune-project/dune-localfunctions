@@ -63,18 +63,6 @@ int main(int argc, char** argv) try
     success &= testFE(lagrangeSimplex);
   }
 #endif
-#if HAVE_ALGLIB
-  std::cout << "Testing LagrangeLocalFiniteElement<LobattoPointSet> on 3d"
-            << " simplex elements with higher precision" << std::endl;
-  for (unsigned int order=1; order<=6; ++order)
-  {
-    std::cout << "order : " << order << std::endl;
-    Dune::LagrangeLocalFiniteElement<Dune::LobattoPointSet,3,double,double,
-        amp::ampf<64>,amp::ampf<128> >
-    lobattoSimplex(0,order);
-    success &= testFE(lobattoSimplex);
-  }
-#endif
   std::cout << "Testing DGLagrangeLocalFiniteElement<EquidistantPointSet> on 3d"
             << " cube elements with double precision" << std::endl;
   for (unsigned int order=1; order<=2; ++order)

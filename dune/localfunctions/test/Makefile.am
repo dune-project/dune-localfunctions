@@ -28,8 +28,8 @@ noinst_HEADERS =				\
 # define the programs
 
 testgenericfem_SOURCES = testgenericfem.cc
-testgenericfem_CPPFLAGS = $(AM_CPPFLAGS) $(GMP_CPPFLAGS) $(ALGLIB_CPPFLAGS)
-testgenericfem_LDADD = $(GMP_LIBS) $(GMP_LDFLAGS) $(ALGLIB_LIBS) $(ALGLIB_LDFLAGS)
+testgenericfem_CPPFLAGS = $(AM_CPPFLAGS) $(GMP_CPPFLAGS)
+testgenericfem_LDADD = $(GMP_LIBS) $(GMP_LDFLAGS)
 lagrangeshapefunctiontest_SOURCES = lagrangeshapefunctiontest.cc
 monomshapefunctiontest_SOURCES = monomshapefunctiontest.cc
 

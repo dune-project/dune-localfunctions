@@ -3,11 +3,6 @@
 #ifndef DUNE_LOCALFUNCTIONS_UTILITY_FIELD_HH
 #define DUNE_LOCALFUNCTIONS_UTILITY_FIELD_HH
 
-#if HAVE_ALGLIB
-#include <alglib/amp.h>
-#warning ALGLIB support is deprecated and will be dropped after DUNE 2.2 (cf. FS#931)
-#endif
-
 #include <dune/common/gmpfield.hh>
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
@@ -89,21 +84,7 @@ namespace Dune
       return Field(1e-12);
     }
   };
-#if HAVE_ALGLIB
-  template< unsigned int precision >
-  struct Zero< amp::ampf< precision > >
-  {
-    typedef amp::ampf< precision > Field;
-    operator Field () const
-    {
-      return Field( 0 );
-    }
-    static const Field epsilon()
-    {
-      return Field(1e-20);
-    }
-  };
-#endif
+
 #if HAVE_GMP
   template< unsigned int precision >
   struct Zero< GMPField< precision > >
@@ -177,20 +158,6 @@ namespace Dune
   {
     f2 = f1;
   }
-
-#if HAVE_ALGLIB
-  template< unsigned int precision >
-  inline void field_cast ( const amp::ampf< precision > &f1, double &f2 )
-  {
-    f2 = f1.toDouble();
-  }
-
-  template< unsigned int precision >
-  inline void field_cast ( const amp::ampf< precision > &f1, long double &f2 )
-  {
-    f2 = f1.toDouble();
-  }
-#endif
 
 #if HAVE_GMP
   template< unsigned int precision >
@@ -312,13 +279,6 @@ namespace Dune
     static const unsigned int value = 32;
   };
 
-#if HAVE_ALGLIB
-  template< unsigned int precision >
-  struct Precision< amp::ampf< precision > >
-  {
-    static const unsigned int value = precision;
-  };
-#endif
 #if HAVE_GMP
   template< unsigned int precision >
   struct Precision< GMPField< precision > >
@@ -336,13 +296,6 @@ namespace Dune
     typedef Field Type;
   };
 
-#if HAVE_ALGLIB
-  template< unsigned int precision, unsigned int sum >
-  struct ComputeField< amp::ampf< precision >, sum >
-  {
-    typedef amp::ampf<precision+sum> Type;
-  };
-#endif
 #if HAVE_GMP
   template< unsigned int precision, unsigned int sum >
   struct ComputeField< GMPField< precision >, sum >
@@ -350,60 +303,6 @@ namespace Dune
     typedef GMPField<precision+sum> Type;
   };
 #endif
-} // namespace Dune
-
-// to be moved to different location...
-namespace std
-{
-
-#if HAVE_ALGLIB
-  template< unsigned int precision >
-  inline ostream &
-  operator<< ( ostream &out,
-               const amp::ampf< precision > &value )
-  {
-    return out << value.toDec();
-  }
-
-  template< unsigned int precision >
-  inline amp::ampf< precision > sqrt ( const amp::ampf< precision > &a )
-  {
-    return amp::sqrt( a );
-  }
-
-  template< unsigned int precision >
-  inline amp::ampf< precision > abs ( const amp::ampf< precision > &a )
-  {
-    return amp::abs( a );
-  }
-#endif // #if HAVE_ALGLIB
-
-} // namespace std
-
-namespace Dune
-{
-
-  namespace GenericGeometry
-  {
-
-    // FieldHelper
-    // -----------
-
-    template< class Field >
-    struct FieldHelper;
-
-#if HAVE_ALGLIB
-    template< unsigned int precision >
-    struct FieldHelper< amp::ampf< precision > >
-    {
-      typedef amp::ampf< precision > Field;
-
-      static Field abs ( const Field &x ) { return amp::abs( x ); }
-    };
-#endif // #if HAVE_ALGLIB
-
-  } // namespace GenericGeometry
-
 } // namespace Dune
 
 #endif // #ifndef DUNE_LOCALFUNCTIONS_UTILITY_FIELD_HH

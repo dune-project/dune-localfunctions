@@ -5,17 +5,12 @@
 #include <dune/localfunctions/raviartthomas/raviartthomasbasis.hh>
 #include <dune/localfunctions/utility/basisprint.hh>
 
-#if HAVE_ALGLIB
-typedef amp::ampf< 128 > StorageField;
-typedef amp::ampf< 512 > ComputeField;
-#else
 #if HAVE_GMP
 typedef Dune::GMPField< 128 > StorageField;
 typedef Dune::GMPField< 512 > ComputeField;
 #else
 typedef double StorageField;
 typedef double ComputeField;
-#endif
 #endif
 
 template <class Topology>

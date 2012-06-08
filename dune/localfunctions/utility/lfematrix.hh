@@ -6,8 +6,7 @@
 #include <cassert>
 #include <vector>
 
-#include <dune/localfunctions/utility/field.hh>
-// #include <dune/localfunctions/utility/vector.hh>
+#include "field.hh"
 
 namespace Dune
 {
@@ -15,12 +14,10 @@ namespace Dune
   template< class F, bool aligned = false >
   class LFEMatrix;
 
-
   template< class F, bool aligned >
   class LFEMatrix
   {
     typedef LFEMatrix< F, aligned > This;
-    // typedef LFEVector< F > Row;
     typedef std::vector< F > Row;
     typedef std::vector<Row> RealMatrix;
 

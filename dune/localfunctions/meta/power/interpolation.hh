@@ -9,11 +9,7 @@
 #include <cstddef>
 #include <vector>
 
-// #include <dune/common/array.hh>
-// #include <dune/common/geometrytype.hh>
 #include <dune/common/static_assert.hh>
-
-// #include <dune/localfunctions/common/localkey.hh>
 
 namespace Dune {
 

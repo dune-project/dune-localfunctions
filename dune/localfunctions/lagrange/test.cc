@@ -8,7 +8,6 @@
 #include <dune/localfunctions/utility/basisprint.hh>
 
 #include <dune/localfunctions/lagrange/equidistantpoints.hh>
-#include <dune/localfunctions/lagrange/lobattopoints.hh>
 #include <dune/localfunctions/lagrange/lagrangebasis.hh>
 
 #if HAVE_GMP
@@ -61,8 +60,6 @@ bool test(unsigned int order, bool verbose = false)
 {
   typedef Dune::LagrangeBasisFactory<Dune::EquidistantPointSet,Topology::dimension,StorageField,ComputeField> BasisFactory;
   typedef Dune::LagrangeCoefficientsFactory< Dune::EquidistantPointSet,  Topology::dimension,double > LagrangeCoefficientsFactory;
-  // typedef Dune::LagrangeBasisFactory<Dune::LobattoPointSet,Topology::dimension,StorageField,ComputeField> BasisFactory;
-  // typedef Dune::LagrangeCoefficientsFactory< Dune::LobattoPointSet, Topology::dimension, double > LagrangeCoefficientsFactory;
 
   bool ret = true;
 
@@ -102,8 +99,6 @@ bool test(unsigned int topologyId, unsigned int order, bool verbose = false)
 {
   typedef Dune::LagrangeBasisFactory<Dune::EquidistantPointSet,dimension,StorageField,ComputeField> BasisFactory;
   typedef Dune::LagrangeCoefficientsFactory< Dune::EquidistantPointSet,  dimension,double > LagrangeCoefficientsFactory;
-  // typedef Dune::LagrangeBasisFactory<Dune::LobattoPointSet,Topology::dimension,StorageField,ComputeField> BasisFactory;
-  // typedef Dune::LagrangeCoefficientsFactory< Dune::LobattoPointSet, Topology::dimension, double > LagrangeCoefficientsFactory;
 
   bool ret = true;
 

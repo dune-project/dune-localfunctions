@@ -18,7 +18,6 @@
 // Lagrange type elements
 #include <dune/localfunctions/lagrange.hh>
 #include <dune/localfunctions/lagrange/equidistantpoints.hh>
-#include <dune/localfunctions/lagrange/lobattopoints.hh>
 
 // DG type elements
 #include <dune/localfunctions/orthonormal.hh>

@@ -9,7 +9,6 @@
 #include <cstdlib>
 #include <vector>
 
-#include <dune/common/deprecated.hh>
 #include <dune/common/shared_ptr.hh>
 #include <dune/common/static_assert.hh>
 
@@ -45,12 +44,6 @@ namespace Dune
         MonomLocalCoefficients<static_size>,
         MonomLocalInterpolation<MonomLocalBasis<D,R,d,p, diffOrder>,static_size>
         > Traits;
-
-    /** \todo Please doc me !
-     */
-    MonomLocalFiniteElement (GeometryType::BasicType basicType) DUNE_DEPRECATED
-      : basis(), interpolation(basicType, basis), gt(basicType,d)
-    {}
 
     //! Construct a MonomLocalFiniteElement
     MonomLocalFiniteElement (const GeometryType &gt_)

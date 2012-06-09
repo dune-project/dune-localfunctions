@@ -39,15 +39,6 @@ namespace Dune
                         "incompatible keys between BasisCreator and InterpolationCreator" );
 
     /** \todo Please doc me */
-    GenericLocalFiniteElement ( unsigned int topologyId, const Key &key ) DUNE_DEPRECATED
-      : topologyId_( topologyId ),
-        key_( key ),
-        finiteElement_()
-    {
-      GenericGeometry::IfTopology< FiniteElement::template Maker, dimDomain >::apply( topologyId_, key_, finiteElement_ );
-    }
-
-    /** \todo Please doc me */
     GenericLocalFiniteElement ( const GeometryType &gt, const Key &key )
       : topologyId_( gt.id() ),
         key_( key ),
@@ -170,12 +161,6 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    DGLocalFiniteElement ( unsigned int topologyId, const typename Base::Key &key  ) DUNE_DEPRECATED
-      : Base( topologyId, key )
-    {}
-
-    /** \todo Please doc me !
-     */
     DGLocalFiniteElement ( const GeometryType &gt, const typename Base::Key &key  )
       : Base( gt, key )
     {}
@@ -198,12 +183,6 @@ namespace Dune
         LocalL2InterpolationFactory< typename FE::BasisFactory, false > > Base;
   public:
     typedef typename Base::Traits Traits;
-
-    /** \todo Please doc me !
-     */
-    L2LocalFiniteElement ( unsigned int topologyId, const typename Base::Key &key  ) DUNE_DEPRECATED
-      : Base( topologyId, key )
-    {}
 
     /** \todo Please doc me !
      */

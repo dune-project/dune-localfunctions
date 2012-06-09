@@ -35,12 +35,6 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    P0LocalFiniteElement (GeometryType::BasicType basicType) DUNE_DEPRECATED
-      : interpolation(GeometryType(basicType,d)), gt(basicType,d)
-    {}
-
-    /** \todo Please doc me !
-     */
     const typename Traits::LocalBasisType& localBasis () const
     {
       return basis;

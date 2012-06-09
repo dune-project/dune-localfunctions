@@ -34,11 +34,6 @@ namespace Dune
     using typename Base::Traits;
 
     /** \todo Please doc me */
-    RaviartThomasLocalFiniteElement ( unsigned int topologyId, unsigned int order ) DUNE_DEPRECATED
-      : Base( topologyId, order )
-    {}
-
-    /** \todo Please doc me */
     RaviartThomasLocalFiniteElement ( const GeometryType &gt, unsigned int order )
       : Base( gt, order )
     {}

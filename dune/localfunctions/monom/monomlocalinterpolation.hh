@@ -5,7 +5,6 @@
 
 #include <vector>
 
-#include <dune/common/deprecated.hh>
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
 
@@ -45,12 +44,6 @@ namespace Dune
     }
 
   public:
-    MonomLocalInterpolation (const GeometryType::BasicType &bt_,
-                             const LB &lb_) DUNE_DEPRECATED
-      : gt(bt_, dimD), lb(lb_), Minv(0)
-        , qr(QuadratureRules<DF,dimD>::rule(gt, 2*lb.order()))
-    { init(); }
-
     MonomLocalInterpolation (const GeometryType &gt_,
                              const LB &lb_)
       : gt(gt_), lb(lb_), Minv(0)

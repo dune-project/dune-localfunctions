@@ -7,7 +7,7 @@
 
 #include <dune/localfunctions/common/virtualinterface.hh>
 #include <dune/localfunctions/common/virtualwrappers.hh>
-#include "q22d.hh"
+#include "q2.hh"
 #include "pk2d.hh"
 
 namespace Dune
@@ -36,7 +36,7 @@ namespace Dune
       if ( gt.isTriangle() )
         setup( Pk2DLocalFiniteElement<D,R,2>() );
       else if ( gt.isQuadrilateral() )
-        setup( Q22DLocalFiniteElement<D,R>() );
+        setup( Q2LocalFiniteElement<D,R,2>() );
     }
 
     PQ22DLocalFiniteElement ( const GeometryType &gt, const std::vector<unsigned int> vertexmap )
@@ -45,7 +45,7 @@ namespace Dune
       if ( gt.isTriangle() )
         setup( Pk2DLocalFiniteElement<D,R,2>(vertexmap) );
       else if ( gt.isQuadrilateral() )
-        setup( Q22DLocalFiniteElement<D,R>() );
+        setup( Q2LocalFiniteElement<D,R,2>() );
     }
 
     PQ22DLocalFiniteElement ( const PQ22DLocalFiniteElement<D, R>& other )

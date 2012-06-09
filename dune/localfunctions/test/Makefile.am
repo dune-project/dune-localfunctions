@@ -70,9 +70,6 @@ test_power_monom_SOURCES = test-power-monom.cc
 TESTS += test-q1
 test_q1_SOURCES = test-q1.cc
 
-TESTS += test-q22d
-test_q22d_SOURCES = test-q22d.cc
-
 TESTS += test-q2
 test_q2_SOURCES = test-q2.cc
 

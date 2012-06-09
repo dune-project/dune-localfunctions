@@ -22,7 +22,7 @@
 #include "../lagrange/p23d.hh"
 #include "../lagrange/pq22d.hh"
 #include "../lagrange/pk.hh"
-#include "../lagrange/q22d.hh"
+#include "../lagrange/q2.hh"
 
 #include "../brezzidouglasmarini/brezzidouglasmarini1q2d.hh"
 #include "../brezzidouglasmarini/brezzidouglasmarini12d.hh"
@@ -183,8 +183,14 @@ int main(int argc, char** argv) try
 
   success = PkLocalFiniteElementTest<3, 10>::test() and success;
 
-  Dune::Q22DLocalFiniteElement<double,double> q22dlfem;
+  Dune::Q2LocalFiniteElement<double,double,1> q21dlfem;
+  success = testFE(q21dlfem) and success;
+
+  Dune::Q2LocalFiniteElement<double,double,2> q22dlfem;
   success = testFE(q22dlfem) and success;
+
+  Dune::Q2LocalFiniteElement<double,double,3> q23dlfem;
+  success = testFE(q23dlfem) and success;
 
   Dune::RT02DLocalFiniteElement<double,double> rt02dlfem(1);
   success = testFE(rt02dlfem) and success;

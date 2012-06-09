@@ -48,7 +48,6 @@ AC_CONFIG_FILES([
                 dune/localfunctions/lagrange/pyramidp2/Makefile
                 dune/localfunctions/lagrange/q1/Makefile
                 dune/localfunctions/lagrange/q2/Makefile
-                dune/localfunctions/lagrange/q22d/Makefile
                 dune/localfunctions/Makefile
                 dune/localfunctions/meta/Makefile
                 dune/localfunctions/meta/power/Makefile

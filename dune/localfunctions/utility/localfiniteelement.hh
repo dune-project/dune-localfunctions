@@ -4,7 +4,6 @@
 #define DUNE_GENERIC_LOCALFINITEELEMENT_HH
 
 #include <dune/geometry/type.hh>
-#include <dune/geometry/genericgeometry/conversion.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include <dune/localfunctions/utility/l2interpolation.hh>

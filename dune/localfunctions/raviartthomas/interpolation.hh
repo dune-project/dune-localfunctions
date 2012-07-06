@@ -11,7 +11,6 @@
 
 #include <dune/geometry/topologyfactory.hh>
 #include <dune/geometry/referenceelements.hh>
-#include <dune/geometry/genericgeometry/referenceelements.hh>
 #include <dune/geometry/quadraturerules/gaussquadrature.hh>
 
 #include <dune/localfunctions/common/localkey.hh>
@@ -181,10 +180,11 @@ namespace Dune
         static void apply( const unsigned int order,
                            std::vector<FaceStructure> &faceStructure )
         {
+          static const int dim=Topology::dimension;
           faceStructure.push_back(
             FaceStructure(
               TestFaceBasisFactory::template create<FaceTopology>(order),
-              GenericGeometry::ReferenceElement<Topology,Field>::integrationOuterNormal(face)
+              GenericReferenceElements<Field,dim>::general(GeometryType(Topology::id,dim)).volumeOuterNormal(face)
               ) );
         }
       };

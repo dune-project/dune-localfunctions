@@ -180,11 +180,11 @@ namespace Dune
         static void apply( const unsigned int order,
                            std::vector<FaceStructure> &faceStructure )
         {
-          static const int dim=Topology::dimension;
+          static const int dimTopo = Topology::dimension;
           faceStructure.push_back(
             FaceStructure(
               TestFaceBasisFactory::template create<FaceTopology>(order),
-              GenericReferenceElements<Field,dim>::general(GeometryType(Topology::id,dim)).volumeOuterNormal(face)
+              GenericReferenceElements<Field,dimTopo>::general(GeometryType(Topology::id,dimTopo)).volumeOuterNormal(face)
               ) );
         }
       };

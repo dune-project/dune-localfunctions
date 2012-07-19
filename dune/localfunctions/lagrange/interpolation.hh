@@ -30,7 +30,7 @@ namespace Dune
     static const unsigned int dimension = LagrangePointSet::dimension;
 
   private:
-    friend class LagrangeInterpolationFactory<LP,dim,F>;
+    friend struct LagrangeInterpolationFactory<LP,dim,F>;
     const LagrangePointSet &lagrangePoints_;
 
     explicit LocalLagrangeInterpolation ( const LagrangePointSet &lagrangePoints )

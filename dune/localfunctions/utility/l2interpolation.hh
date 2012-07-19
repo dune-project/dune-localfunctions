@@ -191,7 +191,7 @@ namespace Dune
     static const unsigned int dimension = Traits::dimension;
     typedef typename Traits::Key Key;
     typedef typename Traits::Basis Basis;
-    typedef typename Traits::Object Object;;
+    typedef typename Traits::Object Object;
     typedef typename Traits::Field Field;
     typedef typename Traits::Quadrature Quadrature;
 

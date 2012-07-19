@@ -19,7 +19,7 @@ namespace Dune
 {
 
   template< template <class,unsigned int> class LP, unsigned int dim, class F >
-  class LagrangeCoefficientsFactory;
+  struct LagrangeCoefficientsFactory;
 
   template< template <class,unsigned int> class LP,
       unsigned int dim, class F>

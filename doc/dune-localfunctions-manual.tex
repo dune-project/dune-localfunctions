@@ -226,7 +226,7 @@ For every degree of freedom we thus have
 \end{enumerate} 
 These informations are stored in the \lstinline!LocalKey! class, which allows
 access to the entries by the methods \lstinline!subEntity()!, \lstinline!codim()!, and \lstinline!index()!.
-For the correct local numbering of the subentities see the documentation of the \lstinline!GenericReferenceElements!
+For the correct local numbering of the subentities see the documentation of the \lstinline!ReferenceElements!
 at \url{http://dune-project.org}.
 
 The \lstinline!LocalCoefficient! class now associates the indices of the shape function with
@@ -915,7 +915,7 @@ struct VertexOrderingInterface {
 \end{lstlisting}
 Information about the dimension and the geometry type is included because it
 determines the limits for the parameters (via the {\tt
-  GenericReferenceElements}).  The {\tt getReduced()} method shall resize the
+  ReferenceElements}).  The {\tt getReduced()} method shall resize the
 vector passed in the {\tt order} parameter to the suitable size.
 
 \subsection{Matching Multiple Dofs on a Common Sub-Entity}

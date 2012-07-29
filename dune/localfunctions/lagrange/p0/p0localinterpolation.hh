@@ -26,7 +26,7 @@ namespace Dune
       typedef typename LB::Traits::DomainFieldType DF;
       const int dim=LB::Traits::dimDomain;
 
-      DomainType x = Dune::GenericReferenceElements<DF,dim>::general(gt_).position(0,0);
+      DomainType x = Dune::ReferenceElements<DF,dim>::general(gt_).position(0,0);
       RangeType y;
 
       out.resize(1);

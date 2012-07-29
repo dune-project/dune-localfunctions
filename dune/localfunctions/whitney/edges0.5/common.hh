@@ -14,7 +14,7 @@ namespace Dune {
   template<std::size_t dim, class DF = double>
   struct EdgeS0_5Common {
     //! The reference element for this edge element
-    static const GenericReferenceElement<DF, dim>& refelem;
+    static const ReferenceElement<DF, dim>& refelem;
     //! The number of base functions
     /**
      * \note This is not a compile time constant, since the number of edges is
@@ -24,8 +24,8 @@ namespace Dune {
   };
 
   template<std::size_t dim, class DF>
-  const GenericReferenceElement<DF, dim>& EdgeS0_5Common<dim,DF>::
-  refelem(GenericReferenceElements<DF, dim>::simplex());
+  const ReferenceElement<DF, dim>& EdgeS0_5Common<dim,DF>::
+  refelem(ReferenceElements<DF, dim>::simplex());
 
   template<std::size_t dim, typename DF>
   const std::size_t EdgeS0_5Common<dim,DF>::s(refelem.size(dim-1));

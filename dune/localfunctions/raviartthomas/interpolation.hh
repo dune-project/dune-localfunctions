@@ -184,7 +184,7 @@ namespace Dune
           faceStructure.push_back(
             FaceStructure(
               TestFaceBasisFactory::template create<FaceTopology>(order),
-              GenericReferenceElements<Field,dimTopo>::general(GeometryType(Topology::id,dimTopo)).volumeOuterNormal(face)
+              ReferenceElements<Field,dimTopo>::general(GeometryType(Topology::id,dimTopo)).volumeOuterNormal(face)
               ) );
         }
       };
@@ -282,8 +282,8 @@ namespace Dune
       typedef Dune::GenericGeometry::GaussQuadratureProvider< dimension-1, Field >
       FaceQuadratureProvider;
 
-      typedef Dune::GenericReferenceElements< Field, dimension > RefElements;
-      typedef Dune::GenericReferenceElement< Field, dimension > RefElement;
+      typedef Dune::ReferenceElements< Field, dimension > RefElements;
+      typedef Dune::ReferenceElement< Field, dimension > RefElement;
       typedef typename RefElement::template Codim< 1 >::Mapping Mapping;
 
       const RefElement &refElement = RefElements::general( geoType );

@@ -23,6 +23,7 @@
 #include "../lagrange/pq22d.hh"
 #include "../lagrange/pk.hh"
 #include "../lagrange/q2.hh"
+#include "../lagrange/qk.hh"
 
 #include "../brezzidouglasmarini/brezzidouglasmarini1q2d.hh"
 #include "../brezzidouglasmarini/brezzidouglasmarini12d.hh"
@@ -192,6 +193,34 @@ int main(int argc, char** argv) try
   Dune::Q2LocalFiniteElement<double,double,3> q23dlfem;
   success = testFE(q23dlfem) and success;
 
+  // --------------------------------------------------------
+  //  Test some instantiations of QkLocalFiniteElement
+  // --------------------------------------------------------
+  Dune::QkLocalFiniteElement<double,double,1,1> qk11dlfem;
+  success = testFE(qk11dlfem) and success;
+
+  Dune::QkLocalFiniteElement<double,double,2,1> qk12dlfem;
+  success = testFE(qk12dlfem) and success;
+
+  Dune::QkLocalFiniteElement<double,double,2,2> qk22dlfem;
+  success = testFE(qk22dlfem) and success;
+
+  Dune::QkLocalFiniteElement<double,double,2,3> qk32dlfem;
+  success = testFE(qk32dlfem) and success;
+
+  Dune::QkLocalFiniteElement<double,double,3,1> qk13dlfem;
+  success = testFE(qk13dlfem) and success;
+
+  Dune::QkLocalFiniteElement<double,double,3,2> qk23dlfem;
+  success = testFE(qk23dlfem) and success;
+
+  Dune::QkLocalFiniteElement<double,double,3,3> qk33dlfem;
+  success = testFE(qk33dlfem) and success;
+
+
+  // --------------------------------------------------------
+  //  Test Raviart-Thomas Finite elements
+  // --------------------------------------------------------
   Dune::RT02DLocalFiniteElement<double,double> rt02dlfem(1);
   success = testFE(rt02dlfem) and success;
 

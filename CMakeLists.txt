@@ -2,11 +2,11 @@
 project("dune-localfunctions" C CXX)
 
 # general stuff
-cmake_minimum_required(VERSION 2.8.8)
+cmake_minimum_required(VERSION 2.8)
 
 # make sure our own modules are found
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules")
-message("${CMAKE_MODULE_PATH}")
+
 #include the dune macros
 include(DuneMacros)
 

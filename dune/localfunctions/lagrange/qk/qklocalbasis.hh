@@ -5,6 +5,8 @@
 #define DUNE_LOCALFUNCTIONS_QKLOCALBASIS_HH
 
 #include <dune/common/fvector.hh>
+#include <dune/common/fmatrix.hh>
+#include <dune/common/misc.hh>
 
 #include <dune/geometry/type.hh>
 

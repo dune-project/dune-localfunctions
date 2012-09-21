@@ -4,6 +4,11 @@
 #ifndef DUNE_LOCALFUNCTIONS_QK_LOCALCOEFFICIENTS_HH
 #define DUNE_LOCALFUNCTIONS_QK_LOCALCOEFFICIENTS_HH
 
+#include <cassert>
+
+#include <dune/common/misc.hh>
+
+#include <dune/localfunctions/common/localkey.hh>
 
 namespace Dune
 {

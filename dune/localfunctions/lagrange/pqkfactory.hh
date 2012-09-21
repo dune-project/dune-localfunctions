@@ -78,7 +78,7 @@ namespace Dune
     typedef LocalFiniteElementVirtualInterface<T> FiniteElementType;
     typedef P0LocalFiniteElement<D,R,dim> P0;
     typedef PkLocalFiniteElement<D,R,dim,k> Pk;
-    typedef QkCGLocalFiniteElement<D,R,k,dim> Qk;
+    typedef QkLocalFiniteElement<D,R,k,dim> Qk;
 
 
     //! create finite element for given GeometryType

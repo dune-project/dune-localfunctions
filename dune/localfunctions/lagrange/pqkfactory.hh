@@ -14,6 +14,7 @@
 #include <dune/localfunctions/lagrange/pk.hh>
 #include <dune/localfunctions/lagrange/q1.hh>
 #include <dune/localfunctions/lagrange/q2.hh>
+#include <dune/localfunctions/lagrange/qk.hh>
 #include <dune/localfunctions/lagrange/prismp1.hh>
 #include <dune/localfunctions/lagrange/prismp2.hh>
 #include <dune/localfunctions/lagrange/pyramidp1.hh>
@@ -34,25 +35,6 @@ namespace Dune
     //! create finite element for given GeometryType
     static LocalFiniteElementVirtualInterface<T>* create(const GeometryType& gt)
     {
-      return 0;
-    }
-  };
-
-  /** \brief Factory that only creates dimension specific local finite elements
-   *
-   * Specialization for dim=2
-   */
-  template<class D, class R, int k>
-  struct DimSpecificPQkLocalFiniteElementFactory<D,R,2,k>
-  {
-    typedef typename FixedOrderLocalBasisTraits<typename P0LocalFiniteElement<D,R,2>::Traits::LocalBasisType::Traits,0>::Traits T;
-    typedef Q2LocalFiniteElement<D,R,2> Q22D;
-
-    //! create finite element for given GeometryType
-    static LocalFiniteElementVirtualInterface<T>* create(const GeometryType& gt)
-    {
-      if ((gt.isCube())and (k==2))
-        return new LocalFiniteElementVirtualImp<Q22D>(Q22D());
       return 0;
     }
   };
@@ -96,7 +78,7 @@ namespace Dune
     typedef LocalFiniteElementVirtualInterface<T> FiniteElementType;
     typedef P0LocalFiniteElement<D,R,dim> P0;
     typedef PkLocalFiniteElement<D,R,dim,k> Pk;
-    typedef Q1LocalFiniteElement<D,R,dim> Q1;
+    typedef QkLocalFiniteElement<D,R,k,dim> Qk;
 
 
     //! create finite element for given GeometryType
@@ -108,8 +90,8 @@ namespace Dune
       if (gt.isSimplex())
         return new LocalFiniteElementVirtualImp<Pk>(Pk());
 
-      if ((gt.isCube())and (k==1))
-        return new LocalFiniteElementVirtualImp<Q1>(Q1());
+      if (gt.isCube())
+        return new LocalFiniteElementVirtualImp<Qk>(Qk());
 
       return DimSpecificPQkLocalFiniteElementFactory<D,R,dim,k>::create(gt);
     }

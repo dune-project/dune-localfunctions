@@ -184,7 +184,7 @@ namespace Dune
           faceStructure.push_back(
             FaceStructure(
               TestFaceBasisFactory::template create<FaceTopology>(order),
-              ReferenceElements<Field,dimTopo>::general(GeometryType(Topology::id,dimTopo)).volumeOuterNormal(face)
+              ReferenceElements<Field,dimTopo>::general(GeometryType( Topology() )).integrationOuterNormal(face)
               ) );
         }
       };

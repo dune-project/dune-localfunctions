@@ -6,7 +6,7 @@
 
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
-#include <dune/common/misc.hh>
+#include <dune/common/power.hh>
 
 #include <dune/geometry/type.hh>
 

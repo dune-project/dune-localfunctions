@@ -6,7 +6,7 @@
 
 #include <cassert>
 
-#include <dune/common/misc.hh>
+#include <dune/common/power.hh>
 
 #include <dune/localfunctions/common/localkey.hh>
 

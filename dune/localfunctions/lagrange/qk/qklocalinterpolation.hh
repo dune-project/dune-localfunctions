@@ -5,7 +5,7 @@
 #define DUNE_LOCALFUNCTIONS_QKLOCALINTERPOLATION_HH
 
 #include <dune/common/fvector.hh>
-#include <dune/common/misc.hh>
+#include <dune/common/power.hh>
 
 #include <dune/geometry/type.hh>
 

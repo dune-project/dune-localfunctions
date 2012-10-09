@@ -60,7 +60,9 @@ namespace Dune
       }
       li[lastIndex++] = LocalKey(3,2,0);       // corner 3
 
+#ifndef NDEBUG
       const unsigned numIndices = Power_m_p<k+1,d>::power;
+#endif
 
       --lastIndex; --lastInnerFaceIndex;
 
@@ -74,8 +76,10 @@ namespace Dune
       assert(k>0);
       unsigned lastIndex=0;
       unsigned lastInnerFaceIndex=0;
+#ifndef NDEBUG
       const unsigned numIndices = Power_m_p<k+1,d>::power;
       const unsigned numFaceIndices = Power_m_p<k+1,d-1>::power;
+#endif
       const unsigned numInnerEdgeDofs = k-1;
       const unsigned numInnerFaceDofs = numInnerEdgeDofs * numInnerEdgeDofs;
 

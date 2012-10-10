@@ -5,7 +5,9 @@
 #define DUNE_LOCALFUNCTIONS_QK_LOCALCOEFFICIENTS_HH
 
 #include <cassert>
+#include <vector>
 
+#include <dune/common/exceptions.hh>
 #include <dune/common/power.hh>
 
 #include <dune/localfunctions/common/localkey.hh>

@@ -31,7 +31,7 @@ namespace Dune
   template<class D, class R, int k, int d>
   class QkLocalBasis
   {
-    enum { n = Power_m_p<k+1,d>::power };
+    enum { n = StaticPower<k+1,d>::power };
 
     // ith Lagrange polynomial of degree k in one dimension
     static R p (int i, D x)
@@ -77,7 +77,7 @@ namespace Dune
     //! \brief number of shape functions
     unsigned int size () const
     {
-      return Power_m_p<k+1,d>::power;
+      return StaticPower<k+1,d>::power;
     }
 
     //! \brief Evaluate all shape functions

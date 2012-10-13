@@ -41,9 +41,9 @@ namespace Dune
       typename LB::Traits::DomainType x;
       typename LB::Traits::RangeType y;
 
-      out.resize(Power_m_p<k+1,d>::power);
+      out.resize(StaticPower<k+1,d>::power);
 
-      for (int i=0; i<Power_m_p<k+1,d>::power; i++)
+      for (int i=0; i<StaticPower<k+1,d>::power; i++)
       {
         // convert index i to multiindex
         Dune::FieldVector<int,d> alpha(multiindex(i));

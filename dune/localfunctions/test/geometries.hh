@@ -11,19 +11,19 @@
 #include <dune/common/fvector.hh>
 
 #include <dune/geometry/type.hh>
-#include <dune/geometry/mockgeometry.hh>
+#include <dune/geometry/multilineargeometry.hh>
 
 template<class ctype, std::size_t dim>
 class TestGeometries;
 
 template<class ctype>
 class TestGeometries<ctype, 0> :
-  public std::vector<Dune::MockGeometry<ctype, 0, 0> >
+  public std::vector<Dune::MultiLinearGeometry<ctype, 0, 0> >
 {
   static const std::size_t dim = 0;
 
 public:
-  typedef Dune::MockGeometry<ctype, dim, dim> Geometry;
+  typedef Dune::MultiLinearGeometry<ctype, dim, dim> Geometry;
 
   TestGeometries() {
     Dune::GeometryType gt;
@@ -44,12 +44,12 @@ public:
 
 template<class ctype>
 class TestGeometries<ctype, 1> :
-  public std::vector<Dune::MockGeometry<ctype, 1, 1> >
+  public std::vector<Dune::MultiLinearGeometry<ctype, 1, 1> >
 {
   static const std::size_t dim = 1;
 
 public:
-  typedef Dune::MockGeometry<ctype, dim, dim> Geometry;
+  typedef Dune::MultiLinearGeometry<ctype, dim, dim> Geometry;
 
   TestGeometries() {
     Dune::GeometryType gt;
@@ -72,12 +72,12 @@ public:
 
 template<class ctype>
 class TestGeometries<ctype, 2> :
-  public std::vector<Dune::MockGeometry<ctype, 2, 2> >
+  public std::vector<Dune::MultiLinearGeometry<ctype, 2, 2> >
 {
   static const std::size_t dim = 2;
 
 public:
-  typedef Dune::MockGeometry<ctype, dim, dim> Geometry;
+  typedef Dune::MultiLinearGeometry<ctype, dim, dim> Geometry;
 
   TestGeometries() {
     Dune::GeometryType gt;
@@ -109,12 +109,12 @@ public:
 
 template<class ctype>
 class TestGeometries<ctype, 3> :
-  public std::vector<Dune::MockGeometry<ctype, 3, 3> >
+  public std::vector<Dune::MultiLinearGeometry<ctype, 3, 3> >
 {
   static const std::size_t dim = 3;
 
 public:
-  typedef Dune::MockGeometry<ctype, dim, dim> Geometry;
+  typedef Dune::MultiLinearGeometry<ctype, dim, dim> Geometry;
 
   TestGeometries() {
     Dune::GeometryType gt;

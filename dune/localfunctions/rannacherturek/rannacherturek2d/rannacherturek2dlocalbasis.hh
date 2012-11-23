@@ -1,7 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_RANNACHER_TUREK2DLOCALBASIS_HH
-#define DUNE_RANNACHER_TUREK2DLOCALBASIS_HH
+#ifndef DUNE_RANNACHER_TUREK_2D_LOCALBASIS_HH
+#define DUNE_RANNACHER_TUREK_2D_LOCALBASIS_HH
 
 #include <vector>
 
@@ -10,24 +10,25 @@
 
 #include <dune/localfunctions/common/localbasis.hh>
 
-namespace Dune {
+namespace Dune
+{
 
-  template<class D, class R>
-  class RannacherTurek2DLocalBasis
+  template< class D, class R >
+  struct RannacherTurek2DLocalBasis
   {
-  public:
-    typedef LocalBasisTraits<D,2,FieldVector<D,2>,
-        R,1,FieldVector<R,1>,
-        FieldMatrix<R,1,2> > Traits;
+    typedef LocalBasisTraits< D, 2, FieldVector< D, 2 >,
+        R, 1, FieldVector< R, 1 >,
+        FieldMatrix< R, 1, 2 > > Traits;
 
-    unsigned int size () const {
+    //! \brief number of shape functions
+    unsigned int size () const
+    {
       return 4;
     }
 
-    //! \brief Evaluate all shape functions
-    inline void
-    evaluateFunction (const typename Traits::DomainType& in,
-                      std::vector<typename Traits::RangeType>& out) const
+    //! \brief evaluate all shape functions
+    inline void evaluateFunction ( const typename Traits::DomainType &in,
+                                   std::vector< typename Traits::RangeType > &out ) const
     {
       out.resize(4);
       typename Traits::DomainFieldType qbase = in[0]*in[0]-in[1]*in[1];
@@ -37,10 +38,9 @@ namespace Dune {
       out[3] = -.25 +   in[0]           - qbase;
     }
 
-    //! \brief Evaluate Jacobian of all shape functions
-    inline void
-    evaluateJacobian (const typename Traits::DomainType& in,
-                      std::vector<typename Traits::JacobianType>& out) const
+    //! \brief evaluate jacobian of all shape functions
+    inline void evaluateJacobian ( const typename Traits::DomainType &in,
+                                   std::vector< typename Traits::JacobianType > &out ) const
     {
       out.resize(4);
 
@@ -53,8 +53,9 @@ namespace Dune {
       out[3][0][0] =  1 - 2*in[0]; out[3][0][1] =      2*in[1];
     }
 
-    //! \brief Polynomial order of the shape functions
-    unsigned int order () const {
+    //! \brief polynomial order of the shape functions
+    unsigned int order () const
+    {
       // must be 2 here since it contains x^2 and x^2
       return 2;
     }
@@ -62,4 +63,4 @@ namespace Dune {
 
 } //namespace Dune
 
-#endif // DUNE_RANNACHER_TUREK2DLOCALBASIS_HH
+#endif // #ifndef DUNE_RANNACHER_TUREK_2D_LOCALBASIS_HH

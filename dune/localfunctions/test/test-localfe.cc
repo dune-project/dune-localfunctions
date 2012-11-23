@@ -32,7 +32,7 @@
 #include "../hierarchical/hierarchicalp2.hh"
 #include "../hierarchical/hierarchicalp2withelementbubble.hh"
 #include "../hierarchical/hierarchicalprismp2.hh"
-#include "../rannacherturek/rannacherturek2d.hh"
+#include "../rannacherturek/rannacherturek.hh"
 #include "../raviartthomas/raviartthomas02d.hh"
 #include "../raviartthomas/raviartthomas0q2d.hh"
 #include "../raviartthomas/raviartthomas0q3d.hh"
@@ -242,8 +242,11 @@ int main(int argc, char** argv) try
   Dune::RT2Q2DLocalFiniteElement<double,double> rt2q2dlfem(1);
   success = testFE(rt2q2dlfem) and success;
 
-  Dune::RannacherTurek2DLocalFiniteElement<double,double> rannacher_turek2dfem;
+  Dune::RannacherTurekLocalFiniteElement<double,double,2> rannacher_turek2dfem;
   success = testFE(rannacher_turek2dfem) and success;
+
+  Dune::RannacherTurekLocalFiniteElement<double,double,3> rannacher_turek3dfem;
+  success = testFE(rannacher_turek3dfem) and success;
 
   std::cout << "Monomials are only tested up to order 2 due to the instability of interpolate()." << std::endl;
   success = testMonomials<2>() and success;

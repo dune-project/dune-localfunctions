@@ -57,6 +57,7 @@ AC_CONFIG_FILES([
                 dune/localfunctions/orthonormal/Makefile
                 dune/localfunctions/rannacherturek/Makefile
                 dune/localfunctions/rannacherturek/rannacherturek2d/Makefile
+                dune/localfunctions/rannacherturek/rannacherturek3d/Makefile
                 dune/localfunctions/raviartthomas/Makefile
                 dune/localfunctions/raviartthomas/raviartthomas02d/Makefile
                 dune/localfunctions/raviartthomas/raviartthomas0q2d/Makefile

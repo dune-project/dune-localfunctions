@@ -6,3 +6,7 @@
 
 
 #include <dune/localfunctions/rannacherturek/rannacherturek.hh>
+
+#define DISABLE_RANNACHERTUREK2D_DEPRECATION_WARNING
+#include <dune/localfunctions/rannacherturek/rannacherturek2d.hh>
+#undef DISABLE_RANNACHERTUREK2D_DEPRECATION_WARNING

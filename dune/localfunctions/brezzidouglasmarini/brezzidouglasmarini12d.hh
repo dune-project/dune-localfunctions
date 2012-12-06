@@ -3,12 +3,10 @@
 #ifndef DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI12DLOCALFINITEELEMENT_HH
 #define DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI12DLOCALFINITEELEMENT_HH
 
-#include <dune/geometry/type.hh>
+#include "brezzidouglasmarini1simplex2d.hh"
 
-#include "../common/localfiniteelementtraits.hh"
-#include "brezzidouglasmarini12d/brezzidouglasmarini12dlocalbasis.hh"
-#include "brezzidouglasmarini12d/brezzidouglasmarini12dlocalcoefficients.hh"
-#include "brezzidouglasmarini12d/brezzidouglasmarini12dlocalinterpolation.hh"
+#warning This header is deprecated, please use\
+  dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini1simplex2d.hh instead
 
 namespace Dune
 {
@@ -18,56 +16,15 @@ namespace Dune
    *
    * \tparam D Type to represent the field in the domain.
    * \tparam R Type to represent the field in the range.
+   *
+   * \deprecated This class is deprecated and will be removed after Dune 2.3.
+   *             Use BDM1Simplex2DLocalFiniteElement instead.
    */
   template<class D, class R>
-  class BDM12DLocalFiniteElement
-  {
-
-  public:
-    typedef LocalFiniteElementTraits<BDM12DLocalBasis<D,R>,BDM12DLocalCoefficients,
-        BDM12DLocalInterpolation<BDM12DLocalBasis<D,R> > > Traits;
-
-    //! \brief Standard constructor
-    BDM12DLocalFiniteElement ()
-    {
-      gt.makeTriangle();
-    }
-
-    /**
-     * \brief Make set number s, where 0 <= s < 8
-     *
-     * \param s Edge orientation indicator
-     */
-    BDM12DLocalFiniteElement (int s) : basis(s), interpolation(s)
-    {
-      gt.makeTriangle();
-    }
-
-    const typename Traits::LocalBasisType& localBasis () const
-    {
-      return basis;
-    }
-
-    const typename Traits::LocalCoefficientsType& localCoefficients () const
-    {
-      return coefficients;
-    }
-
-    const typename Traits::LocalInterpolationType& localInterpolation () const
-    {
-      return interpolation;
-    }
-
-    GeometryType type () const
-    {
-      return gt;
-    }
-
-  private:
-    BDM12DLocalBasis<D,R> basis;
-    BDM12DLocalCoefficients coefficients;
-    BDM12DLocalInterpolation<BDM12DLocalBasis<D,R> > interpolation;
-    GeometryType gt;
-  };
+  class
+  DUNE_DEPRECATED_MSG("Use BDM1Simplex2DLocalFiniteElement instead")
+  BDM12DLocalFiniteElement
+    : public BDM1Simplex2DLocalFiniteElement<D, R>
+  {};
 }
 #endif // DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI12DLOCALFINITEELEMENT_HH

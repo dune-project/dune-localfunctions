@@ -1,7 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI1TRIANGLELOCALCOEFFICIENTS_HH
-#define DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI1TRIANGLELOCALCOEFFICIENTS_HH
+#ifndef DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI1_SIMPLEX2D_LOCALCOEFFICIENTS_HH
+#define DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI1_SIMPLEX2D_LOCALCOEFFICIENTS_HH
 
 #include <cstddef>
 #include <vector>
@@ -12,18 +12,18 @@ namespace Dune
 {
 
   /**
-   * @ingroup LocalLayoutImplementation
+   * \ingroup LocalLayoutImplementation
    * \brief Layout map for Brezzi-Douglas-Marini-1 elements on triangles.
    *
    * \nosubgrouping
    * \implements Dune::LocalCoefficientsVirtualImp
    */
-  class BDM12DLocalCoefficients
+  class BDM1Simplex2DLocalCoefficients
   {
 
   public:
     //! \brief Standard constructor
-    BDM12DLocalCoefficients () : li(6)
+    BDM1Simplex2DLocalCoefficients () : li(6)
     {
       for (std::size_t i=0; i<3; i++)
       {
@@ -48,4 +48,4 @@ namespace Dune
     std::vector<LocalKey> li;
   };
 }
-#endif // DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI1TRIANGLELOCALCOEFFICIENTS_HH
+#endif // DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI1_SIMPLEX2D_LOCALCOEFFICIENTS_HH

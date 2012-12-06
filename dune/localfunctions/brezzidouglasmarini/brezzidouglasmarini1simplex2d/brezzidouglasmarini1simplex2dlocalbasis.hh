@@ -1,7 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI1TRIANGLELOCALBASIS_HH
-#define DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI1TRIANGLELOCALBASIS_HH
+#ifndef DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI1_SIMPLEX2D_LOCALBASIS_HH
+#define DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI1_SIMPLEX2D_LOCALBASIS_HH
 
 #include <vector>
 
@@ -12,7 +12,7 @@
 namespace Dune
 {
   /**
-   * @ingroup LocalBasisImplementation
+   * \ingroup LocalBasisImplementation
    * \brief First order Brezzi-Douglas-Marini shape functions on the reference triangle.
    *
    * \tparam D Type to represent the field in the domain.
@@ -21,7 +21,7 @@ namespace Dune
    * \nosubgrouping
    */
   template<class D, class R>
-  class BDM12DLocalBasis
+  class BDM1Simplex2DLocalBasis
   {
 
   public:
@@ -29,7 +29,7 @@ namespace Dune
         Dune::FieldMatrix<R,2,2> > Traits;
 
     //! \brief Standard constructor
-    BDM12DLocalBasis ()
+    BDM1Simplex2DLocalBasis ()
     {
       sign0 = sign1 = sign2 = 1.0;
     }
@@ -39,7 +39,7 @@ namespace Dune
      *
      * \param s Edge orientation indicator
      */
-    BDM12DLocalBasis (unsigned int s)
+    BDM1Simplex2DLocalBasis (unsigned int s)
     {
       sign0 = sign1 = sign2 = 1.0;
       if (s & 1)
@@ -139,4 +139,4 @@ namespace Dune
     R sign0, sign1, sign2;
   };
 }
-#endif // DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI1TRIANGLELOCALBASIS_HH
+#endif // DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI1_SIMPLEX2D_LOCALBASIS_HH

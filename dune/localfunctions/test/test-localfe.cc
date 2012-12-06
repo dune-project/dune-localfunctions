@@ -25,8 +25,8 @@
 #include "../lagrange/q2.hh"
 #include "../lagrange/qk.hh"
 
-#include "../brezzidouglasmarini/brezzidouglasmarini1q2d.hh"
-#include "../brezzidouglasmarini/brezzidouglasmarini12d.hh"
+#include "../brezzidouglasmarini/brezzidouglasmarini1cube2d.hh"
+#include "../brezzidouglasmarini/brezzidouglasmarini1simplex2d.hh"
 #include "../refined/refinedp1.hh"
 #include "../refined/refinedp0.hh"
 #include "../hierarchical/hierarchicalp2.hh"
@@ -143,11 +143,11 @@ int main(int argc, char** argv) try
   Dune::P23DLocalFiniteElement<double,double> p23dlfem;
   success = testFE(p23dlfem) and success;
 
-  Dune::BDM1Q2DLocalFiniteElement<double,double> bdm1q2dlfem(1);
-  success = testFE(bdm1q2dlfem) and success;
+  Dune::BDM1Cube2DLocalFiniteElement<double,double> bdm1cube2dlfem(1);
+  success = testFE(bdm1cube2dlfem) and success;
 
-  Dune::BDM12DLocalFiniteElement<double,double> bdm12dlfem(1);
-  success = testFE(bdm12dlfem) and success;
+  Dune::BDM1Simplex2DLocalFiniteElement<double,double> bdm1simplex2dlfem(1);
+  success = testFE(bdm1simplex2dlfem) and success;
 
   //    Dune::HierarchicalP2LocalFiniteElement<double,double,1> hierarchicalp21dlfem;
   //    success = testFE(hierarchicalp21dlfem) and success;

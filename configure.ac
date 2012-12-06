@@ -28,8 +28,8 @@ AC_CONFIG_FILES([
                 doc/Makefile
                 dune-localfunctions.pc
                 dune/localfunctions/brezzidouglasmarini/Makefile
-                dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini12d/Makefile
-                dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini1q2d/Makefile
+                dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini1cube2d/Makefile
+                dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini1simplex2d/Makefile
                 dune/localfunctions/common/Makefile
                 dune/localfunctions/hierarchical/hierarchicalp2/Makefile
                 dune/localfunctions/hierarchical/hierarchicalp2withelementbubble/Makefile

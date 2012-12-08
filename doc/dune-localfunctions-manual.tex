@@ -156,7 +156,7 @@ which can be obtained from the \lstinline!LocalFiniteElement! class.
 \end{enumerate}
 Motivated by these points the  interface of a \lstinline!LocalFiniteElement! is given by:
 \begin{lstlisting}
-class LocalFiniteElementInterface
+class LocalFiniteElementVirtualInterface
 {
    // export traits 
    typedef LocalFiniteElementTraits<LocalBasisImpl,
@@ -245,7 +245,7 @@ class LocalCoefficientsInterface
 
 \subsection{The \lstinline!LocalInterpolation! Classes}
 \begin{lstlisting}
-class LocalInterpolationInterface 
+class LocalInterpolationVirtualInterface 
 {
 // export local basis traits
 LocalBasisInterface::Traits Traits;

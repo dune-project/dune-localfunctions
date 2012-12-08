@@ -296,7 +296,7 @@ namespace Dune
      */
     virtual void interpolate (const FunctionType& f, std::vector<CoefficientType>& out) const = 0;
 
-    //! @copydoc LocalInterpolationInterfaceBase::interpolate
+    //! \copydoc LocalInterpolationVirtualInterfaceBase::interpolate
     //! This uses the pure virtual method by wrapping the template argument into a VirtualFunction
     template<class F>
     void interpolate (const F& f, std::vector<CoefficientType>& out) const
@@ -389,7 +389,7 @@ namespace Dune
             typename T::DomainType,
             typename T::RangeType> > Traits;
 
-    //! @copydoc C1LocalFiniteElementInterface::localBasis
+    //! \copydoc LocalFiniteElementVirtualInterface::localBasis
     virtual const typename Traits::LocalBasisType& localBasis () const = 0;
 
     using BaseInterface::localBasis;
@@ -422,16 +422,16 @@ namespace Dune
 
     virtual ~LocalFiniteElementVirtualInterface() {}
 
-    //! @copydoc LocalFiniteElementInterface::localBasis
+    //! \copydoc LocalFiniteElementVirtualInterface::localBasis
     virtual const typename Traits::LocalBasisType& localBasis () const = 0;
 
-    //! @copydoc LocalFiniteElementInterface::localCoefficients
+    //! \copydoc LocalFiniteElementVirtualInterface::localCoefficients
     virtual const typename Traits::LocalCoefficientsType& localCoefficients () const = 0;
 
-    //! @copydoc LocalFiniteElementInterface::localInterpolation
+    //! \copydoc LocalFiniteElementVirtualInterface::localInterpolation
     virtual const typename Traits::LocalInterpolationType& localInterpolation () const = 0;
 
-    //! @copydoc LocalFiniteElementInterface::type
+    //! \copydoc LocalFiniteElementVirtualInterface::type
     virtual const GeometryType type () const = 0;
 
     virtual LocalFiniteElementVirtualInterface<T>* clone() const = 0;

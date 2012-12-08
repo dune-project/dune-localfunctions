@@ -12,7 +12,7 @@
 namespace Dune
 {
   /**
-   * @brief A LocalFiniteElement implementation bassed on three
+   * \brief A LocalFiniteElement implementation based on three
    *        TopologyFactories providing the LocalBasis, LocalCoefficients,
    *        and LocalInterpolations. Note the key type for all three
    *        factories must coincide.

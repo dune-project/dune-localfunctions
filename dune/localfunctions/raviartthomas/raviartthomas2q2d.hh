@@ -3,12 +3,10 @@
 #ifndef DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS2Q2DLOCALFINITEELEMENT_HH
 #define DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS2Q2DLOCALFINITEELEMENT_HH
 
-#include <dune/geometry/type.hh>
+#include "raviartthomas2cube2d.hh"
 
-#include "../common/localfiniteelementtraits.hh"
-#include "raviartthomas2q2d/raviartthomas2q2dlocalbasis.hh"
-#include "raviartthomas2q2d/raviartthomas2q2dlocalcoefficients.hh"
-#include "raviartthomas2q2d/raviartthomas2q2dlocalinterpolation.hh"
+#warning This header is deprecated, please use\
+  dune/localfunctions/raviartthomas/raviartthomas2cube2d.hh instead
 
 namespace Dune
 {
@@ -17,56 +15,15 @@ namespace Dune
    *
    * \tparam D Type to represent the field in the domain.
    * \tparam R Type to represent the field in the range.
+   *
+   * \deprecated This class is deprecated and will be removed after Dune 2.3.
+   *             Use RT2Cube2DLocalFiniteElement instead.
    */
   template<class D, class R>
-  class RT2Q2DLocalFiniteElement
-  {
-
-  public:
-    typedef LocalFiniteElementTraits<RT2Q2DLocalBasis<D,R>,RT2Q2DLocalCoefficients,
-        RT2Q2DLocalInterpolation<RT2Q2DLocalBasis<D,R> > > Traits;
-
-    //! \brief Standard constructor
-    RT2Q2DLocalFiniteElement ()
-    {
-      gt.makeQuadrilateral();
-    }
-
-    /**
-     * \brief Make set number s, where 0 <= s < 16
-     *
-     * \param s Edge orientation indicator
-     */
-    RT2Q2DLocalFiniteElement (int s) : basis(s), interpolation(s)
-    {
-      gt.makeQuadrilateral();
-    }
-
-    const typename Traits::LocalBasisType& localBasis () const
-    {
-      return basis;
-    }
-
-    const typename Traits::LocalCoefficientsType& localCoefficients () const
-    {
-      return coefficients;
-    }
-
-    const typename Traits::LocalInterpolationType& localInterpolation () const
-    {
-      return interpolation;
-    }
-
-    GeometryType type () const
-    {
-      return gt;
-    }
-
-  private:
-    RT2Q2DLocalBasis<D,R> basis;
-    RT2Q2DLocalCoefficients coefficients;
-    RT2Q2DLocalInterpolation<RT2Q2DLocalBasis<D,R> > interpolation;
-    GeometryType gt;
-  };
+  class
+  DUNE_DEPRECATED_MSG("Use RT2Cube2DLocalFiniteElement instead")
+  RT2Q2DLocalFiniteElement
+    : public RT2Cube2DLocalFiniteElement<D, R>
+  {};
 }
 #endif // DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS2Q2DLOCALFINITEELEMENT_HH

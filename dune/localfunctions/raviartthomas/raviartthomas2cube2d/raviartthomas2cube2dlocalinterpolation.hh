@@ -1,7 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS2Q2DLOCALINTERPOLATION_HH
-#define DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS2Q2DLOCALINTERPOLATION_HH
+#ifndef DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS2_CUBE2D_LOCALINTERPOLATION_HH
+#define DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS2_CUBE2D_LOCALINTERPOLATION_HH
 
 #include <vector>
 
@@ -11,7 +11,7 @@ namespace Dune
 {
 
   /**
-   * @ingroup LocalInterpolationImplementation
+   * \ingroup LocalInterpolationImplementation
    * \brief Second order Raviart-Thomas shape functions on the reference triangle.
    *
    * \tparam LB corresponding LocalBasis giving traits
@@ -19,12 +19,12 @@ namespace Dune
    * \nosubgrouping
    */
   template<class LB>
-  class RT2Q2DLocalInterpolation
+  class RT2Cube2DLocalInterpolation
   {
 
   public:
     //! \brief Standard constructor
-    RT2Q2DLocalInterpolation ()
+    RT2Cube2DLocalInterpolation ()
     {
       sign0 = sign1 = sign2 = sign3 = 1.0;
     }
@@ -34,7 +34,7 @@ namespace Dune
      *
      * \param s Edge orientation indicator
      */
-    RT2Q2DLocalInterpolation (unsigned int s)
+    RT2Cube2DLocalInterpolation (unsigned int s)
     {
       sign0 = sign1 = sign2 = sign3 = 1.0;
       if (s & 1)
@@ -148,4 +148,4 @@ namespace Dune
     typename LB::Traits::DomainType n0, n1, n2, n3;
   };
 }
-#endif // DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS2Q2DLOCALINTERPOLATION_HH
+#endif // DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS2_CUBE2D_LOCALINTERPOLATION_HH

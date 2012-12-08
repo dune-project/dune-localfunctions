@@ -39,7 +39,7 @@
 #include "../raviartthomas/raviartthomas12d.hh"
 #include "../raviartthomas/raviartthomas1q2d.hh"
 #include "../raviartthomas/raviartthomas1q3d.hh"
-#include "../raviartthomas/raviartthomas2q2d.hh"
+#include "../raviartthomas/raviartthomas2cube2d.hh"
 #include "../monom.hh"
 
 #include "../common/virtualinterface.hh"
@@ -239,8 +239,8 @@ int main(int argc, char** argv) try
   Dune::RT1Q3DLocalFiniteElement<double,double> rt1q3dlfem(1);
   success = testFE(rt1q3dlfem) and success;
 
-  Dune::RT2Q2DLocalFiniteElement<double,double> rt2q2dlfem(1);
-  success = testFE(rt2q2dlfem) and success;
+  Dune::RT2Cube2DLocalFiniteElement<double,double> rt2cube2dlfem(1);
+  success = testFE(rt2cube2dlfem) and success;
 
   Dune::RannacherTurekLocalFiniteElement<double,double,2> rannacher_turek2dfem;
   success = testFE(rannacher_turek2dfem) and success;

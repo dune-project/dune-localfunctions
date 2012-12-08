@@ -65,7 +65,7 @@ AC_CONFIG_FILES([
                 dune/localfunctions/raviartthomas/raviartthomas12d/Makefile
                 dune/localfunctions/raviartthomas/raviartthomas1q2d/Makefile
                 dune/localfunctions/raviartthomas/raviartthomas1q3d/Makefile
-                dune/localfunctions/raviartthomas/raviartthomas2q2d/Makefile
+                dune/localfunctions/raviartthomas/raviartthomas2cube2d/Makefile
                 dune/localfunctions/refined/common/Makefile
                 dune/localfunctions/refined/Makefile
                 dune/localfunctions/refined/refinedp0/Makefile

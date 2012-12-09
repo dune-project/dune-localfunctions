@@ -1,7 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS1Q3DLOCALCOEFFICIENTS_HH
-#define DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS1Q3DLOCALCOEFFICIENTS_HH
+#ifndef DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS1_CUBE3D_LOCALCOEFFICIENTS_HH
+#define DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS1_CUBE3D_LOCALCOEFFICIENTS_HH
 
 #include <cstddef>
 #include <vector>
@@ -12,18 +12,18 @@ namespace Dune
 {
 
   /**
-   * @ingroup LocalLayoutImplementation
+   * \ingroup LocalLayoutImplementation
    * \brief Layout map for Raviart-Thomas-1 elements on quadrilaterals.
    *
    * \nosubgrouping
    * \implements Dune::LocalCoefficientsVirtualImp
    */
-  class RT1Q3DLocalCoefficients
+  class RT1Cube3DLocalCoefficients
   {
 
   public:
     //! \brief Standard constructor
-    RT1Q3DLocalCoefficients () : li(36)
+    RT1Cube3DLocalCoefficients () : li(36)
     {
       for (std::size_t i = 0; i < 6; i++)
       {
@@ -55,4 +55,4 @@ namespace Dune
     std::vector<LocalKey> li;
   };
 }
-#endif // DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS1Q3DLOCALCOEFFICIENTS_HH
+#endif // DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS1_CUBE3D_LOCALCOEFFICIENTS_HH

@@ -1,7 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS1Q3DLOCALINTERPOLATION_HH
-#define DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS1Q3DLOCALINTERPOLATION_HH
+#ifndef DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS1_CUBE3D_LOCALINTERPOLATION_HH
+#define DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS1_CUBE3D_LOCALINTERPOLATION_HH
 
 #include <vector>
 
@@ -10,7 +10,7 @@
 namespace Dune
 {
   /**
-   * @ingroup LocalInterpolationImplementation
+   * \ingroup LocalInterpolationImplementation
    * \brief First order Raviart-Thomas shape functions on the reference hexahedron.
    *
    * \tparam LB corresponding LocalBasis giving traits
@@ -18,12 +18,12 @@ namespace Dune
    * \nosubgrouping
    */
   template<class LB>
-  class RT1Q3DLocalInterpolation
+  class RT1Cube3DLocalInterpolation
   {
 
   public:
     //! \brief Standard constructor
-    RT1Q3DLocalInterpolation ()
+    RT1Cube3DLocalInterpolation ()
     {
       sign0 = sign1 = sign2 = sign3 = sign4 = sign5 = 1.0;
     }
@@ -33,7 +33,7 @@ namespace Dune
      *
      * \param s Edge orientation indicator
      */
-    RT1Q3DLocalInterpolation (unsigned int s)
+    RT1Cube3DLocalInterpolation (unsigned int s)
     {
       sign0 = sign1 = sign2 = sign3 = sign4 = sign5 = 1.0;
       if (s & 1)
@@ -191,4 +191,4 @@ namespace Dune
     typename LB::Traits::DomainType n0, n1, n2, n3, n4, n5;
   };
 }
-#endif // DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS1Q3DLOCALINTERPOLATION_HH
+#endif // DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS1_CUBE3D_LOCALINTERPOLATION_HH

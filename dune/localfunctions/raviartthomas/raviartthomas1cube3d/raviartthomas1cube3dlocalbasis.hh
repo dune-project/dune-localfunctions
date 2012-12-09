@@ -1,7 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS1Q3DLOCALBASIS_HH
-#define DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS1Q3DLOCALBASIS_HH
+#ifndef DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS1_CUBE3D_LOCALBASIS_HH
+#define DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS1_CUBE3D_LOCALBASIS_HH
 
 #include <vector>
 
@@ -12,7 +12,7 @@
 namespace Dune
 {
   /**
-   * @ingroup LocalBasisImplementation
+   * \ingroup LocalBasisImplementation
    * \brief First order Raviart-Thomas shape functions on the reference hexahedron.
    *
    * \tparam D Type to represent the field in the domain.
@@ -21,7 +21,7 @@ namespace Dune
    * \nosubgrouping
    */
   template<class D, class R>
-  class RT1Q3DLocalBasis
+  class RT1Cube3DLocalBasis
   {
 
   public:
@@ -29,7 +29,7 @@ namespace Dune
         Dune::FieldMatrix<R,3,3> > Traits;
 
     //! \brief Standard constructor
-    RT1Q3DLocalBasis ()
+    RT1Cube3DLocalBasis ()
     {
       sign0 = sign1 = sign2 = sign3 = sign4 = sign5 = 1.0;
     }
@@ -39,7 +39,7 @@ namespace Dune
      *
      * \param s Edge orientation indicator
      */
-    RT1Q3DLocalBasis (unsigned int s)
+    RT1Cube3DLocalBasis (unsigned int s)
     {
       sign0 = sign1 = sign2 = sign3 = sign4 = sign5 = 1.0;
       if (s & 1)
@@ -612,4 +612,4 @@ namespace Dune
     R sign0, sign1, sign2, sign3, sign4, sign5;
   };
 }
-#endif // DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS1Q3DLOCALBASIS_HH
+#endif // DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS1_CUBE3D_LOCALBASIS_HH

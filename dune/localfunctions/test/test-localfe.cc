@@ -34,11 +34,11 @@
 #include "../hierarchical/hierarchicalprismp2.hh"
 #include "../rannacherturek/rannacherturek.hh"
 #include "../raviartthomas/raviartthomas02d.hh"
-#include "../raviartthomas/raviartthomas0q2d.hh"
-#include "../raviartthomas/raviartthomas0q3d.hh"
+#include "../raviartthomas/raviartthomas0cube2d.hh"
+#include "../raviartthomas/raviartthomas0cube3d.hh"
 #include "../raviartthomas/raviartthomas12d.hh"
-#include "../raviartthomas/raviartthomas1q2d.hh"
-#include "../raviartthomas/raviartthomas1q3d.hh"
+#include "../raviartthomas/raviartthomas1cube2d.hh"
+#include "../raviartthomas/raviartthomas1cube3d.hh"
 #include "../raviartthomas/raviartthomas2cube2d.hh"
 #include "../monom.hh"
 
@@ -224,20 +224,20 @@ int main(int argc, char** argv) try
   Dune::RT02DLocalFiniteElement<double,double> rt02dlfem(1);
   success = testFE(rt02dlfem) and success;
 
-  Dune::RT0Q2DLocalFiniteElement<double,double> rt0q2dlfem(1);
-  success = testFE(rt0q2dlfem) and success;
+  Dune::RT0Cube2DLocalFiniteElement<double,double> rt0cube2dlfem(1);
+  success = testFE(rt0cube2dlfem) and success;
 
-  Dune::RT0Q3DLocalFiniteElement<double,double> rt0q3dlfem(1);
-  success = testFE(rt0q3dlfem) and success;
+  Dune::RT0Cube3DLocalFiniteElement<double,double> rt0cube3dlfem(1);
+  success = testFE(rt0cube3dlfem) and success;
 
   Dune::RT12DLocalFiniteElement<double,double> rt12dlfem(1);
   success = testFE(rt12dlfem) and success;
 
-  Dune::RT1Q2DLocalFiniteElement<double,double> rt1q2dlfem(1);
-  success = testFE(rt1q2dlfem) and success;
+  Dune::RT1Cube2DLocalFiniteElement<double,double> rt1cube2dlfem(1);
+  success = testFE(rt1cube2dlfem) and success;
 
-  Dune::RT1Q3DLocalFiniteElement<double,double> rt1q3dlfem(1);
-  success = testFE(rt1q3dlfem) and success;
+  Dune::RT1Cube3DLocalFiniteElement<double,double> rt1cube3dlfem(1);
+  success = testFE(rt1cube3dlfem) and success;
 
   Dune::RT2Cube2DLocalFiniteElement<double,double> rt2cube2dlfem(1);
   success = testFE(rt2cube2dlfem) and success;

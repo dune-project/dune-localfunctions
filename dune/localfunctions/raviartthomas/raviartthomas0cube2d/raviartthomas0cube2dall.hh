@@ -1,7 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_RT0Q2DALL_HH
-#define DUNE_RT0Q2DALL_HH
+#ifndef DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS0_CUBE2D_ALL_HH
+#define DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS0_CUBE2D_ALL_HH
 
 #include <cstddef>
 #include <vector>
@@ -22,20 +22,20 @@ namespace Dune
          \nosubgrouping
    */
   template<class D, class R>
-  class RT0Q2DLocalBasis
+  class RT0Cube2DLocalBasis
   {
   public:
     typedef LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,2,Dune::FieldVector<R,2>,
         Dune::FieldMatrix<R,2,2> > Traits;
 
     //! \brief Standard constructor
-    RT0Q2DLocalBasis ()
+    RT0Cube2DLocalBasis ()
     {
       sign0 = sign1 = sign2 = sign3 = 1.0;
     }
 
     //! \brief Make set numer s, where 0<=s<16
-    RT0Q2DLocalBasis (unsigned int s)
+    RT0Cube2DLocalBasis (unsigned int s)
     {
       sign0 = sign1 = sign2 = sign3 = 1.0;
       if (s&1) sign0 = -1.0;
@@ -99,18 +99,18 @@ namespace Dune
          \nosubgrouping
    */
   template<class LB>
-  class RT0Q2DLocalInterpolation
+  class RT0Cube2DLocalInterpolation
   {
   public:
 
     //! \brief Standard constructor
-    RT0Q2DLocalInterpolation ()
+    RT0Cube2DLocalInterpolation ()
     {
       sign0 = sign1 = sign2 = sign3 = 1.0;
     }
 
     //! \brief Make set numer s, where 0<=s<8
-    RT0Q2DLocalInterpolation (unsigned int s)
+    RT0Cube2DLocalInterpolation (unsigned int s)
     {
       sign0 = sign1 = sign2 = sign3 = 1.0;
       if (s&1) sign0 *= -1.0;
@@ -155,11 +155,11 @@ namespace Dune
          \nosubgrouping
      \implements Dune::LocalCoefficientsVirtualImp
    */
-  class RT0Q2DLocalCoefficients
+  class RT0Cube2DLocalCoefficients
   {
   public:
     //! \brief Standard constructor
-    RT0Q2DLocalCoefficients () : li(4)
+    RT0Cube2DLocalCoefficients () : li(4)
     {
       for (std::size_t i=0; i<4; i++)
         li[i] = LocalKey(i,1,0);
@@ -182,4 +182,4 @@ namespace Dune
   };
 
 }
-#endif
+#endif // DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS0_CUBE2D_ALL_HH

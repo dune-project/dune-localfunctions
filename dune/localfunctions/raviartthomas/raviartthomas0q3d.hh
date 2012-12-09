@@ -3,55 +3,22 @@
 #ifndef DUNE_RAVIARTTHOMAS0Q3DLOCALFINITEELEMENT_HH
 #define DUNE_RAVIARTTHOMAS0Q3DLOCALFINITEELEMENT_HH
 
-#include <dune/geometry/type.hh>
+#include "raviartthomas0cube3d.hh"
 
-#include <dune/localfunctions/common/localfiniteelementtraits.hh>
-#include "raviartthomas0q3d/raviartthomas0q3dall.hh"
+#warning This header is deprecated, please use\
+  dune/localfunctions/raviartthomas/raviartthomas0cube3d.hh instead
 
 namespace Dune
 {
+  /**
+   * \deprecated This class is deprecated and will be removed after Dune 2.3.
+   *             Use RT0Cube3DLocalFiniteElement instead.
+   */
   template<class D, class R>
-  class RT0Q3DLocalFiniteElement
-  {
-  public:
-    typedef LocalFiniteElementTraits<RT0Q3DLocalBasis<D,R>,RT0Q3DLocalCoefficients,
-        RT0Q3DLocalInterpolation<RT0Q3DLocalBasis<D,R> > > Traits;
-
-    RT0Q3DLocalFiniteElement ()
-    {
-      gt.makeHexahedron();
-    }
-
-    RT0Q3DLocalFiniteElement (int s) : basis(s), interpolation(s)
-    {
-      gt.makeHexahedron();
-    }
-
-    const typename Traits::LocalBasisType& localBasis () const
-    {
-      return basis;
-    }
-
-    const typename Traits::LocalCoefficientsType& localCoefficients () const
-    {
-      return coefficients;
-    }
-
-    const typename Traits::LocalInterpolationType& localInterpolation () const
-    {
-      return interpolation;
-    }
-
-    GeometryType type () const
-    {
-      return gt;
-    }
-
-  private:
-    RT0Q3DLocalBasis<D,R> basis;
-    RT0Q3DLocalCoefficients coefficients;
-    RT0Q3DLocalInterpolation<RT0Q3DLocalBasis<D,R> > interpolation;
-    GeometryType gt;
-  };
+  class
+  DUNE_DEPRECATED_MSG("Use RT0Cube3DLocalFiniteElement instead")
+  RT0Q3DLocalFiniteElement
+    : public RT0Cube3DLocalFiniteElement<D, R>
+  {};
 }
 #endif

@@ -1,7 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_RT0Q3DALL_HH
-#define DUNE_RT0Q3DALL_HH
+#ifndef DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS0_CUBE3D_ALL_HH
+#define DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS0_CUBE3D_ALL_HH
 
 #include <cstddef>
 #include <vector>
@@ -22,20 +22,20 @@ namespace Dune
          \nosubgrouping
    */
   template<class D, class R>
-  class RT0Q3DLocalBasis
+  class RT0Cube3DLocalBasis
   {
   public:
     typedef LocalBasisTraits<D,3,Dune::FieldVector<D,3>,R,3,Dune::FieldVector<R,3>,
         Dune::FieldMatrix<R,3,3> > Traits;
 
     //! \brief Standard constructor
-    RT0Q3DLocalBasis ()
+    RT0Cube3DLocalBasis ()
     {
       sign0 = sign1 = sign2 = sign3 = sign4 = sign5 = 1.0;
     }
 
     //! \brief Make set numer s, where 0<=s<64
-    RT0Q3DLocalBasis (unsigned int s)
+    RT0Cube3DLocalBasis (unsigned int s)
     {
       sign0 = sign1 = sign2 = sign3 = sign4 = sign5 = 1.0;
       if (s&1) sign0 = -1.0;
@@ -115,18 +115,18 @@ namespace Dune
          \nosubgrouping
    */
   template<class LB>
-  class RT0Q3DLocalInterpolation
+  class RT0Cube3DLocalInterpolation
   {
   public:
 
     //! \brief Standard constructor
-    RT0Q3DLocalInterpolation ()
+    RT0Cube3DLocalInterpolation ()
     {
       sign0 = sign1 = sign2 = sign3 = sign4 = sign5 = 1.0;
     }
 
     //! \brief Make set numer s, where 0<=s<64
-    RT0Q3DLocalInterpolation (unsigned int s)
+    RT0Cube3DLocalInterpolation (unsigned int s)
     {
       sign0 = sign1 = sign2 = sign3 = sign4 = sign5 = 1.0;
       if (s&1) sign0 *= -1.0;
@@ -179,11 +179,11 @@ namespace Dune
          \nosubgrouping
      \implements Dune::LocalCoefficientsVirtualImp
    */
-  class RT0Q3DLocalCoefficients
+  class RT0Cube3DLocalCoefficients
   {
   public:
     //! \brief Standard constructor
-    RT0Q3DLocalCoefficients () : li(6)
+    RT0Cube3DLocalCoefficients () : li(6)
     {
       for (std::size_t i=0; i<6; i++)
         li[i] = LocalKey(i,1,0);
@@ -206,4 +206,4 @@ namespace Dune
   };
 
 }
-#endif
+#endif // DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS0_CUBE3D_ALL_HH

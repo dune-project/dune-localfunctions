@@ -1,11 +1,9 @@
 Makefile
 Makefile.in
-
 lagrangeshapefunctiontest
 monomshapefunctiontest
 virtualshapefunctiontest
 refinedp1test
-
 testfem
 testgenericfem
 test-edges0.5
@@ -17,7 +15,10 @@ test-power-monom
 test-q1
 test-q2
 test-q22d
+test-raviartthomas1simplex
+test-raviartthomas2simplex
+test-raviartthomas3simplex
+test-raviartthomassimplex-all
 
 *.swp
-
 .deps

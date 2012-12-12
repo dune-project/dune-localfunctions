@@ -1,9 +1,27 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
 #include <config.h>
-#include <dune/localfunctions/utility/field.hh>
 #include <dune/localfunctions/raviartthomas/raviartthomasbasis.hh>
+#include <dune/localfunctions/utility/field.hh>
 #include <dune/localfunctions/utility/basisprint.hh>
+
+/**
+ * \file
+ * \brief Performs some tests for the generic Raviart-Thomas
+ *        shape functions on simplices.
+ *
+ * The topology can be chosen at compile time by setting TOPOLOGY
+ * to a string like
+ * \code
+ * Pyramid<Pyramid<Point> > >
+ * \endcode
+ * which generates a 2d simplex. If TOPOLOGY is not set, all
+ * topologies up to 4d are tested. Note, this may lead to prolonged
+ * compiler runs.
+ *
+ * For debugging purpuse the functions and the derivatives can be
+ * printed. You have to remove some comments to activate this function.
+ */
 
 #if HAVE_GMP
 typedef Dune::GMPField< 128 > StorageField;
@@ -18,18 +36,19 @@ bool test(unsigned int order)
 {
   bool ret = true;
 
-  for (unsigned int o=order; o<=order; --o)
+  for (unsigned int o = 0; o <= order; ++o)
   {
     std::cout << "Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
     typedef Dune::RaviartThomasBasisFactory<Topology::dimension,StorageField,ComputeField> BasisFactory;
     const typename BasisFactory::Object &basis = *BasisFactory::template create<Topology>(o);
 
-    // print function and derivatives
-    std::stringstream name;
-    name << "rt_" << Topology::name() << "_p" << o << ".basis";
-    std::ofstream out(name.str().c_str());
-    // Dune::basisPrint<0,BasisFactory,typename BasisFactory::StorageField>(out,basis);
-    // Dune::basisPrint<1,BasisFactory,typename BasisFactory::StorageField>(out,basis);
+    // uncomment the following lines to get files containing functions and
+    // derivatives in a human readabible form (aka LaTeX source)
+    //std::stringstream name;
+    //name << "rt_" << Topology::name() << "_p" << o << ".basis";
+    //std::ofstream out(name.str().c_str());
+    //Dune::basisPrint<0,BasisFactory,typename BasisFactory::StorageField>(out,basis);
+    //Dune::basisPrint<1,BasisFactory,typename BasisFactory::StorageField>(out,basis);
 
     // test interpolation
     typedef Dune::RaviartThomasL2InterpolationFactory<Topology::dimension,StorageField> InterpolationFactory;
@@ -58,13 +77,13 @@ int main ( int argc, char **argv )
   using namespace Dune;
   using namespace GenericGeometry;
 
-  if( argc < 2 )
-  {
-    std::cerr << "Usage: " << argv[ 0 ] << " <p>" << std::endl;
-    return 2;
-  }
+  const unsigned int order = (argc < 2) ? 5 : atoi(argv[1]);
 
-  const unsigned int order = atoi( argv[ 1 ] );
+  if (argc < 2)
+  {
+    std::cerr << "Usage: " << argv[ 0 ] << " <p>" << std::endl
+              << "Using default order of " << order << std::endl;
+  }
 #ifdef TOPOLOGY
   return (test<TOPOLOGY>(order) ? 0 : 1 );
 #else

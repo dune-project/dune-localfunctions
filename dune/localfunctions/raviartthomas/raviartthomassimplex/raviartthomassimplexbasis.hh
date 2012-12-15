@@ -7,8 +7,8 @@
 #include <dune/common/exceptions.hh>
 
 #include <dune/localfunctions/utility/defaultbasisfactory.hh>
-#include <dune/localfunctions/raviartthomas/interpolation.hh>
-#include <dune/localfunctions/raviartthomas/raviartthomasprebasis.hh>
+#include "raviartthomassimplexinterpolation.hh"
+#include "raviartthomassimplexprebasis.hh"
 
 namespace Dune
 {

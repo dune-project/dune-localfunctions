@@ -74,12 +74,12 @@ test_q1_SOURCES = test-q1.cc
 TESTS += test-q2
 test_q2_SOURCES = test-q2.cc
 
-#TESTS += test-raviartthomas1simplex
-#RT1_TOPOLOGY = Pyramid< Point >
-#RT1_SETTINGS = -DTOPOLOGY="$(RT1_TOPOLOGY)"
-#test_raviartthomas1simplex_SOURCES = test-raviartthomassimplex.cc
-#test_raviartthomas1simplex_CPPFLAGS = $(DUNE_CPPFLAGS) $(AM_CPPFLAGS) $(RT1_SETTINGS) $(GMP_CPPFLAGS)
-#test_raviartthomas1simplex_LDADD = $(DUNE_LDFLAGS) $(DUNE_LIBS) $(GMP_LIBS)
+TESTS += test-raviartthomas1simplex
+RT1_TOPOLOGY = Pyramid< Point >
+RT1_SETTINGS = -DTOPOLOGY="$(RT1_TOPOLOGY)"
+test_raviartthomas1simplex_SOURCES = test-raviartthomassimplex.cc
+test_raviartthomas1simplex_CPPFLAGS = $(DUNE_CPPFLAGS) $(AM_CPPFLAGS) $(RT1_SETTINGS) $(GMP_CPPFLAGS)
+test_raviartthomas1simplex_LDADD = $(DUNE_LDFLAGS) $(DUNE_LIBS) $(GMP_LIBS)
 
 TESTS += test-raviartthomas2simplex
 RT2_TOPOLOGY = Pyramid< Pyramid< Point > >

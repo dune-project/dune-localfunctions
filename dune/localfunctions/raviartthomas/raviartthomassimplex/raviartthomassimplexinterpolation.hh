@@ -301,7 +301,10 @@ namespace Dune
         const unsigned int quadratureSize = faceQuad->size();
         for( unsigned int qi = 0; qi < quadratureSize; ++qi )
         {
-          builder_.testFaceBasis(f)->template evaluate<0>(faceQuad->position(qi),testBasisVal);
+          if (dimension>1)
+            builder_.testFaceBasis(f)->template evaluate<0>(faceQuad->position(qi),testBasisVal);
+          else
+            testBasisVal[0] = 1.;
           fillBnd( row, testBasisVal,
                    func.evaluate( mapping.global( faceQuad->position(qi) ) ),
                    builder_.normal(f), faceQuad->weight(qi),

@@ -101,14 +101,14 @@ int main(int argc, char** argv) try
     onbPrism(Dune::GeometryType(Dune::GeometryType::prism, 3), order);
     success &= testFE(onbPrism);
   }
-  std::cout << "Testing RaviartThomasFiniteElement on 3d"
+  std::cout << "Testing RaviartThomasSimplexFiniteElement on 3d"
             << " simplex elements with double precision" << std::endl;
   for (unsigned int order=0; order<=4; ++order)
   {
     std::cout << "order : " << order << std::endl;
-    Dune::RaviartThomasLocalFiniteElement<3,double,double>
-    lagrangeCube(Dune::GeometryType(Dune::GeometryType::simplex, 3), order);
-    success &= testFE(lagrangeCube);
+    Dune::RaviartThomasSimplexLocalFiniteElement<3,double,double>
+    rtSimplex(Dune::GeometryType(Dune::GeometryType::simplex, 3), order);
+    success &= testFE(rtSimplex);
   }
   return success ? 0 : 1;
 }

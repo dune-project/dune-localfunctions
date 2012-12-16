@@ -3,6 +3,7 @@
 #ifndef DUNE_RAVIARTTHOMASFINITEELEMENT_HH
 #define DUNE_RAVIARTTHOMASFINITEELEMENT_HH
 
+#include <dune/localfunctions/raviartthomas/raviartthomascube.hh>
 #include <dune/localfunctions/raviartthomas/raviartthomassimplex.hh>
 
 #endif // #ifndef DUNE_RAVIARTTHOMASFINITEELEMENT_HH

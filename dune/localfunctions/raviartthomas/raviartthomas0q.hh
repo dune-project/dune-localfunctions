@@ -3,8 +3,8 @@
 #ifndef DUNE_RAVIARTTHOMAS0QLOCALFINITEELEMENT_HH
 #define DUNE_RAVIARTTHOMAS0QLOCALFINITEELEMENT_HH
 
-#include "raviartthomas0q2d.hh"
-#include "raviartthomas0q3d.hh"
+#include "raviartthomas0cube2d.hh"
+#include "raviartthomas0cube3d.hh"
 
 namespace Dune
 {
@@ -20,7 +20,7 @@ namespace Dune
    * \tparam dim Dimension.
    */
   template<class D, class R, int dim>
-  class RT0QLocalFiniteElement;
+  class RT0CubeLocalFiniteElement;
 
   /**
    * \brief Specialization on 2d quadrilaterals for lowest order Raviart-Thomas shape functions.
@@ -29,14 +29,14 @@ namespace Dune
    * \tparam R Type to represent the field in the range.
    */
   template<class D, class R>
-  class RT0QLocalFiniteElement<D, R, 2>
-    : public RT0Q2DLocalFiniteElement<D, R>
+  class RT0CubeLocalFiniteElement<D, R, 2>
+    : public RT0Cube2DLocalFiniteElement<D, R>
   {
   public:
-    RT0QLocalFiniteElement () : RT0Q2DLocalFiniteElement<D, R>()
+    RT0CubeLocalFiniteElement () : RT0Cube2DLocalFiniteElement<D, R>()
     {}
 
-    RT0QLocalFiniteElement (int s) : RT0Q2DLocalFiniteElement<D, R>(s)
+    RT0CubeLocalFiniteElement (int s) : RT0Cube2DLocalFiniteElement<D, R>(s)
     {}
   };
 
@@ -47,14 +47,14 @@ namespace Dune
    * \tparam R Type to represent the field in the range.
    */
   template<class D, class R>
-  class RT0QLocalFiniteElement<D, R, 3>
-    : public RT0Q3DLocalFiniteElement<D, R>
+  class RT0CubeLocalFiniteElement<D, R, 3>
+    : public RT0Cube3DLocalFiniteElement<D, R>
   {
   public:
-    RT0QLocalFiniteElement () : RT0Q3DLocalFiniteElement<D, R>()
+    RT0CubeLocalFiniteElement () : RT0Cube3DLocalFiniteElement<D, R>()
     {}
 
-    RT0QLocalFiniteElement (int s) : RT0Q3DLocalFiniteElement<D, R>(s)
+    RT0CubeLocalFiniteElement (int s) : RT0Cube3DLocalFiniteElement<D, R>(s)
     {}
   };
 

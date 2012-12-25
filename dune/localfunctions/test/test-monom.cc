@@ -14,7 +14,6 @@
 #include <dune/common/fvector.hh>
 
 #include <dune/geometry/type.hh>
-#include <dune/geometry/mockgeometry.hh>
 #include <dune/geometry/generalvertexorder.hh>
 
 #include <dune/localfunctions/monom.hh>

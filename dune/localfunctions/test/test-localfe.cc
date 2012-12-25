@@ -25,21 +25,17 @@
 #include "../lagrange/q2.hh"
 #include "../lagrange/qk.hh"
 
-#include "../brezzidouglasmarini/brezzidouglasmarini1q2d.hh"
-#include "../brezzidouglasmarini/brezzidouglasmarini12d.hh"
+#include "../brezzidouglasmarini/brezzidouglasmarini1cube2d.hh"
+#include "../brezzidouglasmarini/brezzidouglasmarini1simplex2d.hh"
 #include "../refined/refinedp1.hh"
 #include "../refined/refinedp0.hh"
 #include "../hierarchical/hierarchicalp2.hh"
 #include "../hierarchical/hierarchicalp2withelementbubble.hh"
 #include "../hierarchical/hierarchicalprismp2.hh"
-#include "../rannacherturek/rannacherturek2d.hh"
+#include "../rannacherturek/rannacherturek.hh"
 #include "../raviartthomas/raviartthomas02d.hh"
-#include "../raviartthomas/raviartthomas0q2d.hh"
-#include "../raviartthomas/raviartthomas0q3d.hh"
 #include "../raviartthomas/raviartthomas12d.hh"
-#include "../raviartthomas/raviartthomas1q2d.hh"
-#include "../raviartthomas/raviartthomas1q3d.hh"
-#include "../raviartthomas/raviartthomas2q2d.hh"
+#include "../raviartthomas/raviartthomascube.hh"
 #include "../monom.hh"
 
 #include "../common/virtualinterface.hh"
@@ -143,11 +139,11 @@ int main(int argc, char** argv) try
   Dune::P23DLocalFiniteElement<double,double> p23dlfem;
   success = testFE(p23dlfem) and success;
 
-  Dune::BDM1Q2DLocalFiniteElement<double,double> bdm1q2dlfem(1);
-  success = testFE(bdm1q2dlfem) and success;
+  Dune::BDM1Cube2DLocalFiniteElement<double,double> bdm1cube2dlfem(1);
+  success = testFE(bdm1cube2dlfem) and success;
 
-  Dune::BDM12DLocalFiniteElement<double,double> bdm12dlfem(1);
-  success = testFE(bdm12dlfem) and success;
+  Dune::BDM1Simplex2DLocalFiniteElement<double,double> bdm1simplex2dlfem(1);
+  success = testFE(bdm1simplex2dlfem) and success;
 
   //    Dune::HierarchicalP2LocalFiniteElement<double,double,1> hierarchicalp21dlfem;
   //    success = testFE(hierarchicalp21dlfem) and success;
@@ -224,26 +220,29 @@ int main(int argc, char** argv) try
   Dune::RT02DLocalFiniteElement<double,double> rt02dlfem(1);
   success = testFE(rt02dlfem) and success;
 
-  Dune::RT0Q2DLocalFiniteElement<double,double> rt0q2dlfem(1);
-  success = testFE(rt0q2dlfem) and success;
-
-  Dune::RT0Q3DLocalFiniteElement<double,double> rt0q3dlfem(1);
-  success = testFE(rt0q3dlfem) and success;
-
   Dune::RT12DLocalFiniteElement<double,double> rt12dlfem(1);
   success = testFE(rt12dlfem) and success;
 
-  Dune::RT1Q2DLocalFiniteElement<double,double> rt1q2dlfem(1);
-  success = testFE(rt1q2dlfem) and success;
+  Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,0> rt0cube2dlfem(1);
+  success = testFE(rt0cube2dlfem) and success;
 
-  Dune::RT1Q3DLocalFiniteElement<double,double> rt1q3dlfem(1);
-  success = testFE(rt1q3dlfem) and success;
+  Dune::RaviartThomasCubeLocalFiniteElement<double,double,3,0> rt0cube3dlfem(1);
+  success = testFE(rt0cube3dlfem) and success;
 
-  Dune::RT2Q2DLocalFiniteElement<double,double> rt2q2dlfem(1);
-  success = testFE(rt2q2dlfem) and success;
+  Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,1> rt1cube2dlfem(1);
+  success = testFE(rt1cube2dlfem) and success;
 
-  Dune::RannacherTurek2DLocalFiniteElement<double,double> rannacher_turek2dfem;
+  Dune::RaviartThomasCubeLocalFiniteElement<double,double,3,1> rt1cube3dlfem(1);
+  success = testFE(rt1cube3dlfem) and success;
+
+  Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,2> rt2cube2dlfem(1);
+  success = testFE(rt2cube2dlfem) and success;
+
+  Dune::RannacherTurekLocalFiniteElement<double,double,2> rannacher_turek2dfem;
   success = testFE(rannacher_turek2dfem) and success;
+
+  Dune::RannacherTurekLocalFiniteElement<double,double,3> rannacher_turek3dfem;
+  success = testFE(rannacher_turek3dfem) and success;
 
   std::cout << "Monomials are only tested up to order 2 due to the instability of interpolate()." << std::endl;
   success = testMonomials<2>() and success;

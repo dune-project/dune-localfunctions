@@ -31,7 +31,6 @@ void testShapeFunctionDerivative(const GeometryType& type)
   // ////////////////////////////////////////////////////////////
 
   // A set of test points
-  // Bad: dependence on dune-grid.  Only for the test points, though
   const QuadratureRule<double,dim> quad = QuadratureRules<double,dim>::rule(type,order);
 
   for (size_t i=0; i<quad.size(); i++) {

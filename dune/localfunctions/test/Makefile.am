@@ -30,6 +30,7 @@ noinst_HEADERS =				\
 testgenericfem_SOURCES = testgenericfem.cc
 testgenericfem_CPPFLAGS = $(AM_CPPFLAGS) $(GMP_CPPFLAGS)
 testgenericfem_LDADD = $(GMP_LIBS) $(GMP_LDFLAGS)
+
 lagrangeshapefunctiontest_SOURCES = lagrangeshapefunctiontest.cc
 monomshapefunctiontest_SOURCES = monomshapefunctiontest.cc
 
@@ -72,5 +73,34 @@ test_q1_SOURCES = test-q1.cc
 
 TESTS += test-q2
 test_q2_SOURCES = test-q2.cc
+
+TESTS += test-raviartthomas1simplex
+RT1_TOPOLOGY = Pyramid< Point >
+RT1_SETTINGS = -DTOPOLOGY="$(RT1_TOPOLOGY)"
+test_raviartthomas1simplex_SOURCES = test-raviartthomassimplex.cc
+test_raviartthomas1simplex_CPPFLAGS = $(DUNE_CPPFLAGS) $(AM_CPPFLAGS) $(RT1_SETTINGS) $(GMP_CPPFLAGS)
+test_raviartthomas1simplex_LDADD = $(DUNE_LDFLAGS) $(DUNE_LIBS) $(GMP_LIBS)
+
+TESTS += test-raviartthomas2simplex
+RT2_TOPOLOGY = Pyramid< Pyramid< Point > >
+RT2_SETTINGS = -DTOPOLOGY="$(RT2_TOPOLOGY)"
+test_raviartthomas2simplex_SOURCES = test-raviartthomassimplex.cc
+test_raviartthomas2simplex_CPPFLAGS = $(DUNE_CPPFLAGS) $(AM_CPPFLAGS) $(RT2_SETTINGS) $(GMP_CPPFLAGS)
+test_raviartthomas2simplex_LDADD = $(DUNE_LDFLAGS) $(DUNE_LIBS) $(GMP_LIBS)
+
+TESTS += test-raviartthomas3simplex
+RT3_TOPOLOGY = Pyramid< Pyramid< Pyramid< Point > > >
+RT3_SETTINGS = -DTOPOLOGY="$(RT2_TOPOLOGY)"
+test_raviartthomas3simplex_SOURCES = test-raviartthomassimplex.cc
+test_raviartthomas3simplex_CPPFLAGS = $(DUNE_CPPFLAGS) $(AM_CPPFLAGS) $(RT3_SETTINGS) $(GMP_CPPFLAGS)
+test_raviartthomas3simplex_LDADD = $(DUNE_LDFLAGS) $(DUNE_LIBS) $(GMP_LIBS)
+
+# extra programs
+EXTRA_PROGRAMS = test-raviartthomassimplex-all
+
+# this is not included in automatic testing due to longe compilation
+test_raviartthomassimplex_all_SOURCES = test-raviartthomassimplex.cc
+test_raviartthomassimplex_all_CPPFLAGS = $(DUNE_CPPFLAGS) $(AM_CPPFLAGS) $(GMP_CPPFLAGS)
+test_raviartthomassimplex_all_LDADD = $(DUNE_LDFLAGS) $(DUNE_LIBS) $(GMP_LIBS)
 
 include $(top_srcdir)/am/global-rules

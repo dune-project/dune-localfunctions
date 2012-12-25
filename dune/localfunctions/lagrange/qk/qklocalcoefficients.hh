@@ -5,8 +5,10 @@
 #define DUNE_LOCALFUNCTIONS_QK_LOCALCOEFFICIENTS_HH
 
 #include <cassert>
+#include <vector>
 
-#include <dune/common/misc.hh>
+#include <dune/common/exceptions.hh>
+#include <dune/common/power.hh>
 
 #include <dune/localfunctions/common/localkey.hh>
 
@@ -60,7 +62,9 @@ namespace Dune
       }
       li[lastIndex++] = LocalKey(3,2,0);       // corner 3
 
-      const unsigned numIndices = Power_m_p<k+1,d>::power;
+#ifndef NDEBUG
+      const unsigned numIndices = StaticPower<k+1,d>::power;
+#endif
 
       --lastIndex; --lastInnerFaceIndex;
 
@@ -74,8 +78,10 @@ namespace Dune
       assert(k>0);
       unsigned lastIndex=0;
       unsigned lastInnerFaceIndex=0;
-      const unsigned numIndices = Power_m_p<k+1,d>::power;
-      const unsigned numFaceIndices = Power_m_p<k+1,d-1>::power;
+#ifndef NDEBUG
+      const unsigned numIndices = StaticPower<k+1,d>::power;
+      const unsigned numFaceIndices = StaticPower<k+1,d-1>::power;
+#endif
       const unsigned numInnerEdgeDofs = k-1;
       const unsigned numInnerFaceDofs = numInnerEdgeDofs * numInnerEdgeDofs;
 
@@ -182,11 +188,11 @@ namespace Dune
 
   public:
     //! \brief Default constructor
-    QkLocalCoefficients () : li(Power_m_p<k+1,d>::power)
+    QkLocalCoefficients () : li(StaticPower<k+1,d>::power)
     {
       if (k==1) {
 
-        for (std::size_t i=0; i<Power_m_p<k+1,d>::power; i++)
+        for (std::size_t i=0; i<StaticPower<k+1,d>::power; i++)
           li[i] = LocalKey(i,d,0);
 
       } else if (d==2) {
@@ -204,7 +210,7 @@ namespace Dune
     //! number of coefficients
     std::size_t size () const
     {
-      return Power_m_p<k+1,d>::power;
+      return StaticPower<k+1,d>::power;
     }
 
     //! get i'th index

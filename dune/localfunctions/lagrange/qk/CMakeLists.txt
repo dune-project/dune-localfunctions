@@ -1,7 +1,6 @@
 set(qk_HEADERS
   qklocalbasis.hh
   qklocalcoefficients.hh
-  qklocalcoefficients.hh
   qklocalinterpolation.hh)
 
 install(FILES ${qk_HEADERS}

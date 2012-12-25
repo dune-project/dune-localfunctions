@@ -1,8 +1,12 @@
 set(brezzidouglasmarinidir  ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions/brezzidouglasmarini)
 
-set(brezzidouglasmarini_HEADERS  brezzidouglasmarini12d.hh brezzidouglasmarini1q2d.hh)
+set(brezzidouglasmarini_HEADERS
+	brezzidouglasmarini1cube2d.hh
+	brezzidouglasmarini1q2d.hh
+	brezzidouglasmarini1simplex2d.hh
+	brezzidouglasmarini12d.hh)
 
-set(SUBDIRS  brezzidouglasmarini12d brezzidouglasmarini1q2d)
+set(SUBDIRS  brezzidouglasmarini1cube2d brezzidouglasmarini1simplex2d)
 
 # include not needed for CMake
 # include $(top_srcdir)/am/global-rules

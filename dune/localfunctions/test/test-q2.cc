@@ -12,7 +12,6 @@
 #include <dune/common/fvector.hh>
 
 #include <dune/geometry/type.hh>
-#include <dune/geometry/mockgeometry.hh>
 
 #include <dune/localfunctions/lagrange/q2.hh>
 

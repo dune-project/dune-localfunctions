@@ -1,0 +1,160 @@
+// -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+// vi: set et ts=4 sw=2 sts=2:
+#ifndef DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI1_CUBE2D_LOCALBASIS_HH
+#define DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI1_CUBE2D_LOCALBASIS_HH
+
+#include <vector>
+
+#include <dune/common/fmatrix.hh>
+
+#include "../../common/localbasis.hh"
+
+namespace Dune
+{
+  /**
+   * \ingroup LocalBasisImplementation
+   * \brief First order Brezzi-Douglas-Marini shape functions on the reference quadrilateral.
+   *
+   * \tparam D Type to represent the field in the domain.
+   * \tparam R Type to represent the field in the range.
+   *
+   * \nosubgrouping
+   */
+  template<class D, class R>
+  class BDM1Cube2DLocalBasis
+  {
+
+  public:
+    typedef LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,2,Dune::FieldVector<R,2>,
+        Dune::FieldMatrix<R,2,2> > Traits;
+
+    //! \brief Standard constructor
+    BDM1Cube2DLocalBasis ()
+    {
+      sign0 = sign1 = sign2 = sign3 = 1.0;
+    }
+
+    /**
+     * \brief Make set number s, where 0 <= s < 16
+     *
+     * \param s Edge orientation indicator
+     */
+    BDM1Cube2DLocalBasis (unsigned int s)
+    {
+      sign0 = sign1 = sign2 = sign3 = 1.0;
+      if (s & 1)
+      {
+        sign0 = -1.0;
+      }
+      if (s & 2)
+      {
+        sign1 = -1.0;
+      }
+      if (s & 4)
+      {
+        sign2 = -1.0;
+      }
+      if (s & 8)
+      {
+        sign3 = -1.0;
+      }
+    }
+
+    //! \brief number of shape functions
+    unsigned int size () const
+    {
+      return 8;
+    }
+
+    /**
+     * \brief Evaluate all shape functions
+     *
+     * \param in Position
+     * \param out return value
+     */
+    inline void evaluateFunction (const typename Traits::DomainType& in,
+                                  std::vector<typename Traits::RangeType>& out) const
+    {
+      out.resize(8);
+
+      out[0][0] = sign0*(in[0] - 1.0);
+      out[0][1] = 0.0;
+      out[1][0] = 6.0*in[0]*in[1] - 3.0*in[0]-6*in[1] + 3.0;
+      out[1][1] = -3.0*in[1]*in[1] + 3.0*in[1];
+      out[2][0] = sign1*(in[0]);
+      out[2][1] = 0.0;
+      out[3][0] = -6.0*in[0]*in[1] + 3.0*in[0];
+      out[3][1] = 3.0*in[1]*in[1] - 3.0*in[1];
+      out[4][0] = 0.0;
+      out[4][1] = sign2*(in[1] - 1.0);
+      out[5][0] = 3.0*in[0]*in[0] - 3.0*in[0];
+      out[5][1] = -6.0*in[0]*in[1] + 6.0*in[0] + 3.0*in[1] - 3.0;
+      out[6][0] = 0.0;
+      out[6][1] = sign3*(in[1]);
+      out[7][0] = -3.0*in[0]*in[0] + 3.0*in[0];
+      out[7][1] = 6.0*in[0]*in[1] - 3.0*in[1];
+    }
+
+    /**
+     * \brief Evaluate Jacobian of all shape functions
+     *
+     * \param in Position
+     * \param out return value
+     */
+    inline void evaluateJacobian (const typename Traits::DomainType& in,
+                                  std::vector<typename Traits::JacobianType>& out) const
+    {
+      out.resize(8);
+
+      out[0][0][0] = sign0;
+      out[0][0][1] = 0.0;
+      out[0][1][0] = 0.0;
+      out[0][1][1] = 0.0;
+
+      out[1][0][0] = 6.0*in[1] - 3.0;
+      out[1][0][1] = 6.0*in[0] - 6.0;
+      out[1][1][0] = 0.0;
+      out[1][1][1] = -6.0*in[1] + 3.0;
+
+      out[2][0][0] = sign1;
+      out[2][0][1] = 0.0;
+      out[2][1][0] = 0.0;
+      out[2][1][1] = 0.0;
+
+      out[3][0][0] = -6.0*in[1] + 3.0;
+      out[3][0][1] = -6.0*in[0];
+      out[3][1][0] = 0.0;
+      out[3][1][1] = 6.0*in[1] - 3.0;
+
+      out[4][0][0] = 0.0;
+      out[4][0][1] = 0.0;
+      out[4][1][0] = 0.0;
+      out[4][1][1] = sign2;
+
+      out[5][0][0] = 6.0*in[0] - 3.0;
+      out[5][0][1] = 0.0;
+      out[5][1][0] = -6.0*in[1] + 6.0;
+      out[5][1][1] = -6.0*in[0] + 3.0;
+
+      out[6][0][0] = 0.0;
+      out[6][0][1] = 0.0;
+      out[6][1][0] = 0.0;
+      out[6][1][1] = sign3;
+
+      out[7][0][0] = -6.0*in[0] + 3.0;
+      out[7][0][1] = 0.0;
+      out[7][1][0] = 6.0*in[1];
+      out[7][1][1] = 6.0*in[0] - 3.0;
+    }
+
+    //! \brief Polynomial order of the shape functions
+    unsigned int order () const
+    {
+      return 2;
+    }
+
+  private:
+    R sign0, sign1, sign2, sign3;
+  };
+}
+#endif // DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI1_CUBE2D_LOCALBASIS_HH

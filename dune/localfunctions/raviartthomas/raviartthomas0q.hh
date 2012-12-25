@@ -3,8 +3,10 @@
 #ifndef DUNE_RAVIARTTHOMAS0QLOCALFINITEELEMENT_HH
 #define DUNE_RAVIARTTHOMAS0QLOCALFINITEELEMENT_HH
 
-#include "raviartthomas0q2d.hh"
-#include "raviartthomas0q3d.hh"
+#warning This header is deprecated, please use\
+  dune/localfunctions/raviartthomas/raviartthomascube.hh instead
+
+#include "raviartthomascube.hh"
 
 namespace Dune
 {
@@ -18,6 +20,9 @@ namespace Dune
    * \tparam D Type to represent the field in the domain.
    * \tparam R Type to represent the field in the range.
    * \tparam dim Dimension.
+   *
+   * \deprecated This class is deprecated and will be removed after Dune 2.3.
+   *             Use RaviartThomasCubeLocalFiniteElement<D, R, dim, 0> instead.
    */
   template<class D, class R, int dim>
   class RT0QLocalFiniteElement;
@@ -27,16 +32,23 @@ namespace Dune
    *
    * \tparam D Type to represent the field in the domain.
    * \tparam R Type to represent the field in the range.
+   *
+   * \deprecated This class is deprecated and will be removed after Dune 2.3.
+   *             Use RaviartThomasCubeLocalFiniteElement<D, R, 2, 0> instead.
    */
   template<class D, class R>
-  class RT0QLocalFiniteElement<D, R, 2>
-    : public RT0Q2DLocalFiniteElement<D, R>
+  class
+  DUNE_DEPRECATED_MSG("Use RaviartThomasCubeLocalFiniteElement<D, R, 2, 0> instead")
+  RT0QLocalFiniteElement<D, R, 2>
+    : public RaviartThomasCubeLocalFiniteElement<D, R, 2, 0>
   {
   public:
-    RT0QLocalFiniteElement () : RT0Q2DLocalFiniteElement<D, R>()
+    RT0QLocalFiniteElement ()
+      : RaviartThomasCubeLocalFiniteElement<D, R, 2, 0>::RaviartThomasCubeLocalFiniteElement()
     {}
 
-    RT0QLocalFiniteElement (int s) : RT0Q2DLocalFiniteElement<D, R>(s)
+    RT0QLocalFiniteElement (int s)
+      : RaviartThomasCubeLocalFiniteElement<D, R, 2, 0>::RaviartThomasCubeLocalFiniteElement(s)
     {}
   };
 
@@ -45,16 +57,23 @@ namespace Dune
    *
    * \tparam D Type to represent the field in the domain.
    * \tparam R Type to represent the field in the range.
+   *
+   * \deprecated This class is deprecated and will be removed after Dune 2.3.
+   *             Use RaviartThomasCubeLocalFiniteElement<D, R, 3, 0> instead.
    */
   template<class D, class R>
-  class RT0QLocalFiniteElement<D, R, 3>
-    : public RT0Q3DLocalFiniteElement<D, R>
+  class
+  DUNE_DEPRECATED_MSG("Use RaviartThomasCubeLocalFiniteElement<D, R, 3, 0> instead")
+  RT0QLocalFiniteElement<D, R, 3>
+    : public RaviartThomasCubeLocalFiniteElement<D, R, 3, 0>
   {
   public:
-    RT0QLocalFiniteElement () : RT0Q3DLocalFiniteElement<D, R>()
+    RT0QLocalFiniteElement ()
+      : RaviartThomasCubeLocalFiniteElement<D, R, 3, 0>::RaviartThomasCubeLocalFiniteElement()
     {}
 
-    RT0QLocalFiniteElement (int s) : RT0Q3DLocalFiniteElement<D, R>(s)
+    RT0QLocalFiniteElement (int s)
+      : RaviartThomasCubeLocalFiniteElement<D, R, 3, 0>::RaviartThomasCubeLocalFiniteElement(s)
     {}
   };
 

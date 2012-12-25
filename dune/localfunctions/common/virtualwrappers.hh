@@ -193,7 +193,7 @@ namespace Dune
    *
    * @tparam DomainType domain type of the Dune::VirtualFunction to interpolate
    * @tparam RangeType range type of the Dune::VirtualFunction to interpolate
-   * @tparam Imp LocalInterpolationInterface implementation
+   * \tparam Imp LocalInterpolationVirtualInterface implementation
    */
   template<class DomainType, class RangeType, class Imp>
   class LocalInterpolationVirtualImp
@@ -216,7 +216,7 @@ namespace Dune
 
     typedef typename Base::CoefficientType CoefficientType;
 
-    //! @copydoc LocalCoefficientsVirtualInterface::interpolate
+    //! \copydoc LocalInterpolationVirtualInterface::interpolate
     virtual void interpolate (const FunctionType& f, std::vector<CoefficientType>& out) const
     {
       impl_.interpolate(f,out);
@@ -296,7 +296,7 @@ namespace Dune
   public:
     typedef typename Interface::Traits Traits;
 
-    //! @copydoc constructor taking a LocalFiniteElementInterface implementation
+    //! @copydoc constructor taking a LocalFiniteElementVirtualInterface implementation
     LocalFiniteElementVirtualImp( const Imp &imp )
       : impl_(LocalFiniteElementCloneFactory<Imp>::clone(imp)),
         localBasisImp_(impl_->localBasis()),
@@ -325,25 +325,25 @@ namespace Dune
       delete impl_;
     }
 
-    //! @copydoc LocalFiniteElementInterface::localBasis
+    //! \copydoc LocalFiniteElementVirtualInterface::localBasis
     const typename Traits::LocalBasisType& localBasis () const
     {
       return localBasisImp_;
     }
 
-    //! @copydoc LocalFiniteElementInterface::localCoefficients
+    //! \copydoc LocalFiniteElementVirtualInterface::localCoefficients
     const typename Traits::LocalCoefficientsType& localCoefficients () const
     {
       return localCoefficientsImp_;
     }
 
-    //! @copydoc LocalFiniteElementInterface::localInterpolation
+    //! \copydoc LocalFiniteElementVirtualInterface::localInterpolation
     const typename Traits::LocalInterpolationType& localInterpolation () const
     {
       return localInterpolationImp_;
     }
 
-    //! @copydoc LocalFiniteElementInterface::type
+    //! \copydoc LocalFiniteElementVirtualInterface::type
     const GeometryType type () const
     {
       return impl_->type();

@@ -1,39 +1,20 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_RANNACHER_TUREK2DLOCALCOEFFICIENTS_HH
-#define DUNE_RANNACHER_TUREK2DLOCALCOEFFICIENTS_HH
+#ifndef DUNE_RANNACHER_TUREK_2D_LOCALCOEFFICIENTS_HH
+#define DUNE_RANNACHER_TUREK_2D_LOCALCOEFFICIENTS_HH
 
-#include <cstddef>
-#include <vector>
+#warning dune/localfunctions/rannacherturek/rannacherturek2d/rannacherturek2dlocalcoefficients.h\
+  is deprecated, please use dune/localfunctions/rannacherturek/rannachertureklocalcoefficients.hh
 
-#include <dune/localfunctions/common/localkey.hh>
+#include <dune/localfunctions/rannacherturek/rannachertureklocalcoefficients.hh>
 
-namespace Dune {
+namespace Dune
+{
 
-  /** \todo Please doc me!
-      \implements Dune::LocalCoefficientsVirtualImp
-   */
   class RannacherTurek2DLocalCoefficients
-  {
-  public:
-    RannacherTurek2DLocalCoefficients () : li(4)  {
-      for (std::size_t i=0; i<4; i++) li[i] = LocalKey(i,1,0);
-    }
-
-    //! number of coefficients
-    std::size_t size () const {
-      return 4;
-    }
-
-    //! map index i to local key
-    const LocalKey& localKey (std::size_t i) const {
-      return li[i];
-    }
-
-  private:
-    std::vector<LocalKey> li;
-  };
+    : public RannacherTurekLocalCoefficients< 2 >
+  {};
 
 } //namespace Dune
 
-#endif //DUNE_RANNACHER_TUREK2DLOCALCOEFFICIENTS_HH
+#endif // #ifndef DUNE_RANNACHER_TUREK_2D_LOCALCOEFFICIENTS_HH

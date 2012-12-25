@@ -3,12 +3,10 @@
 #ifndef DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS1Q3DLOCALFINITEELEMENT_HH
 #define DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS1Q3DLOCALFINITEELEMENT_HH
 
-#include <dune/geometry/type.hh>
+#include "raviartthomas1cube3d.hh"
 
-#include "../common/localfiniteelementtraits.hh"
-#include "raviartthomas1q3d/raviartthomas1q3dlocalbasis.hh"
-#include "raviartthomas1q3d/raviartthomas1q3dlocalcoefficients.hh"
-#include "raviartthomas1q3d/raviartthomas1q3dlocalinterpolation.hh"
+#warning This header is deprecated, please use\
+  dune/localfunctions/raviartthomas/raviartthomas0cube3d.hh instead
 
 namespace Dune
 {
@@ -17,56 +15,15 @@ namespace Dune
    *
    * \tparam D Type to represent the field in the domain.
    * \tparam R Type to represent the field in the range.
+   *
+   * \deprecated This class is deprecated and will be removed after Dune 2.3.
+   *             Use RT1Cube3DLocalFiniteElement instead.
    */
   template<class D, class R>
-  class RT1Q3DLocalFiniteElement
-  {
-
-  public:
-    typedef LocalFiniteElementTraits<RT1Q3DLocalBasis<D,R>,RT1Q3DLocalCoefficients,
-        RT1Q3DLocalInterpolation<RT1Q3DLocalBasis<D,R> > > Traits;
-
-    //! \brief Standard constructor
-    RT1Q3DLocalFiniteElement ()
-    {
-      gt.makeHexahedron();
-    }
-
-    /**
-     * \brief Make set number s, where 0 <= s < 64
-     *
-     * \param s Edge orientation indicator
-     */
-    RT1Q3DLocalFiniteElement (int s) : basis(s), interpolation(s)
-    {
-      gt.makeHexahedron();
-    }
-
-    const typename Traits::LocalBasisType& localBasis () const
-    {
-      return basis;
-    }
-
-    const typename Traits::LocalCoefficientsType& localCoefficients () const
-    {
-      return coefficients;
-    }
-
-    const typename Traits::LocalInterpolationType& localInterpolation () const
-    {
-      return interpolation;
-    }
-
-    GeometryType type () const
-    {
-      return gt;
-    }
-
-  private:
-    RT1Q3DLocalBasis<D,R> basis;
-    RT1Q3DLocalCoefficients coefficients;
-    RT1Q3DLocalInterpolation<RT1Q3DLocalBasis<D,R> > interpolation;
-    GeometryType gt;
-  };
+  class
+  DUNE_DEPRECATED_MSG("Use RT1Cube3DLocalFiniteElement instead")
+  RT1Q3DLocalFiniteElement
+    : public RT1Cube3DLocalFiniteElement<D, R>
+  {};
 }
 #endif // DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS1Q3DLOCALFINITEELEMENT_HH

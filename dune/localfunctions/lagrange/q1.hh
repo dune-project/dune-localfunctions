@@ -36,6 +36,9 @@ namespace Dune
       gt.makeCube(dim);
     }
 
+    Q1LocalFiniteElement (const Q1LocalFiniteElement & o) : gt(o.gt)
+    {}
+
     /** \todo Please doc me !
      */
     const typename Traits::LocalBasisType& localBasis () const

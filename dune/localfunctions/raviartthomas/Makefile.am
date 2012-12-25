@@ -2,23 +2,17 @@ raviartthomasdir = $(includedir)/dune/localfunctions/raviartthomas
 
 raviartthomas_HEADERS = raviartthomas02d.hh raviartthomas0q2d.hh raviartthomas0q3d.hh raviartthomas0q.hh \
                         raviartthomas12d.hh raviartthomas1q2d.hh raviartthomas1q3d.hh raviartthomas2q2d.hh \
-                        interpolation.hh  raviartthomasbasis.hh  raviartthomasprebasis.hh
+	raviartthomas0cube2d.hh raviartthomas0cube3d.hh \
+	raviartthomas1cube2d.hh raviartthomas1cube3d.hh \
+	raviartthomas2cube2d.hh \
+	raviartthomassimplex.hh
 
-SUBDIRS = raviartthomas02d raviartthomas0q2d raviartthomas0q3d \
-          raviartthomas12d raviartthomas1q2d raviartthomas1q3d \
-          raviartthomas2q2d
-
-check_PROGRAMS = test
-EXTRA_PROGRAMS = test-all
-
-TOPOLOGY = Pyramid< Pyramid< Point > >
-SETTINGS = -DTOPOLOGY="$(TOPOLOGY)"
-
-test_SOURCES = test.cc
-test_CPPFLAGS = $(DUNE_CPPFLAGS) $(AM_CPPFLAGS) $(SETTINGS) $(GMP_CPPFLAGS)
-test_all_SOURCES = test.cc
-test_all_CPPFLAGS = $(DUNE_CPPFLAGS) $(AM_CPPFLAGS) $(GMP_CPPFLAGS)
-
-LDADD = $(DUNE_LDFLAGS) $(DUNE_LIBS) $(GMP_LIBS)
+SUBDIRS = \
+	raviartthomas02d \
+	raviartthomas0cube2d raviartthomas0cube3d \
+	raviartthomas12d \
+	raviartthomas1cube2d raviartthomas1cube3d \
+	raviartthomas2cube2d \
+	raviartthomassimplex
 
 include $(top_srcdir)/am/global-rules

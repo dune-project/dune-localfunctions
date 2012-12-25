@@ -115,26 +115,11 @@ and forward the function calls to this implementation.  Details of this
 When designing the \modulename{dune-localfunctions} module we have deliberately
 tried to keep dependencies on other \dune modules to a minimum.  Ideally,
 people should be able to use the shape functions from \dune without having
-to use anything else from \dune.  The only exception here is \modulename{dune-common},
-which all \dune modules depend on.
+to use anything else from \dune.  The only exception here are \modulename{dune-common}
+and \modulename{dune-geometry} which most \dune modules depend on.
 
-In addition to \modulename{dune-common}, \modulename{dune-localfunctions} currently
-depends only on \modulename{dune-grid}.  This dependence is somewhat unfortunate,
-and it has been hotly debated.  We would like users to be able to use \dune grids
-without shapefunctions from \modulename{dune-localfunctions} and the shapefunctions
-from \modulename{dune-localfunctions} without the grids from \modulename{dune-grid}.
-While the former is easy, \modulename{dune-localfunctions} currently needs a few
-features from \modulename{dune-grid} to work.  These are in particular a few
-quadrature rules and some of the infrastructure for constructing reference elements.
-More seriously, \modulename{dune-localfunctions} provides some {\em global} finite
-elements (also known as {\em non-affine families} of finite elements).  These
-have to have some information about the geometry of the grid.
-
-In the future the necessary things from \modulename{dune-grid} may be split off
-into a separate module \modulename{dune-geometry} (or similar).  The dependence of
-\modulename{dune-localfunctions} on \modulename{dune-grid} can then be replaced
-by the weaker dependency on the new module.
-
+In addition \modulename{dune-localfunctions} suggests \modulename{dune-grid} which
+is mainly used in tests.
 
 \section{The \lstinline!LocalFiniteElement! Interface}
 \label{sec:static_interface}
@@ -156,11 +141,11 @@ which can be obtained from the \lstinline!LocalFiniteElement! class.
 \end{enumerate}
 Motivated by these points the  interface of a \lstinline!LocalFiniteElement! is given by:
 \begin{lstlisting}
-class LocalFiniteElementInterface
+class LocalFiniteElementVirtualInterface
 {
    // export traits 
    typedef LocalFiniteElementTraits<LocalBasisImpl,
- 	LocalCoefficientsImpl, LocalInterpolationImpl> Traits;
+     LocalCoefficientsImpl, LocalInterpolationImpl> Traits;
 
    // access to the local basis implementation
    const Traits::LocalBasisType& localBasis() const;
@@ -216,7 +201,7 @@ of the shape functions is represented in C++ types. A description of the templat
 be found in the doxygen documentation of the traits class. 
 
 \subsection{The \lstinline!LocalCoefficients! Classes}
-To describe the position of the degrees of freedom (shape functions) of a \lstinline!LocalFiniteElement!
+To describe the position of the degrees of freedom (shape functions) of a \texttt{Local\-Finite\-Element}
 it is assumed that each degree of freedom can be attached to a subentity of the underlying reference element.
 For every degree of freedom we thus have
 \begin{enumerate}
@@ -245,7 +230,7 @@ class LocalCoefficientsInterface
 
 \subsection{The \lstinline!LocalInterpolation! Classes}
 \begin{lstlisting}
-class LocalInterpolationInterface 
+class LocalInterpolationVirtualInterface 
 {
 // export local basis traits
 LocalBasisInterface::Traits Traits;
@@ -374,7 +359,7 @@ public:
 Now the \lstinline!LocalInterpolationVirtualInterface! derives from this class and additionally 
 contains non-virtual template versions of the \lstinline!interpolate! method which wrap the template parameter \lstinline!FunctionType! into a \lstinline!VirtualFunction!  and then call the virtual base method.
 
-You can get a proper \lstinline!type! for functions to use with \lstinline!LocalInterpolation! by using\\\lstinline!LocalFiniteElementFunctionBase<class FE>::type! which is the \lstinline!VirtualFunction! interface class if \lstinline!FE! implements the virtual interface and the \lstinline!Function! base class otherwise. \\
+You can get a proper \lstinline!type! for functions to use with \lstinline!LocalInterpolation! by using\\\lstinline!LocalFiniteElementFunctionBase<class FE>::type! which is the \lstinline!VirtualFunction! interface class if \lstinline!FE! implements the virtual interface and the \lstinline!Function! base class otherwise.
 
 Due to the \lstinline!LocalBasisVirtualInterface! structure the \lstinline!LocalFiniteElementVirtualInterface!  is also organized in a hierarchy differing in the order of implemented derivatives. 
 \begin{lstlisting}
@@ -589,7 +574,7 @@ This section explicitly does not deal with the following issues:
 \item Different geometry types for different grid elements.  This will lead to
   different number of basis functions and must already be dealt with in the
   local finite element.
-\item $p$-adaptiviy.  Again, this will lead to different number of basis
+\item $p$-adaptivity.  Again, this will lead to different number of basis
   functions and must already be dealt with in the local finite element.
 \end{itemize}
 
@@ -1006,7 +991,7 @@ is no longer quadratic and has no determinant.
 The reason why the information about the vertex ids is not enough is roughly
 that to construct the normal orientation there is alway some kind of rotation
 involved.  In 2D the codimension 1 sub-entities are edges.  We can obtain a
-normal orientation by rotating the tangential orientation by $90°$.  To get a
+normal orientation by rotating the tangential orientation by 90°.  To get a
 consistent result however, this rotation must be done in the global coordinate
 system for the global orientation and in the respective local coordinate
 systems for the local orientations.  Locally on the element we have only the
@@ -1106,7 +1091,7 @@ value of {\tt true} means the global orientation of the face is outward, {\tt
 \subsection{API}
 
 The API for global-valued finite elements consists of five interface classes
-({\tt Basis\-Interface}, {\tt InterpolationInterface}, {\tt
+({\tt Basis\-Inter\-face}, {\tt InterpolationInterface}, {\tt
   Coefficients\-Interface}, {\tt FiniteElementInterface}, and {\tt
   Finite\-Element\-Factory\-Interface}) and two traits classes ({\tt
   BasisTraits} and {\tt Finite\-Element\-Traits}).  In contrast to the local

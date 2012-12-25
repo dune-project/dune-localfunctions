@@ -73,6 +73,31 @@ list(APPEND TESTS test-q2)
 add_executable(test-q2 test-q2.cc)
 target_link_libraries(test-q2 ${DUNE_LIBS})
 
+list(APPEND TEST test-raviartthomas1simplex)
+add_executable(test-raviartthomas1simplex test-raviartthomassimplex.cc)
+target_link_libraries(test-raviartthomas1simplex ${DUNE_LIBS})
+set_property(TARGET test-raviartthomas1simplex APPEND PROPERTY COMPILE_DEFINITIONS
+  TOPOLOGY=Pyramid<Point>)
+dune_add_gmp_flags(test-raviartthomas1simplex)
+
+list(APPEND TEST test-raviartthomas2simplex)
+add_executable(test-raviartthomas2simplex test-raviartthomassimplex.cc)
+target_link_libraries(test-raviartthomas2simplex ${DUNE_LIBS})
+set_property(TARGET test-raviartthomas2simplex APPEND PROPERTY COMPILE_DEFINITIONS
+  "TOPOLOGY=\"Pyramid<Pyramid<Point> >\"")
+dune_add_gmp_flags(test-raviartthomas2simplex)
+
+list(APPEND TEST test-raviartthomas3simplex)
+add_executable(test-raviartthomas3simplex test-raviartthomassimplex.cc)
+target_link_libraries(test-raviartthomas1simplex ${DUNE_LIBS})
+set_property(TARGET test-raviartthomas1simplex APPEND PROPERTY COMPILE_DEFINITIONS
+  "TOPOLOGY=\"Pyramid<Pyramid<Pyramid<Point> > >\"")
+dune_add_gmp_flags(test-raviartthomas3simplex)
+
+add_executable(test-raviartthomassimplex-all test-raviartthomassimplex.cc)
+target_link_libraries(test-raviartthomassimplex-all ${DUNE_LIBS})
+dune_add_gmp_flags(test-raviartthomassimplex-all)
+
 foreach(i ${TESTS})
   add_test(${i} ${i})
 endforeach(i ${TESTS})

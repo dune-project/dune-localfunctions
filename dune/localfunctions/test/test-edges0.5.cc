@@ -14,7 +14,6 @@
 #include <dune/common/static_assert.hh>
 
 #include <dune/geometry/type.hh>
-#include <dune/geometry/mockgeometry.hh>
 #include <dune/geometry/generalvertexorder.hh>
 
 #include <dune/localfunctions/whitney/edges0.5.hh>

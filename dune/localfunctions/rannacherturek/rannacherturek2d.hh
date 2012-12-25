@@ -1,52 +1,28 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_RANNACHER_TUREK2DLOCALFINITEELEMENT_HH
-#define DUNE_RANNACHER_TUREK2DLOCALFINITEELEMENT_HH
+#ifndef DUNE_RANNACHER_TUREK_2D_LOCALFINITEELEMENT_HH
+#define DUNE_RANNACHER_TUREK_2D_LOCALFINITEELEMENT_HH
 
-#include <dune/geometry/type.hh>
+#ifndef DISABLE_RANNACHERTUREK2D_DEPRECATION_WARNING
+#warning dune/localfunctions/rannacherturek/rannacherturek2d.hh\
+  is deprecated, please use dune/localfunctions/rannacherturek/rannacherturek.hh
+#endif
 
-#include <dune/localfunctions/common/localfiniteelementtraits.hh>
+#include "rannacherturek.hh"
 
-#include "rannacherturek2d/rannacherturek2dlocalbasis.hh"
-#include "rannacherturek2d/rannacherturek2dlocalcoefficients.hh"
-#include "rannacherturek2d/rannacherturek2dlocalinterpolation.hh"
-
-namespace Dune {
-
-  template<class D, class R>
-  class RannacherTurek2DLocalFiniteElement
-  {
-    RannacherTurek2DLocalBasis<D,R> basis;
-    RannacherTurek2DLocalCoefficients coefficients;
-    RannacherTurek2DLocalInterpolation<RannacherTurek2DLocalBasis<D,R> > interpolation;
-    GeometryType gt;
-
-  public:
-    typedef LocalFiniteElementTraits<
-        RannacherTurek2DLocalBasis<D,R>,
-        RannacherTurek2DLocalCoefficients,
-        RannacherTurek2DLocalInterpolation<RannacherTurek2DLocalBasis<D,R> > > Traits;
-
-    RannacherTurek2DLocalFiniteElement () { gt.makeQuadrilateral(); }
-
-    const typename Traits::LocalBasisType& localBasis () const
-    {
-      return basis;
-    }
-
-    const typename Traits::LocalCoefficientsType& localCoefficients () const
-    {
-      return coefficients;
-    }
-
-    const typename Traits::LocalInterpolationType& localInterpolation () const
-    {
-      return interpolation;
-    }
-
-    GeometryType type () const { return gt; }
-  };
+namespace Dune
+{
+  /**
+   * \deprecated This class is deprecated and will be removed after Dune 2.3.
+   *             Use RannacherTurekLocalFiniteElement< D, R, 2 > instead.
+   */
+  template< class D, class R >
+  class
+  DUNE_DEPRECATED_MSG("Use RannacherTurekLocalFiniteElement< D, R, 2 > instead")
+  RannacherTurek2DLocalFiniteElement
+    : public RannacherTurekLocalFiniteElement< D, R, 2 >
+  {};
 
 } // namespace Dune
 
-#endif // DUNE_RANNACHER_TUREK2DLOCALFINITEELEMENT_HH
+#endif // #ifndef DUNE_RANNACHER_TUREK_2D_LOCALFINITEELEMENT_HH

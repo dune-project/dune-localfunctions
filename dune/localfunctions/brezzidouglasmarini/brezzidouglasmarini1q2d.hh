@@ -3,70 +3,28 @@
 #ifndef DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI1Q2DLOCALFINITEELEMENT_HH
 #define DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI1Q2DLOCALFINITEELEMENT_HH
 
-#include <dune/geometry/type.hh>
+#include "brezzidouglasmarini1cube2d.hh"
 
-#include "../common/localfiniteelementtraits.hh"
-#include "brezzidouglasmarini1q2d/brezzidouglasmarini1q2dlocalbasis.hh"
-#include "brezzidouglasmarini1q2d/brezzidouglasmarini1q2dlocalcoefficients.hh"
-#include "brezzidouglasmarini1q2d/brezzidouglasmarini1q2dlocalinterpolation.hh"
+#warning This header is deprecated, please use\
+  dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini1cube2d.hh instead
 
 namespace Dune
 {
+
   /**
-   * \brief First order Brezzi-Douglas-Marini shape functions on quadrilaterals.
+   * \brief First order Brezzi-Douglas-Marini shape functions on triangles.
    *
    * \tparam D Type to represent the field in the domain.
    * \tparam R Type to represent the field in the range.
+   *
+   * \deprecated This class is deprecated and will be removed after Dune 2.3.
+   *             Use BDM1Cube2DLocalFiniteElement instead.
    */
   template<class D, class R>
-  class BDM1Q2DLocalFiniteElement
-  {
-
-  public:
-    typedef LocalFiniteElementTraits<BDM1Q2DLocalBasis<D,R>,BDM1Q2DLocalCoefficients,
-        BDM1Q2DLocalInterpolation<BDM1Q2DLocalBasis<D,R> > > Traits;
-
-    //! \brief Standard constructor
-    BDM1Q2DLocalFiniteElement ()
-    {
-      gt.makeQuadrilateral();
-    }
-
-    /**
-     * \brief Make set number s, where 0 <= s < 16
-     *
-     * \param s Edge orientation indicator
-     */
-    BDM1Q2DLocalFiniteElement (int s) : basis(s), interpolation(s)
-    {
-      gt.makeQuadrilateral();
-    }
-
-    const typename Traits::LocalBasisType& localBasis () const
-    {
-      return basis;
-    }
-
-    const typename Traits::LocalCoefficientsType& localCoefficients () const
-    {
-      return coefficients;
-    }
-
-    const typename Traits::LocalInterpolationType& localInterpolation () const
-    {
-      return interpolation;
-    }
-
-    GeometryType type () const
-    {
-      return gt;
-    }
-
-  private:
-    BDM1Q2DLocalBasis<D,R> basis;
-    BDM1Q2DLocalCoefficients coefficients;
-    BDM1Q2DLocalInterpolation<BDM1Q2DLocalBasis<D,R> > interpolation;
-    GeometryType gt;
-  };
+  class
+  DUNE_DEPRECATED_MSG("Use BDM1Cube2DLocalFiniteElement instead")
+  BDM1Q2DLocalFiniteElement
+    : public BDM1Cube2DLocalFiniteElement<D, R>
+  {};
 }
 #endif // DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI1Q2DLOCALFINITEELEMENT_HH

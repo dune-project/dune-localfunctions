@@ -5,8 +5,8 @@ BASEDIR=../..
 CURDIR=doc/doxygen
 WHAT=
 
-doxygendir = $(datadir)/doc/dune-localfunctions/doxygen
-doxygen_DATA = $(WHAT)
+doxydir = $(datadir)/doc/dune-localfunctions/doxygen
+doxy_DATA = $(WHAT)
 
 #we need this in the distribution
 EXTRA_DIST = $(WHAT) $(DOXYGENDISTFILES)

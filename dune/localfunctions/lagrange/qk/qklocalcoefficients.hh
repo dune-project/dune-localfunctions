@@ -257,25 +257,24 @@ namespace Dune
 
       if (k==1) {
 
-        for (std::size_t i=0; i<StaticPower<k+1,d>::power; i++)
-          li[i] = LocalKey(i,codim[i],0);
+        for (std::size_t i=0; i<size(); i++) {
+          subEntity[i] = i;
+          index[i]     = 0;
+        }
 
       } else if (d==2) {
 
         setup2d(subEntity, index);
 
-        for (size_t i=0; i<li.size(); i++)
-          li[i] = LocalKey(subEntity[i], codim[i], index[i]);
-
       } else if (d==3) {
 
         setup3d(subEntity, index);
 
-        for (size_t i=0; i<li.size(); i++)
-          li[i] = LocalKey(subEntity[i], codim[i], index[i]);
-
       } else
         DUNE_THROW(Dune::NotImplemented, "QkLocalCoefficients for k==" << k << " and d==" << d);
+
+      for (size_t i=0; i<li.size(); i++)
+        li[i] = LocalKey(subEntity[i], codim[i], index[i]);
     }
 
     //! number of coefficients

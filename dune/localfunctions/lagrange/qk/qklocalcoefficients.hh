@@ -92,7 +92,8 @@ namespace Dune
     }
 
 
-    void setup3d()
+    void setup3d(std::vector<unsigned int>& subEntity,
+                 std::vector<unsigned int>& index)
     {
       assert(k>0);
       unsigned lastIndex=0;
@@ -119,27 +120,37 @@ namespace Dune
       lastIndex=0;
       lastInnerFaceIndex=0;
       // lower edge (2)
-      li[lastIndex++] = LocalKey(0,d,0);       // corner 0
-      for (unsigned i = 0; i < numInnerEdgeDofs; ++i)
-        li[lastIndex++] = LocalKey(6,d-1,i);         // inner dofs of lower edge (2)
+      subEntity[lastIndex] = 0;              // corner 0
+      index[lastIndex++] = 0;
+      for (unsigned i = 0; i < numInnerEdgeDofs; ++i) {
+        subEntity[lastIndex] = 6;                // inner dofs of lower edge (2)
+        index[lastIndex++] = i;
+      }
 
-      li[lastIndex++] = LocalKey(1,d,0);       // corner 1
+      subEntity[lastIndex] = 1;              // corner 1
+      index[lastIndex++] = 0;
 
       // iterate from bottom to top over inner edge dofs
       for (unsigned e = 0; e < numInnerEdgeDofs; ++e) {
-        li[lastIndex++] = LocalKey(4,d-1,e);         // left edge (4)
+        subEntity[lastIndex] = 4;                // left edge (4)
+        index[lastIndex++] = e;
         for (unsigned i = 0; i < numInnerEdgeDofs; ++i) {
-          li[lastIndex++] = LocalKey(4,d-2,lastInnerFaceIndex++);           // inner face dofs
+          subEntity[lastIndex] = 4;                       // inner face dofs
+          index[lastIndex++] = lastInnerFaceIndex++;
         }
-        li[lastIndex++] = LocalKey(5,d-1,e);         // right edge (5)
+        subEntity[lastIndex] = 5;                 // right edge (5)
+        index[lastIndex++] = e;
       }
 
       // upper edge (7)
-      li[lastIndex++] = LocalKey(2,d,0);       // corner 2
+      subEntity[lastIndex] = 2;              // corner 2
+      index[lastIndex++] = 0;
       for (unsigned i = 0; i < k - 1; ++i) {
-        li[lastIndex++] = LocalKey(7,d-1,i);         // inner dofs of upper edge (7)
+        subEntity[lastIndex] = 7;                // inner dofs of upper edge (7)
+        index[lastIndex++] = i;
       }
-      li[lastIndex++] = LocalKey(3,d,0);       // corner 3
+      subEntity[lastIndex] = 3;                // corner 3
+      index[lastIndex++] = 0;
 
       assert(((k-1)*(k-1))==lastInnerFaceIndex);
 
@@ -152,27 +163,36 @@ namespace Dune
         lastInnerFaceIndex=0;
 
         // lower edge (connecting  edges 0 and 1)
-        li[lastIndex++] = LocalKey(0,d-1,f);         // dof on edge 0
+        subEntity[lastIndex] = 0;                // dof on edge 0
+        index[lastIndex++] = f;
         for (unsigned i = 0; i < numInnerEdgeDofs; ++i) {
-          li[lastIndex++] = LocalKey(2,d-2,i+(f*numInnerEdgeDofs));           // dof in front face (2)
+          subEntity[lastIndex] = 2;                            // dof in front face
+          index[lastIndex++] = i+(f*numInnerEdgeDofs);
         }
-        li[lastIndex++] = LocalKey(1,d-1,f);         // dof on edge 1
+        subEntity[lastIndex] = 1;                // dof on edge 1
+        index[lastIndex++] = f;
 
         // iterate from bottom to top over inner edge dofs
         for (unsigned e = 0; e < numInnerEdgeDofs; ++e) {
-          li[lastIndex++] = LocalKey(0,d-2,e+f*numInnerEdgeDofs);           // on left face (0)
+          subEntity[lastIndex] = 0;                  // on left face (0)
+          index[lastIndex++] = e+f*numInnerEdgeDofs;
           for (unsigned i = 0; i < numInnerEdgeDofs; ++i) {
-            li[lastIndex++] = LocalKey(0,d-3,i + f*numInnerFaceDofs + e*numInnerEdgeDofs);             // volume dofs
+            subEntity[lastIndex] = 0;                    // volume dofs
+            index[lastIndex++] = i + f*numInnerFaceDofs + e*numInnerEdgeDofs;
           }
-          li[lastIndex++] = LocalKey(1,d-2,e+f*numInnerEdgeDofs);           // right edge (5)
+          subEntity[lastIndex] = 1;                  // right edge (5)
+          index[lastIndex++] = e + f*numInnerEdgeDofs;
         }
 
         // upper edge (connecting  edges 0 and 1)
-        li[lastIndex++] = LocalKey(2,d-1,f);         // dof on edge 2
+        subEntity[lastIndex] = 2;                // dof on edge 2
+        index[lastIndex++] = f;
         for (unsigned i = 0; i < numInnerEdgeDofs; ++i) {
-          li[lastIndex++] = LocalKey(3,d-2,i+(f*numInnerEdgeDofs));           // dof in rear face (3)
+          subEntity[lastIndex] = 3;                  // dof on rear face (3)
+          index[lastIndex++] = i + f*numInnerEdgeDofs;
         }
-        li[lastIndex++] = LocalKey(3,d-1,f);         // dof on edge 3
+        subEntity[lastIndex] = 3;                // dof on edge 3
+        index[lastIndex++] = f;
 
         assert(lastIndex==(f+1+1)*numFaceIndices);
       }
@@ -180,27 +200,36 @@ namespace Dune
       ////////////////////////////////////////// top face (5)
       lastInnerFaceIndex=0;
       // lower edge (10)
-      li[lastIndex++] = LocalKey(4,d,0);       // corner 4
+      subEntity[lastIndex] = 4;              // corner 4
+      index[lastIndex++] = 0;
       for (unsigned i = 0; i < k - 1; ++i) {
-        li[lastIndex++] = LocalKey(10,d-1,i);         // inner dofs of lower edge (10)
+        subEntity[lastIndex] = 10;                // inner dofs on lower edge (10)
+        index[lastIndex++] = i;
       }
-      li[lastIndex++] = LocalKey(5,d,0);       // corner 5
+      subEntity[lastIndex] = 5;              // corner 5
+      index[lastIndex++] = 0;
 
       // iterate from bottom to top over inner edge dofs
       for (unsigned e = 0; e < k - 1; ++e) {
-        li[lastIndex++] = LocalKey(8,d-1,e);         // left edge (8)
+        subEntity[lastIndex] = 8;                // left edge (8)
+        index[lastIndex++] = e;
         for (unsigned i = 0; i < k - 1; ++i) {
-          li[lastIndex++] = LocalKey(5,d-2,lastInnerFaceIndex++);           // face dofs
+          subEntity[lastIndex] = 5;                  // face dofs
+          index[lastIndex++] = lastInnerFaceIndex++;
         }
-        li[lastIndex++] = LocalKey(9,d-1,e);         // right edge (9)
+        subEntity[lastIndex] = 9;                // right edge (9)
+        index[lastIndex++] = e;
       }
 
       // upper edge (11)
-      li[lastIndex++] = LocalKey(6,d,0);       // corner 6
-      for (unsigned i = 0; i < k - 1; ++i)
-        li[lastIndex++] = LocalKey(11,d-1,i);             // inner dofs of upper edge (7)
-
-      li[lastIndex++] = LocalKey(7,d,0);       // corner 7
+      subEntity[lastIndex] = 6;              // corner 6
+      index[lastIndex++] = 0;
+      for (unsigned i = 0; i < k - 1; ++i) {
+        subEntity[lastIndex] = 11;                // inner dofs of upper edge (11)
+        index[lastIndex++] = i;
+      }
+      subEntity[lastIndex] = 7;              // corner 7
+      index[lastIndex++] = 0;
 
       assert(numIndices==lastIndex);
     }
@@ -240,7 +269,10 @@ namespace Dune
 
       } else if (d==3) {
 
-        setup3d();
+        setup3d(subEntity, index);
+
+        for (size_t i=0; i<li.size(); i++)
+          li[i] = LocalKey(subEntity[i], codim[i], index[i]);
 
       } else
         DUNE_THROW(Dune::NotImplemented, "QkLocalCoefficients for k==" << k << " and d==" << d);

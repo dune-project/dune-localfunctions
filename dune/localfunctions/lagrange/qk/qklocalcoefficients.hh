@@ -22,6 +22,19 @@ namespace Dune
   template<int k, int d>
   class QkLocalCoefficients {
 
+    // Return i as a d-digit number in the (k+1)-nary system
+    static array<unsigned int,d> multiindex (unsigned int i)
+    {
+      array<unsigned int,d> alpha;
+      for (int j=0; j<d; j++)
+      {
+        alpha[j] = i % (k+1);
+        i = i/(k+1);
+      }
+      return alpha;
+    }
+
+
     void setup2d()
     {
       assert(k>0);
@@ -190,10 +203,24 @@ namespace Dune
     //! \brief Default constructor
     QkLocalCoefficients () : li(StaticPower<k+1,d>::power)
     {
+      // Set up array of codimension-per-dof-number
+      std::vector<unsigned int> codim(li.size());
+
+      for (std::size_t i=0; i<codim.size(); i++) {
+        codim[i] = 0;
+        // Codimension gets reduced by 1 for each coordinate direction
+        // where dof is on boundary
+        array<unsigned int,d> mIdx = multiindex(i);
+        for (int j=0; j<d; j++)
+          if (mIdx[j]==0 or mIdx[j]==k)
+            codim[i]--;
+      }
+
+      // Set up entity and dof numbers for each (supported) dimension separately
       if (k==1) {
 
         for (std::size_t i=0; i<StaticPower<k+1,d>::power; i++)
-          li[i] = LocalKey(i,d,0);
+          li[i] = LocalKey(i,codim[i],0);
 
       } else if (d==2) {
 

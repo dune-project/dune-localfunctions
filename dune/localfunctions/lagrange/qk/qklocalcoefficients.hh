@@ -243,12 +243,12 @@ namespace Dune
 
       for (std::size_t i=0; i<codim.size(); i++) {
         codim[i] = 0;
-        // Codimension gets reduced by 1 for each coordinate direction
+        // Codimension gets increased by 1 for each coordinate direction
         // where dof is on boundary
         array<unsigned int,d> mIdx = multiindex(i);
         for (int j=0; j<d; j++)
           if (mIdx[j]==0 or mIdx[j]==k)
-            codim[i]--;
+            codim[i]++;
       }
 
       // Set up entity and dof numbers for each (supported) dimension separately

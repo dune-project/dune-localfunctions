@@ -35,7 +35,8 @@ namespace Dune
     }
 
 
-    void setup2d()
+    void setup2d(std::vector<unsigned int>& subEntity,
+                 std::vector<unsigned int>& index)
     {
       assert(k>0);
       unsigned lastIndex=0;
@@ -53,27 +54,38 @@ namespace Dune
        */
 
       // lower edge (2)
-      li[lastIndex++] = LocalKey(0,2,0);        // corner 0
+      subEntity[lastIndex] = 0;                 // corner 0
+      index[lastIndex++] = 0;
       for (unsigned i = 0; i < k - 1; ++i) {
-        li[lastIndex++] = LocalKey(2,1,i);         // inner dofs of lower edge (2)
+        subEntity[lastIndex] = 2;           // inner dofs of lower edge (2)
+        index[lastIndex++] = i;
       }
-      li[lastIndex++] = LocalKey(1,2,0);       // corner 1
+
+      subEntity[lastIndex] = 1;                 // corner 1
+      index[lastIndex++] = 0;
 
       // iterate from bottom to top over inner edge dofs
       for (unsigned e = 0; e < k - 1; ++e) {
-        li[lastIndex++] = LocalKey(0,1,e);         // left edge (0)
-        for (unsigned i = 0; i < k - 1; ++i)
-          li[lastIndex++] = LocalKey(0,0,lastInnerFaceIndex++);           // face dofs
-
-        li[lastIndex++] = LocalKey(1,1,e);         // right edge (1)
+        subEntity[lastIndex] = 0;                   // left edge (0)
+        index[lastIndex++] = e;
+        for (unsigned i = 0; i < k - 1; ++i) {
+          subEntity[lastIndex] = 0;                     // face dofs
+          index[lastIndex++] = lastInnerFaceIndex++;
+        }
+        subEntity[lastIndex] = 1;                   // right edge (1)
+        index[lastIndex++] = e;
       }
 
       // upper edge (3)
-      li[lastIndex++] = LocalKey(2,2,0);       // corner 2
+      subEntity[lastIndex] = 2;                 // corner 2
+      index[lastIndex++] = 0;
       for (unsigned i = 0; i < k - 1; ++i) {
-        li[lastIndex++] = LocalKey(3,1,i);         // inner dofs of upper edge (3)
+        subEntity[lastIndex] = 3;                   // inner dofs of upper edge (3)
+        index[lastIndex++] = i;
       }
-      li[lastIndex++] = LocalKey(3,2,0);       // corner 3
+
+      subEntity[lastIndex] = 3;                 // corner 3
+      index[lastIndex++] = 0;
 
 #ifndef NDEBUG
       const unsigned numIndices = StaticPower<k+1,d>::power;
@@ -217,6 +229,9 @@ namespace Dune
       }
 
       // Set up entity and dof numbers for each (supported) dimension separately
+      std::vector<unsigned int> subEntity(li.size());
+      std::vector<unsigned int> index(li.size());
+
       if (k==1) {
 
         for (std::size_t i=0; i<StaticPower<k+1,d>::power; i++)
@@ -224,7 +239,10 @@ namespace Dune
 
       } else if (d==2) {
 
-        setup2d();
+        setup2d(subEntity, index);
+
+        for (size_t i=0; i<li.size(); i++)
+          li[i] = LocalKey(subEntity[i], codim[i], index[i]);
 
       } else if (d==3) {
 

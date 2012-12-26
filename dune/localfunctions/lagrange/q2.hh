@@ -14,7 +14,7 @@
 namespace Dune
 {
 
-  /** \brief 2nd-order Lagrangian finite elements on hybercubes
+  /** \brief 2nd-order Lagrangian finite elements on hypercubes
    * \tparam D Type used for coordinates
    * \tparam R Type used for function values
    * \tparam dim Dimension of the reference cube

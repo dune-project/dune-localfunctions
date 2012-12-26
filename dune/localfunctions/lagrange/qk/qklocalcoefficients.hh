@@ -87,14 +87,8 @@ namespace Dune
       subEntity[lastIndex] = 3;                 // corner 3
       index[lastIndex++] = 0;
 
-#ifndef NDEBUG
-      const unsigned numIndices = StaticPower<k+1,d>::power;
-#endif
-
-      --lastIndex; --lastInnerFaceIndex;
-
-      assert(numIndices==lastIndex+1);
-      assert(((k-1)*(k-1))==lastInnerFaceIndex+1);
+      assert((StaticPower<k+1,d>::power==lastIndex));
+      assert(((k-1)*(k-1))==lastInnerFaceIndex);
     }
 
 

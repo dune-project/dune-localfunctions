@@ -3,6 +3,9 @@
 #ifndef DUNE_Q2_LOCALFINITEELEMENT_HH
 #define DUNE_Q2_LOCALFINITEELEMENT_HH
 
+#warning The class Q2LocalFiniteElement from q2.hh is deprecated, and will be removed\
+  after the release of Dune 2.3.  Please use QkLocalFiniteElement from qk.hh instead.
+
 #include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>

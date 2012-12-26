@@ -28,7 +28,7 @@ set(noinst_HEADERS
 # define the programs
 
 add_executable(testgenericfem testgenericfem.cc)
-dune_add_gmp_flags(testgenericfem)
+add_dune_gmp_flags(testgenericfem)
 target_link_libraries(testgenericfem ${DUNE_LIBS})
 add_executable(lagrangeshapefunctiontest lagrangeshapefunctiontest.cc)
 target_link_libraries(lagrangeshapefunctiontest ${DUNE_LIBS})
@@ -78,25 +78,25 @@ add_executable(test-raviartthomas1simplex test-raviartthomassimplex.cc)
 target_link_libraries(test-raviartthomas1simplex ${DUNE_LIBS})
 set_property(TARGET test-raviartthomas1simplex APPEND PROPERTY COMPILE_DEFINITIONS
   TOPOLOGY=Pyramid<Point>)
-dune_add_gmp_flags(test-raviartthomas1simplex)
+add_dune_gmp_flags(test-raviartthomas1simplex)
 
 list(APPEND TEST test-raviartthomas2simplex)
 add_executable(test-raviartthomas2simplex test-raviartthomassimplex.cc)
 target_link_libraries(test-raviartthomas2simplex ${DUNE_LIBS})
 set_property(TARGET test-raviartthomas2simplex APPEND PROPERTY COMPILE_DEFINITIONS
   "TOPOLOGY=\"Pyramid<Pyramid<Point> >\"")
-dune_add_gmp_flags(test-raviartthomas2simplex)
+add_dune_gmp_flags(test-raviartthomas2simplex)
 
 list(APPEND TEST test-raviartthomas3simplex)
 add_executable(test-raviartthomas3simplex test-raviartthomassimplex.cc)
 target_link_libraries(test-raviartthomas1simplex ${DUNE_LIBS})
 set_property(TARGET test-raviartthomas1simplex APPEND PROPERTY COMPILE_DEFINITIONS
   "TOPOLOGY=\"Pyramid<Pyramid<Pyramid<Point> > >\"")
-dune_add_gmp_flags(test-raviartthomas3simplex)
+add_dune_gmp_flags(test-raviartthomas3simplex)
 
 add_executable(test-raviartthomassimplex-all test-raviartthomassimplex.cc)
 target_link_libraries(test-raviartthomassimplex-all ${DUNE_LIBS})
-dune_add_gmp_flags(test-raviartthomassimplex-all)
+add_dune_gmp_flags(test-raviartthomassimplex-all)
 
 foreach(i ${TESTS})
   add_test(${i} ${i})

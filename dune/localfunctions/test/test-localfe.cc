@@ -247,7 +247,7 @@ int main(int argc, char** argv) try
   std::cout << "Monomials are only tested up to order 2 due to the instability of interpolate()." << std::endl;
   success = testMonomials<2>() and success;
 
-  // test virtualalized FEs
+  // test virtualized FEs
   // notice that testFE add another level of virtualization
   Dune::LocalFiniteElementVirtualImp< Dune::P1LocalFiniteElement<double,double, 2> >
   p12dlfemVirtual(p12dlfem);

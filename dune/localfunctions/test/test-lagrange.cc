@@ -10,6 +10,25 @@
 #include <dune/localfunctions/lagrange/equidistantpoints.hh>
 #include <dune/localfunctions/lagrange/lagrangebasis.hh>
 
+/**
+ * \file
+ * \brief Performs some tests for the generic Lagrange
+ *        shape functions on simplices.
+ *
+ * The topology can be chosen at compile time by setting TOPOLOGY
+ * to a string like
+ * \code
+ * Pyramid<Pyramid<Point> > >
+ * \endcode
+ * which generates a 2d simplex. If TOPOLOGY is not set, all
+ * topologies up to 4d are tested. Note, this may lead to prolonged
+ * compiler runs.
+ *
+ * For debugging purpuse the functions and the derivatives can be
+ * printed. You have to define the macro TEST_OUTPUT_FUNCTIONS to
+ * activate this function.
+ */
+
 #if HAVE_GMP
 typedef Dune::GMPField< 128 > StorageField;
 typedef Dune::GMPField< 512 > ComputeField;
@@ -63,7 +82,7 @@ bool test(unsigned int order, bool verbose = false)
 
   bool ret = true;
 
-  for (unsigned int o=order; o<=order; --o)
+  for (unsigned int o = 0; o <= order; ++o)
   {
     const typename LagrangeCoefficientsFactory::Object *pointsPtr = LagrangeCoefficientsFactory::template create< Topology >( o );
 
@@ -74,48 +93,17 @@ bool test(unsigned int order, bool verbose = false)
 
     typename BasisFactory::Object &basis = *BasisFactory::template create<Topology>(o);
 
-    std::cout << "# Basis construction complete ... testing interpolation property" << std::endl;
-
     ret |= test(basis,*pointsPtr,verbose);
 
+    // define the macro TEST_OUTPUT_FUNCTIONS to output files containing functions and
+    // derivatives in a human readabible form (aka LaTeX source)
+#ifdef TEST_OUTPUT_FUNCTIONS
     std::stringstream name;
     name << "lagrange_" << Topology::name() << "_p" << o << ".basis";
     std::ofstream out(name.str().c_str());
     Dune::basisPrint<0,BasisFactory,typename BasisFactory::StorageField>(out,basis);
-
-    LagrangeCoefficientsFactory::release( pointsPtr );
-    BasisFactory::release( &basis );
-  }
-
-  if (verbose)
-    std::cout << std::endl << std::endl << std::endl;
-  if (!ret) {
-    std::cout << "   FAILED !" << std::endl;
-  }
-  return ret;
-}
-template <unsigned int dimension>
-bool test(unsigned int topologyId, unsigned int order, bool verbose = false)
-{
-  typedef Dune::LagrangeBasisFactory<Dune::EquidistantPointSet,dimension,StorageField,ComputeField> BasisFactory;
-  typedef Dune::LagrangeCoefficientsFactory< Dune::EquidistantPointSet,  dimension,double > LagrangeCoefficientsFactory;
-
-  bool ret = true;
-
-  for (unsigned int o=1; o<=order; ++o)
-  {
-    const typename LagrangeCoefficientsFactory::Object *pointsPtr = LagrangeCoefficientsFactory::create( topologyId, o );
-
-    if ( pointsPtr == 0)
-      continue;
-
-    std::cout << "# Testing " << topologyId << " in dimension " << dimension << " with order " << o << std::endl;
-
-    typename BasisFactory::Object &basis = *BasisFactory::create( topologyId, o );
-
-    std::cout << "# Basis construction complete ... testing interpolation property" << std::endl;
-
-    ret |= test(basis,*pointsPtr,verbose);
+    Dune::basisPrint<1,BasisFactory,typename BasisFactory::StorageField>(out,basis);
+#endif // TEST_OUTPUT_FUNCTIONS
 
     LagrangeCoefficientsFactory::release( pointsPtr );
     BasisFactory::release( &basis );
@@ -133,16 +121,16 @@ int main ( int argc, char **argv )
 {
   using namespace Dune;
   using namespace GenericGeometry;
-  if( argc < 2 )
-  {
-    std::cerr << "Usage: " << argv[ 0 ] << " <p>" << std::endl;
-    return 2;
-  }
 
-  const unsigned int order = atoi( argv[ 1 ] );
+  const unsigned int order = (argc < 2) ? 5 : atoi(argv[1]);
+
+  if (argc < 2)
+  {
+    std::cerr << "Usage: " << argv[ 0 ] << " <p>" << std::endl
+              << "Using default order of " << order << std::endl;
+  }
 #ifdef TOPOLOGY
-  test<TOPOLOGY>(order,false);
-  test<TOPOLOGY::dimension>(TOPOLOGY::id,order,false);
+  return (test<TOPOLOGY>(order) ? 0 : 1 );
 #else
   bool tests = true;
   tests &= test<Prism<Point> > (order);

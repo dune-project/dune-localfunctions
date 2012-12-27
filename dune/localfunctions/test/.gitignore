@@ -19,6 +19,13 @@ test-raviartthomas1simplex
 test-raviartthomas2simplex
 test-raviartthomas3simplex
 test-raviartthomassimplex-all
-
 *.swp
 .deps
+test-lagrange1
+test-lagrange2
+test-lagrange3
+test-lagrange-all
+test-orthonormal1
+test-orthonormal2
+test-orthonormal3
+test-orthonormal-all

@@ -9,18 +9,4 @@ lagrange_HEADERS = emptypoints.hh        lagrangebasis.hh         \
                    qk.hh \
                    pqkfactory.hh
 
-check_PROGRAMS = test-all
-EXTRA_PROGRAMS = test
-
-
-TOPOLOGY = Pyramid< Pyramid< Pyramid< Point > > >
-SETTINGS = -DTOPOLOGY="$(TOPOLOGY)"
-
-test_SOURCES = test.cc
-test_CPPFLAGS = $(DUNE_CPPFLAGS) $(GMP_CPPFLAGS) $(AM_CPPFLAGS) $(SETTINGS)
-test_all_SOURCES = test.cc
-test_all_CPPFLAGS = $(DUNE_CPPFLAGS) $(GMP_CPPFLAGS) $(AM_CPPFLAGS)
-
-LDADD = $(DUNE_LDFLAGS) $(DUNE_LIBS) $(GMP_LIBS)
-
 include $(top_srcdir)/am/global-rules

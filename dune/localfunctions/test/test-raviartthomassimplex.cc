@@ -20,7 +20,8 @@
  * compiler runs.
  *
  * For debugging purpuse the functions and the derivatives can be
- * printed. You have to remove some comments to activate this function.
+ * printed. You have to define the macro TEST_OUTPUT_FUNCTIONS to
+ * activate this function.
  */
 
 #if HAVE_GMP
@@ -42,13 +43,15 @@ bool test(unsigned int order)
     typedef Dune::RaviartThomasBasisFactory<Topology::dimension,StorageField,ComputeField> BasisFactory;
     const typename BasisFactory::Object &basis = *BasisFactory::template create<Topology>(o);
 
-    // uncomment the following lines to get files containing functions and
+    // define the macro TEST_OUTPUT_FUNCTIONS to output files containing functions and
     // derivatives in a human readabible form (aka LaTeX source)
-    //std::stringstream name;
-    //name << "rt_" << Topology::name() << "_p" << o << ".basis";
-    //std::ofstream out(name.str().c_str());
-    //Dune::basisPrint<0,BasisFactory,typename BasisFactory::StorageField>(out,basis);
-    //Dune::basisPrint<1,BasisFactory,typename BasisFactory::StorageField>(out,basis);
+#ifdef TEST_OUTPUT_FUNCTIONS
+    std::stringstream name;
+    name << "rt_" << Topology::name() << "_p" << o << ".basis";
+    std::ofstream out(name.str().c_str());
+    Dune::basisPrint<0,BasisFactory,typename BasisFactory::StorageField>(out,basis);
+    Dune::basisPrint<1,BasisFactory,typename BasisFactory::StorageField>(out,basis);
+#endif // TEST_OUTPUT_FUNCTIONS
 
     // test interpolation
     typedef Dune::RaviartThomasL2InterpolationFactory<Topology::dimension,StorageField> InterpolationFactory;

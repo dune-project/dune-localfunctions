@@ -10,11 +10,20 @@
 #include "raviartthomas02d/raviartthomas02dlocalcoefficients.hh"
 #include "raviartthomas02d/raviartthomas02dlocalinterpolation.hh"
 
+#warning This header is deprecated, please use\
+  dune/localfunctions/raviartthomas/raviartthomassimplex.hh instead
+
 namespace Dune
 {
 
+  /**
+   * \deprecated This class is deprecated and will be removed after Dune 2.3.
+   *             Use RaviartThomasSimplexLocalFiniteElement<2,D,R> instead.
+   */
   template<class D, class R>
-  class RT02DLocalFiniteElement
+  class
+  DUNE_DEPRECATED_MSG("Use RaviartThomasSimplexLocalFiniteElement<2,D,R> instead")
+  RT02DLocalFiniteElement
   {
   public:
     typedef LocalFiniteElementTraits<RT02DLocalBasis<D,R>,RT02DLocalCoefficients,

@@ -31,6 +31,9 @@ AC_CONFIG_FILES([
                 dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini1cube2d/Makefile
                 dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini1simplex2d/Makefile
                 dune/localfunctions/common/Makefile
+                dune/localfunctions/dualmortarbasis/Makefile
+                dune/localfunctions/dualmortarbasis/dualp1/Makefile
+                dune/localfunctions/dualmortarbasis/dualq1/Makefile
                 dune/localfunctions/hierarchical/hierarchicalp2/Makefile
                 dune/localfunctions/hierarchical/hierarchicalp2withelementbubble/Makefile
                 dune/localfunctions/hierarchical/hierarchicalprismp2/Makefile

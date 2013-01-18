@@ -1,6 +1,7 @@
 localfunctionsdir = $(includedir)/dune/localfunctions
 
 localfunctions_HEADERS =			\
+	dualmortarbasis.hh			\
 	lagrange.hh				\
 	mimetic.hh				\
 	monom.hh				\
@@ -12,6 +13,7 @@ localfunctions_HEADERS =			\
 SUBDIRS =					\
 	brezzidouglasmarini			\
 	common					\
+	dualmortarbasis				\
 	hierarchical				\
 	lagrange				\
 	meta					\

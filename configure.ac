@@ -34,6 +34,7 @@ AC_CONFIG_FILES([
                 dune/localfunctions/dualmortarbasis/Makefile
                 dune/localfunctions/dualmortarbasis/dualp1/Makefile
                 dune/localfunctions/dualmortarbasis/dualq1/Makefile
+                dune/localfunctions/dualmortarbasis/test/Makefile
                 dune/localfunctions/hierarchical/hierarchicalp2/Makefile
                 dune/localfunctions/hierarchical/hierarchicalp2withelementbubble/Makefile
                 dune/localfunctions/hierarchical/hierarchicalprismp2/Makefile

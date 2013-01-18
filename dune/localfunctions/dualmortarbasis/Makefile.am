@@ -1,4 +1,4 @@
-SUBDIRS = dualp1 dualq1
+SUBDIRS = dualp1 dualq1 test
 
 dualdir = $(includedir)/dune/localfunctions/dualmortarbasis
 dual_HEADERS = dualp1.hh \

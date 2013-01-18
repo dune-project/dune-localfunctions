@@ -27,6 +27,7 @@
 
 #include "../brezzidouglasmarini/brezzidouglasmarini1cube2d.hh"
 #include "../brezzidouglasmarini/brezzidouglasmarini1simplex2d.hh"
+#include <dune/localfunctions/dualmortarbasis.hh>
 #include "../refined/refinedp1.hh"
 #include "../refined/refinedp0.hh"
 #include "../hierarchical/hierarchicalp2.hh"
@@ -212,6 +213,28 @@ int main(int argc, char** argv) try
 
   Dune::QkLocalFiniteElement<double,double,3,3> qk33dlfem;
   success = testFE(qk33dlfem) and success;
+
+
+  // --------------------------------------------------------
+  //  Test dual mortar elements
+  // --------------------------------------------------------
+  Dune::DualP1LocalFiniteElement<double,double,1> dualp11dlfem;
+  success = testFE(dualp11dlfem) and success;
+
+  Dune::DualP1LocalFiniteElement<double,double,2> dualp12dlfem;
+  success = testFE(dualp12dlfem) and success;
+
+  Dune::DualP1LocalFiniteElement<double,double,3> dualp13dlfem;
+  success = testFE(dualp13dlfem) and success;
+
+  Dune::DualQ1LocalFiniteElement<double,double,1> dualq11dlfem;
+  success = testFE(dualq11dlfem) and success;
+
+  Dune::DualQ1LocalFiniteElement<double,double,2> dualq12dlfem;
+  success = testFE(dualq12dlfem) and success;
+
+  Dune::DualQ1LocalFiniteElement<double,double,3> dualq13dlfem;
+  success = testFE(dualq13dlfem) and success;
 
 
   // --------------------------------------------------------

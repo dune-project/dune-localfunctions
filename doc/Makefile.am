@@ -6,8 +6,8 @@ TEXSOURCES = dune-localfunctions-manual.tex
 
 if BUILD_DOCS
   DOCFILES = dune-localfunctions-manual.pdf
-  EXTRA_DIST = dune-localfunctions-manual.pdf
-  EXTRAINSTALL = dune-localfunctions-manual.pdf
+  EXTRA_DIST = $(DOCFILES)
+  EXTRAINSTALL = $(DOCFILES)
 endif
 
 # setting like in dune-web

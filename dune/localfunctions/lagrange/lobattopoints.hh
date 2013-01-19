@@ -12,7 +12,6 @@
 #include <dune/geometry/referenceelements.hh>
 #include <dune/geometry/genericgeometry/referenceelements.hh>
 
-#include <dune/localfunctions/utility/lfematrix.hh>
 #include <dune/localfunctions/utility/field.hh>
 #include <dune/localfunctions/lagrange/lagrangecoefficients.hh>
 #include <dune/localfunctions/lagrange/emptypoints.hh>

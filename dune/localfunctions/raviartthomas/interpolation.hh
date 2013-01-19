@@ -16,7 +16,6 @@
 
 #include <dune/localfunctions/common/localkey.hh>
 #include <dune/localfunctions/utility/interpolationhelper.hh>
-#include <dune/localfunctions/utility/lfematrix.hh>
 #include <dune/localfunctions/utility/polynomialbasis.hh>
 #include <dune/localfunctions/orthonormal/orthonormalbasis.hh>
 

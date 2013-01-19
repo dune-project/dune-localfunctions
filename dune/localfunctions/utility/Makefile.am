@@ -1,12 +1,19 @@
 utilitydir = $(includedir)/dune/localfunctions/utility
 
-utility_HEADERS = basisevaluator.hh       localfiniteelement.hh  \
-                  basismatrix.hh          monomialbasis.hh       \
-                  basisprint.hh           multiindex.hh          \
-                  coeffmatrix.hh          polynomialbasis.hh     \
-                  defaultbasisfactory.hh  tensor.hh              \
+utility_HEADERS = basisevaluator.hh \
+                  basismatrix.hh \
+                  basisprint.hh \
+                  coeffmatrix.hh \
+                  defaultbasisfactory.hh \
                   dglocalcoefficients.hh \
-                  interpolationhelper.hh  l2interpolation.hh     \
-                  field.hh lfematrix.hh
+                  field.hh \
+                  interpolationhelper.hh \
+                  l2interpolation.hh \
+                  lfematrix.hh \
+                  localfiniteelement.hh \
+                  monomialbasis.hh \
+                  multiindex.hh \
+                  polynomialbasis.hh \
+                  tensor.hh
 
 include $(top_srcdir)/am/global-rules

@@ -4,18 +4,8 @@
 #ifndef DUNE_LOCALFUNCTIONS_WHITNEY_EDGES0_5_HH
 #define DUNE_LOCALFUNCTIONS_WHITNEY_EDGES0_5_HH
 
-// #include <cstddef>
-// #include <vector>
-
-// #include <dune/common/fmatrix.hh>
-// #include <dune/common/fvector.hh>
 #include <dune/geometry/type.hh>
 
-// #include <dune/grid/common/referenceelements.hh>
-
-// #include <dune/localfunctions/common/localkey.hh>
-// #include <dune/localfunctions/common/localtoglobaladaptors.hh>
-// #include <dune/localfunctions/lagrange/p1/p1localbasis.hh>
 #include <dune/localfunctions/whitney/edges0.5/basis.hh>
 #include <dune/localfunctions/whitney/edges0.5/coefficients.hh>
 #include <dune/localfunctions/whitney/edges0.5/interpolation.hh>

@@ -18,18 +18,19 @@ double TOL = 1e-9;
 template<class DualLfe,class LagrangeLfe>
 bool testBiorthogonality(const DualLfe& dualLfe, const LagrangeLfe& lagrangeLfe)
 {
-
   const int dim = DualLfe::Traits::LocalBasisType::Traits::dimDomain;
   const Dune::QuadratureRule<double,dim>& quad = Dune::QuadratureRules<double,dim>::rule(dualLfe.type(),dualLfe.localBasis().order() + lagrangeLfe.localBasis().order());
 
   const unsigned int numLagBasFct = lagrangeLfe.localBasis().size();
   const unsigned int numDualBasFct = dualLfe.localBasis().size();
 
-  // save the integrals of all mixed combinations
-  double mixedMassMat [numLagBasFct][numDualBasFct];
+  // save the integrals of all mixed combinations in mixedMassMat[numLagBasFct][numDualBasFct]
+  double **mixedMassMat = new double*[numLagBasFct];
+  for (unsigned int i = 0; i < numLagBasFct; i++)
+    mixedMassMat[i] = new double[numDualBasFct];
 
   // integrate all lagrange basis functions
-  double integralLagrange [numLagBasFct];
+  double *integralLagrange = new double[numLagBasFct];
 
   for (unsigned int k=0; k<numLagBasFct; k++) {
     integralLagrange[k] = 0;
@@ -75,6 +76,11 @@ bool testBiorthogonality(const DualLfe& dualLfe, const LagrangeLfe& lagrangeLfe)
                  <<std::fabs(mixedMassMat[k][l]-(k==l)*integralLagrange[k])<<std::endl;
         biorthog = false;
       }
+
+  delete [] integralLagrange;
+  for (unsigned int i = 0; i < numLagBasFct; i++)
+    delete [] mixedMassMat[i];
+  delete [] mixedMassMat;
 
   return biorthog;
 }

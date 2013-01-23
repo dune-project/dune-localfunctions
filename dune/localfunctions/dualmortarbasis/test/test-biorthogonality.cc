@@ -27,17 +27,17 @@ bool testBiorthogonality(const DualLfe& dualLfe, const LagrangeLfe& lagrangeLfe)
   const unsigned int numDualBasFct = dualLfe.localBasis().size();
 
   // save the integrals of all mixed combinations in mixedMassMat[numLagBasFct][numDualBasFct]
-  double **mixedMassMat = new double*[numLagBasFct];
+  std::vector<std::vector<double> > mixedMassMat(numLagBasFct);
   for (unsigned int i = 0; i < numLagBasFct; i++)
-    mixedMassMat[i] = new double[numDualBasFct];
+    mixedMassMat[i].resize(numDualBasFct);
 
   // integrate all lagrange basis functions
-  double *integralLagrange = new double[numLagBasFct];
+  std::vector<double> integralLagrange(numLagBasFct);
 
-  for (unsigned int k=0; k<numLagBasFct; k++) {
-    std::fill(mixedMassMat[k], mixedMassMat[k] + numDualBasFct, 0.0);
-  }
-  std::fill(integralLagrange, integralLagrange + numLagBasFct, 0.0);
+  for (unsigned int k=0; k<numLagBasFct; k++)
+    std::fill(mixedMassMat[k].begin(), mixedMassMat[k].end(), 0.0);
+
+  std::fill(integralLagrange.begin(), integralLagrange.end(), 0.0);
 
   for(size_t i=0; i<quad.size(); i++) {
     const Dune::FieldVector<double,dim>& pos = quad[i].position();
@@ -76,11 +76,6 @@ bool testBiorthogonality(const DualLfe& dualLfe, const LagrangeLfe& lagrangeLfe)
                  <<std::fabs(mixedMassMat[k][l]-(k==l)*integralLagrange[k])<<std::endl;
         biorthog = false;
       }
-
-  delete [] integralLagrange;
-  for (unsigned int i = 0; i < numLagBasFct; i++)
-    delete [] mixedMassMat[i];
-  delete [] mixedMassMat;
 
   return biorthog;
 }

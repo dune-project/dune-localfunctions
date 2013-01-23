@@ -2,6 +2,8 @@
 // vi: set et ts=4 sw=2 sts=2:
 #include "config.h"
 
+#include <algorithm>
+
 #include <dune/common/fvector.hh>
 
 #include <dune/geometry/quadraturerules.hh>
@@ -33,13 +35,11 @@ bool testBiorthogonality(const DualLfe& dualLfe, const LagrangeLfe& lagrangeLfe)
   double *integralLagrange = new double[numLagBasFct];
 
   for (unsigned int k=0; k<numLagBasFct; k++) {
-    integralLagrange[k] = 0;
-    for (unsigned int l=0; l<numLagBasFct; l++)
-      mixedMassMat[k][l] = 0;
+    std::fill(mixedMassMat[k], mixedMassMat[k] + numDualBasFct, 0.0);
   }
+  std::fill(integralLagrange, integralLagrange + numLagBasFct, 0.0);
 
   for(size_t i=0; i<quad.size(); i++) {
-
     const Dune::FieldVector<double,dim>& pos = quad[i].position();
     std::vector<typename DualLfe::Traits::LocalBasisType::Traits::RangeType> dualValues(dualLfe.localBasis().size());
     std::vector<typename LagrangeLfe::Traits::LocalBasisType::Traits::RangeType> lagrangeValues(lagrangeLfe.localBasis().size());

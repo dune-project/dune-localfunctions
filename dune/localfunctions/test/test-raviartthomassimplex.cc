@@ -62,8 +62,7 @@ bool test(unsigned int order)
       matrix(i,i)-=1;
     for (unsigned int i=0; i<matrix.rows(); ++i)
       for (unsigned int j=0; j<matrix.cols(); ++j)
-        if (matrix(i,j)<Dune::Zero<StorageField>() ||
-            Dune::Zero<StorageField>()<matrix(i,j))
+        if ( std::abs( matrix(i,j) ) > 1000.*Dune::Zero<double>::epsilon() )
           std::cout << "  non-zero entry in interpolation matrix: "
                     << "(" << i << "," << j << ") = " << Dune::field_cast<double>(matrix(i,j))
                     << std::endl;

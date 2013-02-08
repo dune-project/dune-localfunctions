@@ -1,6 +1,7 @@
 set(localfunctionsdir  ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions)
 
 set(localfunctions_HEADERS
+        dualmortarbasis.hh
         lagrange.hh
         mimetic.hh
         monom.hh
@@ -12,6 +13,7 @@ set(localfunctions_HEADERS
 set(SUBDIRS
         brezzidouglasmarini
         common
+	dualmortarbasis
         hierarchical
         lagrange
         meta

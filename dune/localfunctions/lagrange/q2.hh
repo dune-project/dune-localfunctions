@@ -3,6 +3,9 @@
 #ifndef DUNE_Q2_LOCALFINITEELEMENT_HH
 #define DUNE_Q2_LOCALFINITEELEMENT_HH
 
+#warning The class Q2LocalFiniteElement from q2.hh is deprecated, and will be removed\
+  after the release of Dune 2.3.  Please use QkLocalFiniteElement from qk.hh instead.
+
 #include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
@@ -14,7 +17,7 @@
 namespace Dune
 {
 
-  /** \brief 2nd-order Lagrangian finite elements on hybercubes
+  /** \brief 2nd-order Lagrangian finite elements on hypercubes
    * \tparam D Type used for coordinates
    * \tparam R Type used for function values
    * \tparam dim Dimension of the reference cube

@@ -10,6 +10,9 @@
 #include "raviartthomas12d/raviartthomas12dlocalcoefficients.hh"
 #include "raviartthomas12d/raviartthomas12dlocalinterpolation.hh"
 
+#warning This header is deprecated, please use\
+  dune/localfunctions/raviartthomas/raviartthomassimplex.hh instead
+
 namespace Dune
 {
 
@@ -18,9 +21,14 @@ namespace Dune
    *
    * \tparam D Type to represent the field in the domain.
    * \tparam R Type to represent the field in the range.
+   *
+   * \deprecated This class is deprecated and will be removed after Dune 2.3.
+   *             Use RaviartThomasSimplexLocalFiniteElement<2,D,R> instead.
    */
   template<class D, class R>
-  class RT12DLocalFiniteElement
+  class
+  DUNE_DEPRECATED_MSG("Use RaviartThomasSimplexLocalFiniteElement<2,D,R> instead")
+  RT12DLocalFiniteElement
   {
 
   public:
@@ -28,6 +36,7 @@ namespace Dune
         RT12DLocalInterpolation<RT12DLocalBasis<D,R> > > Traits;
 
     //! \brief Standard constructor
+    DUNE_DEPRECATED_MSG("Use RaviartThomasSimplexLocalFiniteElement(GeometryType gt, int order) instead")
     RT12DLocalFiniteElement ()
     {
       gt.makeTriangle();
@@ -38,6 +47,7 @@ namespace Dune
      *
      * \param s Edge orientation indicator
      */
+    DUNE_DEPRECATED_MSG("Use RaviartThomasSimplexLocalFiniteElement(GeometryType gt, int order) instead")
     RT12DLocalFiniteElement (int s) : basis(s), interpolation(s)
     {
       gt.makeTriangle();

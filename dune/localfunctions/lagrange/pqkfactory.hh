@@ -13,7 +13,6 @@
 #include <dune/localfunctions/lagrange/p0.hh>
 #include <dune/localfunctions/lagrange/pk.hh>
 #include <dune/localfunctions/lagrange/q1.hh>
-#include <dune/localfunctions/lagrange/q2.hh>
 #include <dune/localfunctions/lagrange/qk.hh>
 #include <dune/localfunctions/lagrange/prismp1.hh>
 #include <dune/localfunctions/lagrange/prismp2.hh>

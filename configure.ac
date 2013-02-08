@@ -4,7 +4,7 @@
 AC_PREREQ(2.50)
 DUNE_AC_INIT # gets module version from dune.module file
 AC_CONFIG_SRCDIR([dune/localfunctions/common/localbasis.hh])
-AM_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 
 # add configure flags needed to create log files for dune-autobuild
 DUNE_AUTOBUILD_FLAGS
@@ -31,6 +31,10 @@ AC_CONFIG_FILES([
                 dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini1cube2d/Makefile
                 dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini1simplex2d/Makefile
                 dune/localfunctions/common/Makefile
+                dune/localfunctions/dualmortarbasis/Makefile
+                dune/localfunctions/dualmortarbasis/dualp1/Makefile
+                dune/localfunctions/dualmortarbasis/dualq1/Makefile
+                dune/localfunctions/dualmortarbasis/test/Makefile
                 dune/localfunctions/hierarchical/hierarchicalp2/Makefile
                 dune/localfunctions/hierarchical/hierarchicalp2withelementbubble/Makefile
                 dune/localfunctions/hierarchical/hierarchicalprismp2/Makefile

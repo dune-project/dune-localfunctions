@@ -11,6 +11,12 @@ set(TESTS  lagrangeshapefunctiontest
         monomshapefunctiontest
         virtualshapefunctiontest
         testgenericfem
+	test-lagrange1
+	test-lagrange2
+	test-lagrange3
+	test-orthonormal1
+	test-orthonormal2
+	test-orthonormal3
         ${ALUPROG})
 
 
@@ -73,6 +79,54 @@ list(APPEND TESTS test-q2)
 add_executable(test-q2 test-q2.cc)
 target_link_libraries(test-q2 ${DUNE_LIBS})
 
+set(LAGRANGE1_TOPOLOGY  "Pyramid< Point >")
+set(LAGRANGE1_SETTINGS  TOPOLOGY="${LAGRANGE1_TOPOLOGY}")
+
+add_executable(test-lagrange1 EXCLUDE_FROM_ALL test-lagrange.cc)
+set_property(TARGET test-lagrange1 APPEND PROPERTY COMPILE_DEFINTIONS ${LAGRANGE1_SETTINGS})
+target_link_libraries(test-lagrange1 dunecommon)
+add_dune_gmp_flags(test-lagrange1)
+
+set(LAGRANGE2_TOPOLOGY  "Pyramid< ${LAGRANGE1} >")
+set(LAGRANGE2_SETTINGS  TOPOLOGY="${LAGRANGE2_TOPOLOGY}")
+
+add_executable(test-lagrange2 EXCLUDE_FROM_ALL test-lagrange.cc)
+set_property(TARGET test-lagrange2 APPEND PROPERTY COMPILE_DEFINTIONS ${LAGRANGE2_SETTINGS})
+target_link_libraries(test-lagrange2 dunecommon)
+add_dune_gmp_flags(test-lagrange2)
+
+set(LAGRANGE3_TOPOLOGY  "Pyramid< ${LAGRANGE3} >")
+set(LAGRANGE3_SETTINGS  TOPOLOGY="${LAGRANGE3_TOPOLOGY}")
+
+add_executable(test-lagrange3 EXCLUDE_FROM_ALL test-lagrange.cc)
+set_property(TARGET test-lagrange2 APPEND PROPERTY COMPILE_DEFINTIONS ${LAGRANGE3_SETTINGS})
+target_link_libraries(test-lagrange3 dunecommon)
+add_dune_gmp_flags(test-lagrange3)
+
+set(ORTHONORMAL1_TOPOLOGY  "Pyramid< Point >")
+set(ORTHONORMAL1_SETTINGS  TOPOLOGY="${ORTHONORMAL1_TOPOLOGY}")
+
+add_executable(test-orthonormal EXCLUDE_FROM_ALL test-orthonormal.cc)
+set_property(TARGET test-orthonormal APPEND PROPERTY COMPILE_DEFINTIONS ${ORTHONORMAL1_SETTINGS})
+target_link_libraries(test-orthonormal dunegeometry dunecommon)
+add_dune_gmp_flags(test-orthonormal)
+
+set(ORTHONORMAL2_TOPOLOGY  "Pyramid< ${ORTHONORMAL1} >")
+set(ORTHONORMAL2_SETTINGS  TOPOLOGY="${ORTHONORMAL2_TOPOLOGY}")
+
+add_executable(test-orthonormal2 EXCLUDE_FROM_ALL test-orthonormal.cc)
+set_property(TARGET test-orthonormal2 APPEND PROPERTY COMPILE_DEFINTIONS ${ORTHONORMAL2_SETTINGS})
+target_link_libraries(test-orthonormal2 dunegeometry dunecommon)
+add_dune_gmp_flags(test-orthonormal2)
+
+set(ORTHONORMAL3_TOPOLOGY  "Prism< ${ORTHONORMAL3} >")
+set(ORTHONORMAL3_SETTINGS  TOPOLOGY="${ORTHONORMAL3_TOPOLOGY}")
+
+add_executable(test-orthonormal3 EXCLUDE_FROM_ALL test-orthonormal.cc)
+set_property(TARGET test-orthonormal2 APPEND PROPERTY COMPILE_DEFINTIONS ${ORTHONORMAL3_SETTINGS})
+target_link_libraries(test-orthonormal3 dunegeometry dunecommon)
+add_dune_gmp_flags(test-orthonormal3)
+
 list(APPEND TEST test-raviartthomas1simplex)
 add_executable(test-raviartthomas1simplex test-raviartthomassimplex.cc)
 target_link_libraries(test-raviartthomas1simplex ${DUNE_LIBS})
@@ -97,6 +151,17 @@ add_dune_gmp_flags(test-raviartthomas3simplex)
 add_executable(test-raviartthomassimplex-all test-raviartthomassimplex.cc)
 target_link_libraries(test-raviartthomassimplex-all ${DUNE_LIBS})
 add_dune_gmp_flags(test-raviartthomassimplex-all)
+
+set(TOPOLOGY  "Pyramid< Pyramid< Pyramid< Point > > >")
+set(SETTINGS  TOPOLOGY="${TOPOLOGY}")
+
+add_executable(test-lagrange-all EXCLUDE_FROM_ALL test-lagrange.cc)
+add_dune_gmp_flags(test-lagrange-all)
+target_link_libraries(test-lagrange-all dunecommon)
+
+add_executable(test-orthonormal-all EXCLUDE_FROM_ALL test-orthonormal.cc)
+add_dune_gmp_flags(test-orthonormal-all)
+target_link_libraries(test-orthonormal-all dunecommon)
 
 foreach(i ${TESTS})
   add_test(${i} ${i})

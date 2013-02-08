@@ -6,7 +6,27 @@
 #include <dune/geometry/quadraturerules/gaussquadrature.hh>
 
 #include <dune/localfunctions/utility/field.hh>
+#include <dune/localfunctions/utility/basisprint.hh>
 #include <dune/localfunctions/orthonormal/orthonormalbasis.hh>
+
+/**
+ * \file
+ * \brief Performs some tests for the generic orthonormal
+ *        shape functions on simplices.
+ *
+ * The topology can be chosen at compile time by setting TOPOLOGY
+ * to a string like
+ * \code
+ * Pyramid<Pyramid<Point> > >
+ * \endcode
+ * which generates a 2d simplex. If TOPOLOGY is not set, all
+ * topologies up to 4d are tested. Note, this may lead to prolonged
+ * compiler runs.
+ *
+ * For debugging purpuse the functions and the derivatives can be
+ * printed. You have to define the macro TEST_OUTPUT_FUNCTIONS to
+ * activate this function.
+ */
 
 #if HAVE_GMP
 typedef Dune::GMPField< 128 > StorageField;
@@ -20,7 +40,7 @@ template <class Topology>
 bool test(unsigned int order)
 {
   bool ret = true;
-  for (unsigned int o=order; o<=order; --o)
+  for (unsigned int o = 0; o <= order; ++o)
   {
     std::cout << "Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
     typedef Dune::OrthonormalBasisFactory<Topology::dimension,StorageField,ComputeField> BasisFactory;
@@ -54,68 +74,22 @@ bool test(unsigned int order)
       for( unsigned int j = 0; j < size; ++j )
       {
         const double value = m[ i*size + j ];
-        if( fabs( value - double( i == j ) ) > 1e-10 ) {
-          std::cout << "i = " << i << ", j = " << j << ": " << value << std::endl;
+        if( std::abs( value - double( i == j ) ) > 1000.*Dune::Zero<double>::epsilon() ) {
+          std::cout << "i = " << i << ", j = " << j << ": " << std::abs( value - double( i == j ) ) << std::endl;
           ret = false;
         }
       }
     }
 
-    QuadratureProvider::release(&quadrature);
-    BasisFactory::release(&basis);
-  }
-  if (!ret) {
-    std::cout << "   FAILED !" << std::endl;
-  }
-  std::cout << std::endl;
-  return ret;
-}
-template <unsigned int dimension>
-bool test(unsigned int topologyId, unsigned int order)
-{
-  Dune::GeometryType gt(topologyId, dimension);
-
-  bool ret = true;
-  for (unsigned int o=order; o<=order; --o)
-  {
-    std::cout << "Testing " << topologyId << " in dimension " << dimension << " with order " << o << std::endl;
-    typedef Dune::OrthonormalBasisFactory<dimension,StorageField,ComputeField> BasisFactory;
-    const typename BasisFactory::Object &basis = *BasisFactory::create(gt, o);
-
-    const unsigned int size = basis.size( );
-
-    std::vector< Dune::FieldVector< double, 1 > > y( size );
-
-    std::vector< Dune::FieldVector< double, 1 > > m( size * size );
-    for( unsigned int i = 0; i < size * size; ++i )
-      m[ i ] = 0;
-
-    // typedef typename Dune::GenericGeometry::GaussQuadratureProvider<dimension,double,ComputeField> QuadratureProvider;
-    typedef typename Dune::GenericGeometry::GaussQuadratureProvider<dimension,double,double> QuadratureProvider;
-    typedef typename QuadratureProvider::Object Quadrature;
-    const Quadrature &quadrature = *QuadratureProvider::create(gt, 2*order+1);
-    const unsigned int quadratureSize = quadrature.size();
-    for( unsigned int qi = 0; qi < quadratureSize; ++qi )
-    {
-      basis.evaluate( quadrature.position( qi ), y );
-      for( unsigned int i = 0; i < size; ++i )
-      {
-        for( unsigned int j = 0; j < size; ++j )
-          m[ i*size + j ] += quadrature.weight( qi ) * y[ i ] * y[ j ];
-      }
-    }
-
-    for( unsigned int i = 0; i < size; ++i )
-    {
-      for( unsigned int j = 0; j < size; ++j )
-      {
-        const double value = m[ i*size + j ];
-        if( fabs( value - double( i == j ) ) > 1e-10 ) {
-          std::cout << "i = " << i << ", j = " << j << ": " << value << std::endl;
-          ret = false;
-        }
-      }
-    }
+    // define the macro TEST_OUTPUT_FUNCTIONS to output files containing functions and
+    // derivatives in a human readabible form (aka LaTeX source)
+#ifdef TEST_OUTPUT_FUNCTIONS
+    std::stringstream name;
+    name << "orthonormal_" << Topology::name() << "_p" << o << ".basis";
+    std::ofstream out(name.str().c_str());
+    Dune::basisPrint<0,BasisFactory,typename BasisFactory::StorageField>(out,basis);
+    Dune::basisPrint<1,BasisFactory,typename BasisFactory::StorageField>(out,basis);
+#endif // TEST_OUTPUT_FUNCTIONS
 
     QuadratureProvider::release(&quadrature);
     BasisFactory::release(&basis);
@@ -132,19 +106,17 @@ int main ( int argc, char **argv )
   using namespace Dune;
   using namespace GenericGeometry;
 
-  if( argc < 2 )
-  {
-    std::cerr << "Usage: " << argv[ 0 ] << " <p>" << std::endl;
-    return 2;
-  }
+  const unsigned int order = (argc < 2) ? 5 : atoi(argv[1]);
 
-  const unsigned int order = atoi( argv[ 1 ] );
-  bool tests = true;
+  if (argc < 2)
+  {
+    std::cerr << "Usage: " << argv[ 0 ] << " <p>" << std::endl
+              << "Using default order of " << order << std::endl;
+  }
 #ifdef TOPOLOGY
-  tests &= test<TOPOLOGY>(order);
-  tests &= test<TOPOLOGY::dimension>(TOPOLOGY::id,order);
-  return 0;
+  return (test<TOPOLOGY>(order) ? 0 : 1 );
 #else
+  bool tests = true;
   tests &= test<Prism<Point> > (order);
   tests &= test<Pyramid<Point> > (order);
 

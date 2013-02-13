@@ -11,3 +11,5 @@ SUBDIRS = \
 	brezzidouglasmarini1simplex2d
 
 include $(top_srcdir)/am/global-rules
+
+EXTRA_DIST = CMakeLists.txt

@@ -5,3 +5,5 @@ raviartthomas12d_HEADERS =	raviartthomas12dlocalbasis.hh \
 				raviartthomas12dlocalinterpolation.hh
 
 include $(top_srcdir)/am/global-rules
+
+EXTRA_DIST = CMakeLists.txt

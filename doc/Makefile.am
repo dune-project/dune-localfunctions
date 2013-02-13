@@ -6,7 +6,7 @@ TEXSOURCES = dune-localfunctions-manual.tex
 
 if BUILD_DOCS
   DOCFILES = dune-localfunctions-manual.pdf
-  EXTRA_DIST = $(DOCFILES)
+  EXTRA_DIST = CMakeLists.txt $(DOCFILES)
   EXTRAINSTALL = $(DOCFILES)
 endif
 

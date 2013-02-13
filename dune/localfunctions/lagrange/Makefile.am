@@ -10,3 +10,5 @@ lagrange_HEADERS = emptypoints.hh        lagrangebasis.hh         \
                    pqkfactory.hh
 
 include $(top_srcdir)/am/global-rules
+
+EXTRA_DIST = CMakeLists.txt

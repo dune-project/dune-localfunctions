@@ -4,3 +4,5 @@ hierarchical_HEADERS = hierarchicalp2.hh hierarchicalp2withelementbubble.hh hier
 SUBDIRS = hierarchicalp2 hierarchicalprismp2 hierarchicalp2withelementbubble
 
 include $(top_srcdir)/am/global-rules
+
+EXTRA_DIST = CMakeLists.txt

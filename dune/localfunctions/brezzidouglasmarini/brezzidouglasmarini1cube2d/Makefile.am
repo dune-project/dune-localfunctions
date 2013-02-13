@@ -7,3 +7,5 @@ brezzidouglasmarini1cube2d_HEADERS = \
 	brezzidouglasmarini1cube2dlocalinterpolation.hh
 
 include $(top_srcdir)/am/global-rules
+
+EXTRA_DIST = CMakeLists.txt

@@ -6,7 +6,7 @@ CURDIR=doc/doxygen
 WHAT=
 
 doxydir = $(datadir)/doc/dune-localfunctions/doxygen
-doxy_DATA = $(WHAT)
+dist_doxy_DATA = $(WHAT)
 
 #we need this in the distribution
 EXTRA_DIST = CMakeLists.txt $(WHAT) $(DOXYGENDISTFILES)

@@ -134,6 +134,9 @@ int main(int argc, char** argv) try
   Dune::RefinedP1LocalFiniteElement<double,double,3> refp13dlfem;
   success = testFE(refp13dlfem) and success;
 
+  Dune::RefinedP0LocalFiniteElement<double,double,1> refp01dlfem;
+  success = testFE(refp01dlfem) and success;
+
   Dune::RefinedP0LocalFiniteElement<double,double,2> refp02dlfem;
   success = testFE(refp02dlfem) and success;
 

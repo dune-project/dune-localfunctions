@@ -34,6 +34,66 @@ namespace Dune
   /** \brief Local finite element that is piecewise P0 on a once uniformly refined reference geometry
    */
   template<class D, class R>
+  class RefinedP0LocalFiniteElement<D,R,1>
+  {
+  public:
+    /** \todo Please doc me !
+     */
+    typedef LocalFiniteElementTraits<
+        RefinedP0LocalBasis<D,R,1>,
+        RefinedP0LocalCoefficients<1>,
+        RefinedP0LocalInterpolation<RefinedP0LocalBasis<D,R,1> > > Traits;
+
+    /** \todo Please doc me !
+     */
+    RefinedP0LocalFiniteElement ()
+    {
+      gt.makeLine();
+    }
+
+    /** \todo Please doc me !
+     */
+    const typename Traits::LocalBasisType& localBasis () const
+    {
+      return basis_;
+    }
+
+    /** \todo Please doc me !
+     */
+    const typename Traits::LocalCoefficientsType& localCoefficients () const
+    {
+      return coefficients_;
+    }
+
+    /** \todo Please doc me !
+     */
+    const typename Traits::LocalInterpolationType& localInterpolation () const
+    {
+      return interpolation_;
+    }
+
+    /** \todo Please doc me !
+     */
+    GeometryType type () const
+    {
+      return gt;
+    }
+
+    RefinedP0LocalFiniteElement * clone () const
+    {
+      return new RefinedP0LocalFiniteElement(*this);
+    }
+
+  private:
+    RefinedP0LocalBasis<D,R,1> basis_;
+    RefinedP0LocalCoefficients<1> coefficients_;
+    RefinedP0LocalInterpolation<RefinedP0LocalBasis<D,R,1> > interpolation_;
+    GeometryType gt;
+  };
+
+  /** \brief Local finite element that is piecewise P0 on a once uniformly refined reference geometry
+   */
+  template<class D, class R>
   class RefinedP0LocalFiniteElement<D,R,2>
   {
   public:

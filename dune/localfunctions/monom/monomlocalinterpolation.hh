@@ -50,7 +50,13 @@ namespace Dune
         , qr(QuadratureRules<DF,dimD>::rule(gt, 2*lb.order()))
     { init(); }
 
-    //! determine coefficients interpolating a given function
+    /** \brief Determine coefficients interpolating a given function
+     *
+     * The method computes the coefficients
+     * for the L^2 projection with respect to the given
+     * GeometryType. Be carefull: the implementation is
+     * unstable for higher polynolial degrees.
+     */
     template<typename F, typename C>
     void interpolate (const F& f, std::vector<C>& out) const
     {

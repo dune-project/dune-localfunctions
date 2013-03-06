@@ -3,7 +3,7 @@
 #include <config.h>
 
 #include <dune/geometry/type.hh>
-#include <dune/geometry/quadraturerules/gaussquadrature.hh>
+#include <dune/geometry/quadraturerules.hh>
 
 #include <dune/localfunctions/utility/field.hh>
 #include <dune/localfunctions/utility/basisprint.hh>
@@ -40,6 +40,7 @@ template <class Topology>
 bool test(unsigned int order)
 {
   bool ret = true;
+  Dune::GeometryType gt(Topology::id, Topology::dimension);
   for (unsigned int o = 0; o <= order; ++o)
   {
     std::cout << "Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
@@ -54,18 +55,16 @@ bool test(unsigned int order)
     for( unsigned int i = 0; i < size * size; ++i )
       m[ i ] = 0;
 
-    // typedef typename Dune::GenericGeometry::GaussQuadratureProvider<Topology::dimension,double,ComputeField> QuadratureProvider;
-    typedef typename Dune::GenericGeometry::GaussQuadratureProvider<Topology::dimension,double,double> QuadratureProvider;
-    typedef typename QuadratureProvider::Object Quadrature;
-    const Quadrature &quadrature = *QuadratureProvider::template create<Topology>(2*order+1);
+    const Dune::QuadratureRule<double,Topology::dimension> &quadrature =
+      Dune::QuadratureRules<double,Topology::dimension>::rule(gt,2*order+1);
     const unsigned int quadratureSize = quadrature.size();
     for( unsigned int qi = 0; qi < quadratureSize; ++qi )
     {
-      basis.evaluate( quadrature.position( qi ), y );
+      basis.evaluate( quadrature[qi].position(), y );
       for( unsigned int i = 0; i < size; ++i )
       {
         for( unsigned int j = 0; j < size; ++j )
-          m[ i*size + j ] += quadrature.weight( qi ) * y[ i ] * y[ j ];
+          m[ i*size + j ] += quadrature[qi].weight() * y[ i ] * y[ j ];
       }
     }
 
@@ -91,7 +90,6 @@ bool test(unsigned int order)
     Dune::basisPrint<1,BasisFactory,typename BasisFactory::StorageField>(out,basis);
 #endif // TEST_OUTPUT_FUNCTIONS
 
-    QuadratureProvider::release(&quadrature);
     BasisFactory::release(&basis);
   }
   if (!ret) {

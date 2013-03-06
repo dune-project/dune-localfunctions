@@ -11,7 +11,7 @@
 
 #include <dune/geometry/topologyfactory.hh>
 #include <dune/geometry/referenceelements.hh>
-#include <dune/geometry/quadraturerules/gaussquadrature.hh>
+#include <dune/geometry/quadraturerules.hh>
 
 #include <dune/localfunctions/common/localkey.hh>
 #include <dune/localfunctions/utility/interpolationhelper.hh>
@@ -279,8 +279,8 @@ namespace Dune
       unsigned int row = 0;
 
       // boundary dofs:
-      typedef Dune::GenericGeometry::GaussQuadratureProvider< dimension-1, Field >
-      FaceQuadratureProvider;
+      typedef Dune::QuadratureRule<Field, dimension-1> FaceQuadrature;
+      typedef Dune::QuadratureRules<Field, dimension-1> FaceQuadratureRules;
 
       typedef Dune::ReferenceElements< Field, dimension > RefElements;
       typedef Dune::ReferenceElement< Field, dimension > RefElement;
@@ -296,22 +296,20 @@ namespace Dune
 
         const Mapping &mapping = refElement.template mapping< 1 >( f );
         const Dune::GeometryType subGeoType( mapping.type().id(), dimension-1 );
-        const typename FaceQuadratureProvider::Object *faceQuad = FaceQuadratureProvider::create( subGeoType, 2*order_ );
+        const FaceQuadrature &faceQuad = FaceQuadratureRules::rule( subGeoType, 2*order_+2 );
 
-        const unsigned int quadratureSize = faceQuad->size();
+        const unsigned int quadratureSize = faceQuad.size();
         for( unsigned int qi = 0; qi < quadratureSize; ++qi )
         {
           if (dimension>1)
-            builder_.testFaceBasis(f)->template evaluate<0>(faceQuad->position(qi),testBasisVal);
+            builder_.testFaceBasis(f)->template evaluate<0>(faceQuad[qi].position(),testBasisVal);
           else
             testBasisVal[0] = 1.;
           fillBnd( row, testBasisVal,
-                   func.evaluate( mapping.global( faceQuad->position(qi) ) ),
-                   builder_.normal(f), faceQuad->weight(qi),
+                   func.evaluate( mapping.global( faceQuad[qi].position() ) ),
+                   builder_.normal(f), faceQuad[qi].weight(),
                    func);
         }
-
-        FaceQuadratureProvider::release( faceQuad );
 
         row += builder_.testFaceBasis(f)->size();
       }
@@ -320,20 +318,19 @@ namespace Dune
       {
         testBasisVal.resize(builder_.testBasis()->size());
 
-        typedef Dune::GenericGeometry::GaussQuadratureProvider< dimension, Field > QuadratureProvider;
-        const typename QuadratureProvider::Object *elemQuad = QuadratureProvider::create( geoType, 2*(order_-1) );
+        typedef Dune::QuadratureRule<Field, dimension> Quadrature;
+        typedef Dune::QuadratureRules<Field, dimension> QuadratureRules;
+        const Quadrature &elemQuad = QuadratureRules::rule( geoType, 2*order_+1 );
 
-        const unsigned int quadratureSize = elemQuad->size();
+        const unsigned int quadratureSize = elemQuad.size();
         for( unsigned int qi = 0; qi < quadratureSize; ++qi )
         {
-          builder_.testBasis()->template evaluate<0>(elemQuad->position(qi),testBasisVal);
+          builder_.testBasis()->template evaluate<0>(elemQuad[qi].position(),testBasisVal);
           fillInterior( row, testBasisVal,
-                        func.evaluate(elemQuad->position(qi)),
-                        elemQuad->weight(qi),
+                        func.evaluate(elemQuad[qi].position()),
+                        elemQuad[qi].weight(),
                         func );
         }
-
-        QuadratureProvider::release( elemQuad );
 
         row += builder_.testBasis()->size()*dimension;
       }

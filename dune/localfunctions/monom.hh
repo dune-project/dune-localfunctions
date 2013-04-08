@@ -23,13 +23,16 @@
 namespace Dune
 {
 
-  /** Monom basis for discontinuous Galerkin
-
-     \tparam D Type used for coordinates
-     \tparam R Type used for shape function values
-     \tparam d Dimension of the element
-     \tparam p Order of the basis
-     \tparam diffOrder Maximum differentiation order to report in the traits.
+  /** \brief Monom basis for discontinuous Galerkin
+   *
+   * Be carefull: Although MonomLocalInterpolation::interpolate
+   * uses an L^2 projection it is unstable for higher polynolial degrees.
+   *
+   * \tparam D Type used for coordinates
+   * \tparam R Type used for shape function values
+   * \tparam d Dimension of the element
+   * \tparam p Order of the basis
+   * \tparam diffOrder Maximum differentiation order to report in the traits.
    */
   template<class D, class R, int d, int p, int diffOrder = p>
   class MonomLocalFiniteElement

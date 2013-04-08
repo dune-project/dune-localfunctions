@@ -274,7 +274,7 @@ namespace Dune {
 
   //! Interface for global-valued coefficients
   /**
-   * \note This interface is listet seperately only to keep it together with
+   * \note This interface is listed separately only to keep it together with
    *       the other global-valued interfaces.  It is identical to the
    *       interface for local coefficients.
    */

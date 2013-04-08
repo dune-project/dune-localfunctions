@@ -48,7 +48,7 @@ namespace Dune
      * \param[in] global Coordinates in the reference element
      * \returns Number of the subtriangle containing <tt>global</tt>
      */
-    static int getSubElement(const FieldVector<D,2>& global)
+    static int getSubElement(const FieldVector<D,1>& global)
     {
       if (global[0] <= 0.5)
         return 0;

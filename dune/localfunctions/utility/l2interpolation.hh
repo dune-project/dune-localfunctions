@@ -4,7 +4,7 @@
 #define DUNE_L2INTERPOLATION_HH
 
 #include <dune/geometry/topologyfactory.hh>
-#include <dune/geometry/quadraturerules/gaussquadrature.hh>
+#include <dune/geometry/quadraturerules.hh>
 
 #include <dune/localfunctions/utility/lfematrix.hh>
 
@@ -42,7 +42,7 @@ namespace Dune
     template< class Function, class DofField >
     void interpolate ( const Function &function, std::vector< DofField > &coefficients ) const
     {
-      typedef typename Quadrature::Iterator Iterator;
+      typedef typename Quadrature::iterator Iterator;
       typedef FieldVector< DofField, Basis::dimRange > RangeVector;
 
       const unsigned int size = basis().size();
@@ -131,7 +131,7 @@ namespace Dune
         massMatrix_()
     {
       typedef FieldVector< Field, Base::Basis::dimRange > RangeVector;
-      typedef typename Base::Quadrature::Iterator Iterator;
+      typedef typename Base::Quadrature::iterator Iterator;
       const unsigned size = basis.size();
       std::vector< RangeVector > basisValues( size );
 
@@ -173,8 +173,8 @@ namespace Dune
     static const unsigned int dimension = BasisFactory::dimension;
     // typedef typename BasisFactory::StorageField Field;
     typedef double Field;
-    typedef GenericGeometry::GaussQuadratureProvider<dimension,Field> QuadratureProvider;
-    typedef typename QuadratureProvider::Object Quadrature;
+    typedef QuadratureRule<Field,dimension> Quadrature;
+    typedef QuadratureRules<Field,dimension> QuadratureProvider;
 
     typedef typename BasisFactory::Key Key;
     typedef typename BasisFactory::Object Basis;
@@ -198,17 +198,15 @@ namespace Dune
     template< class Topology >
     static Object *createObject ( const Key &key )
     {
-      typedef GenericGeometry::GenericQuadrature< Topology, Field > GenericQuadrature;
+      Dune::GeometryType gt(Topology::id, Topology::dimension);
       const Basis *basis = BasisFactory::template create< Topology >( key );
-      const Quadrature *quadrature = Traits::QuadratureProvider::template create< Topology >( 2*basis->order()+1 );
-      return new Object( *basis, *quadrature );
+      const Quadrature & quadrature = Traits::QuadratureProvider::rule(gt, 2*basis->order()+1);
+      return new Object( *basis, quadrature );
     }
     static void release ( Object *object )
     {
       const Basis &basis = object->basis();
-      const Quadrature &quadrature = object->quadrature();
       BasisFactory::release( &basis );
-      Traits::QuadratureProvider::release( &quadrature );
       delete object;
     }
   };

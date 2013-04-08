@@ -7,6 +7,7 @@
 #include <iostream>
 #include <typeinfo>
 
+#include <dune/common/classname.hh>
 #include <dune/geometry/quadraturerules.hh>
 
 #include <dune/localfunctions/common/virtualinterface.hh>
@@ -115,7 +116,7 @@ bool testLocalInterpolation(const FE& fe, int n=5)
     if (coeff.size() != fe.localBasis().size())
     {
       std::cout << "Bug in LocalInterpolation for finite element type "
-                << typeid(FE).name() << std::endl;
+                << Dune::className(fe) << std::endl;
       std::cout << "    Interpolation vector has size " << coeff.size() << std::endl;
       std::cout << "    Basis has size " << fe.localBasis().size() << std::endl;
       std::cout << std::endl;
@@ -130,7 +131,7 @@ bool testLocalInterpolation(const FE& fe, int n=5)
       {
         std::cout << std::setprecision(16);
         std::cout << "Bug in LocalInterpolation for finite element type "
-                  << typeid(FE).name() << std::endl;
+                  << Dune::className(fe) << std::endl;
         std::cout << "    Interpolation weight " << j
                   << " differs by " << std::abs(coeff[j]-f.coeff_[j])
                   << " from coefficient of linear combination." << std::endl;
@@ -172,7 +173,7 @@ bool testJacobian(const FE& fe, unsigned order = 2)
     fe.localBasis().evaluateJacobian(testPoint, jacobians);
     if(jacobians.size() != fe.localBasis().size()) {
       std::cout << "Bug in evaluateJacobianGlobal() for finite element type "
-                << typeid(FE).name() << std::endl;
+                << Dune::className(fe) << std::endl;
       std::cout << "    Jacobian vector has size " << jacobians.size()
                 << std::endl;
       std::cout << "    Basis has size " << fe.localBasis().size()
@@ -213,7 +214,7 @@ bool testJacobian(const FE& fe, unsigned order = 2)
           {
             std::cout << std::setprecision(16);
             std::cout << "Bug in evaluateJacobian() for finite element type "
-                      << typeid(FE).name() << std::endl;
+                      << Dune::className(fe) << std::endl;
             std::cout << "    Shape function derivative does not agree with "
                       << "FD approximation" << std::endl;
             std::cout << "    Shape function " << j << " component " << l

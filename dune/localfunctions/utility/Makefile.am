@@ -17,3 +17,5 @@ utility_HEADERS = basisevaluator.hh \
                   tensor.hh
 
 include $(top_srcdir)/am/global-rules
+
+EXTRA_DIST = CMakeLists.txt

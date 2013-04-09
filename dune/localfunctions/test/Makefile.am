@@ -160,3 +160,5 @@ test_raviartthomassimplex_all_CPPFLAGS = $(DUNE_CPPFLAGS) $(AM_CPPFLAGS) $(GMP_C
 test_raviartthomassimplex_all_LDADD = $(DUNE_LDFLAGS) $(DUNE_LIBS) $(GMP_LIBS)
 
 include $(top_srcdir)/am/global-rules
+
+EXTRA_DIST = CMakeLists.txt

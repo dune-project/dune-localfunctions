@@ -9,3 +9,5 @@ rannacherturek_HEADERS = rannacherturek2d.hh \
 SUBDIRS = rannacherturek2d rannacherturek3d
 
 include $(top_srcdir)/am/global-rules
+
+EXTRA_DIST = CMakeLists.txt

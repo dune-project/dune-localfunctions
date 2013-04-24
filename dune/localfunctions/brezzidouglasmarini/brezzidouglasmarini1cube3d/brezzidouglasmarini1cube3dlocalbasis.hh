@@ -43,10 +43,10 @@ namespace Dune
      *
      * \param s Edge orientation indicator
      */
-    BDM1Cube3DLocalBasis(unsigned int s)
+    BDM1Cube3DLocalBasis(std::bitset<6> s)
     {
       for (size_t i=0; i<6; i++)
-        sign_[i] = (std::bitset<5>(s)[i]) ? -1.0 : 1.0;
+        sign_[i] = s[i] ? -1.0 : 1.0;
     }
 
     //! \brief number of shape functions

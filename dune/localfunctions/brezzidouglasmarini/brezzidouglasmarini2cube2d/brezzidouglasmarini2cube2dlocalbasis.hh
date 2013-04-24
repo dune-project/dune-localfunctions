@@ -42,10 +42,10 @@ namespace Dune
      *
      * \param s Edge orientation indicator
      */
-    BDM2Cube2DLocalBasis(unsigned int s)
+    BDM2Cube2DLocalBasis(std::bitset<4> s)
     {
       for (size_t i=0; i<4; i++)
-        sign_[i] = (std::bitset<4>(s)[i]) ? -1.0 : 1.0;
+        sign_[i] = s[i] ? -1.0 : 1.0;
     }
 
     //! \brief number of shape functions

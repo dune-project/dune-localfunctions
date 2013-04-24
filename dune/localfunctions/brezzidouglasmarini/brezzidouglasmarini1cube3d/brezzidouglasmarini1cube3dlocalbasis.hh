@@ -4,6 +4,7 @@
 #define DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI1_CUBE3D_LOCALBASIS_HH
 
 #include <vector>
+#include <bitset>
 
 #include <dune/common/fmatrix.hh>
 
@@ -33,7 +34,8 @@ namespace Dune
     //! \brief Standard constructor
     BDM1Cube3DLocalBasis()
     {
-      sign0 = sign1 = sign2 = sign3 = sign4 = sign5 = 1.0;
+      for (size_t i=0; i<6; i++)
+        sign_[i] = 1.0;
     }
 
     /**
@@ -43,31 +45,8 @@ namespace Dune
      */
     BDM1Cube3DLocalBasis(unsigned int s)
     {
-      sign0 = sign1 = sign2 = sign3 = sign4 = sign5 = 1.0;
-      if (s & 1)
-      {
-        sign0 = -1.0;
-      }
-      if (s & 2)
-      {
-        sign1 = -1.0;
-      }
-      if (s & 4)
-      {
-        sign2 = -1.0;
-      }
-      if (s & 8)
-      {
-        sign3 = -1.0;
-      }
-      if (s & 16)
-      {
-        sign4 = -1.0;
-      }
-      if (s & 32)
-      {
-        sign5 = -1.0;
-      }
+      for (size_t i=0; i<6; i++)
+        sign_[i] = (std::bitset<5>(s)[i]) ? -1.0 : 1.0;
     }
 
     //! \brief number of shape functions
@@ -87,24 +66,24 @@ namespace Dune
     {
       out.resize(size());
 
-      out[0][0] = sign0 * (in[0] - 1.0);
+      out[0][0] = sign_[0] * (in[0] - 1.0);
       out[0][1] = 0.0;
       out[0][2] = 0.0;
-      out[1][0] = sign1 * in[0];
+      out[1][0] = sign_[1] * in[0];
       out[1][1] = 0.0;
       out[1][2] = 0.0;
       out[2][0] = 0.0;
-      out[2][1] = sign2 * (in[1] - 1.0);
+      out[2][1] = sign_[2] * (in[1] - 1.0);
       out[2][2] = 0.0;
       out[3][0] = 0.0;
-      out[3][1] = sign3 * in[1];
+      out[3][1] = sign_[3] * in[1];
       out[3][2] = 0.0;
       out[4][0] = 0.0;
       out[4][1] = 0.0;
-      out[4][2] = sign4 * (in[2] - 1.0);
+      out[4][2] = sign_[4] * (in[2] - 1.0);
       out[5][0] = 0.0;
       out[5][1] = 0.0;
-      out[5][2] = sign5 * in[2];
+      out[5][2] = sign_[5] * in[2];
       out[6][0]  =  6.0 * in[0] * in[1] - 3 * in[0]-6 * in[1] + 3.0;
       out[6][1]  = -3.0 * in[1] * in[1] + 3 * in[1];
       out[6][2]  =  0.0;
@@ -154,29 +133,29 @@ namespace Dune
     {
       out.resize(size());
 
-      out[0][0][0] = sign0;            out[0][0][1] = 0;           out[0][0][2] = 0;
+      out[0][0][0] = sign_[0];            out[0][0][1] = 0;           out[0][0][2] = 0;
       out[0][1][0] = 0;                out[0][1][1] = 0;           out[0][1][2] = 0;
       out[0][2][0] = 0;                out[0][2][1] = 0;           out[0][2][2] = 0;
 
-      out[1][0][0] = sign1;            out[1][0][1] = 0;           out[1][0][2] = 0;
+      out[1][0][0] = sign_[1];            out[1][0][1] = 0;           out[1][0][2] = 0;
       out[1][1][0] = 0;                out[1][1][1] = 0;           out[1][1][2] = 0;
       out[1][2][0] = 0;                out[1][2][1] = 0;           out[1][2][2] = 0;
 
       out[2][0][0] = 0;                out[2][0][1] = 0;           out[2][0][2] = 0;
-      out[2][1][0] = 0;                out[2][1][1] = sign2;       out[2][1][2] = 0;
+      out[2][1][0] = 0;                out[2][1][1] = sign_[2];       out[2][1][2] = 0;
       out[2][2][0] = 0;                out[2][2][1] = 0;           out[2][2][2] = 0;
 
       out[3][0][0] = 0;                out[3][0][1] = 0;           out[3][0][2] = 0;
-      out[3][1][0] = 0;                out[3][1][1] = sign3;       out[3][1][2] = 0;
+      out[3][1][0] = 0;                out[3][1][1] = sign_[3];       out[3][1][2] = 0;
       out[3][2][0] = 0;                out[3][2][1] = 0;           out[3][2][2] = 0;
 
       out[4][0][0] = 0;                out[4][0][1] = 0;           out[4][0][2] = 0;
       out[4][1][0] = 0;                out[4][1][1] = 0;           out[4][1][2] = 0;
-      out[4][2][0] = 0;                out[4][2][1] = 0;           out[4][2][2] = sign4;
+      out[4][2][0] = 0;                out[4][2][1] = 0;           out[4][2][2] = sign_[4];
 
       out[5][0][0] = 0;                out[5][0][1] = 0;           out[5][0][2] = 0;
       out[5][1][0] = 0;                out[5][1][1] = 0;           out[5][1][2] = 0;
-      out[5][2][0] = 0;                out[5][2][1] = 0;           out[5][2][2] = sign5;
+      out[5][2][0] = 0;                out[5][2][1] = 0;           out[5][2][2] = sign_[5];
 
 
 
@@ -239,7 +218,7 @@ namespace Dune
     }
 
   private:
-    R sign0, sign1, sign2, sign3, sign4, sign5;
+    array<R,6> sign_;
   };
 } // end namespace Dune
 #endif // DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI1_CUBE3D_LOCALBASIS_HH

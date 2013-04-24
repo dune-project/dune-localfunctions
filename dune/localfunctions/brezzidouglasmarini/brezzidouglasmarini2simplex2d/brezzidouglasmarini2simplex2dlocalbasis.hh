@@ -32,7 +32,8 @@ namespace Dune
     //! \brief Standard constructor
     BDM2Simplex2DLocalBasis()
     {
-      sign0 = sign1 = sign2 = 1.0;
+      for (size_t i=0; i<3; i++)
+        sign_[i] = 1.0;
     }
 
     /**
@@ -42,19 +43,8 @@ namespace Dune
      */
     BDM2Simplex2DLocalBasis(unsigned int s)
     {
-      sign0 = sign1 = sign2 = 1.0;
-      if (s & 1)
-      {
-        sign0 = -1.0;
-      }
-      if (s & 2)
-      {
-        sign1 = -1.0;
-      }
-      if (s & 4)
-      {
-        sign2 = -1.0;
-      }
+      for (size_t i=0; i<3; i++)
+        sign_[i] = (std::bitset<3>(s)[i]) ? -1.0 : 1.0;
     }
 
     //! \brief number of shape functions
@@ -74,36 +64,36 @@ namespace Dune
     {
       out.resize(size());
 
-      out[0][0] = sign0*(-2*in[0]*in[1] + in[0]*in[0]);
-      out[0][1] = sign0*(-1 + 6*in[1] -2*in[0]*in[1] - 5*in[1]*in[1]);
+      out[0][0] = sign_[0]*(-2*in[0]*in[1] + in[0]*in[0]);
+      out[0][1] = sign_[0]*(-1 + 6*in[1] -2*in[0]*in[1] - 5*in[1]*in[1]);
 
       out[1][0] = 1.5*in[0] + 3*in[0]*in[1] - 4.5*in[0]*in[0];
       out[1][1] = -3 + 6*in[0] + 10.5*in[1] - 15*in[0]*in[1] - 7.5*in[1]*in[1];
 
-      out[2][0] = sign0*(-7.5*in[0] + 5*in[0]*in[1] + 12.5*in[0]*in[0]);
-      out[2][1] = sign0*(-5 + 30*in[0] + 7.5*in[1] - 25*in[0]*in[1] - 30*in[0]*in[0] - 2.5*in[1]*in[1]);
+      out[2][0] = sign_[0]*(-7.5*in[0] + 5*in[0]*in[1] + 12.5*in[0]*in[0]);
+      out[2][1] = sign_[0]*(-5 + 30*in[0] + 7.5*in[1] - 25*in[0]*in[1] - 30*in[0]*in[0] - 2.5*in[1]*in[1]);
 
 
 
-      out[3][0] = sign1*(-1 + 6*in[0] - 2*in[0]*in[1] - 5*in[0]*in[0]);
-      out[3][1] = sign1*(-2*in[0]*in[1] + in[1]*in[1]);
+      out[3][0] = sign_[1]*(-1 + 6*in[0] - 2*in[0]*in[1] - 5*in[0]*in[0]);
+      out[3][1] = sign_[1]*(-2*in[0]*in[1] + in[1]*in[1]);
 
       out[4][0] = 3 - 10.5*in[0] - 6*in[1] + 15*in[0]*in[1] + 7.5*in[0]*in[0];
       out[4][1] = -1.5*in[1] - 3*in[0]*in[1] + 4.5*in[1]*in[1];
 
-      out[5][0] = sign1*(-5 + 7.5*in[0] + 30*in[1] - 25*in[0]*in[1] - 2.5*in[0]*in[0] - 30*in[1]*in[1]);
-      out[5][1] = sign1*(-7.5*in[1] + 5*in[0]*in[1] + 12.5*in[1]*in[1]);
+      out[5][0] = sign_[1]*(-5 + 7.5*in[0] + 30*in[1] - 25*in[0]*in[1] - 2.5*in[0]*in[0] - 30*in[1]*in[1]);
+      out[5][1] = sign_[1]*(-7.5*in[1] + 5*in[0]*in[1] + 12.5*in[1]*in[1]);
 
 
 
-      out[6][0] = sign2*(-3*in[0] + 4*in[0]*in[1] + 4*in[0]*in[0]);
-      out[6][1] = sign2*(-3*in[1] + 4*in[0]*in[1] + 4*in[1]*in[1]);
+      out[6][0] = sign_[2]*(-3*in[0] + 4*in[0]*in[1] + 4*in[0]*in[0]);
+      out[6][1] = sign_[2]*(-3*in[1] + 4*in[0]*in[1] + 4*in[1]*in[1]);
 
       out[7][0] = -3*in[0] + 6*in[0]*in[0];
       out[7][1] = 3*in[1] - 6*in[1]*in[1];
 
-      out[8][0] = sign2*(-10*in[0]*in[1] + 5*in[0]*in[0]);
-      out[8][1] = sign2*(-10*in[0]*in[1] + 5*in[1]*in[1]);
+      out[8][0] = sign_[2]*(-10*in[0]*in[1] + 5*in[0]*in[0]);
+      out[8][1] = sign_[2]*(-10*in[0]*in[1] + 5*in[1]*in[1]);
 
 
 
@@ -128,11 +118,11 @@ namespace Dune
     {
       out.resize(size());
 
-      out[0][0][0] = sign0*(-2*in[1] + 2*in[0]);
-      out[0][0][1] = sign0*(-2*in[0]);
+      out[0][0][0] = sign_[0]*(-2*in[1] + 2*in[0]);
+      out[0][0][1] = sign_[0]*(-2*in[0]);
 
-      out[0][1][0] = sign0*(-2*in[1]);
-      out[0][1][1] = sign0*(6 -2*in[0] - 10*in[1]);
+      out[0][1][0] = sign_[0]*(-2*in[1]);
+      out[0][1][1] = sign_[0]*(6 -2*in[0] - 10*in[1]);
 
 
       out[1][0][0] = 1.5 + 3*in[1] - 9*in[0];
@@ -142,19 +132,19 @@ namespace Dune
       out[1][1][1] = 10.5 - 15*in[0] - 15*in[1];
 
 
-      out[2][0][0] = sign0*(-7.5 + 5*in[1] + 25*in[0]);
-      out[2][0][1] = sign0*(5*in[0]);
+      out[2][0][0] = sign_[0]*(-7.5 + 5*in[1] + 25*in[0]);
+      out[2][0][1] = sign_[0]*(5*in[0]);
 
-      out[2][1][0] = sign0*(30 - 25*in[1] - 60*in[0]);
-      out[2][1][1] = sign0*(7.5 - 25*in[0] - 5*in[1]);
+      out[2][1][0] = sign_[0]*(30 - 25*in[1] - 60*in[0]);
+      out[2][1][1] = sign_[0]*(7.5 - 25*in[0] - 5*in[1]);
 
 
 
-      out[3][0][0] = sign1*(6 - 2*in[1] - 10*in[0]);
-      out[3][0][1] = sign1*(-2*in[0]);
+      out[3][0][0] = sign_[1]*(6 - 2*in[1] - 10*in[0]);
+      out[3][0][1] = sign_[1]*(-2*in[0]);
 
-      out[3][1][0] = sign1*(-2*in[1]);
-      out[3][1][1] = sign1*(-2*in[0] + 2*in[1]);
+      out[3][1][0] = sign_[1]*(-2*in[1]);
+      out[3][1][1] = sign_[1]*(-2*in[0] + 2*in[1]);
 
 
       out[4][0][0] = -10.5 + 15*in[1] + 15*in[0];
@@ -164,19 +154,19 @@ namespace Dune
       out[4][1][1] = -1.5 - 3*in[0] + 9*in[1];
 
 
-      out[5][0][0] = sign1*(7.5 - 25*in[1] - 5*in[0]);
-      out[5][0][1] = sign1*(30 - 25*in[0] - 60*in[1]);
+      out[5][0][0] = sign_[1]*(7.5 - 25*in[1] - 5*in[0]);
+      out[5][0][1] = sign_[1]*(30 - 25*in[0] - 60*in[1]);
 
-      out[5][1][0] = sign1*(5*in[1]);
-      out[5][1][1] = sign1*(-7.5 + 5*in[0] + 25*in[1]);
+      out[5][1][0] = sign_[1]*(5*in[1]);
+      out[5][1][1] = sign_[1]*(-7.5 + 5*in[0] + 25*in[1]);
 
 
 
-      out[6][0][0] = sign2*(-3 + 4*in[1] + 8*in[0]);
-      out[6][0][1] = sign2*(4*in[0]);
+      out[6][0][0] = sign_[2]*(-3 + 4*in[1] + 8*in[0]);
+      out[6][0][1] = sign_[2]*(4*in[0]);
 
-      out[6][1][0] = sign2*(4*in[1]);
-      out[6][1][1] = sign2*(-3 + 4*in[0] + 8*in[1]);
+      out[6][1][0] = sign_[2]*(4*in[1]);
+      out[6][1][1] = sign_[2]*(-3 + 4*in[0] + 8*in[1]);
 
 
       out[7][0][0] = -3 + 12*in[0];
@@ -186,11 +176,11 @@ namespace Dune
       out[7][1][1] = 3 - 12*in[1];
 
 
-      out[8][0][0] = sign2*(-10*in[1] + 10*in[0]);
-      out[8][0][1] = sign2*(-10*in[0]);
+      out[8][0][0] = sign_[2]*(-10*in[1] + 10*in[0]);
+      out[8][0][1] = sign_[2]*(-10*in[0]);
 
-      out[8][1][0] = sign2*(-10*in[1]);
-      out[8][1][1] = sign2*(-10*in[0] + 10*in[1]);
+      out[8][1][0] = sign_[2]*(-10*in[1]);
+      out[8][1][1] = sign_[2]*(-10*in[0] + 10*in[1]);
 
 
       out[9][0][0] = 18 - 12*in[1] - 36*in[0];
@@ -219,7 +209,7 @@ namespace Dune
     }
 
   private:
-    R sign0, sign1, sign2;
+    array<R,3> sign_;
   };
 } // end namespace Dune
 #endif // DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI2_SIMPLEX2D_LOCALBASIS_HH

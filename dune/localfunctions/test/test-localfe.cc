@@ -37,8 +37,7 @@
 #include "../hierarchical/hierarchicalp2withelementbubble.hh"
 #include "../hierarchical/hierarchicalprismp2.hh"
 #include "../rannacherturek/rannacherturek.hh"
-#include "../raviartthomas/raviartthomas02d.hh"
-#include "../raviartthomas/raviartthomas12d.hh"
+#include "../raviartthomas/raviartthomassimplex.hh"
 #include "../raviartthomas/raviartthomascube.hh"
 #include "../monom.hh"
 
@@ -257,10 +256,10 @@ int main(int argc, char** argv) try
   // --------------------------------------------------------
   //  Test Raviart-Thomas Finite elements
   // --------------------------------------------------------
-  Dune::RT02DLocalFiniteElement<double,double> rt02dlfem(1);
+  Dune::RaviartThomasSimplexLocalFiniteElement<2,double,double> rt02dlfem(Dune::GeometryType(2,Dune::GeometryType::simplex),0);
   success = testFE(rt02dlfem) and success;
 
-  Dune::RT12DLocalFiniteElement<double,double> rt12dlfem(1);
+  Dune::RaviartThomasSimplexLocalFiniteElement<2,double,double> rt12dlfem(Dune::GeometryType(2,Dune::GeometryType::simplex),1);
   success = testFE(rt12dlfem) and success;
 
   Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,0> rt0cube2dlfem(1);

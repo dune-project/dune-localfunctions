@@ -143,14 +143,15 @@ int main(int argc, char** argv) try
   Dune::P23DLocalFiniteElement<double,double> p23dlfem;
   success = testFE(p23dlfem) and success;
 
+  // --------------------------------------------------------
+  //  Test Brezzi-Douglas-Marini finite elements
+  // --------------------------------------------------------
   Dune::BDM1Cube2DLocalFiniteElement<double,double> bdm1cube2dlfem(1);
   success = testFE(bdm1cube2dlfem) and success;
 
-  // missing interpolation!
   Dune::BDM1Simplex2DLocalFiniteElement<double,double> bdm1simplex2dlfem(1);
   success = testFE(bdm1simplex2dlfem) and success;
 
-  // missing interpolation!
   Dune::BDM2Simplex2DLocalFiniteElement<double,double> bdm2simplex2dlfem(1);
   success &= testFE(bdm2simplex2dlfem);
 
@@ -249,7 +250,7 @@ int main(int argc, char** argv) try
   //  Test Raviart-Thomas Finite elements
   // --------------------------------------------------------
   Dune::RaviartThomasSimplexLocalFiniteElement<2,double,double> rt0simplex2dlfem(Dune::GeometryType(2,Dune::GeometryType::simplex),0);
-  success = testFE(rt0simplexs2dlfem) and success;
+  success = testFE(rt0simplex2dlfem) and success;
 
   Dune::RaviartThomasSimplexLocalFiniteElement<2,double,double> rt1simplex2dlfem(Dune::GeometryType(2,Dune::GeometryType::simplex),1);
   success = testFE(rt1simplex2dlfem) and success;

@@ -284,7 +284,7 @@ namespace Dune
 
       typedef Dune::ReferenceElements< Field, dimension > RefElements;
       typedef Dune::ReferenceElement< Field, dimension > RefElement;
-      typedef typename RefElement::template Codim< 1 >::Mapping Mapping;
+      typedef typename RefElement::template Codim< 1 >::Geometry Geometry;
 
       const RefElement &refElement = RefElements::general( geoType );
 
@@ -294,8 +294,8 @@ namespace Dune
           continue;
         testBasisVal.resize(builder_.testFaceBasis(f)->size());
 
-        const Mapping &mapping = refElement.template mapping< 1 >( f );
-        const Dune::GeometryType subGeoType( mapping.type().id(), dimension-1 );
+        const Geometry &geometry = refElement.template geometry< 1 >( f );
+        const Dune::GeometryType subGeoType( geometry.type().id(), dimension-1 );
         const FaceQuadrature &faceQuad = FaceQuadratureRules::rule( subGeoType, 2*order_+2 );
 
         const unsigned int quadratureSize = faceQuad.size();
@@ -306,7 +306,7 @@ namespace Dune
           else
             testBasisVal[0] = 1.;
           fillBnd( row, testBasisVal,
-                   func.evaluate( mapping.global( faceQuad[qi].position() ) ),
+                   func.evaluate( geometry.global( faceQuad[qi].position() ) ),
                    builder_.normal(f), faceQuad[qi].weight(),
                    func);
         }

@@ -26,8 +26,6 @@
 #include "../lagrange/qk.hh"
 
 #include "../brezzidouglasmarini/brezzidouglasmarini1cube2d.hh"
-#include "../brezzidouglasmarini/brezzidouglasmarini1cube3d.hh"
-#include "../brezzidouglasmarini/brezzidouglasmarini2cube2d.hh"
 #include "../brezzidouglasmarini/brezzidouglasmarini1simplex2d.hh"
 #include "../brezzidouglasmarini/brezzidouglasmarini2simplex2d.hh"
 #include <dune/localfunctions/dualmortarbasis.hh>
@@ -149,12 +147,6 @@ int main(int argc, char** argv) try
   success = testFE(bdm1cube2dlfem) and success;
 
   // missing interpolation!
-  Dune::BDM1Cube3DLocalFiniteElement<double,double> bdm1cube3dlfem(1);
-  success &= testFE(bdm1cube3dlfem);
-
-  Dune::BDM2Cube2DLocalFiniteElement<double,double> bdm2cube2dlfem(1);
-  success &= testFE(bdm2cube2dlfem);
-
   Dune::BDM1Simplex2DLocalFiniteElement<double,double> bdm1simplex2dlfem(1);
   success = testFE(bdm1simplex2dlfem) and success;
 
@@ -256,11 +248,11 @@ int main(int argc, char** argv) try
   // --------------------------------------------------------
   //  Test Raviart-Thomas Finite elements
   // --------------------------------------------------------
-  Dune::RaviartThomasSimplexLocalFiniteElement<2,double,double> rt02dlfem(Dune::GeometryType(2,Dune::GeometryType::simplex),0);
-  success = testFE(rt02dlfem) and success;
+  Dune::RaviartThomasSimplexLocalFiniteElement<2,double,double> rt0simplex2dlfem(Dune::GeometryType(2,Dune::GeometryType::simplex),0);
+  success = testFE(rt0simplexs2dlfem) and success;
 
-  Dune::RaviartThomasSimplexLocalFiniteElement<2,double,double> rt12dlfem(Dune::GeometryType(2,Dune::GeometryType::simplex),1);
-  success = testFE(rt12dlfem) and success;
+  Dune::RaviartThomasSimplexLocalFiniteElement<2,double,double> rt1simplex2dlfem(Dune::GeometryType(2,Dune::GeometryType::simplex),1);
+  success = testFE(rt1simplex2dlfem) and success;
 
   Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,0> rt0cube2dlfem(1);
   success = testFE(rt0cube2dlfem) and success;

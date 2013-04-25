@@ -32,8 +32,6 @@ AC_CONFIG_FILES([
                 dune-localfunctions.pc
                 dune/localfunctions/brezzidouglasmarini/Makefile
                 dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini1cube2d/Makefile
-                dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini2cube2d/Makefile
-                dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini1cube3d/Makefile
                 dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini1simplex2d/Makefile
                 dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini2simplex2d/Makefile
                 dune/localfunctions/common/Makefile

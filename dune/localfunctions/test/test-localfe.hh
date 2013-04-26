@@ -232,26 +232,45 @@ bool testJacobian(const FE& fe, unsigned order = 2)
   return success;
 }
 
+
+// Flags for disabling parts of testFE
+enum {
+  DisableNone = 0,
+  DisableLocalInterpolation = 1,
+  DisableVirtualInterface = 2,
+  DisableJacobian = 3
+};
+
 // call tests for given finite element
 template<class FE>
-bool testFE(const FE& fe, unsigned order = 2)
+bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned order = 2)
 {
   std::vector<double> c;
 
-  fe.localInterpolation().interpolate(Func<FE>(),c);
 
   bool success = true;
-  success = testLocalInterpolation<FE>(fe) and success;
-  success = testJacobian<FE>(fe, order) and success;
+  if (not (disabledTests & DisableLocalInterpolation))
+  {
+    fe.localInterpolation().interpolate(Func<FE>(),c);
+    success = testLocalInterpolation<FE>(fe) and success;
+  }
+  if (not (disabledTests & DisableJacobian))
+    success = testJacobian<FE>(fe, order) and success;
 
-  typedef typename FE::Traits::LocalBasisType::Traits LBTraits;
-  typedef typename Dune::FixedOrderLocalBasisTraits<LBTraits,0>::Traits C0LBTraits;
-  typedef typename Dune::LocalFiniteElementVirtualInterface<C0LBTraits> VirtualFEInterface;
-  typedef typename Dune::LocalFiniteElementVirtualImp<FE> VirtualFEImp;
 
-  const VirtualFEImp virtualFE(fe);
-  success = testLocalInterpolation<VirtualFEInterface>(virtualFE) and success;
-  success = testJacobian<VirtualFEInterface>(virtualFE) and success;
+  if (not (disabledTests & DisableVirtualInterface))
+  {
+    typedef typename FE::Traits::LocalBasisType::Traits LBTraits;
+    typedef typename Dune::FixedOrderLocalBasisTraits<LBTraits,0>::Traits C0LBTraits;
+    typedef typename Dune::LocalFiniteElementVirtualInterface<C0LBTraits> VirtualFEInterface;
+    typedef typename Dune::LocalFiniteElementVirtualImp<FE> VirtualFEImp;
+
+    const VirtualFEImp virtualFE(fe);
+    if (not (disabledTests & DisableLocalInterpolation))
+      success = testLocalInterpolation<VirtualFEInterface>(virtualFE) and success;
+    if (not (disabledTests & DisableJacobian))
+      success = testJacobian<VirtualFEInterface>(virtualFE) and success;
+  }
 
   return success;
 }

@@ -155,8 +155,8 @@ int main(int argc, char** argv) try
   Dune::BDM2Simplex2DLocalFiniteElement<double,double> bdm2simplex2dlfem(1);
   success &= testFE(bdm2simplex2dlfem);
 
-  //    Dune::HierarchicalP2LocalFiniteElement<double,double,1> hierarchicalp21dlfem;
-  //    success = testFE(hierarchicalp21dlfem) and success;
+  Dune::HierarchicalP2LocalFiniteElement<double,double,1> hierarchicalp21dlfem;
+  success = testFE(hierarchicalp21dlfem) and success;
 
   Dune::HierarchicalP2LocalFiniteElement<double,double,2> hierarchicalp22dlfem;
   success = testFE(hierarchicalp22dlfem) and success;

@@ -21,13 +21,14 @@ namespace Dune
   class HierarchicalP2LocalFiniteElement
   {
 
-    dune_static_assert(dim==2 || dim==3, "HierarchicalP2LocalFiniteElement only implemented for dim==2, 3.");
+    dune_static_assert(1<=dim && dim<=3, "HierarchicalP2LocalFiniteElement only implemented for dim==1, 2, 3.");
 
   public:
     /** \todo Please doc me !
      */
-    typedef LocalFiniteElementTraits<HierarchicalSimplexP2LocalBasis<D,R,dim>,
-        typename Dune::SelectType<dim==2, Pk2DLocalCoefficients<2>, Pk3DLocalCoefficients<2> >::Type,
+    typedef LocalFiniteElementTraits<
+        HierarchicalSimplexP2LocalBasis<D,R,dim>,
+        typename PkLocalFiniteElement<D,R,dim,2>::Traits::LocalCoefficientsType,
         HierarchicalSimplexP2LocalInterpolation<HierarchicalSimplexP2LocalBasis<D,R,dim> > > Traits;
 
     /** \todo Please doc me !
@@ -73,8 +74,7 @@ namespace Dune
   private:
     HierarchicalSimplexP2LocalBasis<D,R,dim> basis;
 
-    /** \todo Stupid, Pk local coefficients can't be parametrized */
-    typename Dune::SelectType<dim==2, Pk2DLocalCoefficients<2>, Pk3DLocalCoefficients<2> >::Type coefficients;
+    typename Traits::LocalCoefficientsType coefficients;
 
     HierarchicalSimplexP2LocalInterpolation<HierarchicalSimplexP2LocalBasis<D,R,dim> > interpolation;
     GeometryType gt;

@@ -249,6 +249,16 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned order = 2)
 
 
   bool success = true;
+
+  if (FE::Traits::LocalBasisType::Traits::dimDomain != fe.type().dim())
+  {
+    std::cout << "Bug in type() for finite element type "
+              << Dune::className(fe) << std::endl;
+    std::cout << "    Coordinate dimension is " << FE::Traits::LocalBasisType::Traits::dimDomain << std::endl;
+    std::cout << "    but GeometryType is " << fe.type() << " with dimension " << fe.type().dim() << std::endl;
+    success = false;
+  }
+
   if (not (disabledTests & DisableLocalInterpolation))
   {
     fe.localInterpolation().interpolate(Func<FE>(),c);

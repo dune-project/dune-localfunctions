@@ -59,8 +59,8 @@ namespace Dune
       out.resize(3);
 
       out[0] = 1-in[0];
-      out[1] = in[0];
-      out[2] = 1-4*(in[0]-0.5)*(in[0]-0.5);
+      out[1] = 1-4*(in[0]-0.5)*(in[0]-0.5);
+      out[2] = in[0];
     }
 
     //! \brief Evaluate Jacobian of all shape functions
@@ -71,8 +71,8 @@ namespace Dune
       out.resize(3);
 
       out[0][0][0] = -1;
-      out[1][0][0] =  1;
-      out[2][0][0] = 4-8*in[0];
+      out[1][0][0] = 4-8*in[0];
+      out[2][0][0] =  1;
     }
 
     /** \brief Polynomial order of the shape functions  (2, in this case)

@@ -34,7 +34,7 @@ namespace Dune
      */
     HierarchicalP2LocalFiniteElement ()
     {
-      gt.makeTriangle();
+      gt.makeSimplex(dim);
     }
 
     /** \todo Please doc me !

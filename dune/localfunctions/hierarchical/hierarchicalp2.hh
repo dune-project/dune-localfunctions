@@ -6,6 +6,7 @@
 #include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
+#include <dune/localfunctions/lagrange/pk.hh>
 #include <dune/localfunctions/lagrange/pk2d/pk2dlocalcoefficients.hh>
 #include <dune/localfunctions/lagrange/pk3d/pk3dlocalcoefficients.hh>
 

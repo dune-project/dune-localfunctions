@@ -5,3 +5,4 @@ Maintainer: dune-devel@dune-project.org
 Depends: dune-geometry (>= 2.3)
 # Needed for the debugging vtk output program
 Suggests: dune-grid (>= 2.3)
+Whitespace-Hook: Yes

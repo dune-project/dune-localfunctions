@@ -26,5 +26,9 @@ missing
 stamp-h1
 *.swp
 *.tmp
-.deps
-.libs
+*.o
+*.lo
+*.la
+.deps/
+.libs/
+test-driver

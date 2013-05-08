@@ -1,6 +1,3 @@
-.deps
-Makefile
-Makefile.in
-
 test-biorthogonality
-
+*.log
+*.trs

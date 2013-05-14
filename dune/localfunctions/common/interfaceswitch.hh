@@ -173,9 +173,16 @@ namespace Dune {
 #ifndef DOXYGEN
   //! Switch for uniform treatment of local and global basis classes
   template<class Basis>
-  struct BasisInterfaceSwitch<
-      Basis, typename enable_if<Basis::Traits::dimDomain>::type
-      >
+  struct BasisInterfaceSwitch<Basis,
+                              typename enable_if<
+                                AlwaysTrue<
+                                  integral_constant<
+                                    std::size_t,
+                                    Basis::Traits::dimDomain
+                                    >
+                                  >::value
+                                >::type
+                              >
   {
     //! export field types of the coordinates
     typedef typename Basis::Traits::DomainFieldType DomainField;

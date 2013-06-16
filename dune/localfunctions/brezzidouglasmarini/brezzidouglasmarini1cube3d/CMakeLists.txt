@@ -1,0 +1,5 @@
+install(FILES
+  brezzidouglasmarini1cube3dlocalbasis.hh
+  brezzidouglasmarini1cube3dlocalcoefficients.hh
+  brezzidouglasmarini1cube3dlocalinterpolation.hh
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini1cube3d)

@@ -26,6 +26,8 @@
 #include "../lagrange/qk.hh"
 
 #include "../brezzidouglasmarini/brezzidouglasmarini1cube2d.hh"
+#include "../brezzidouglasmarini/brezzidouglasmarini1cube3d.hh"
+#include "../brezzidouglasmarini/brezzidouglasmarini2cube2d.hh"
 #include "../brezzidouglasmarini/brezzidouglasmarini1simplex2d.hh"
 #include "../brezzidouglasmarini/brezzidouglasmarini2simplex2d.hh"
 #include <dune/localfunctions/dualmortarbasis.hh>
@@ -149,12 +151,21 @@ int main(int argc, char** argv) try
   Dune::BDM1Cube2DLocalFiniteElement<double,double> bdm1cube2dlfem(1);
   success = testFE(bdm1cube2dlfem) and success;
 
+  Dune::BDM1Cube3DLocalFiniteElement<double,double> bdm1cube3dlfem(1);
+  success &= testFE(bdm1cube3dlfem, DisableLocalInterpolation);
+
+  Dune::BDM2Cube2DLocalFiniteElement<double,double> bdm2cube2dlfem(1);
+  success &= testFE(bdm2cube2dlfem);
+
   Dune::BDM1Simplex2DLocalFiniteElement<double,double> bdm1simplex2dlfem(1);
   success = testFE(bdm1simplex2dlfem) and success;
 
   Dune::BDM2Simplex2DLocalFiniteElement<double,double> bdm2simplex2dlfem(1);
-  success &= testFE(bdm2simplex2dlfem);
+  success &= testFE(bdm2simplex2dlfem, DisableLocalInterpolation);
 
+  // --------------------------------------------------------
+  //  Test hierarchical P2 finite elements
+  // --------------------------------------------------------
   Dune::HierarchicalP2LocalFiniteElement<double,double,1> hierarchicalp21dlfem;
   success = testFE(hierarchicalp21dlfem) and success;
 

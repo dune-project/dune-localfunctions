@@ -8,6 +8,8 @@
 
 #include <dune/localfunctions/dualmortarbasis.hh>
 
+namespace Dune {
+
 template<class D, class R, int dim>
 class DualPQ1LocalFiniteElementCache
 {
@@ -60,5 +62,7 @@ public:
 protected:
   mutable FEMap cache_;
 };
+
+}  // namespace Dune
 
 #endif   // DUNE_LOCALFUNCTIONS_DUAL_P1_Q1_FACTORY_HH

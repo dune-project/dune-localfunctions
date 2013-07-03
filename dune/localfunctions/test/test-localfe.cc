@@ -260,10 +260,10 @@ int main(int argc, char** argv) try
   // --------------------------------------------------------
   //  Test Raviart-Thomas Finite elements
   // --------------------------------------------------------
-  Dune::RaviartThomasSimplexLocalFiniteElement<2,double,double> rt0simplex2dlfem(Dune::GeometryType(2,Dune::GeometryType::simplex),0);
+  Dune::RaviartThomasSimplexLocalFiniteElement<2,double,double> rt0simplex2dlfem(Dune::GeometryType(Dune::GeometryType::simplex,2),0);
   success = testFE(rt0simplex2dlfem) and success;
 
-  Dune::RaviartThomasSimplexLocalFiniteElement<2,double,double> rt1simplex2dlfem(Dune::GeometryType(2,Dune::GeometryType::simplex),1);
+  Dune::RaviartThomasSimplexLocalFiniteElement<2,double,double> rt1simplex2dlfem(Dune::GeometryType(Dune::GeometryType::simplex,2),1);
   success = testFE(rt1simplex2dlfem) and success;
 
   Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,0> rt0cube2dlfem(1);

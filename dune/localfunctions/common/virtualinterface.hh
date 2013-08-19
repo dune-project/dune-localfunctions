@@ -90,7 +90,7 @@ namespace Dune
      * This is the VirtualFunction interface class if FE implements the virtual
      * interface and Function base class otherwise.
      */
-    typedef typename SelectType<IsBaseOf<Interface, Implementation>::value, VirtualFunctionBase, FunctionBase>::Type type;
+    typedef typename conditional<IsBaseOf<Interface, Implementation>::value, VirtualFunctionBase, FunctionBase>::type type;
   };
 
 

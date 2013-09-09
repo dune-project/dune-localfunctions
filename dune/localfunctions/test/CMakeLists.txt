@@ -1,10 +1,8 @@
 # $Id: Makefile.am 4150 2008-05-15 16:12:46Z christi $
 
-if( dune_grid_FOUND )
-if( ALUGrid_FOUND )
+if(dune-grid_FOUND AND ALUGRID_FOUND)
   set(ALUPROG  refinedp1test)
-endif( ALUGrid_FOUND )
-endif( dune_grid_FOUND )
+endif(dune-grid_FOUND AND ALUGRID_FOUND)
 
 # which tests to run
 set(TESTS  lagrangeshapefunctiontest
@@ -44,12 +42,11 @@ target_link_libraries(monomshapefunctiontest ${DUNE_LIBS})
 add_executable(virtualshapefunctiontest virtualshapefunctiontest.cc)
 target_link_libraries(virtualshapefunctiontest ${DUNE_LIBS})
 
-if( dune-grid_FOUND)
-if( ALUGrid_FOUND)
-add_executable(refinedp1test refinedp1test.cc)
-dune_add_alugrid_flags(efinedp1test)
-endif( ALUGrid_FOUND )
-endif( dune-grid_FOUND )
+message("::::: ${dune-grid_FOUND} | ${ALUGRID_FOUND}")
+if(dune-grid_FOUND AND ALUGRID_FOUND)
+  add_executable(refinedp1test refinedp1test.cc)
+  add_dune_alugrid_flags(refinedp1test)
+endif(dune-grid_FOUND AND ALUGRID_FOUND)
 
 list(APPEND TESTS test-edges0.5)
 add_executable(test-edges0.5 test-edges0.5.cc)

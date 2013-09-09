@@ -3,7 +3,6 @@ set(rannacherturekdir  ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions/rannacher
 set(rannacherturek_HEADERS
   rannacherturek.hh
   rannacherturek2d.hh
-  rannacherturek3d.hh
   rannachertureklocalbasis.hh
   rannachertureklocalcoefficients.hh
   rannachertureklocalinterpolation.hh)

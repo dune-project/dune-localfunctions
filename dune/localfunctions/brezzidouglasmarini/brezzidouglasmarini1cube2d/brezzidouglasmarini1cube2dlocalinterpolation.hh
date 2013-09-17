@@ -77,7 +77,7 @@ namespace Dune
     {
       // f gives v*outer normal at a point on the edge!
       typedef typename LB::Traits::RangeFieldType Scalar;
-      typedef typename LB::Traits::DomainFieldType Vector;
+      //typedef typename LB::Traits::DomainFieldType Vector;
       typename F::Traits::RangeType y;
 
       out.resize(8);

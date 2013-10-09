@@ -8,8 +8,6 @@
 #include <vector>
 
 #include <dune/common/fvector.hh>
-#include <dune/common/misc.hh>
-#include <dune/common/typetraits.hh>
 
 #include <dune/localfunctions/utility/field.hh>
 

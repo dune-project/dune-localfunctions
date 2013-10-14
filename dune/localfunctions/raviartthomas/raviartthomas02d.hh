@@ -10,30 +10,34 @@
 #include "raviartthomas02d/raviartthomas02dlocalcoefficients.hh"
 #include "raviartthomas02d/raviartthomas02dlocalinterpolation.hh"
 
-#warning This header is deprecated, please use\
-  dune/localfunctions/raviartthomas/raviartthomassimplex.hh instead
-
 namespace Dune
 {
 
   /**
-   * \deprecated This class is deprecated and will be removed after Dune 2.3.
-   *             Use RaviartThomasSimplexLocalFiniteElement<2,D,R> instead.
+   * \brief Zero order Raviart-Thomas shape functions on triangles.
+   *
+   * \tparam D Type to represent the field in the domain.
+   * \tparam R Type to represent the field in the range.
    */
   template<class D, class R>
   class
-  DUNE_DEPRECATED_MSG("Use RaviartThomasSimplexLocalFiniteElement<2,D,R> instead")
   RT02DLocalFiniteElement
   {
   public:
     typedef LocalFiniteElementTraits<RT02DLocalBasis<D,R>,RT02DLocalCoefficients,
         RT02DLocalInterpolation<RT02DLocalBasis<D,R> > > Traits;
 
+    //! \brief Standard constructor
     RT02DLocalFiniteElement ()
     {
       gt.makeTriangle();
     }
 
+    /**
+     * \brief Make set number s, where 0 <= s < 8
+     *
+     * \param s Edge orientation indicator
+     */
     RT02DLocalFiniteElement (int s) : basis(s), interpolation(s)
     {
       gt.makeTriangle();

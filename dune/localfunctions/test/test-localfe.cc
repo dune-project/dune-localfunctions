@@ -22,7 +22,9 @@
 #include "../lagrange/p23d.hh"
 #include "../lagrange/pq22d.hh"
 #include "../lagrange/pk.hh"
+#if !DISABLE_DEPRECATED_METHOD_CHECK
 #include "../lagrange/q2.hh"
+#endif
 #include "../lagrange/qk.hh"
 
 #include "../brezzidouglasmarini/brezzidouglasmarini1cube2d.hh"
@@ -188,10 +190,10 @@ int main(int argc, char** argv) try
   success = testFE(prismp2fem) and success;
 
   Dune::PyramidP1LocalFiniteElement<double,double> pyramidp1fem;
-  success = testFE(pyramidp1fem) and success;
+  success = testFE(pyramidp1fem, DisableJacobian) and success;
 
   Dune::PyramidP2LocalFiniteElement<double,double> pyramidp2fem;
-  success = testFE(pyramidp2fem) and success;
+  success = testFE(pyramidp2fem, DisableJacobian) and success;
 
   success = PkLocalFiniteElementTest<1, 1>::test() and success;
 
@@ -201,6 +203,7 @@ int main(int argc, char** argv) try
 
   success = PkLocalFiniteElementTest<3, 10>::test() and success;
 
+#if !DISABLE_DEPRECATED_METHOD_CHECK
   Dune::Q2LocalFiniteElement<double,double,1> q21dlfem;
   success = testFE(q21dlfem) and success;
 
@@ -209,6 +212,7 @@ int main(int argc, char** argv) try
 
   Dune::Q2LocalFiniteElement<double,double,3> q23dlfem;
   success = testFE(q23dlfem) and success;
+#endif
 
   // --------------------------------------------------------
   //  Test some instantiations of QkLocalFiniteElement

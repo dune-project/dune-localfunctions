@@ -28,6 +28,7 @@ stamp-h1
 *.o
 *.lo
 *.la
+*~
 .deps/
 .libs/
 test-driver

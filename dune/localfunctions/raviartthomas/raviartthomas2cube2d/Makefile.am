@@ -6,3 +6,5 @@ raviartthomas2cube2d_HEADERS = \
 	raviartthomas2cube2dlocalinterpolation.hh
 
 include $(top_srcdir)/am/global-rules
+
+EXTRA_DIST = CMakeLists.txt

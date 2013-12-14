@@ -3,3 +3,5 @@ raviartthomas0cube3ddir = $(includedir)/dune/localfunctions/raviartthomas/raviar
 raviartthomas0cube3d_HEADERS = raviartthomas0cube3dall.hh
 
 include $(top_srcdir)/am/global-rules
+
+EXTRA_DIST = CMakeLists.txt

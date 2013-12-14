@@ -6,3 +6,5 @@ raviartthomas1cube3d_HEADERS = \
 	raviartthomas1cube3dlocalinterpolation.hh
 
 include $(top_srcdir)/am/global-rules
+
+EXTRA_DIST = CMakeLists.txt

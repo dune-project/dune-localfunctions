@@ -8,3 +8,5 @@ check_PROGRAMS = $(TESTS)
 test_biorthogonality_SOURCES = test-biorthogonality.cc
 
 include $(top_srcdir)/am/global-rules
+
+EXTRA_DIST = CMakeLists.txt

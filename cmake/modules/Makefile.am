@@ -1,4 +1,4 @@
-MODULES = DunelocalfunctionsMacros.cmake
+MODULES = DuneLocalfunctionsMacros.cmake
 
 modulesdir = $(datadir)/cmake/modules
 dist_modules_DATA = ${MODULES}

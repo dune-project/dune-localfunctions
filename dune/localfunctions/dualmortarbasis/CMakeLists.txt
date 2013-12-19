@@ -5,6 +5,7 @@ add_subdirectory(test EXCLUDE_FROM_ALL)
 install(FILES
   dualp1.hh
   dualq1.hh
+  dualpq1factory.hh
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions/dualmortarbasis)
 
 # We do not want want to build the tests during make all

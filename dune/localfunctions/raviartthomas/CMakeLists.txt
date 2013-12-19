@@ -5,6 +5,7 @@ set(raviartthomas_HEADERS  raviartthomas02d.hh raviartthomas0q2d.hh raviartthoma
 			raviartthomas0cube2d.hh raviartthomas0cube3d.hh
 			raviartthomas1cube2d.hh raviartthomas1cube3d.hh
 			raviartthomas2cube2d.hh
+			raviartthomascube.hh
 			raviartthomassimplex.hh)
 
 set(SUBDIRS

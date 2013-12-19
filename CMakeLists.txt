@@ -31,7 +31,7 @@ set(EXTRA_DIST dune.module)
 # we need automake 1.9 or newer
 set(AUTOMAKE_OPTIONS  foreign 1.9)
 
-set(SUBDIRS  dune doc m4)
+set(SUBDIRS  dune doc m4 cmake/modules)
 
 foreach(i ${SUBDIRS})
   if(${i} STREQUAL "test")

@@ -42,7 +42,6 @@ target_link_libraries(monomshapefunctiontest ${DUNE_LIBS})
 add_executable(virtualshapefunctiontest virtualshapefunctiontest.cc)
 target_link_libraries(virtualshapefunctiontest ${DUNE_LIBS})
 
-message("::::: ${dune-grid_FOUND} | ${ALUGRID_FOUND}")
 if(dune-grid_FOUND AND ALUGRID_FOUND)
   add_executable(refinedp1test refinedp1test.cc)
   add_dune_alugrid_flags(refinedp1test)

@@ -18,3 +18,5 @@ include $(top_srcdir)/am/global-rules
 # Distribute and install config.h.cmake
 configdir = $(datadir)/dune-localfunctions
 dist_config_DATA = config.h.cmake
+
+include /am/cmake-pkg-config

@@ -1,8 +1,8 @@
 Module: dune-localfunctions
-Version: 2.3-svn
+Version: 3.0-git
 Maintainer: dune-devel@dune-project.org
 #depending on
-Depends: dune-geometry (>= 2.3)
+Depends: dune-geometry (>= 3.0)
 # Needed for the debugging vtk output program
-Suggests: dune-grid (>= 2.3)
+Suggests: dune-grid (>= 3.0)
 Whitespace-Hook: Yes

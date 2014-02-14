@@ -13,7 +13,7 @@ set(localfunctions_HEADERS
 set(SUBDIRS
         brezzidouglasmarini
         common
-	dualmortarbasis
+        dualmortarbasis
         hierarchical
         lagrange
         meta

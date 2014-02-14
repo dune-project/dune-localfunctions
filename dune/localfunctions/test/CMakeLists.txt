@@ -9,12 +9,12 @@ set(TESTS  lagrangeshapefunctiontest
         monomshapefunctiontest
         virtualshapefunctiontest
         testgenericfem
-	test-lagrange1
-	test-lagrange2
-	test-lagrange3
-	test-orthonormal1
-	test-orthonormal2
-	test-orthonormal3
+        test-lagrange1
+        test-lagrange2
+        test-lagrange3
+        test-orthonormal1
+        test-orthonormal2
+        test-orthonormal3
         ${ALUPROG})
 
 

@@ -130,7 +130,7 @@ namespace Dune {
       localJacobian(size());
       localBasis.evaluateJacobian(in, localJacobian);
 
-      const typename Geometry::Jacobian &geoJacobian =
+      const typename Geometry::JacobianInverseTransposed &geoJacobian =
         geometry.jacobianInverseTransposed(in);
 
       out.resize(size());

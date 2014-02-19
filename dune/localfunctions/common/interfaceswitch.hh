@@ -211,7 +211,7 @@ namespace Dune {
       std::vector<typename Basis::Traits::JacobianType> lgrad(basis.size());
       basis.evaluateJacobian(xl, lgrad);
 
-      const typename Geometry::Jacobian& jac =
+      const typename Geometry::JacobianInverseTransposed& jac =
         geometry.jacobianInverseTransposed(xl);
 
       grad.resize(basis.size());

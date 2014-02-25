@@ -6,7 +6,6 @@
 #include <iostream>
 #include <vector>
 
-#include <dune/common/static_assert.hh>
 #include <dune/common/array.hh>
 #include <dune/common/fvector.hh>
 

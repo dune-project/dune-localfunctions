@@ -5,12 +5,10 @@
 #define DUNE_LOCALFUNCTIONS_COMMON_INTERFACESWITCH_HH
 
 #include <cstddef>
+#include <memory>
 #include <vector>
 
 #include <dune/common/fmatrix.hh>
-#include <dune/common/shared_ptr.hh>
-#include <dune/common/static_assert.hh>
-#include <dune/common/typetraits.hh>
 
 namespace Dune {
 
@@ -66,7 +64,7 @@ namespace Dune {
      * destroyed.  Access to the finite element is done by simply
      * dereferencing the store in both cases.
      */
-    typedef shared_ptr<const FiniteElement> Store;
+    typedef std::shared_ptr<const FiniteElement> Store;
     //! Store a finite element in the store.
     /**
      * For local finite elements this means storing the address of the passed

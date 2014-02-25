@@ -21,8 +21,9 @@ namespace Dune
       typename LB::Traits::DomainType x;
       typename LB::Traits::RangeType y;
 
-      dune_static_assert(LB::Traits::dimDomain <=3, "LocalInterpolation for HierarchicalSimplexP2 finite elements"
-                         " is only implemented for dimDomain <=3!");
+      static_assert(LB::Traits::dimDomain <= 3,
+                    "LocalInterpolation for HierarchicalSimplexP2 finite elements"
+                    " is only implemented for dimDomain <=3!");
 
       switch ( int(LB::Traits::dimDomain))  {
 

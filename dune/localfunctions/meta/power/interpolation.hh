@@ -9,8 +9,6 @@
 #include <cstddef>
 #include <vector>
 
-#include <dune/common/static_assert.hh>
-
 namespace Dune {
 
   //! \brief Meta-interpolation turning a scalar interpolation into
@@ -23,8 +21,8 @@ namespace Dune {
    */
   template<class Backend, class BasisTraits>
   class PowerInterpolation {
-    dune_static_assert(Backend::Traits::dimRange == 1, "PowerInterpolation "
-                       "works only with scalar backends");
+    static_assert(Backend::Traits::dimRange == 1,
+                  "PowerInterpolation  works only with scalar backends");
 
     const Backend *backend;
 

@@ -32,10 +32,10 @@ namespace Dune
     typedef CoeffF CoefficientFactory;
     typedef InterpolF InterpolationFactory;
 
-    dune_static_assert( (Conversion<Key,typename CoeffF::Key>::sameType),
-                        "incompatible keys between BasisCreator and CoefficientsCreator" );
-    dune_static_assert( (Conversion<Key,typename InterpolF::Key>::sameType),
-                        "incompatible keys between BasisCreator and InterpolationCreator" );
+    static_assert(Conversion<Key, typename CoeffF::Key>::sameType,
+                  "incompatible keys between BasisCreator and CoefficientsCreator");
+    static_assert(Conversion<Key, typename InterpolF::Key>::sameType,
+                  "incompatible keys between BasisCreator and InterpolationCreator" );
 
     /** \todo Please doc me */
     GenericLocalFiniteElement ( const GeometryType &gt, const Key &key )

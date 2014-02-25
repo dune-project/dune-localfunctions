@@ -20,7 +20,8 @@ namespace Dune
   class HierarchicalP2LocalFiniteElement
   {
 
-    dune_static_assert(1<=dim && dim<=3, "HierarchicalP2LocalFiniteElement only implemented for dim==1, 2, 3.");
+    static_assert(1 <= dim && dim <= 3,
+                  "HierarchicalP2LocalFiniteElement only implemented for dim==1, 2, 3.");
 
   public:
     /** \todo Please doc me !

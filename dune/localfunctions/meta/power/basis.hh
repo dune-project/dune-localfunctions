@@ -9,7 +9,6 @@
 
 #include <dune/common/fmatrix.hh>
 #include <dune/common/fvector.hh>
-#include <dune/common/static_assert.hh>
 
 namespace Dune {
 
@@ -22,8 +21,8 @@ namespace Dune {
    */
   template<class Backend, std::size_t dimR>
   class PowerBasis {
-    dune_static_assert(Backend::Traits::dimRange == 1, "PowerBasis works only "
-                       "with scalar backends");
+    static_assert(Backend::Traits::dimRange == 1,
+                  "PowerBasis works only with scalar backends");
 
     // don't use a reference here so this class stays copyable
     const Backend *backend;

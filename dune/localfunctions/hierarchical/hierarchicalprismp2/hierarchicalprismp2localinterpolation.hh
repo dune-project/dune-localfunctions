@@ -21,9 +21,6 @@ namespace Dune
       typename LB::Traits::DomainType x;
       typename LB::Traits::RangeType y;
       out.resize(18);
-      //dune_static_assert(LB::Traits::dimDomain ==3, "LocalInterpolation for HierarchicalPrismP2 finite elements"
-      //   " is only implemented for dimDomain ==3!");
-
 
       //First the  vertex dofs
       x[0] = 0.0;    x[1] = 0.0;     x[2] = 0.0;    f.evaluate(x, y);    out[0] = y;
@@ -74,8 +71,6 @@ namespace Dune
       out[17] = y - 0.25*(out[2] + out[1] + out[4] + out[5] );
 
     }
-
-
   };
 }
 

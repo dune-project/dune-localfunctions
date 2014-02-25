@@ -7,10 +7,8 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdlib>
+#include <memory>
 #include <vector>
-
-#include <dune/common/shared_ptr.hh>
-#include <dune/common/static_assert.hh>
 
 #include <dune/geometry/type.hh>
 
@@ -108,7 +106,7 @@ namespace Dune
 
     typedef MonomLocalFiniteElement<DF, RF, dim, p> LocalFE;
 
-    std::vector<shared_ptr<const LocalFE> > localFEs;
+    std::vector<std::shared_ptr<const LocalFE> > localFEs;
 
     void init(const GeometryType &gt) {
       std::size_t index = gt.id() >> 1;
@@ -146,8 +144,8 @@ namespace Dune
      * \note This constructor only works for dimensions up to and including 3.
      */
     MonomFiniteElementFactory() {
-      dune_static_assert(dim <= 3, "MonomFiniteElementFactory knows the "
-                         "available geometry types only up to dimension 3");
+      static_assert(dim <= 3, "MonomFiniteElementFactory knows the "
+                    "available geometry types only up to dimension 3");
 
       GeometryType gt;
       switch(dim) {

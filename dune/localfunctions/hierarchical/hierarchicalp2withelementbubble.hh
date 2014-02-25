@@ -18,7 +18,7 @@ namespace Dune
   class HierarchicalP2WithElementBubbleLocalFiniteElement
   {
 
-    dune_static_assert(dim==2, "HierarchicalP2WithElementBubbleLocalFiniteElement only implemented for dim==2.");
+    static_assert(dim==2, "HierarchicalP2WithElementBubbleLocalFiniteElement only implemented for dim==2.");
 
   public:
     /** \todo Please doc me !

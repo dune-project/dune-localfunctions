@@ -9,7 +9,6 @@
 
 #include <dune/common/fmatrix.hh>
 #include <dune/common/fvector.hh>
-#include <dune/common/static_assert.hh>
 #include <dune/common/typetraits.hh>
 
 #include <dune/geometry/type.hh>
@@ -64,14 +63,14 @@ namespace Dune {
    */
   template<class LocalBasis, class Geometry>
   class ScalarLocalToGlobalBasisAdaptor {
-    dune_static_assert(LocalBasis::Traits::dimRange == 1,
-                       "ScalarLocalToGlobalBasisAdaptor can only wrap a "
-                       "scalar local basis.");
-    dune_static_assert((is_same<typename LocalBasis::Traits::DomainFieldType,
-                            typename Geometry::ctype>::value),
-                       "ScalarLocalToGlobalBasisAdaptor: LocalBasis must use "
-                       "the same ctype as Geometry");
-    dune_static_assert
+    static_assert(LocalBasis::Traits::dimRange == 1,
+                  "ScalarLocalToGlobalBasisAdaptor can only wrap a "
+                  "scalar local basis.");
+    static_assert((is_same<typename LocalBasis::Traits::DomainFieldType,
+                           typename Geometry::ctype>::value),
+                   "ScalarLocalToGlobalBasisAdaptor: LocalBasis must use "
+                   "the same ctype as Geometry");
+    static_assert
       ( static_cast<std::size_t>(LocalBasis::Traits::dimDomain) ==
       static_cast<std::size_t>(Geometry::mydimension),
       "ScalarLocalToGlobalBasisAdaptor: LocalBasis domain dimension must "

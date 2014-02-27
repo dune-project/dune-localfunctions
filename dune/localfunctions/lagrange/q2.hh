@@ -3,76 +3,16 @@
 #ifndef DUNE_Q2_LOCALFINITEELEMENT_HH
 #define DUNE_Q2_LOCALFINITEELEMENT_HH
 
-#warning The class Q2LocalFiniteElement from q2.hh is deprecated, and will be removed\
-  after the release of Dune 2.3.  Please use QkLocalFiniteElement from qk.hh instead.
-
+#include <dune/common/typetraits.hh>
 #include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include <dune/localfunctions/common/localtoglobaladaptors.hh>
-#include "q2/q2localbasis.hh"
-#include "q2/q2localcoefficients.hh"
-#include "q2/q2localinterpolation.hh"
+#include "pk.hh"
+#include "qk.hh"
 
 namespace Dune
 {
-
-  /** \brief 2nd-order Lagrangian finite elements on hypercubes
-   * \tparam D Type used for coordinates
-   * \tparam R Type used for function values
-   * \tparam dim Dimension of the reference cube
-   */
-  template<class D, class R, int dim>
-  class Q2LocalFiniteElement
-  {
-  public:
-    /** \todo Please doc me !
-     */
-    typedef LocalFiniteElementTraits<Q2LocalBasis<D,R,dim>,Q2LocalCoefficients<dim>,
-        Q2LocalInterpolation<Q2LocalBasis<D,R,dim> > > Traits;
-
-    /** \brief Default constructor
-     */
-    Q2LocalFiniteElement ()
-    {
-      gt.makeCube(dim);
-    }
-
-    /** \brief Get the actual shape functions
-     */
-    const typename Traits::LocalBasisType& localBasis () const
-    {
-      return basis;
-    }
-
-    /** \todo Please doc me!
-     */
-    const typename Traits::LocalCoefficientsType& localCoefficients () const
-    {
-      return coefficients;
-    }
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalInterpolationType& localInterpolation () const
-    {
-      return interpolation;
-    }
-
-    /** \brief Get the type of the reference element
-     */
-    GeometryType type () const
-    {
-      return gt;
-    }
-
-  private:
-    Q2LocalBasis<D,R,dim> basis;
-    Q2LocalCoefficients<dim> coefficients;
-    Q2LocalInterpolation<Q2LocalBasis<D,R,dim> > interpolation;
-    GeometryType gt;
-  };
-
   //! Factory for global-valued Q23D elements
   /**
    * \tparam Geometry Type of the geometry.  Used to extract the domain field
@@ -82,10 +22,14 @@ namespace Dune
   template<class Geometry, class RF>
   class Q2FiniteElementFactory :
     public ScalarLocalToGlobalFiniteElementAdaptorFactory<
-        Q2LocalFiniteElement<typename Geometry::ctype, RF, Geometry::mydimension>, Geometry
-        >
+      typename conditional<Geometry::mydimension == 1,
+        PkLocalFiniteElement<typename Geometry::ctype, RF, 1, 2>,
+        QkLocalFiniteElement<typename Geometry::ctype, RF, Geometry::mydimension, 2> >::type,
+      Geometry>
   {
-    typedef Q2LocalFiniteElement<typename Geometry::ctype, RF, Geometry::mydimension> LFE;
+    typedef typename conditional<Geometry::mydimension == 1,
+      PkLocalFiniteElement<typename Geometry::ctype, RF, 1, 2>,
+      QkLocalFiniteElement<typename Geometry::ctype, RF, Geometry::mydimension, 2> >::type LFE;
     typedef ScalarLocalToGlobalFiniteElementAdaptorFactory<LFE, Geometry> Base;
 
     static const LFE lfe;

@@ -22,9 +22,6 @@
 #include "../lagrange/p23d.hh"
 #include "../lagrange/pq22d.hh"
 #include "../lagrange/pk.hh"
-#if !DISABLE_DEPRECATED_METHOD_CHECK
-#include "../lagrange/q2.hh"
-#endif
 #include "../lagrange/qk.hh"
 
 #include "../brezzidouglasmarini/brezzidouglasmarini1cube2d.hh"
@@ -202,17 +199,6 @@ int main(int argc, char** argv) try
   success = PkLocalFiniteElementTest<2, 10>::test() and success;
 
   success = PkLocalFiniteElementTest<3, 10>::test() and success;
-
-#if !DISABLE_DEPRECATED_METHOD_CHECK
-  Dune::Q2LocalFiniteElement<double,double,1> q21dlfem;
-  success = testFE(q21dlfem) and success;
-
-  Dune::Q2LocalFiniteElement<double,double,2> q22dlfem;
-  success = testFE(q22dlfem) and success;
-
-  Dune::Q2LocalFiniteElement<double,double,3> q23dlfem;
-  success = testFE(q23dlfem) and success;
-#endif
 
   // --------------------------------------------------------
   //  Test some instantiations of QkLocalFiniteElement

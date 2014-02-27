@@ -46,29 +46,6 @@ namespace Dune
       : Base(gt, order)
     {}
   };
-
-  /**
-   * \copydoc Dune::RaviartThomasSimplexLocalFiniteElement
-   *
-   * \deprecated This class is deprecated and will be removed after Dune 2.3.
-   *             Use RaviartThomasSimplexLocalFiniteElement instead.
-   **/
-  template< unsigned int dimDomain, class D, class R,
-      class SF=R, class CF=SF >
-  class
-  DUNE_DEPRECATED_MSG("Use RaviartThomasSimplexLocalFiniteElement instead")
-  RaviartThomasLocalFiniteElement
-    : public GenericLocalFiniteElement< RaviartThomasBasisFactory< dimDomain, SF, CF >,
-          RaviartThomasCoefficientsFactory< dimDomain >,
-          RaviartThomasL2InterpolationFactory< dimDomain, SF > >
-  {
-  public:
-    /** \todo Please doc me */
-    RaviartThomasLocalFiniteElement(const GeometryType &gt, unsigned int order)
-      : RaviartThomasSimplexLocalFiniteElement<dimDomain, D, R, SF, CF>::
-        RaviartThomasSimplexLocalFiniteElement(gt, order)
-    {}
-  };
 } // namespace Dune
 
 #endif // #ifndef DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS_SIMPLEX_HH

@@ -1,4 +1,4 @@
-set(SUBDIRS  p0 p1 p23d pk1d pk2d pk3d prismp1 prismp2 pyramidp1 pyramidp2 q1 q2 qk)
+set(SUBDIRS  p0 p1 p23d pk1d pk2d pk3d prismp1 prismp2 pyramidp1 pyramidp2 q1 qk)
 
 set(lagrangedir  ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions/lagrange)
 set(lagrange_HEADERS  emptypoints.hh        lagrangebasis.hh

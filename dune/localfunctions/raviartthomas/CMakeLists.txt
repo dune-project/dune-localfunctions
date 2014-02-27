@@ -4,16 +4,10 @@ set(raviartthomas_HEADERS
   raviartthomas02d.hh
   raviartthomas0cube2d.hh
   raviartthomas0cube3d.hh
-  raviartthomas0q2d.hh
-  raviartthomas0q3d.hh
-  raviartthomas0q.hh
   raviartthomas12d.hh
   raviartthomas1cube2d.hh
   raviartthomas1cube3d.hh
   raviartthomas2cube2d.hh
-  raviartthomas1q2d.hh
-  raviartthomas1q3d.hh
-  raviartthomas2q2d.hh
   raviartthomascube.hh
   raviartthomassimplex.hh)
 

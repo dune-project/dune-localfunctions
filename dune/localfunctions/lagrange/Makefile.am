@@ -1,4 +1,4 @@
-SUBDIRS = p0 p1 p23d pk1d pk2d pk3d prismp1 prismp2 pyramidp1 pyramidp2 q1 q2 qk
+SUBDIRS = p0 p1 p23d pk1d pk2d pk3d prismp1 prismp2 pyramidp1 pyramidp2 q1 qk
 
 lagrangedir = $(includedir)/dune/localfunctions/lagrange
 lagrange_HEADERS = emptypoints.hh        lagrangebasis.hh         \

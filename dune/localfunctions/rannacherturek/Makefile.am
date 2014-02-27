@@ -1,6 +1,6 @@
 rannacherturekdir = $(includedir)/dune/localfunctions/rannacherturek
 
-rannacherturek_HEADERS = rannacherturek2d.hh \
+rannacherturek_HEADERS = \
 			 rannacherturek.hh \
 			 rannachertureklocalbasis.hh \
 			 rannachertureklocalcoefficients.hh \

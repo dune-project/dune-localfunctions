@@ -2,15 +2,11 @@ set(rannacherturekdir  ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions/rannacher
 
 set(rannacherturek_HEADERS
   rannacherturek.hh
-  rannacherturek2d.hh
   rannachertureklocalbasis.hh
   rannachertureklocalcoefficients.hh
   rannachertureklocalinterpolation.hh)
 
 set(SUBDIRS  rannacherturek2d rannacherturek3d)
-
-# include not needed for CMake
-# include $(top_srcdir)/am/global-rules
 
 install(FILES ${rannacherturek_HEADERS} DESTINATION ${rannacherturekdir})
 foreach(i ${SUBDIRS})

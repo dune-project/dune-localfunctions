@@ -4,10 +4,8 @@ set(brezzidouglasmarini_HEADERS
   brezzidouglasmarini1cube2d.hh
   brezzidouglasmarini1cube3d.hh
   brezzidouglasmarini2cube2d.hh
-  brezzidouglasmarini1q2d.hh
   brezzidouglasmarini1simplex2d.hh
-  brezzidouglasmarini2simplex2d.hh
-  brezzidouglasmarini12d.hh)
+  brezzidouglasmarini2simplex2d.hh)
 
 set(SUBDIRS
   brezzidouglasmarini1cube2d

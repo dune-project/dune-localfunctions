@@ -11,7 +11,6 @@
 
 #include <dune/common/exceptions.hh>
 #include <dune/common/fvector.hh>
-#include <dune/common/static_assert.hh>
 
 #include <dune/geometry/type.hh>
 #include <dune/geometry/generalvertexorder.hh>
@@ -40,7 +39,7 @@ void testEdgeS0_5(int &result) {
   typedef typename TestGeos::Geometry Geometry;
   const Geometry &geo = testGeos.get(gt);
 
-  dune_static_assert(dim <= 3, "Need to update vertexIds array for dim > 3");
+  static_assert(dim <= 3, "Need to update vertexIds array for dim > 3");
   std::size_t vertexIds[] = {0, 1, 2, 3};
   Dune::GeneralVertexOrder<dim, std::size_t>
   vo(gt, vertexIds+0, vertexIds+dim+1);

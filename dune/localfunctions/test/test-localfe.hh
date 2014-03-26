@@ -266,7 +266,10 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned order = 2)
   }
   if (not (disabledTests & DisableJacobian))
     success = testJacobian<FE>(fe, order) and success;
-
+  if (not DisableJacobian) // make sure diffOrder is 0
+    success = (FE::Traits::LocalBasisType::Traits::diffOrder == 0) and success;
+  if (DisableJacobian) // make sure diffOrder is >= 1
+    success = (FE::Traits::LocalBasisType::Traits::diffOrder >= 1) and success;
 
   if (not (disabledTests & DisableVirtualInterface))
   {
@@ -280,8 +283,16 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned order = 2)
       success = testLocalInterpolation<VirtualFEInterface>(virtualFE) and success;
     if (not (disabledTests & DisableJacobian))
       success = testJacobian<VirtualFEInterface>(virtualFE) and success;
+    if (not DisableJacobian) // make sure diffOrder is 0
+      success = (VirtualFEInterface::Traits::LocalBasisType::Traits::diffOrder == 0) and success;
+    if (DisableJacobian) // make sure diffOrder is >= 1
+      success = (VirtualFEInterface::Traits::LocalBasisType::Traits::diffOrder >= 1) and success;
   }
 
   return success;
 }
+
+#define TEST_FE(A) { bool b = testFE(A); std::cout << "testFE(" #A ") " << (b?"succeded\n":"failed\n"); success &= b; }
+#define TEST_FE2(A,B) { bool b = testFE(A, B); if (!b) std::cerr << "testFE(" #A ", " #B ") " << (b?"succeded\n":"failed\n"); success &= b; }
+
 #endif // DUNE_LOCALFUNCTIONS_TEST_TEST_LOCALFE_HH

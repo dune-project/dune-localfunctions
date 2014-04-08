@@ -9,6 +9,7 @@
 #include <vector>
 
 #include <dune/common/fmatrix.hh>
+#include <dune/common/static_assert.hh>
 
 namespace Dune {
 

@@ -78,7 +78,7 @@ namespace Dune {
       "match local dimension of Geometry");
 
     const LocalBasis& localBasis;
-    const Geometry& geometry;
+    Geometry geometry;
 
   public:
     typedef LocalToGlobalBasisAdaptorTraits<typename LocalBasis::Traits,

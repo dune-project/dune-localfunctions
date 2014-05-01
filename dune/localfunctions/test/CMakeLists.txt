@@ -1,11 +1,6 @@
-# $Id: Makefile.am 4150 2008-05-15 16:12:46Z christi $
-
-if(dune-grid_FOUND AND ALUGRID_FOUND)
-  set(ALUPROG  refinedp1test)
-endif(dune-grid_FOUND AND ALUGRID_FOUND)
-
 # which tests to run
-set(TESTS  lagrangeshapefunctiontest
+set(TESTS
+        lagrangeshapefunctiontest
         monomshapefunctiontest
         virtualshapefunctiontest
         testgenericfem
@@ -14,15 +9,7 @@ set(TESTS  lagrangeshapefunctiontest
         test-lagrange3
         test-orthonormal1
         test-orthonormal2
-        test-orthonormal3
-        ${ALUPROG})
-
-
-# programs just to build when "make check" is used
-set(check_PROGRAMS  ${TESTS})
-
-# output code coverage
-#AM_CXXFLAGS = @AM_CPPFLAGS@ -fprofile-arcs -ftest-coverage
+        test-orthonormal3)
 
 set(noinst_HEADERS
         geometries.hh
@@ -30,12 +17,13 @@ set(noinst_HEADERS
         test-localfe.hh)
 
 # define the programs
-
 add_executable(testgenericfem testgenericfem.cc)
 add_dune_gmp_flags(testgenericfem)
 target_link_libraries(testgenericfem ${DUNE_LIBS})
+
 add_executable(lagrangeshapefunctiontest lagrangeshapefunctiontest.cc)
 target_link_libraries(lagrangeshapefunctiontest ${DUNE_LIBS})
+
 add_executable(monomshapefunctiontest monomshapefunctiontest.cc)
 target_link_libraries(monomshapefunctiontest ${DUNE_LIBS})
 
@@ -43,8 +31,10 @@ add_executable(virtualshapefunctiontest virtualshapefunctiontest.cc)
 target_link_libraries(virtualshapefunctiontest ${DUNE_LIBS})
 
 if(dune-grid_FOUND AND ALUGRID_FOUND)
+  LIST(APPEND TESTS refinedp1test)
   add_executable(refinedp1test refinedp1test.cc)
   add_dune_alugrid_flags(refinedp1test)
+  target_link_libraries(refinedp1test ${DUNE_LIBS})
 endif(dune-grid_FOUND AND ALUGRID_FOUND)
 
 list(APPEND TESTS test-edges0.5)

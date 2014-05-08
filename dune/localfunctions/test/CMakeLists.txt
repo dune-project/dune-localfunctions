@@ -30,13 +30,6 @@ target_link_libraries(monomshapefunctiontest ${DUNE_LIBS})
 add_executable(virtualshapefunctiontest virtualshapefunctiontest.cc)
 target_link_libraries(virtualshapefunctiontest ${DUNE_LIBS})
 
-if(dune-grid_FOUND AND ALUGRID_FOUND)
-  LIST(APPEND TESTS refinedp1test)
-  add_executable(refinedp1test refinedp1test.cc)
-  add_dune_alugrid_flags(refinedp1test)
-  target_link_libraries(refinedp1test ${DUNE_LIBS})
-endif(dune-grid_FOUND AND ALUGRID_FOUND)
-
 list(APPEND TESTS test-edges0.5)
 add_executable(test-edges0.5 test-edges0.5.cc)
 target_link_libraries(test-edges0.5 ${DUNE_LIBS})

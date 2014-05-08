@@ -1,11 +1,5 @@
 # $Id: Makefile.am 4150 2008-05-15 16:12:46Z christi $
 
-if HAVE_DUNE_GRID
-if ALUGRID
-  ALUPROG = refinedp1test
-endif
-endif
-
 # which tests to run
 TESTS = lagrangeshapefunctiontest		\
 	monomshapefunctiontest			\
@@ -36,22 +30,6 @@ monomshapefunctiontest_SOURCES = monomshapefunctiontest.cc
 
 virtualshapefunctiontest_SOURCES = virtualshapefunctiontest.cc
 virtualshapefunctiontest_CPPFLAGS = $(AM_CPPFLAGS)
-
-if HAVE_DUNE_GRID
-if ALUGRID
-refinedp1test_SOURCES = refinedp1test.cc
-refinedp1test_CPPFLAGS = $(AM_CPPFLAGS)		\
-	$(DUNEMPICPPFLAGS)			\
-	$(ALUGRID_CPPFLAGS)
-refinedp1test_LDFLAGS = $(AM_LDFLAGS)		\
-	$(DUNEMPILDFLAGS)			\
-	$(ALUGRID_LDFLAGS)
-refinedp1test_LDADD =				\
-	$(ALUGRID_LDFLAGS) $(ALUGRID_LIBS)	\
-	$(DUNEMPILIBS)				\
-	$(LDADD)
-endif
-endif
 
 TESTS += test-edges0.5
 test_edges0_5_SOURCES = test-edges0.5.cc

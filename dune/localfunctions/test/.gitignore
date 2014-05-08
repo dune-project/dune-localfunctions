@@ -3,7 +3,6 @@ Makefile.in
 lagrangeshapefunctiontest
 monomshapefunctiontest
 virtualshapefunctiontest
-refinedp1test
 testfem
 testgenericfem
 test-edges0.5

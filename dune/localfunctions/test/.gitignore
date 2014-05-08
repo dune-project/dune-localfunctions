@@ -1,5 +1,9 @@
 Makefile
 Makefile.in
+
+*.log
+*.trs
+
 lagrangeshapefunctiontest
 monomshapefunctiontest
 virtualshapefunctiontest

@@ -4,7 +4,6 @@
 #define DUNE_MONOMLOCALCOEFFICIENTS_HH
 
 #include <cstddef>
-#include <iostream>
 #include <vector>
 
 #include "../common/localkey.hh"

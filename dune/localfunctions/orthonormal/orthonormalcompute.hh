@@ -142,28 +142,6 @@ namespace ONBCompute
         Dune::field_cast( Base::operator()( i, row ), vec[ i ] );
     }
 
-    bool test ()
-    {
-      bool ret = true;
-      const std::size_t N = Base::rows();
-
-      // check that C^T S C = I
-      for( std::size_t i = 0; i < N; ++i )
-      {
-        for( std::size_t j = 0; j < N; ++j )
-        {
-          scalar_t prod( 0 );
-          for( std::size_t k = 0; k < N; ++k )
-          {
-            for( std::size_t l = 0; l < N; ++l )
-              prod += Base::operator()( l, i ) * S( l, k ) * Base::operator()( k, j );
-          }
-          assert( (i == j) || (fabs( Dune::field_cast< double >( prod ) ) < 1e-10) );
-        }
-      }
-      return ret;
-    }
-
   private:
     void sprod ( int col1, int col2, scalar_t &ret )
     {

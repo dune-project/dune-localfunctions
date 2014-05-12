@@ -229,8 +229,6 @@ namespace Dune
   template<class D, class R, unsigned int d, unsigned int p, unsigned diffOrder = p>
   class MonomLocalBasis
   {
-    enum { static_size = MonomImp::Size<d,p>::val };
-
   public:
     //! \brief export type traits for function signature
     typedef LocalBasisTraits<D,d,Dune::FieldVector<D,d>,R,1,Dune::FieldVector<R,1>,
@@ -239,7 +237,7 @@ namespace Dune
     //! \brief number of shape functions
     unsigned int size () const
     {
-      return static_size;
+      return MonomImp::Size<d,p>::val;
     }
 
     //! \brief Evaluate all shape functions

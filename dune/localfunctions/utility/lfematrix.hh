@@ -11,13 +11,10 @@
 namespace Dune
 {
 
-  template< class F, bool aligned = false >
-  class LFEMatrix;
-
-  template< class F, bool aligned >
+  template< class F >
   class LFEMatrix
   {
-    typedef LFEMatrix< F, aligned > This;
+    typedef LFEMatrix< F > This;
     typedef std::vector< F > Row;
     typedef std::vector<Row> RealMatrix;
 
@@ -148,8 +145,8 @@ namespace Dune
     unsigned int cols_,rows_;
   };
 
-  template< class Field, bool aligned >
-  inline std::ostream &operator<<(std::ostream &out, const LFEMatrix<Field,aligned> &mat)
+  template< class Field >
+  inline std::ostream &operator<<(std::ostream &out, const LFEMatrix<Field> &mat)
   {
     for (unsigned int r=0; r<mat.rows(); ++r)
     {

@@ -1,19 +1,17 @@
 \documentclass[a4paper,11pt]{article}
 \usepackage{multicol}
-%\usepackage{multitoc}
-%\usepackage{german}
-%\usepackage{bibgerm}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{xspace}
 \usepackage[body={148mm,240mm,nohead}]{geometry}
 \usepackage[ansinew]{inputenc}
 \usepackage{listings}
-\usepackage{relsize}
 \usepackage{tikz}
 \usepackage{hyperref}
 \lstset{language=C++, basicstyle=\ttfamily,
-  stringstyle=\ttfamily, commentstyle=\it, extendedchars=true}
+  stringstyle=\ttfamily, commentstyle=\it, extendedchars=true,
+  breaklines=true
+}
 
 \usepgflibrary{arrows}
 
@@ -118,10 +116,7 @@ people should be able to use the shape functions from \dune without having
 to use anything else from \dune.  The only exception here are \modulename{dune-common}
 and \modulename{dune-geometry} which most \dune modules depend on.
 
-In addition \modulename{dune-localfunctions} suggests \modulename{dune-grid} which
-is mainly used in tests.
-
-\section{The \lstinline!LocalFiniteElement! Interface}
+\section{\texorpdfstring{The \lstinline!LocalFiniteElement! Interface}{The LocalFiniteElement Interface}}
 \label{sec:static_interface}
 The interface of a \lstinline!LocalFiniteElement! is designed to provide the user
 with all the functionality needed for the implementation of finite element methods.
@@ -164,7 +159,7 @@ The \lstinline!LocalFiniteElementTraits! class is a simple traits helper struct 
 
 Each local finite element has to provide an implementation of the three classes that are described in the next sections.
 
-\subsection{The \lstinline!LocalBasis! Classes}
+\subsection{\texorpdfstring{The \lstinline!LocalBasis! Classes}{The LocalBasis Classes}}
 The \lstinline!LocalBasis! class represents the set of shape functions:
 \begin{lstlisting}
 class LocalBasisInterface
@@ -200,7 +195,7 @@ The \texttt{LocalBasisTraits} class is a traits helper class which holds informa
 of the shape functions is represented in C++ types. A description of the template parameter above can
 be found in the doxygen documentation of the traits class. 
 
-\subsection{The \lstinline!LocalCoefficients! Classes}
+\subsection{\texorpdfstring{The \lstinline!LocalCoefficients! Classes}{The LocalCoefficients Classes}}
 To describe the position of the degrees of freedom (shape functions) of a \texttt{Local\-Finite\-Element}
 it is assumed that each degree of freedom can be attached to a subentity of the underlying reference element.
 For every degree of freedom we thus have
@@ -228,7 +223,7 @@ class LocalCoefficientsInterface
 };
 \end{lstlisting}
 
-\subsection{The \lstinline!LocalInterpolation! Classes}
+\subsection{\texorpdfstring{The \lstinline!LocalInterpolation! Classes}{The LocalInterpolation Classes}}
 \begin{lstlisting}
 class LocalInterpolationVirtualInterface 
 {
@@ -673,7 +668,7 @@ the transposed Jacobians by gradient where applicable, we obtain
     = \hat J_\mu^{-T}(\hat x) \cdot \hat\nabla\hat f|_{\hat x}
 \end{equation}
 
-\subsubsection{Raviart-Thomas Elements -- Piola Transformation}
+\subsubsection{Piola Transformation for Raviart-Thomas Elements}
 
 Raviart-Thomas elements are finite elements that ensure continuity of the
 normal component across grid elements.  They do allow for jumps in the

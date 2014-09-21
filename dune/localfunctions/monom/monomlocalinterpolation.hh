@@ -26,7 +26,13 @@ namespace Dune
     typedef QuadratureRule<DF,dimD> QR;
     typedef typename QR::iterator QRiterator;
 
-    void init() {
+  public:
+    MonomLocalInterpolation (const GeometryType &gt_,
+                             const LB &lb_)
+      : gt(gt_), lb(lb_), Minv(0)
+        , qr(QuadratureRules<DF,dimD>::rule(gt, 2*lb.order()))
+    {
+      // Compute inverse of the mass matrix of the local basis, and store it in Minv
       if(size != lb.size())
         DUNE_THROW(Exception, "size template parameter does not match size of "
                    "local basis");
@@ -42,13 +48,6 @@ namespace Dune
       }
       Minv.invert();
     }
-
-  public:
-    MonomLocalInterpolation (const GeometryType &gt_,
-                             const LB &lb_)
-      : gt(gt_), lb(lb_), Minv(0)
-        , qr(QuadratureRules<DF,dimD>::rule(gt, 2*lb.order()))
-    { init(); }
 
     /** \brief Determine coefficients interpolating a given function
      *

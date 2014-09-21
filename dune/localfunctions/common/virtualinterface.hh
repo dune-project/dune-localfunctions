@@ -237,7 +237,7 @@ namespace Dune
    * contains a interpolate with function type
    * as template parameter.
    *
-   * This template method can not be defined in the same
+   * This template method cannot be defined in the same
    * class as the virtual method. Otherwise name resolution fails.
    */
   template<class DomainType, class RangeType>

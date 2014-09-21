@@ -36,7 +36,7 @@ namespace Dune
     //! \brief number of coefficients
     std::size_t size() const
     {
-      return 6;
+      return 18;
     }
 
     //! \brief get i'th index

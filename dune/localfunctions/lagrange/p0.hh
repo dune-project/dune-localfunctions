@@ -54,6 +54,12 @@ namespace Dune
       return interpolation;
     }
 
+    /** \brief The number of shape functions -- here: 1 */
+    uint size () const
+    {
+      return 1;
+    }
+
     /** \todo Please doc me !
      */
     GeometryType type () const

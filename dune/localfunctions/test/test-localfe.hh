@@ -259,6 +259,24 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned order = 2)
     success = false;
   }
 
+  if (fe.size() != fe.localBasis().size())
+  {
+    std::cout << "Bug in finite element type "
+              << Dune::className(fe) << std::endl;
+    std::cout << "    Size reported by LocalFiniteElement is " << fe.size() << std::endl;
+    std::cout << "    but size reported by LocalBasis is " << fe.localBasis().size() << std::endl;
+    success = false;
+  }
+
+  if (fe.size() != fe.localCoefficients().size())
+  {
+    std::cout << "Bug in finite element type "
+              << Dune::className(fe) << std::endl;
+    std::cout << "    Size reported by LocalFiniteElement is " << fe.size() << std::endl;
+    std::cout << "    but size reported by LocalCoefficients is " << fe.localCoefficients().size() << std::endl;
+    success = false;
+  }
+
   if (not (disabledTests & DisableLocalInterpolation))
   {
     fe.localInterpolation().interpolate(Func<FE>(),c);

@@ -343,6 +343,12 @@ namespace Dune
       return localInterpolationImp_;
     }
 
+    /** \brief Number of shape functions in this finite element */
+    uint size () const
+    {
+      return impl_->size();
+    }
+
     //! \copydoc LocalFiniteElementVirtualInterface::type
     const GeometryType type () const
     {

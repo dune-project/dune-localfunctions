@@ -60,6 +60,12 @@ namespace Dune
       return interpolation;
     }
 
+    /** \brief Number of shape functions in this finite element */
+    uint size () const
+    {
+      return basis.size();
+    }
+
     /** \todo Please doc me !
      */
     GeometryType type () const

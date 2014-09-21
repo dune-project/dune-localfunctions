@@ -81,6 +81,12 @@ namespace Dune
       return *(finiteElement_.interpol_);
     }
 
+    /** \brief Number of shape functions in this finite element */
+    uint size () const
+    {
+      return finiteElement_.basis_->size();
+    }
+
     /** \todo Please doc me !
      */
     GeometryType type () const

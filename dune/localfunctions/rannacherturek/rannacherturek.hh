@@ -49,6 +49,12 @@ namespace Dune
       return localInterpolation_;
     }
 
+    /** \brief Number of shape functions in this finite element */
+    uint size () const
+    {
+      return localBasis_.size();
+    }
+
     //! \brief return geometry type
     GeometryType type () const
     {

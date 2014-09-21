@@ -54,8 +54,8 @@ namespace Dune
      *
      * The method computes the coefficients
      * for the L^2 projection with respect to the given
-     * GeometryType. Be carefull: the implementation is
-     * unstable for higher polynolial degrees.
+     * GeometryType. Be careful: the implementation is
+     * unstable for higher polynomial degrees.
      */
     template<typename F, typename C>
     void interpolate (const F& f, std::vector<C>& out) const

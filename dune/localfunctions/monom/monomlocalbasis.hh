@@ -154,7 +154,7 @@ namespace Dune
         // start with the highest exponent for this dimension, then work down
         for (int e = bound; e >= 0; --e)
         {
-          // the rest rest of the available exponents, to be used by the other
+          // the rest of the available exponents, to be used by the other
           // dimensions
           int newbound = bound - e;
           if(e < derivatives[d])

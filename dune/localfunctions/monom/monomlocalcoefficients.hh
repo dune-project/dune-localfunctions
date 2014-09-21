@@ -12,7 +12,7 @@ namespace Dune
 {
 
   /**@ingroup LocalLayoutImplementation
-         \brief Layout map for Monom elements
+         \brief Layout map for monomial finite elements
 
          \nosubgrouping
      \implements Dune::LocalCoefficientsVirtualImp

@@ -21,10 +21,10 @@
 namespace Dune
 {
 
-  /** \brief Monom basis for discontinuous Galerkin
+  /** \brief Monomial basis for discontinuous Galerkin methods
    *
-   * Be carefull: Although MonomLocalInterpolation::interpolate
-   * uses an L^2 projection it is unstable for higher polynolial degrees.
+   * Be careful: Although MonomLocalInterpolation::interpolate
+   * uses an L^2 projection it is unstable for higher polynomial degrees.
    *
    * \tparam D Type used for coordinates
    * \tparam R Type used for shape function values

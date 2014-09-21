@@ -13,7 +13,7 @@ namespace Dune
 
   /**
    * \ingroup LocalLayoutImplementation
-   * \brief Layout map for Brezzi-Douglas-Marini-1 elements on quadrilaterals
+   * \brief Layout map for Brezzi-Douglas-Marini-1 elements on hexahedra
    *
    * \nosubgrouping
    * \implements Dune::LocalCoefficientsVirtualImp

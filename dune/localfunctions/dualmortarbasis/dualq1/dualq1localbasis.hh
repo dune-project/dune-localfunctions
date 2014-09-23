@@ -3,6 +3,8 @@
 #ifndef DUNE_DUAL_Q1_LOCALBASIS_HH
 #define DUNE_DUAL_Q1_LOCALBASIS_HH
 
+#include <array>
+
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
 
@@ -26,7 +28,7 @@ namespace Dune
     typedef LocalBasisTraits<D,dim,Dune::FieldVector<D,dim>,R,1,Dune::FieldVector<R,1>,
         Dune::FieldMatrix<R,1,dim> > Traits;
 
-    void setCoefficients(const Dune::array<Dune::FieldVector<R, (1<<dim)> ,(1<<dim)>& coefficients)
+    void setCoefficients(const std::array<Dune::FieldVector<R, (1<<dim)> ,(1<<dim)>& coefficients)
     {
       coefficients_ = coefficients;
     }
@@ -114,7 +116,7 @@ namespace Dune
     }
 
   private:
-    Dune::array<Dune::FieldVector<R, (1<<dim)> ,(1<<dim)> coefficients_;
+    std::array<Dune::FieldVector<R, (1<<dim)> ,(1<<dim)> coefficients_;
   };
 }
 #endif

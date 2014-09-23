@@ -3,6 +3,7 @@
 #ifndef DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI1_CUBE3D_LOCALBASIS_HH
 #define DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI1_CUBE3D_LOCALBASIS_HH
 
+#include <array>
 #include <vector>
 #include <bitset>
 
@@ -218,7 +219,7 @@ namespace Dune
     }
 
   private:
-    array<R,6> sign_;
+    std::array<R,6> sign_;
   };
 } // end namespace Dune
 #endif // DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI1_CUBE3D_LOCALBASIS_HH

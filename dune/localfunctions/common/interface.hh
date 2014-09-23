@@ -8,10 +8,10 @@
 #error This header exists for documentation purposes only and should never be included directly.
 #endif
 
+#include <array>
 #include <cstddef>
 #include <vector>
 
-#include <dune/common/array.hh>
 
 #include <dune/geometry/type.hh>
 
@@ -244,7 +244,7 @@ namespace Dune {
      * \note Only required for Traits::diffOrder >= 2
      */
     void evaluate
-      ( const array<std::size_t, Traits::dimDomainGlobal>& directions,
+      ( const std::array<std::size_t, Traits::dimDomainGlobal>& directions,
       const Traits::DomainLocal& in,
       std::vector<Traits::Range>& out) const;
   };

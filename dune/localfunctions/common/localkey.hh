@@ -3,6 +3,7 @@
 #ifndef DUNE_LOCALKEY_HH
 #define DUNE_LOCALKEY_HH
 
+#include <array>
 #include <cstddef>
 
 #include <dune/common/array.hh>
@@ -91,7 +92,7 @@ namespace Dune
   private:
 
     // We use an array to store the values in order to be able to use the array::operator< implementation
-    Dune::array<unsigned int,3> values_;
+    std::array<unsigned int,3> values_;
 
   };
 

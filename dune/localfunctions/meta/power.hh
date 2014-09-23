@@ -5,8 +5,7 @@
 #define DUNE_LOCALFUNCTIONS_META_POWER_HH
 
 #include <cstddef>
-
-#include <dune/common/shared_ptr.hh>
+#include <memory>
 
 #include <dune/geometry/type.hh>
 
@@ -38,7 +37,7 @@ namespace Dune {
           typename Basis::Traits> Interpolation;
     };
   private:
-    shared_ptr<const Backend> backend;
+    std::shared_ptr<const Backend> backend;
     typename Traits::Basis basis_;
     typename Traits::Coefficients coefficients_;
     typename Traits::Interpolation interpolation_;
@@ -61,7 +60,7 @@ namespace Dune {
      * \note With this constructor ownership of the backend finite element is
      *       determined by the shared_ptr.
      */
-    PowerFiniteElement(const shared_ptr<const Backend> &backendSPtr) :
+    PowerFiniteElement(const std::shared_ptr<const Backend> &backendSPtr) :
       backend(backendSPtr),
       basis_(backend->basis()),
       coefficients_(backend->coefficients(), dimR),
@@ -121,7 +120,7 @@ namespace Dune {
      *       element is determined by the shared_ptr.
      */
     const FiniteElement
-    make(const shared_ptr<const BackendFiniteElement> &backendSPtr) const
+    make(const std::shared_ptr<const BackendFiniteElement> &backendSPtr) const
     { return FiniteElement(backendSPtr); }
 
   };

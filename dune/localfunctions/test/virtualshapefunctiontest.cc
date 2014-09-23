@@ -4,7 +4,7 @@
 
 #undef DUNE_VIRTUAL_SHAPEFUNCTIONS
 
-
+#include <array>
 #include <cstddef>
 #include <iostream>
 
@@ -96,7 +96,7 @@ struct EvaluateTest
   {
     typedef typename Interface::Traits::LocalBasisType::Traits LBTraits;
 
-    Dune::array<int,order> d;
+    std::array<int,order> d;
     for(unsigned int i=0; i<d.size(); ++i)
       d[i] = 0;
 

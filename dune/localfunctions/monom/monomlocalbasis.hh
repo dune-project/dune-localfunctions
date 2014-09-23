@@ -3,6 +3,7 @@
 #ifndef DUNE_MONOMLOCALBASIS_HH
 #define DUNE_MONOMLOCALBASIS_HH
 
+#include <array>
 #include <cassert>
 
 #include <dune/common/fmatrix.hh>
@@ -140,7 +141,7 @@ namespace Dune
         const typename Traits::DomainType &in,
         //! The number of partial derivatives, one entry for
         //! each dimension
-        const array<int, Traits::dimDomain> &derivatives,
+        const std::array<int, Traits::dimDomain> &derivatives,
         //! The product accumulated for the dimensions which
         //! have already been handled
         typename Traits::RangeFieldType prod,
@@ -193,7 +194,7 @@ namespace Dune
       //! \copydoc Evaluate::eval
       template <typename Access>
       static void eval (const typename Traits::DomainType &in,
-                        const array<int, Traits::dimDomain> &derivatives,
+                        const std::array<int, Traits::dimDomain> &derivatives,
                         typename Traits::RangeFieldType prod,
                         int bound, int& index, Access &access)
       {
@@ -244,18 +245,18 @@ namespace Dune
     inline void evaluateFunction (const typename Traits::DomainType& in,
                                   std::vector<typename Traits::RangeType>& out) const
     {
-      evaluate<0>(array<int, 0>(), in, out);
+      evaluate<0>(std::array<int, 0>(), in, out);
     }
 
     //! return given derivative of all components
     template<unsigned int k>
-    inline void evaluate (const array<int,k>& directions,
+    inline void evaluate (const std::array<int,k>& directions,
                           const typename Traits::DomainType& in,
                           std::vector<typename Traits::RangeType>& out) const
     {
       out.resize(size());
       int index = 0;
-      array<int, d> derivatives;
+      std::array<int, d> derivatives;
       for(unsigned int i = 0; i < d; ++i) derivatives[i] = 0;
       for(unsigned int i = 0; i < k; ++i) ++derivatives[directions[i]];
       MonomImp::EvalAccess<Traits> access(out);
@@ -270,7 +271,7 @@ namespace Dune
                       std::vector<typename Traits::JacobianType>& out) const      // return value
     {
       out.resize(size());
-      array<int, d> derivatives;
+      std::array<int, d> derivatives;
       for(unsigned int i = 0; i < d; ++i)
         derivatives[i] = 0;
       for(unsigned int i = 0; i < d; ++i)

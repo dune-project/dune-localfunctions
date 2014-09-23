@@ -3,6 +3,7 @@
 #ifndef DUNE_DUAL_Q1_LOCALINTERPOLATION_HH
 #define DUNE_DUAL_Q1_LOCALINTERPOLATION_HH
 
+#include <array>
 #include <vector>
 
 #include <dune/common/fvector.hh>
@@ -17,7 +18,7 @@ namespace Dune
   {
   public:
 
-    void setCoefficients(const Dune::array<Dune::FieldVector<typename LB::Traits::RangeFieldType, (1<<dim)> ,(1<<dim)>& coefficients)
+    void setCoefficients(const std::array<Dune::FieldVector<typename LB::Traits::RangeFieldType, (1<<dim)> ,(1<<dim)>& coefficients)
     {
       coefficients_ = coefficients;
     }
@@ -67,7 +68,7 @@ namespace Dune
     }
 
   private:
-    Dune::array<Dune::FieldVector<typename LB::Traits::RangeFieldType, (1<<dim)> ,(1<<dim)> coefficients_;
+    std::array<Dune::FieldVector<typename LB::Traits::RangeFieldType, (1<<dim)> ,(1<<dim)> coefficients_;
   };
 
 }

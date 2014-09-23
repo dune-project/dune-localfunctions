@@ -6,7 +6,6 @@
 #include <iostream>
 #include <vector>
 
-#include <dune/common/array.hh>
 #include <dune/common/fvector.hh>
 
 namespace Dune

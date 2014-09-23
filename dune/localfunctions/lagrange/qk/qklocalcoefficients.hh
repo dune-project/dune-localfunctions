@@ -4,6 +4,7 @@
 #ifndef DUNE_LOCALFUNCTIONS_QK_LOCALCOEFFICIENTS_HH
 #define DUNE_LOCALFUNCTIONS_QK_LOCALCOEFFICIENTS_HH
 
+#include <array>
 #include <cassert>
 #include <vector>
 
@@ -23,9 +24,9 @@ namespace Dune
   class QkLocalCoefficients {
 
     // Return i as a d-digit number in the (k+1)-nary system
-    static array<unsigned int,d> multiindex (unsigned int i)
+    static std::array<unsigned int,d> multiindex (unsigned int i)
     {
-      array<unsigned int,d> alpha;
+      std::array<unsigned int,d> alpha;
       for (int j=0; j<d; j++)
       {
         alpha[j] = i % (k+1);
@@ -185,7 +186,7 @@ namespace Dune
         codim[i] = 0;
         // Codimension gets increased by 1 for each coordinate direction
         // where dof is on boundary
-        array<unsigned int,d> mIdx = multiindex(i);
+        std::array<unsigned int,d> mIdx = multiindex(i);
         for (int j=0; j<d; j++)
           if (mIdx[j]==0 or mIdx[j]==k)
             codim[i]++;
@@ -202,7 +203,7 @@ namespace Dune
 
         index[i] = 0;
 
-        array<unsigned int,d> mIdx = multiindex(i);
+        std::array<unsigned int,d> mIdx = multiindex(i);
 
         for (int j=d-1; j>=0; j--)
           if (mIdx[j]>0 and mIdx[j]<k)

@@ -3,6 +3,8 @@
 #ifndef DUNE_VIRTUALWRAPPERS_HH
 #define DUNE_VIRTUALWRAPPERS_HH
 
+#include <array>
+
 #include <dune/common/function.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
@@ -96,7 +98,7 @@ namespace Dune
 
     //! @copydoc LocalBasisVirtualInterface::evaluate
     inline void evaluate(
-      const typename Dune::template array<int,Traits::diffOrder>& directions,
+      const typename std::template array<int,Traits::diffOrder>& directions,
       const typename Traits::DomainType& in,
       std::vector<typename Traits::RangeType>& out) const
     {
@@ -168,7 +170,7 @@ namespace Dune
 
     //! @copydoc LocalBasisVirtualInterface::evaluate
     inline void evaluate(
-      const typename Dune::template array<int,Traits::diffOrder>& directions,
+      const typename std::template array<int,Traits::diffOrder>& directions,
       const typename Traits::DomainType& in,
       std::vector<typename Traits::RangeType>& out) const
     {

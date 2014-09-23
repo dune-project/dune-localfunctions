@@ -3,6 +3,8 @@
 #ifndef DUNE_VIRTUALINTERFACE_HH
 #define DUNE_VIRTUALINTERFACE_HH
 
+#include <array>
+
 #include <dune/common/function.hh>
 
 #include <dune/geometry/type.hh>
@@ -126,7 +128,7 @@ namespace Dune
 
     //! \todo Please doc me!
     virtual void evaluate (
-      const typename Dune::template array<int,Traits::diffOrder>& directions,
+      const typename std::template array<int,Traits::diffOrder>& directions,
       const typename Traits::DomainType& in,
       std::vector<typename Traits::RangeType>& out) const = 0;
 
@@ -175,7 +177,7 @@ namespace Dune
 
     //! \todo Please doc me!
     virtual void evaluate (
-      const typename Dune::template array<int,Traits::diffOrder>& directions,
+      const typename std::template array<int,Traits::diffOrder>& directions,
       const typename Traits::DomainType& in,
       std::vector<typename Traits::RangeType>& out) const = 0;
 
@@ -201,7 +203,7 @@ namespace Dune
     //! \todo Please doc me!
     template <int k>
     void evaluate (
-      const typename Dune::template array<int,k>& directions,
+      const typename std::template array<int,k>& directions,
       const typename Traits::DomainType& in,
       std::vector<typename Traits::RangeType>& out) const
     {

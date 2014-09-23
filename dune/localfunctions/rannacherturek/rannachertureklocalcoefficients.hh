@@ -4,10 +4,9 @@
 #define DUNE_RANNACHER_TUREK_LOCALCOEFFICIENTS_HH
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <cstddef>
-
-#include <dune/common/array.hh>
 
 #include <dune/localfunctions/common/localkey.hh>
 
@@ -54,7 +53,7 @@ namespace Dune
     }
 
   private:
-    array< LocalKey, 2*d > localKeys_;
+    std::array< LocalKey, 2*d > localKeys_;
   };
 
 } // namespace Dune

@@ -3,6 +3,8 @@
 #ifndef DUNE_DUAL_Q1_LOCALFINITEELEMENT_HH
 #define DUNE_DUAL_Q1_LOCALFINITEELEMENT_HH
 
+#include <array>
+
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
 
@@ -84,7 +86,7 @@ namespace Dune
           massMat[i][j] = massMat[j][i];
 
       //solve for the coefficients
-      Dune::array<Dune::FieldVector<R, size>, size> coefficients;
+      std::array<Dune::FieldVector<R, size>, size> coefficients;
 
       for (int i=0; i<size; i++) {
 

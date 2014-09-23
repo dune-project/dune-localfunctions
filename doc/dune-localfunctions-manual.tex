@@ -183,7 +183,7 @@ class LocalBasisInterface
    // evaluate general derivative of k-th order of all shape functions
    template<unsigned int k>
    inline void 
-   evaluate (const typename Dune::array<int,k>& directions,  
+   evaluate (const typename std::array<int,k>& directions,  
              const typename Traits::DomainType& in,    
              std::vector<typename Traits::RangeType>& out) const;
 
@@ -278,7 +278,7 @@ public:
  using Base::evaluateJacobian;
   
  virtual void evaluate (
-  const typename Dune::template array<int,Traits::diffOrder>& directions,
+  const typename std::template array<int,Traits::diffOrder>& directions,
   const typename Traits::DomainType& in,
   std::vector<typename Traits::RangeType>& out) const = 0;
   
@@ -290,10 +290,10 @@ The \lstinline!LowerOrderLocalBasisTraits! defines a \lstinline!LocalBasisTraits
 implemented partial derivatives). 
 This hierarchy is needed because each \lstinline!LocalBasis! implementation is assumed
 to have a template method
-\lstinline!evaluate<unsigned int k>(Dune::array<int,k> directions,...)!  where 
+\lstinline!evaluate<unsigned int k>(std::array<int,k> directions,...)!  where 
 \lstinline!k! denotes the total order of mixed partial derivatives to be computed. 
 In the dynamic case this method has to be replaced by non-template methods
-\lstinline!evaluate(Dune::array<int,fixedOrder> directions,...)! and the hierarchy
+\lstinline!evaluate(std::array<int,fixedOrder> directions,...)! and the hierarchy
 just makes sure that there will be a corresponding method for all 
 $0 \leq $\lstinline!fixedOrder! $\leq$ \lstinline!diffOrder!. Finally a template specialization
 for the case \lstinline{diffOrder = 0} provides all pure virtual methods that belong
@@ -1255,7 +1255,7 @@ struct BasisInterface
   // Evaluate derivatives of all shape functions at given position
   // required for Traits::diffOrder >= 2
   void evaluate
-  ( const array<std::size_t,Traits::dimGlobalDomain>& directions,
+  ( const std::array<std::size_t,Traits::dimGlobalDomain>& directions,
     const typename Traits::DomainLocal& in,
     std::vector<typename Traits::Range>& out) const;
 };

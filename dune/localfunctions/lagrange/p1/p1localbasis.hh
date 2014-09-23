@@ -3,6 +3,8 @@
 #ifndef DUNE_P1_LOCALBASIS_HH
 #define DUNE_P1_LOCALBASIS_HH
 
+#include <array>
+
 #include <dune/common/fmatrix.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
@@ -64,7 +66,7 @@ namespace Dune
 
     //! \brief Evaluate all shape functions
     template<unsigned int k>
-    inline void evaluate (const typename Dune::array<int,k>& directions,
+    inline void evaluate (const typename std::array<int,k>& directions,
                           const typename Traits::DomainType& in,
                           std::vector<typename Traits::RangeType>& out) const
     {

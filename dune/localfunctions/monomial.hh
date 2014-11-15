@@ -1,8 +1,8 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
 
-#ifndef DUNE_MONOMLOCALFINITEELEMENT_HH
-#define DUNE_MONOMLOCALFINITEELEMENT_HH
+#ifndef DUNE_LOCALFUNCTIONS_MONOMIAL_HH
+#define DUNE_LOCALFUNCTIONS_MONOMIAL_HH
 
 #include <cassert>
 #include <cstddef>
@@ -197,4 +197,4 @@ namespace Dune
   };
 }
 
-#endif // DUNE_MONOMLOCALFINITEELEMENT_HH
+#endif // DUNE_LOCALFUNCTIONS_MONOMIAL_HH

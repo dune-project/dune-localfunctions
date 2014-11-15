@@ -38,7 +38,7 @@
 #include "../rannacherturek/rannacherturek.hh"
 #include "../raviartthomas/raviartthomassimplex.hh"
 #include "../raviartthomas/raviartthomascube.hh"
-#include "../monom.hh"
+#include "../monomial.hh"
 
 #include "../common/virtualinterface.hh"
 #include "../common/virtualwrappers.hh"

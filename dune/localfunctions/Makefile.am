@@ -4,7 +4,7 @@ localfunctions_HEADERS =			\
 	dualmortarbasis.hh			\
 	lagrange.hh				\
 	mimetic.hh				\
-	monom.hh				\
+        monomial.hh                             \
 	orthonormal.hh				\
 	rannacherturek.hh			\
 	raviartthomas.hh			\
@@ -18,7 +18,7 @@ SUBDIRS =					\
 	lagrange				\
 	meta					\
 	mimetic					\
-	monom					\
+        monomial                                \
 	orthonormal				\
 	rannacherturek				\
 	raviartthomas				\

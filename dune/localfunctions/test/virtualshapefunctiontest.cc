@@ -14,7 +14,7 @@
 #include <dune/localfunctions/lagrange/p0.hh>
 #include <dune/localfunctions/lagrange/p1.hh>
 #include <dune/localfunctions/lagrange/pq22d.hh>
-#include <dune/localfunctions/monom.hh>
+#include <dune/localfunctions/monomial.hh>
 
 /** \file
     \brief Test the dynamically polymorphic shape function interface

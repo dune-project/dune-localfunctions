@@ -7,7 +7,7 @@
 
 #include <dune/geometry/quadraturerules.hh>
 
-#include <dune/localfunctions/monom.hh>
+#include <dune/localfunctions/monomial.hh>
 
 /** \file
     \brief Performs some tests for the monomial shape functions

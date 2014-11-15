@@ -16,7 +16,7 @@
 #include <dune/geometry/type.hh>
 #include <dune/geometry/generalvertexorder.hh>
 
-#include <dune/localfunctions/monom.hh>
+#include <dune/localfunctions/monomial.hh>
 
 #include "geometries.hh"
 #include "test-fe.hh"

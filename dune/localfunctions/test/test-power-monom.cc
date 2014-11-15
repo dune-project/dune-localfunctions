@@ -13,7 +13,7 @@
 #include <dune/common/forloop.hh>
 
 #include <dune/localfunctions/meta/power.hh>
-#include <dune/localfunctions/monom.hh>
+#include <dune/localfunctions/monomial.hh>
 
 #include "geometries.hh"
 #include "test-fe.hh"

@@ -61,7 +61,7 @@ AC_CONFIG_FILES([
                 dune/localfunctions/meta/Makefile
                 dune/localfunctions/meta/power/Makefile
                 dune/localfunctions/mimetic/Makefile
-                dune/localfunctions/monom/Makefile
+                dune/localfunctions/monomial/Makefile
                 dune/localfunctions/orthonormal/Makefile
                 dune/localfunctions/rannacherturek/Makefile
                 dune/localfunctions/rannacherturek/rannacherturek2d/Makefile

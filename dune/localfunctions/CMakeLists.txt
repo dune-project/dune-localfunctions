@@ -4,6 +4,7 @@ set(localfunctions_HEADERS
         dualmortarbasis.hh
         lagrange.hh
         mimetic.hh
+        monom.hh
         monomial.hh
         orthonormal.hh
         rannacherturek.hh

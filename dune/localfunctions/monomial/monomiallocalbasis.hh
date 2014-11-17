@@ -1,7 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_MONOMLOCALBASIS_HH
-#define DUNE_MONOMLOCALBASIS_HH
+#ifndef DUNE_LOCALFUNCTIONS_MONOMIAL_MONOMIALLOCALBASIS_HH
+#define DUNE_LOCALFUNCTIONS_MONOMIAL_MONOMIALLOCALBASIS_HH
 
 #include <array>
 #include <cassert>
@@ -294,4 +294,4 @@ namespace Dune
 
 }
 
-#endif // DUNE_MONOMLOCALBASIS_HH
+#endif // DUNE_LOCALFUNCTIONS_MONOMIAL_MONOMIALLOCALBASIS_HH

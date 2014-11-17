@@ -1,6 +1,6 @@
-monomdir = $(includedir)/dune/localfunctions/monom
+monomialdir = $(includedir)/dune/localfunctions/monomial
 
-monom_HEADERS = monomlocalbasis.hh monomlocalcoefficients.hh monomlocalinterpolation.hh
+monomial_HEADERS = monomlocalbasis.hh monomlocalcoefficients.hh monomlocalinterpolation.hh
 
 include $(top_srcdir)/am/global-rules
 

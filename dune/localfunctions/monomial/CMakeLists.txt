@@ -1,8 +1,8 @@
-set(monomdir  ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions/monom)
+set(monomialdir  ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions/monomial)
 
-set(monom_HEADERS  monomlocalbasis.hh monomlocalcoefficients.hh monomlocalinterpolation.hh)
+set(monomial_HEADERS  monomlocalbasis.hh monomlocalcoefficients.hh monomlocalinterpolation.hh)
 
 # include not needed for CMake
 # include $(top_srcdir)/am/global-rules
 
-install(FILES ${monom_HEADERS} DESTINATION ${monomdir})
+install(FILES ${monomial_HEADERS} DESTINATION ${monomialdir})

@@ -1,6 +1,6 @@
 set(monomialdir  ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions/monomial)
 
-set(monomial_HEADERS  monomlocalbasis.hh monomlocalcoefficients.hh monomlocalinterpolation.hh)
+set(monomial_HEADERS  monomiallocalbasis.hh monomiallocalcoefficients.hh monomiallocalinterpolation.hh)
 
 # include not needed for CMake
 # include $(top_srcdir)/am/global-rules

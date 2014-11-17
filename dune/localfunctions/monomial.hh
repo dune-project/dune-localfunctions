@@ -14,9 +14,9 @@
 
 #include "common/localfiniteelementtraits.hh"
 #include "common/localtoglobaladaptors.hh"
-#include "monomial/monomlocalbasis.hh"
-#include "monomial/monomlocalcoefficients.hh"
-#include "monomial/monomlocalinterpolation.hh"
+#include "monomial/monomiallocalbasis.hh"
+#include "monomial/monomiallocalcoefficients.hh"
+#include "monomial/monomiallocalinterpolation.hh"
 
 namespace Dune
 {

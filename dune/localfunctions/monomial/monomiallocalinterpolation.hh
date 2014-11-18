@@ -15,7 +15,7 @@ namespace Dune
 {
 
   template<class LB, unsigned int size>
-  class MonomLocalInterpolation
+  class MonomialLocalInterpolation
   {
     typedef typename LB::Traits::DomainType D;
     typedef typename LB::Traits::DomainFieldType DF;
@@ -27,7 +27,7 @@ namespace Dune
     typedef typename QR::iterator QRiterator;
 
   public:
-    MonomLocalInterpolation (const GeometryType &gt_,
+    MonomialLocalInterpolation (const GeometryType &gt_,
                              const LB &lb_)
       : gt(gt_), lb(lb_), Minv(0)
         , qr(QuadratureRules<DF,dimD>::rule(gt, 2*lb.order()))

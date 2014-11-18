@@ -18,11 +18,11 @@ namespace Dune
      \implements Dune::LocalCoefficientsVirtualImp
    */
   template<int static_size>
-  class MonomLocalCoefficients
+  class MonomialLocalCoefficients
   {
   public:
     //! \brief Standard constructor
-    MonomLocalCoefficients ()
+    MonomialLocalCoefficients ()
       : index(static_size, LocalKey(0,0,0))
     {
       for(int i = 0; i < static_size; ++i)

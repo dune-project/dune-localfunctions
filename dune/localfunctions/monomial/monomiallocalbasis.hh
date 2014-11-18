@@ -228,7 +228,7 @@ namespace Dune
          \nosubgrouping
    */
   template<class D, class R, unsigned int d, unsigned int p, unsigned diffOrder = p>
-  class MonomLocalBasis
+  class MonomialLocalBasis
   {
   public:
     //! \brief export type traits for function signature

@@ -23,7 +23,7 @@ namespace Dune
 
   /** \brief Monomial basis for discontinuous Galerkin methods
    *
-   * Be careful: Although MonomLocalInterpolation::interpolate
+   * Be careful: Although MonomialLocalInterpolation::interpolate
    * uses an L^2 projection it is unstable for higher polynomial degrees.
    *
    * \tparam D Type used for coordinates
@@ -41,9 +41,9 @@ namespace Dune
     /** Traits class
      */
     typedef LocalFiniteElementTraits<
-        MonomLocalBasis<D,R,d,p, diffOrder>,
-        MonomLocalCoefficients<static_size>,
-        MonomLocalInterpolation<MonomLocalBasis<D,R,d,p, diffOrder>,static_size>
+        MonomialLocalBasis<D,R,d,p, diffOrder>,
+        MonomialLocalCoefficients<static_size>,
+        MonomialLocalInterpolation<MonomialLocalBasis<D,R,d,p, diffOrder>,static_size>
         > Traits;
 
     //! Construct a MonomLocalFiniteElement
@@ -86,9 +86,9 @@ namespace Dune
     }
 
   private:
-    MonomLocalBasis<D,R,d,p, diffOrder> basis;
-    MonomLocalCoefficients<static_size> coefficients;
-    MonomLocalInterpolation<MonomLocalBasis<D,R,d,p, diffOrder>,static_size> interpolation;
+    MonomialLocalBasis<D,R,d,p, diffOrder> basis;
+    MonomialLocalCoefficients<static_size> coefficients;
+    MonomialLocalInterpolation<MonomialLocalBasis<D,R,d,p, diffOrder>,static_size> interpolation;
     GeometryType gt;
   };
 

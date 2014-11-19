@@ -32,14 +32,14 @@ struct Dim {
   struct Order {
 
     static void apply(int &result) {
-      std::cout << "== Checking global-valued Monom elements (with "
+      std::cout << "== Checking global-valued monomial elements (with "
                 << "dim=" << dim << ", p=" << p << ")" << std::endl;
 
       typedef TestGeometries<double, dim> TestGeos;
       static const TestGeos testGeos;
 
       typedef typename TestGeos::Geometry Geometry;
-      Dune::MonomFiniteElementFactory<Geometry, double, p> feFactory;
+      Dune::MonomialFiniteElementFactory<Geometry, double, p> feFactory;
 
       for(std::size_t i = 0; i < testGeos.size(); ++i) {
         const Geometry &geo = testGeos[i];

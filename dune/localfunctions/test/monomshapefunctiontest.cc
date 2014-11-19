@@ -22,8 +22,8 @@ template <int dim, int order>
 void testShapeFunctionDerivative(const GeometryType& type)
 {
 
-  MonomLocalFiniteElement<double,double,dim,order> shapeFunctionSet(type);
-  typedef typename MonomLocalFiniteElement<double,double,dim,order>::Traits::LocalBasisType::Traits LBTraits;
+  MonomialLocalFiniteElement<double,double,dim,order> shapeFunctionSet(type);
+  typedef typename MonomialLocalFiniteElement<double,double,dim,order>::Traits::LocalBasisType::Traits LBTraits;
 
   // ////////////////////////////////////////////////////////////
   //   Check the partial derivatives by comparing them
@@ -87,7 +87,7 @@ void testShapeFunctionValue(const GeometryType& gt,
                             const Dune::FieldVector<double, dim> &pos,
                             int comp, double expected)
 {
-  MonomLocalFiniteElement<double,double,dim,order> shapeFunctionSet(gt);
+  MonomialLocalFiniteElement<double,double,dim,order> shapeFunctionSet(gt);
   std::vector<Dune::FieldVector<double,1> > out;
   shapeFunctionSet.localBasis().evaluateFunction(pos, out);
 

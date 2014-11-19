@@ -41,7 +41,7 @@ struct DimD {
         static const TestGeos testGeos;
 
         typedef typename TestGeos::Geometry Geometry;
-        typedef Dune::MonomFiniteElementFactory<Geometry, double, p>
+        typedef Dune::MonomialFiniteElementFactory<Geometry, double, p>
         BackendFEFactory;
         BackendFEFactory backendFEFactory;
 

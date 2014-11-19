@@ -155,21 +155,9 @@ namespace Dune
     GeometryType gt;
   };
 
-  //! Factory for global-valued MonomFiniteElement objects
-  /**
-   * Constructs MonomFiniteElement objects given a geometry.
-   *
-   * \tparam Geometry Geometry for the local to global transformation.
-   * \tparam RF       Field type of the range.
-   * \tparam p        Order of the basis.
-   *
-   * \implements FiniteElementFactoryInterface
-   *
-   * \note There is no real MonomFiniteElement, only the FiniteElement typedef
-   *       inside this class.
-   */
+  /** \deprecated Deprecated in 2.4, will be removed in 3.0 */
   template<class Geometry, class RF, std::size_t p>
-  class MonomFiniteElementFactory {
+  class DUNE_DEPRECATED_MSG("Use MonomialFiniteElementFactory instead!") MonomFiniteElementFactory {
     typedef typename Geometry::ctype DF;
     static const std::size_t dim = Geometry::mydimension;
 
@@ -188,11 +176,6 @@ namespace Dune
     typedef ScalarLocalToGlobalFiniteElementAdaptor<LocalFE, Geometry>
     FiniteElement;
 
-    //! construct a MonomFiniteElementFactory from a list of GeometryType's
-    /**
-     * \param begin Begin of a range of geometry types.
-     * \param end   End of a range of geometry types.
-     */
     template<class ForwardIterator>
     MonomFiniteElementFactory(const ForwardIterator &begin,
                               const ForwardIterator &end)
@@ -201,18 +184,103 @@ namespace Dune
         init(*it);
     }
 
-    //! construct a MonomFiniteElementFactory from a single GeometryType
+    MonomFiniteElementFactory(const GeometryType &gt)
+    { init(gt); }
+
+    MonomFiniteElementFactory() {
+      static_assert(dim <= 3, "MonomFiniteElementFactory knows the "
+                    "available geometry types only up to dimension 3");
+
+      GeometryType gt;
+      switch(dim) {
+      case 0 :
+        gt.makeVertex();        init(gt);
+        break;
+      case 1 :
+        gt.makeLine();          init(gt);
+        break;
+      case 2 :
+        gt.makeTriangle();      init(gt);
+        gt.makeQuadrilateral(); init(gt);
+        break;
+      case 3 :
+        gt.makeTetrahedron();   init(gt);
+        gt.makePyramid();       init(gt);
+        gt.makePrism();         init(gt);
+        gt.makeHexahedron();    init(gt);
+        break;
+      default :
+        // this should never happen -- it should be caught by the static
+        // assert above.
+        std::abort();
+      };
+    }
+
+    const FiniteElement make(const Geometry& geometry) {
+      std::size_t index = geometry.type().id() >> 1;
+      assert(localFEs.size() > index && localFEs[index]);
+      return FiniteElement(*localFEs[index], geometry);
+    }
+  };
+
+  //! Factory for global-valued MonomFiniteElement objects
+  /**
+   * Constructs MonomialFiniteElement objects given a geometry.
+   *
+   * \tparam Geometry Geometry for the local to global transformation.
+   * \tparam RF       Field type of the range.
+   * \tparam p        Order of the basis.
+   *
+   * \implements FiniteElementFactoryInterface
+   *
+   * \note There is no real MonomFiniteElement, only the FiniteElement typedef
+   *       inside this class.
+   */
+  template<class Geometry, class RF, std::size_t p>
+  class MonomialFiniteElementFactory {
+    typedef typename Geometry::ctype DF;
+    static const std::size_t dim = Geometry::mydimension;
+
+    typedef MonomialLocalFiniteElement<DF, RF, dim, p> LocalFE;
+
+    std::vector<std::shared_ptr<const LocalFE> > localFEs;
+
+    void init(const GeometryType &gt) {
+      std::size_t index = gt.id() >> 1;
+      if(localFEs.size() <= index)
+        localFEs.resize(index+1);
+      localFEs[index].reset(new LocalFE(gt));
+    }
+
+  public:
+    typedef ScalarLocalToGlobalFiniteElementAdaptor<LocalFE, Geometry>
+    FiniteElement;
+
+    //! construct a MonomialFiniteElementFactory from a list of GeometryType's
+    /**
+     * \param begin Begin of a range of geometry types.
+     * \param end   End of a range of geometry types.
+     */
+    template<class ForwardIterator>
+    MonomialFiniteElementFactory(const ForwardIterator &begin,
+                              const ForwardIterator &end)
+    {
+      for(ForwardIterator it = begin; it != end; ++it)
+        init(*it);
+    }
+
+    //! construct a MonomialFiniteElementFactory from a single GeometryType
     /**
      * \param gt GeometryType to construct elements with
      */
-    MonomFiniteElementFactory(const GeometryType &gt)
+    MonomialFiniteElementFactory(const GeometryType &gt)
     { init(gt); }
 
     //! construct a MonomFiniteElementFactory for all applicable GeometryType's
     /**
      * \note This constructor only works for dimensions up to and including 3.
      */
-    MonomFiniteElementFactory() {
+    MonomialFiniteElementFactory() {
       static_assert(dim <= 3, "MonomFiniteElementFactory knows the "
                     "available geometry types only up to dimension 3");
 

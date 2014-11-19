@@ -10,6 +10,8 @@
 #include <memory>
 #include <vector>
 
+#include <dune/common/deprecated.hh>
+
 #include <dune/geometry/type.hh>
 
 #include "common/localfiniteelementtraits.hh"
@@ -21,19 +23,9 @@
 namespace Dune
 {
 
-  /** \brief Monomial basis for discontinuous Galerkin methods
-   *
-   * Be careful: Although MonomialLocalInterpolation::interpolate
-   * uses an L^2 projection it is unstable for higher polynomial degrees.
-   *
-   * \tparam D Type used for coordinates
-   * \tparam R Type used for shape function values
-   * \tparam d Dimension of the element
-   * \tparam p Order of the basis
-   * \tparam diffOrder Maximum differentiation order to report in the traits.
-   */
+  /** \deprecated Deprecated in 2.4, only here for backward-compatibility */
   template<class D, class R, int d, int p, int diffOrder = p>
-  class MonomLocalFiniteElement
+  class DUNE_DEPRECATED_MSG("Use MonomialLocalFiniteElement instead!") MonomLocalFiniteElement
   {
     enum { static_size = MonomImp::Size<d,p>::val };
 
@@ -48,6 +40,77 @@ namespace Dune
 
     //! Construct a MonomLocalFiniteElement
     MonomLocalFiniteElement (const GeometryType &gt_)
+      : basis(), interpolation(gt_, basis), gt(gt_)
+    {}
+
+    /** \todo Please doc me !
+     */
+    const typename Traits::LocalBasisType& localBasis () const
+    {
+      return basis;
+    }
+
+    /** \todo Please doc me !
+     */
+    const typename Traits::LocalCoefficientsType& localCoefficients () const
+    {
+      return coefficients;
+    }
+
+    /** \todo Please doc me !
+     */
+    const typename Traits::LocalInterpolationType& localInterpolation () const
+    {
+      return interpolation;
+    }
+
+    /** \brief Number of shape functions in this finite element */
+    uint size () const
+    {
+      return basis.size();
+    }
+
+    /** \todo Please doc me !
+     */
+    GeometryType type () const
+    {
+      return gt;
+    }
+
+  private:
+    MonomialLocalBasis<D,R,d,p, diffOrder> basis;
+    MonomialLocalCoefficients<static_size> coefficients;
+    MonomialLocalInterpolation<MonomialLocalBasis<D,R,d,p, diffOrder>,static_size> interpolation;
+    GeometryType gt;
+  };
+
+  /** \brief Monomial basis for discontinuous Galerkin methods
+   *
+   * Be careful: Although MonomialLocalInterpolation::interpolate
+   * uses an L^2 projection it is unstable for higher polynomial degrees.
+   *
+   * \tparam D Type used for coordinates
+   * \tparam R Type used for shape function values
+   * \tparam d Dimension of the element
+   * \tparam p Order of the basis
+   * \tparam diffOrder Maximum differentiation order to report in the traits.
+   */
+  template<class D, class R, int d, int p, int diffOrder = p>
+  class MonomialLocalFiniteElement
+  {
+    enum { static_size = MonomImp::Size<d,p>::val };
+
+  public:
+    /** Traits class
+     */
+    typedef LocalFiniteElementTraits<
+        MonomialLocalBasis<D,R,d,p, diffOrder>,
+        MonomialLocalCoefficients<static_size>,
+        MonomialLocalInterpolation<MonomialLocalBasis<D,R,d,p, diffOrder>,static_size>
+        > Traits;
+
+    //! Construct a MonomLocalFiniteElement
+    MonomialLocalFiniteElement (const GeometryType &gt_)
       : basis(), interpolation(gt_, basis), gt(gt_)
     {}
 

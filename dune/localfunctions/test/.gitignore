@@ -5,16 +5,16 @@ Makefile.in
 *.trs
 
 lagrangeshapefunctiontest
-monomshapefunctiontest
+monomialshapefunctiontest
 virtualshapefunctiontest
 testfem
 testgenericfem
 test-edges0.5
 test-edges03dinterpolate
 test-localfe
-test-monom
+test-monomial
 test-pk2d
-test-power-monom
+test-power-monomial
 test-q1
 test-q2
 test-q22d

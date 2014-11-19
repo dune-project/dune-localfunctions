@@ -2,7 +2,7 @@
 
 # which tests to run
 TESTS = lagrangeshapefunctiontest		\
-	monomshapefunctiontest			\
+	monomialshapefunctiontest			\
 	virtualshapefunctiontest		\
 	testgenericfem              \
 	$(ALUPROG)
@@ -26,7 +26,7 @@ testgenericfem_CPPFLAGS = $(AM_CPPFLAGS) $(GMP_CPPFLAGS)
 testgenericfem_LDADD = $(GMP_LIBS) $(GMP_LDFLAGS)
 
 lagrangeshapefunctiontest_SOURCES = lagrangeshapefunctiontest.cc
-monomshapefunctiontest_SOURCES = monomshapefunctiontest.cc
+monomialshapefunctiontest_SOURCES = monomialshapefunctiontest.cc
 
 virtualshapefunctiontest_SOURCES = virtualshapefunctiontest.cc
 virtualshapefunctiontest_CPPFLAGS = $(AM_CPPFLAGS)
@@ -37,14 +37,14 @@ test_edges0_5_SOURCES = test-edges0.5.cc
 TESTS += test-localfe
 test_localfe_SOURCES = test-localfe.cc
 
-TESTS += test-monom
-test_monom_SOURCES = test-monom.cc
+TESTS += test-monomial
+test_monomial_SOURCES = test-monomial.cc
 
 TESTS += test-pk2d
 test_pk2d_SOURCES = test-pk2d.cc
 
-TESTS += test-power-monom
-test_power_monom_SOURCES = test-power-monom.cc
+TESTS += test-power-monomial
+test_power_monomial_SOURCES = test-power-monomial.cc
 
 TESTS += test-q1
 test_q1_SOURCES = test-q1.cc

@@ -1,7 +1,7 @@
 # which tests to run
 set(TESTS
         lagrangeshapefunctiontest
-        monomshapefunctiontest
+        monomialshapefunctiontest
         virtualshapefunctiontest
         testgenericfem
         test-lagrange1
@@ -38,17 +38,17 @@ list(APPEND TESTS test-localfe)
 add_executable(test-localfe test-localfe.cc)
 target_link_libraries(test-localfe ${DUNE_LIBS})
 
-list(APPEND TESTS test-monom)
-add_executable(test-monom test-monom.cc)
-target_link_libraries(test-monom ${DUNE_LIBS})
+list(APPEND TESTS test-monomial)
+add_executable(test-monomial test-monomial.cc)
+target_link_libraries(test-monomial ${DUNE_LIBS})
 
 list(APPEND TESTS test-pk2d)
 add_executable(test-pk2d test-pk2d.cc)
 target_link_libraries(test-pk2d ${DUNE_LIBS})
 
-list(APPEND TESTS test-power-monom)
-add_executable(test-power-monom test-power-monom.cc)
-target_link_libraries(test-power-monom ${DUNE_LIBS})
+list(APPEND TESTS test-power-monomial)
+add_executable(test-power-monomial test-power-monomial.cc)
+target_link_libraries(test-power-monomial ${DUNE_LIBS})
 
 list(APPEND TESTS test-q1)
 add_executable(test-q1 test-q1.cc)

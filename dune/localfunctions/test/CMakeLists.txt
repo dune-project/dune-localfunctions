@@ -24,8 +24,8 @@ target_link_libraries(testgenericfem ${DUNE_LIBS})
 add_executable(lagrangeshapefunctiontest lagrangeshapefunctiontest.cc)
 target_link_libraries(lagrangeshapefunctiontest ${DUNE_LIBS})
 
-add_executable(monomshapefunctiontest monomshapefunctiontest.cc)
-target_link_libraries(monomshapefunctiontest ${DUNE_LIBS})
+add_executable(monomialshapefunctiontest monomialshapefunctiontest.cc)
+target_link_libraries(monomialshapefunctiontest ${DUNE_LIBS})
 
 add_executable(virtualshapefunctiontest virtualshapefunctiontest.cc)
 target_link_libraries(virtualshapefunctiontest ${DUNE_LIBS})

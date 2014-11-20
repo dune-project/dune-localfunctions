@@ -54,7 +54,7 @@ namespace Dune
     }
 
     /** \brief Number of shape functions in this finite element */
-    uint size () const
+    unsigned int size () const
     {
       return basis.size();
     }

@@ -55,7 +55,7 @@ namespace Dune
     }
 
     /** \brief The number of shape functions -- here: 1 */
-    uint size () const
+    unsigned int size () const
     {
       return 1;
     }

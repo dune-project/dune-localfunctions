@@ -434,7 +434,7 @@ namespace Dune
     virtual const typename Traits::LocalInterpolationType& localInterpolation () const = 0;
 
     //! \copydoc LocalFiniteElementVirtualInterface::size
-    virtual uint size () const = 0;
+    virtual unsigned int size () const = 0;
 
     //! \copydoc LocalFiniteElementVirtualInterface::type
     virtual const GeometryType type () const = 0;

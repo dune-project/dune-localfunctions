@@ -285,8 +285,6 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned order = 2)
   if (not (disabledTests & DisableJacobian))
   {
     success = testJacobian<FE>(fe, order) and success;
-    // make sure diffOrder is >= 1
-    success = (FE::Traits::LocalBasisType::Traits::diffOrder >= 1) and success;
   }
   else
   {
@@ -307,8 +305,6 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned order = 2)
     if (not (disabledTests & DisableJacobian))
     {
       success = testJacobian<VirtualFEInterface>(virtualFE) and success;
-      // make sure diffOrder is >= 1
-      success = (VirtualFEInterface::Traits::LocalBasisType::Traits::diffOrder >= 1) and success;
     }
     else
     {

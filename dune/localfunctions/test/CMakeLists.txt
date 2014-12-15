@@ -9,7 +9,11 @@ set(TESTS
         test-lagrange3
         test-orthonormal1
         test-orthonormal2
-        test-orthonormal3)
+        test-orthonormal3
+        test-raviartthomas1simplex
+        test-raviartthomas2simplex
+        test-raviartthomas3simplex
+)
 
 set(noinst_HEADERS
         geometries.hh
@@ -98,38 +102,33 @@ set_property(TARGET test-orthonormal2 APPEND PROPERTY COMPILE_DEFINITIONS ${ORTH
 target_link_libraries(test-orthonormal2 dunegeometry dunecommon)
 add_dune_gmp_flags(test-orthonormal2)
 
+add_executable(test-orthonormal3 test-orthonormal.cc)
+target_link_libraries(test-orthonormal3 ${DUNE_LIBS})
 set(ORTHONORMAL3_TOPOLOGY  "Prism< ${ORTHONORMAL2_TOPOLOGY} >")
 set(ORTHONORMAL3_SETTINGS  TOPOLOGY=${ORTHONORMAL3_TOPOLOGY})
-
-add_executable(test-orthonormal3 test-orthonormal.cc)
 set_property(TARGET test-orthonormal3 APPEND PROPERTY COMPILE_DEFINITIONS ${ORTHONORMAL3_SETTINGS})
-target_link_libraries(test-orthonormal3 dunegeometry dunecommon)
 add_dune_gmp_flags(test-orthonormal3)
 
-list(APPEND TEST test-raviartthomas1simplex)
-
-set(RT1_TOPOLOGY "Pyramid< Point >")
-set(RT1_SETTINGS TOPOLOGY=${RT2_TOPOLOGY})
 add_executable(test-raviartthomas1simplex test-raviartthomassimplex.cc)
 target_link_libraries(test-raviartthomas1simplex ${DUNE_LIBS})
+set(RT1_TOPOLOGY "Pyramid< Point >")
+set(RT1_SETTINGS TOPOLOGY=${RT2_TOPOLOGY})
 set_property(TARGET test-raviartthomas1simplex APPEND PROPERTY COMPILE_DEFINITIONS
   TOPOLOGY=Pyramid<Point>)
 add_dune_gmp_flags(test-raviartthomas1simplex)
 
-list(APPEND TEST test-raviartthomas2simplex)
-set(RT2_TOPOLOGY "Pyramid< ${RT1_TOPOLOGY} >")
-set(RT2_SETTINGS TOPOLOGY=${RT2_TOPOLOGY})
 add_executable(test-raviartthomas2simplex test-raviartthomassimplex.cc)
 target_link_libraries(test-raviartthomas2simplex ${DUNE_LIBS})
+set(RT2_TOPOLOGY "Pyramid< ${RT1_TOPOLOGY} >")
+set(RT2_SETTINGS TOPOLOGY=${RT2_TOPOLOGY})
 set_property(TARGET test-raviartthomas2simplex APPEND PROPERTY COMPILE_DEFINITIONS
   ${RT2_SETTINGS})
 add_dune_gmp_flags(test-raviartthomas2simplex)
 
-list(APPEND TEST test-raviartthomas3simplex)
-set(RT3_TOPOLOGY "Pyramid< ${RT2_TOPOLOGY} >")
-set(RT3_SETTINGS TOPOLOGY=${RT3_TOPOLOGY})
 add_executable(test-raviartthomas3simplex test-raviartthomassimplex.cc)
 target_link_libraries(test-raviartthomas3simplex ${DUNE_LIBS})
+set(RT3_TOPOLOGY "Pyramid< ${RT2_TOPOLOGY} >")
+set(RT3_SETTINGS TOPOLOGY=${RT3_TOPOLOGY})
 set_property(TARGET test-raviartthomas3simplex APPEND PROPERTY COMPILE_DEFINITIONS
   ${RT3_SETTINGS})
 add_dune_gmp_flags(test-raviartthomas3simplex)
@@ -137,9 +136,6 @@ add_dune_gmp_flags(test-raviartthomas3simplex)
 add_executable(test-raviartthomassimplex-all test-raviartthomassimplex.cc)
 target_link_libraries(test-raviartthomassimplex-all ${DUNE_LIBS})
 add_dune_gmp_flags(test-raviartthomassimplex-all)
-
-set(TOPOLOGY  "Pyramid< Pyramid< Pyramid< Point > > >")
-set(SETTINGS  TOPOLOGY=${TOPOLOGY})
 
 add_executable(test-lagrange-all test-lagrange.cc)
 add_dune_gmp_flags(test-lagrange-all)

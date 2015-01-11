@@ -238,7 +238,7 @@ enum {
   DisableNone = 0,
   DisableLocalInterpolation = 1,
   DisableVirtualInterface = 2,
-  DisableJacobian = 3
+  DisableJacobian = 4
 };
 
 // call tests for given finite element

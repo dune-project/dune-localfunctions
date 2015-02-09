@@ -1,0 +1,74 @@
+// -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+// vi: set et ts=4 sw=2 sts=2:
+#ifndef DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS4_CUBE2D_LOCALFINITEELEMENT_HH
+#define DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS4_CUBE2D_LOCALFINITEELEMENT_HH
+
+#include <dune/geometry/type.hh>
+
+#include "../common/localfiniteelementtraits.hh"
+#include "raviartthomas4cube2d/raviartthomas4cube2dlocalbasis.hh"
+#include "raviartthomas4cube2d/raviartthomas4cube2dlocalcoefficients.hh"
+#include "raviartthomas4cube2d/raviartthomas4cube2dlocalinterpolation.hh"
+
+namespace Dune
+{
+  /**
+   * \brief Second order Raviart-Thomas shape functions on cubes.
+   *
+   * \tparam D Type to represent the field in the domain.
+   * \tparam R Type to represent the field in the range.
+   */
+  template<class D, class R>
+  class RT4Cube2DLocalFiniteElement
+  {
+
+  public:
+    typedef LocalFiniteElementTraits<
+        RT4Cube2DLocalBasis<D,R>,
+        RT4Cube2DLocalCoefficients,
+        RT4Cube2DLocalInterpolation<RT4Cube2DLocalBasis<D,R> > > Traits;
+
+    //! \brief Standard constructor
+    RT4Cube2DLocalFiniteElement ()
+    {
+      gt.makeQuadrilateral();
+    }
+
+    /**
+     * \brief Make set number s, where 0 <= s < 16
+     *
+     * \param s Edge orientation indicator
+     */
+    RT4Cube2DLocalFiniteElement (int s) : basis(s), interpolation(s)
+    {
+      gt.makeQuadrilateral();
+    }
+
+    const typename Traits::LocalBasisType& localBasis () const
+    {
+      return basis;
+    }
+
+    const typename Traits::LocalCoefficientsType& localCoefficients () const
+    {
+      return coefficients;
+    }
+
+    const typename Traits::LocalInterpolationType& localInterpolation () const
+    {
+      return interpolation;
+    }
+
+    GeometryType type () const
+    {
+      return gt;
+    }
+
+  private:
+    RT4Cube2DLocalBasis<D,R> basis;
+    RT4Cube2DLocalCoefficients coefficients;
+    RT4Cube2DLocalInterpolation<RT4Cube2DLocalBasis<D,R> > interpolation;
+    GeometryType gt;
+  };
+}
+#endif // DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS4_CUBE2D_LOCALFINITEELEMENT_HH

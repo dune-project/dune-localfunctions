@@ -8,7 +8,9 @@
 #include "raviartthomas1cube2d.hh"
 #include "raviartthomas1cube3d.hh"
 #include "raviartthomas2cube2d.hh"
+#include "raviartthomas2cube3d.hh"
 #include "raviartthomas3cube2d.hh"
+#include "raviartthomas4cube2d.hh"
 
 /**
  * \file
@@ -85,7 +87,6 @@ namespace Dune
     {}
   };
 
-
   /**
    * \brief Raviart-Thomas local finite elements for cubes with dimension 2 and order 3.
    */
@@ -100,6 +101,23 @@ namespace Dune
 
     RaviartThomasCubeLocalFiniteElement(int s)
       : RT3Cube2DLocalFiniteElement<D, R>::RT3Cube2DLocalFiniteElement(s)
+    {}
+  };
+
+  /**
+   * \brief Raviart-Thomas local finite elements for cubes with dimension 2 and order 4.
+   */
+  template<class D, class R>
+  class RaviartThomasCubeLocalFiniteElement<D, R, 2, 4>
+    : public RT4Cube2DLocalFiniteElement<D, R>
+  {
+  public:
+    RaviartThomasCubeLocalFiniteElement()
+      : RT4Cube2DLocalFiniteElement<D, R>::RT4Cube2DLocalFiniteElement()
+    {}
+
+    RaviartThomasCubeLocalFiniteElement(int s)
+      : RT4Cube2DLocalFiniteElement<D, R>::RT4Cube2DLocalFiniteElement(s)
     {}
   };
 
@@ -134,6 +152,23 @@ namespace Dune
 
     RaviartThomasCubeLocalFiniteElement(int s)
       : RT1Cube3DLocalFiniteElement<D, R>::RT1Cube3DLocalFiniteElement(s)
+    {}
+  };
+
+  /**
+   * \brief Raviart-Thomas local finite elements for cubes with dimension 3 and order 2.
+   */
+  template<class D, class R>
+  class RaviartThomasCubeLocalFiniteElement<D, R, 3, 2>
+    : public RT2Cube3DLocalFiniteElement<D, R>
+  {
+  public:
+    RaviartThomasCubeLocalFiniteElement()
+      : RT2Cube3DLocalFiniteElement<D, R>::RT2Cube3DLocalFiniteElement()
+    {}
+
+    RaviartThomasCubeLocalFiniteElement(int s)
+      : RT2Cube3DLocalFiniteElement<D, R>::RT2Cube3DLocalFiniteElement(s)
     {}
   };
 } // namespace Dune

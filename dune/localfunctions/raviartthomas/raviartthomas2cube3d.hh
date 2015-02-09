@@ -15,6 +15,8 @@ namespace Dune
   /**
    * \brief First order Raviart-Thomas shape functions on cubes.
    *
+   * \note The Jacobian is not implemented.
+   *
    * \tparam D Type to represent the field in the domain.
    * \tparam R Type to represent the field in the range.
    */
@@ -57,6 +59,12 @@ namespace Dune
     const typename Traits::LocalInterpolationType& localInterpolation () const
     {
       return interpolation;
+    }
+
+    /** \brief Number of shape functions in this finite element */
+    unsigned int size () const
+    {
+      return basis.size();
     }
 
     GeometryType type () const

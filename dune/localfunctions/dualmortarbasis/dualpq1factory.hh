@@ -3,6 +3,8 @@
 #ifndef DUNE_LOCALFUNCTIONS_DUAL_P1_Q1_FACTORY_HH
 #define DUNE_LOCALFUNCTIONS_DUAL_P1_Q1_FACTORY_HH
 
+#include <map>
+
 #include <dune/localfunctions/common/virtualinterface.hh>
 #include <dune/localfunctions/common/virtualwrappers.hh>
 

@@ -1,5 +1,4 @@
 # -*- Autoconf -*-
-# $Id: configure.ac 5257 2008-08-01 23:19:24Z mblatt $
 # Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.50)
 DUNE_AC_INIT # gets module version from dune.module file

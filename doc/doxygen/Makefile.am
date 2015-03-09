@@ -1,5 +1,3 @@
-# $Id: Makefile.am 901 2008-05-20 21:47:43Z christi $
-
 # setting like in dune-web
 BASEDIR=../..
 CURDIR=doc/doxygen

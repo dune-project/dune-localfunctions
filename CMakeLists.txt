@@ -22,8 +22,6 @@ include(DuneMacros)
 # start a dune project with information from dune.module
 dune_project()
 
-# $Id: duneproject 5232 2008-07-03 09:34:11Z christi $
-
 # we need the module file to be able to build via dunecontrol
 set(EXTRA_DIST dune.module)
 

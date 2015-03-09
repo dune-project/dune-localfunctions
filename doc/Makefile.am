@@ -1,5 +1,3 @@
-# $Id: Makefile.am 836 2007-12-05 17:34:43Z robertk $
-
 SUBDIRS = doxygen
 
 TEXSOURCES = dune-localfunctions-manual.tex

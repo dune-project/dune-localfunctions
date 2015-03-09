@@ -1,5 +1,3 @@
-# $Id: Makefile.am 4150 2008-05-15 16:12:46Z christi $
-
 # which tests to run
 TESTS = lagrangeshapefunctiontest		\
 	monomialshapefunctiontest			\

@@ -12,7 +12,9 @@ check_PROGRAMS = $(TESTS)
 # output code coverage
 #AM_CXXFLAGS = @AM_CPPFLAGS@ -fprofile-arcs -ftest-coverage
 
-noinst_HEADERS =				\
+localfunctionstestdir = $(includedir)/dune/localfunctions/test
+
+localfunctionstest_HEADERS =			\
 	geometries.hh				\
 	test-fe.hh				\
 	test-localfe.hh

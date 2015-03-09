@@ -15,11 +15,6 @@ set(TESTS
         test-raviartthomas3simplex
 )
 
-set(noinst_HEADERS
-        geometries.hh
-        test-fe.hh
-        test-localfe.hh)
-
 # define the programs
 add_executable(testgenericfem testgenericfem.cc)
 add_dune_gmp_flags(testgenericfem)

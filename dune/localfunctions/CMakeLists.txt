@@ -39,3 +39,11 @@ foreach(i ${SUBDIRS})
   add_subdirectory(${i} ${opt})
   unset(opt)
 endforeach(i ${SUBDIRS})
+
+# Install some test headers, because they might be useful for tests in
+# other modules.
+# We do this here as test will not be considered for make install.
+install(FILES test/geometries.hh
+        test/test-fe.hh
+        test/test-localfe.hh
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions/test)

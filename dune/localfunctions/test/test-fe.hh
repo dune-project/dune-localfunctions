@@ -1,6 +1,11 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
 
+// This header is not part of the official Dune API and might be subject
+// to change.  You can use this header to test external finite element
+// implementations, but be warned that your tests might break with future
+// Dune versions.
+
 #ifndef DUNE_LOCALFUNCTIONS_TEST_TEST_FE_HH
 #define DUNE_LOCALFUNCTIONS_TEST_TEST_FE_HH
 

@@ -274,6 +274,19 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned order = 2)
     success = false;
   }
 
+  // Make sure evaluateFunction returns the correct number of values
+  std::vector<typename FE::Traits::LocalBasisType::Traits::RangeType> values;
+  fe.localBasis().evaluateFunction(Dune::ReferenceElements<double,FE::Traits::LocalBasisType::Traits::dimDomain>::general(fe.type()).position(0,0), values);
+
+  if (values.size() != fe.size())
+  {
+    std::cout << "Bug in finite element type "
+              << Dune::className(fe) << std::endl;
+    std::cout << "    LocalFiniteElement.size() returns " << fe.size() << "," << std::endl;
+    std::cout << "    but LocalBasis::evaluateFunction returns " << values.size() << " values!" << std::endl;
+    success = false;
+  }
+
   if (fe.size() != fe.localCoefficients().size())
   {
     std::cout << "Bug in finite element type "

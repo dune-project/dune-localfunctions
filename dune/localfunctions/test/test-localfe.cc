@@ -271,9 +271,6 @@ int main(int argc, char** argv) try
   Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,2> rt2cube2dlfem(1);
   TEST_FE(rt2cube2dlfem);
 
-  Dune::RaviartThomasCubeLocalFiniteElement<double,double,3,2> rt2cube3dlfem(1);
-  TEST_FE2(rt2cube3dlfem, DisableJacobian);
-
   Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,3> rt3cube2dlfem(1);
   TEST_FE2(rt3cube2dlfem, DisableJacobian);
 

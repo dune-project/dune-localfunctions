@@ -6,7 +6,6 @@ set(raviartthomas_HEADERS
   raviartthomas1cube2d.hh
   raviartthomas1cube3d.hh
   raviartthomas2cube2d.hh
-  raviartthomas2cube3d.hh
   raviartthomas3cube2d.hh
   raviartthomas4cube2d.hh
   raviartthomascube.hh
@@ -20,7 +19,6 @@ set(SUBDIRS
   raviartthomas1cube2d
   raviartthomas1cube3d
   raviartthomas2cube2d
-  raviartthomas2cube3d
   raviartthomas3cube2d
   raviartthomas4cube2d
   raviartthomassimplex)

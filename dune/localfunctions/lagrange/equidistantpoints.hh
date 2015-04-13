@@ -1,13 +1,13 @@
 #ifndef DUNE_LOCALFUNCTIONS_LAGRANGE_EQUIDISTANTPOINTS_HH
 #define DUNE_LOCALFUNCTIONS_LAGRANGE_EQUIDISTANTPOINTS_HH
 
+#include <cstddef>
+
+#include <algorithm>
 #include <vector>
 
-#include <dune/common/forloop.hh>
-#include <dune/common/fvector.hh>
 #include <dune/geometry/genericgeometry/subtopologies.hh>
 #include <dune/geometry/genericgeometry/topologytypes.hh>
-#include <dune/geometry/topologyfactory.hh>
 
 #include <dune/localfunctions/lagrange/emptypoints.hh>
 #include <dune/localfunctions/utility/field.hh>
@@ -15,211 +15,165 @@
 namespace Dune
 {
 
-  // Internal Forward Declarations
-  // -----------------------------
+  // numLagrangePoints
+  // -----------------
 
-  template< class F, unsigned int dim >
-  class EquidistantPointSet;
-
-
-
-  // EquidistantPointSetImpl
-  // -----------------------
-
-  template< class Topology, class F >
-  class EquidistantPointSetImpl;
-
-  template< class F >
-  class EquidistantPointSetImpl< GenericGeometry::Point, F >
+  inline std::size_t numLagrangePoints ( unsigned int topologyId, int dim, unsigned int order )
   {
-    typedef EquidistantPointSetImpl< GenericGeometry::Point, F > This;
+    assert( topologyId < GenericGeometry::numTopologies( dim ) );
 
-    typedef GenericGeometry::Point Topology;
-
-    friend class EquidistantPointSet< F, Topology::dimension >;
-    friend class EquidistantPointSetImpl< GenericGeometry::Prism< Topology >, F >;
-    friend class EquidistantPointSetImpl< GenericGeometry::Pyramid< Topology >, F >;
-
-  public:
-    typedef F Field;
-
-    static const unsigned int dimension = Topology::dimension;
-
-    static unsigned int size ( unsigned int order ) { return 1; }
-
-  private:
-    template< unsigned int codim, unsigned int dim >
-    static unsigned int setup ( unsigned int order, unsigned int *count, LagrangePoint< Field, dim > *points )
+    if( dim > 0 )
     {
-      assert( codim == 0 );
-      points->localKey_ = LocalKey( 0, 0, count[ 0 ]++ );
-      points->point_ = Field( 0 );
-      return 1;
-    }
-  };
-
-  template< class BaseTopology, class F >
-  class EquidistantPointSetImpl< GenericGeometry::Prism< BaseTopology >, F >
-  {
-    typedef EquidistantPointSetImpl< GenericGeometry::Prism< BaseTopology >, F > This;
-
-    typedef GenericGeometry::Prism< BaseTopology > Topology;
-
-    friend class EquidistantPointSet< F, Topology::dimension >;
-    friend class EquidistantPointSetImpl< GenericGeometry::Prism< Topology >, F >;
-    friend class EquidistantPointSetImpl< GenericGeometry::Pyramid< Topology >, F >;
-
-    typedef EquidistantPointSetImpl< BaseTopology, F > BaseImpl;
-
-  public:
-    typedef F Field;
-
-    static const unsigned int dimension = Topology::dimension;
-
-    static unsigned int size ( unsigned int order ) { return BaseImpl::size( order ) * (order+1); }
-
-  // private:
-    template< unsigned int codim, unsigned int dim >
-    static unsigned int setup ( unsigned int order, unsigned int *count, LagrangePoint< Field, dim > *points )
-    {
-      unsigned int size = 0;
-      unsigned int numBaseN = 0;
-
-      if( codim < dimension )
+      const unsigned int baseId = GenericGeometry::baseTopologyId( topologyId, dim );
+      if( GenericGeometry::isPyramid( topologyId, dim ) )
       {
-        const unsigned int vcodim = (codim < dimension ? codim : dimension-1);
-        numBaseN = GenericGeometry::Size< BaseTopology, vcodim >::value;
-        for( unsigned int i = 1; i < order; ++i )
+        std::size_t size = 0;
+        for( unsigned int o = 0; o <= order; ++o )
+          size += numLagrangePoints( baseId, dim-1, o );
+        return size;
+      }
+      else
+        return numLagrangePoints( baseId, dim-1, order ) * (order+1);
+    }
+    else
+      return 1;
+  }
+
+
+
+  // equidistantLagrangePoints
+  // -------------------------
+
+  template< class ct, unsigned int cdim >
+  inline static unsigned int equidistantLagrangePoints ( unsigned int topologyId, unsigned int dim, unsigned int codim, unsigned int order, unsigned int *count, LagrangePoint< ct, cdim > *points )
+  {
+    assert( (0 <= codim) && (codim <= dim) && (dim <= cdim) );
+    assert( topologyId < GenericGeometry::numTopologies( dim ) );
+
+    if( dim > 0 )
+    {
+      const unsigned int baseId = GenericGeometry::baseTopologyId( topologyId, dim );
+      const unsigned int numBaseN = (codim < dim ? GenericGeometry::size( baseId, dim-1, codim ) : 0);
+      const unsigned int numBaseM = (codim > 0 ? GenericGeometry::size( baseId, dim-1, codim-1 ) : 0);
+
+      if( GenericGeometry::isPrism( topologyId, dim ) )
+      {
+        unsigned int size = 0;
+        if( codim < dim )
         {
-          const unsigned int n = BaseImpl::template setup< vcodim, dim >( order, count, points );
+          for( unsigned int i = 1; i < order; ++i )
+          {
+            const unsigned int n = equidistantLagrangePoints( baseId, dim-1, codim, order, count, points );
+            for( unsigned int j = 0; j < n; ++j )
+            {
+              LocalKey &key = points->localKey_;
+              key = LocalKey( key.subEntity(), codim, key.index() );
+              points->point_[ dim-1 ] = ct( i ) / ct( order );
+              ++points;
+            }
+            size += n;
+          }
+        }
+
+        if( codim > 0 )
+        {
+          const unsigned int n = equidistantLagrangePoints( baseId, dim-1, codim-1, order, count+numBaseN, points );
           for( unsigned int j = 0; j < n; ++j )
           {
-            LocalKey &key = points->localKey_;
-            key = LocalKey( key.subEntity(), codim, key.index() );
-            points->point_[ dimension-1 ] = Field( i ) / Field( order );
-            ++points;
+            LocalKey &key = points[ j ].localKey_;
+            key = LocalKey( key.subEntity() + numBaseN, codim, key.index() );
+
+            points[ j + n ].point_ = points[ j ].point_;
+            points[ j + n ].point_[ dim-1 ] = ct( 1 );
+            points[ j + n ].localKey_ = LocalKey( key.subEntity() + numBaseM, codim, key.index() );
+            ++count[ key.subEntity() + numBaseM ];
           }
-          size += n;
+          size += 2*n;
         }
-      }
 
-      if( codim > 0 )
-      {
-        const unsigned int vcodim = (codim > 0 ? codim : 1);
-        const unsigned int numBaseM = GenericGeometry::Size< BaseTopology, vcodim-1 >::value;
-        const unsigned int n = BaseImpl::template setup< vcodim-1, dim >( order, count+numBaseN, points );
-        for( unsigned int j = 0; j < n; ++j )
-        {
-          LocalKey &key = points[ j ].localKey_;
-          key = LocalKey( key.subEntity() + numBaseN, codim, key.index() );
-          points[ j + n ].point_ = points[ j ].point_;
-          points[ j + n ].point_[ dimension-1 ] = Field( 1 );
-          points[ j + n ].localKey_ = LocalKey( key.subEntity() + numBaseM, codim, key.index() );
-          ++count[ key.subEntity() + numBaseM ];
-        }
-        size += 2*n;
-      }
-      return size;
-    }
-  };
-
-  template< class BaseTopology, class F >
-  class EquidistantPointSetImpl< GenericGeometry::Pyramid< BaseTopology >, F >
-  {
-    typedef EquidistantPointSetImpl< GenericGeometry::Pyramid< BaseTopology >, F > This;
-
-    typedef GenericGeometry::Pyramid< BaseTopology > Topology;
-
-    friend class EquidistantPointSet< F, Topology::dimension >;
-    friend class EquidistantPointSetImpl< GenericGeometry::Prism< Topology >, F >;
-    friend class EquidistantPointSetImpl< GenericGeometry::Pyramid< Topology >, F >;
-
-    typedef EquidistantPointSetImpl< BaseTopology, F > BaseImpl;
-
-  public:
-    typedef F Field;
-
-    static const unsigned int dimension = Topology::dimension;
-
-    static unsigned int size ( unsigned int order )
-    {
-      unsigned int size = BaseImpl::size( order );
-      for( unsigned int i = 1; i <= order; ++i )
-        size += BaseImpl::size( order - i );
-      return size;
-    }
-
-    // private:
-    template< unsigned int codim, unsigned int dim >
-    static unsigned int setup ( unsigned int order, unsigned int *count, LagrangePoint< Field, dim > *points )
-    {
-      unsigned int size = 0;
-      unsigned int numBaseM = 0;
-
-      if( codim > 0 )
-      {
-        const unsigned int vcodim = (codim > 0 ? codim : 1);
-        numBaseM = GenericGeometry::Size< BaseTopology, vcodim-1 >::value;
-        size = BaseImpl::template setup< vcodim-1, dim >( order, count, points );
-        LagrangePoint< Field, dim > *const end = points + size;
-        for(; points != end; ++points )
-        {
-          LocalKey &key = points->localKey_;
-          key = LocalKey( key.subEntity(), codim, key.index() );
-        }
-      }
-
-      if( codim < dimension )
-      {
-        const unsigned int vcodim = (codim < dimension ? codim : dimension-1);
-        for( unsigned int i = order-1; i > 0; --i )
-        {
-          const unsigned int n = BaseImpl::template setup< vcodim, dim >( i, count+numBaseM, points );
-          LagrangePoint< Field, dim > *const end = points + n;
-          for(; points != end; ++points )
-          {
-            LocalKey &key = points->localKey_;
-            key = LocalKey( key.subEntity()+numBaseM, codim, key.index() );
-            for( unsigned int j = 0; j < dimension-1; ++j )
-              points->point_[ j ] *= Field( i ) / Field( order );
-            points->point_[ dimension-1 ] = Field( order - i ) / Field( order );
-          }
-          size += n;
-        }
+        return size;
       }
       else
       {
-        points->localKey_ = LocalKey( numBaseM, dimension, count[ numBaseM ]++ );
-        points->point_ = Field( 0 );
-        points->point_[ dimension-1 ] = 1;
-        ++size;
+        unsigned int size = (codim > 0 ? equidistantLagrangePoints( baseId, dim-1, codim-1, order, count, points ) : 0);
+        LagrangePoint< ct, cdim > *const end = points + size;
+        for( ; points != end; ++points )
+          points->localKey_ = LocalKey( points->localKey_.subEntity(), codim, points->localKey_.index() );
+
+        if( codim < dim )
+        {
+          for( unsigned int i = order-1; i > 0; --i )
+          {
+            const unsigned int n = equidistantLagrangePoints( baseId, dim-1, codim, i, count+numBaseM, points );
+            LagrangePoint< ct, cdim > *const end = points + n;
+            for( ; points != end; ++points )
+            {
+              points->localKey_ = LocalKey( points->localKey_.subEntity()+numBaseM, codim, points->localKey_.index() );
+              for( unsigned int j = 0; j < dim-1; ++j )
+                points->point_[ j ] *= ct( i ) / ct( order );
+              points->point_[ dim-1 ] = ct( order - i ) / ct( order );
+            }
+            size += n;
+          }
+        }
+        else
+        {
+          points->localKey_ = LocalKey( numBaseM, dim, count[ numBaseM ]++ );
+          points->point_ = 0;
+          points->point_[ dim-1 ] = ct( 1 );
+          ++size;
+        }
+
+        return size;
       }
-
-      return size;
     }
-  };
+    else
+    {
+      points->localKey_ = LocalKey( 0, 0, count[ 0 ]++ );
+      points->point_ = 0;
+      return 1;
+    }
+  }
 
 
 
-  // LagnragePoints
-  // --------------
+  // EquidistantPointSet
+  // -------------------
 
   template< class F, unsigned int dim >
   class EquidistantPointSet
     : public EmptyPointSet< F, dim >
   {
-    template< class T >
-    struct Topology;
-
     typedef EmptyPointSet< F, dim > Base;
 
   public:
     static const unsigned int dimension = dim;
 
+    using Base::order;
+
     EquidistantPointSet ( unsigned int order ) : Base( order ) {}
 
+    void build ( GeometryType gt )
+    {
+      assert( gt.dim() == dimension );
+      points_.resize( numLagrangePoints( gt.id(), dimension, order() ) );
+
+      typename Base::LagrangePoint *p = points_.data();
+      std::vector< unsigned int > count;
+      for( unsigned int mydim = 0; mydim <= dimension; ++mydim )
+      {
+        count.resize( GenericGeometry::size( gt.id(), dimension, dimension-mydim ) );
+        std::fill( count.begin(), count.end(), 0u );
+        p += equidistantLagrangePoints( gt.id(), dimension, dimension-mydim, order(), count.data(), p );
+      }
+    }
+
     template< class T >
-    bool build ();
+    bool build ()
+    {
+      build( GeometryType( T() ) );
+      return true;
+    }
 
     template< class T >
     static bool supports ( unsigned int order ) { return true; }
@@ -227,45 +181,6 @@ namespace Dune
   private:
     using Base::points_;
   };
-
-
-
-  // EquidistantPointSet::Topology
-  // -----------------------------
-
-  template< class F, unsigned int dim >
-  template< class T >
-  struct EquidistantPointSet< F, dim >::Topology
-  {
-    typedef EquidistantPointSetImpl< T, F > Impl;
-    typedef Dune::LagrangePoint< F, dim > LagrangePoint;
-
-    template< int pdim >
-    struct Init
-    {
-      static void apply ( unsigned int order, LagrangePoint * &p )
-      {
-        const unsigned int size = GenericGeometry::Size< T, dimension-pdim >::value;
-        unsigned int count[ size ];
-        for( unsigned int i = 0; i < size; ++i )
-          count[ i ] = 0;
-        p += Impl::template setup< dimension-pdim, dimension >( order, count, p );
-      }
-    };
-  };
-
-  template< class F, unsigned int dim >
-  template< class T >
-  inline bool EquidistantPointSet< F, dim >::build ()
-  {
-    unsigned int order = Base::order();
-    typedef Dune::LagrangePoint< F, dimension > LagrangePoint;
-    typedef typename Topology< T >::Impl Impl;
-    points_.resize( Impl::size( order ) );
-    LagrangePoint *p = &(points_[ 0 ]);
-    ForLoop< Topology< T >::template Init, 0, dimension >::apply( order, p );
-    return true;
-  }
 
 } // namespace Dune
 

@@ -1,15 +1,13 @@
-// -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
-// vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_EQUIDISTANTPOINTS_HH
-#define DUNE_EQUIDISTANTPOINTS_HH
+#ifndef DUNE_LOCALFUNCTIONS_LAGRANGE_EQUIDISTANTPOINTS_HH
+#define DUNE_LOCALFUNCTIONS_LAGRANGE_EQUIDISTANTPOINTS_HH
 
 #include <vector>
 
-#include <dune/common/fvector.hh>
 #include <dune/common/forloop.hh>
-#include <dune/geometry/topologyfactory.hh>
-#include <dune/geometry/genericgeometry/topologytypes.hh>
+#include <dune/common/fvector.hh>
 #include <dune/geometry/genericgeometry/subtopologies.hh>
+#include <dune/geometry/genericgeometry/topologytypes.hh>
+#include <dune/geometry/topologyfactory.hh>
 
 #include <dune/localfunctions/lagrange/emptypoints.hh>
 #include <dune/localfunctions/utility/field.hh>
@@ -23,8 +21,10 @@ namespace Dune
   template< class F, unsigned int dim >
   class EquidistantPointSet;
 
+
+
   // EquidistantPointSetImpl
-  // ----------------------------
+  // -----------------------
 
   template< class Topology, class F >
   class EquidistantPointSetImpl;
@@ -45,16 +45,11 @@ namespace Dune
 
     static const unsigned int dimension = Topology::dimension;
 
-    static unsigned int size ( const unsigned int order )
-    {
-      return 1;
-    }
+    static unsigned int size ( unsigned int order ) { return 1; }
 
   private:
     template< unsigned int codim, unsigned int dim >
-    static unsigned int setup ( const unsigned int order,
-                                unsigned int *count,
-                                LagrangePoint< Field, dim > *points )
+    static unsigned int setup ( unsigned int order, unsigned int *count, LagrangePoint< Field, dim > *points )
     {
       assert( codim == 0 );
       points->localKey_ = LocalKey( 0, 0, count[ 0 ]++ );
@@ -81,16 +76,11 @@ namespace Dune
 
     static const unsigned int dimension = Topology::dimension;
 
-    static unsigned int size ( const unsigned int order )
-    {
-      return BaseImpl::size( order ) * (order+1);
-    }
+    static unsigned int size ( unsigned int order ) { return BaseImpl::size( order ) * (order+1); }
 
-    // private:
+  // private:
     template< unsigned int codim, unsigned int dim >
-    static unsigned int setup ( const unsigned int order,
-                                unsigned int *count,
-                                LagrangePoint< Field, dim > *points )
+    static unsigned int setup ( unsigned int order, unsigned int *count, LagrangePoint< Field, dim > *points )
     {
       unsigned int size = 0;
       unsigned int numBaseN = 0;
@@ -151,7 +141,7 @@ namespace Dune
 
     static const unsigned int dimension = Topology::dimension;
 
-    static unsigned int size ( const unsigned int order )
+    static unsigned int size ( unsigned int order )
     {
       unsigned int size = BaseImpl::size( order );
       for( unsigned int i = 1; i <= order; ++i )
@@ -161,9 +151,7 @@ namespace Dune
 
     // private:
     template< unsigned int codim, unsigned int dim >
-    static unsigned int setup ( const unsigned int order,
-                                unsigned int *count,
-                                LagrangePoint< Field, dim > *points )
+    static unsigned int setup ( unsigned int order, unsigned int *count, LagrangePoint< Field, dim > *points )
     {
       unsigned int size = 0;
       unsigned int numBaseM = 0;
@@ -174,7 +162,7 @@ namespace Dune
         numBaseM = GenericGeometry::Size< BaseTopology, vcodim-1 >::value;
         size = BaseImpl::template setup< vcodim-1, dim >( order, count, points );
         LagrangePoint< Field, dim > *const end = points + size;
-        for( ; points != end; ++points )
+        for(; points != end; ++points )
         {
           LocalKey &key = points->localKey_;
           key = LocalKey( key.subEntity(), codim, key.index() );
@@ -188,7 +176,7 @@ namespace Dune
         {
           const unsigned int n = BaseImpl::template setup< vcodim, dim >( i, count+numBaseM, points );
           LagrangePoint< Field, dim > *const end = points + n;
-          for( ; points != end; ++points )
+          for(; points != end; ++points )
           {
             LocalKey &key = points->localKey_;
             key = LocalKey( key.subEntity()+numBaseM, codim, key.index() );
@@ -217,29 +205,33 @@ namespace Dune
   // --------------
 
   template< class F, unsigned int dim >
-  class EquidistantPointSet : public EmptyPointSet<F,dim>
+  class EquidistantPointSet
+    : public EmptyPointSet< F, dim >
   {
     template< class T >
     struct Topology;
-    typedef EmptyPointSet<F,dim> Base;
+
+    typedef EmptyPointSet< F, dim > Base;
+
   public:
     static const unsigned int dimension = dim;
 
-    EquidistantPointSet( unsigned int order )
-      : Base(order)
-    {}
+    EquidistantPointSet ( unsigned int order ) : Base( order ) {}
 
     template< class T >
-    bool build ( );
+    bool build ();
 
     template< class T >
-    static bool supports ( unsigned int order )
-    {
-      return true;
-    }
+    static bool supports ( unsigned int order ) { return true; }
+
   private:
     using Base::points_;
   };
+
+
+
+  // EquidistantPointSet::Topology
+  // -----------------------------
 
   template< class F, unsigned int dim >
   template< class T >
@@ -251,7 +243,7 @@ namespace Dune
     template< int pdim >
     struct Init
     {
-      static void apply ( const unsigned int order, LagrangePoint *&p )
+      static void apply ( unsigned int order, LagrangePoint * &p )
       {
         const unsigned int size = GenericGeometry::Size< T, dimension-pdim >::value;
         unsigned int count[ size ];
@@ -264,7 +256,7 @@ namespace Dune
 
   template< class F, unsigned int dim >
   template< class T >
-  inline bool EquidistantPointSet< F, dim >::build ( )
+  inline bool EquidistantPointSet< F, dim >::build ()
   {
     unsigned int order = Base::order();
     typedef Dune::LagrangePoint< F, dimension > LagrangePoint;
@@ -274,6 +266,7 @@ namespace Dune
     ForLoop< Topology< T >::template Init, 0, dimension >::apply( order, p );
     return true;
   }
-}
 
-#endif
+} // namespace Dune
+
+#endif // #ifndef DUNE_LOCALFUNCTIONS_LAGRANGE_EQUIDISTANTPOINTS_HH

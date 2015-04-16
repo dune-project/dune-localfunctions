@@ -35,6 +35,25 @@ namespace Dune
       return alpha;
     }
 
+    /** \brief Set the 'subentity' field for each dof for a 1d element */
+    void setup1d(std::vector<unsigned int>& subEntity)
+    {
+      assert(k>0);
+      unsigned lastIndex=0;
+
+      /* edge and vertex numbering
+         0----0----1
+       */
+
+      // lower edge (2)
+      subEntity[lastIndex++] = 0;                 // corner 0
+      for (unsigned i = 0; i < k - 1; ++i)
+        subEntity[lastIndex++] = 0;               // inner dofs of element (0)
+
+      subEntity[lastIndex++] = 1;                 // corner 1
+
+      assert((StaticPower<k+1,d>::power==lastIndex));
+    }
 
     void setup2d(std::vector<unsigned int>& subEntity)
     {
@@ -76,6 +95,7 @@ namespace Dune
 
       assert((StaticPower<k+1,d>::power==lastIndex));
     }
+
 
 
     void setup3d(std::vector<unsigned int>& subEntity)
@@ -214,10 +234,14 @@ namespace Dune
       // Set up entity and dof numbers for each (supported) dimension separately
       std::vector<unsigned int> subEntity(li.size());
 
-      if (k==1) {
+      if (k==1) {  // We can handle the first-order case in any dimension
 
         for (std::size_t i=0; i<size(); i++)
           subEntity[i] = i;
+
+      } else if (d==1) {
+
+        setup1d(subEntity);
 
       } else if (d==2) {
 

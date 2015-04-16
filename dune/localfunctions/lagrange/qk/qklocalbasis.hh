@@ -158,7 +158,7 @@ namespace Dune
         out[i][j] = dp(alpha[j],in[j]);
 
         // rest of the product
-        for (int l=0; l<d; l++)
+        for (std::size_t l=0; l<d; l++)
           if (l!=j)
             out[i][j] *= p(alpha[l],in[l]);
       }

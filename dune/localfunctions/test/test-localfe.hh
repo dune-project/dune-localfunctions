@@ -15,6 +15,7 @@
 
 #include <dune/common/classname.hh>
 #include <dune/geometry/quadraturerules.hh>
+#include <dune/geometry/referenceelements.hh>
 
 #include <dune/localfunctions/common/virtualinterface.hh>
 #include <dune/localfunctions/common/virtualwrappers.hh>

@@ -137,7 +137,7 @@ namespace Dune
      */
     template<int diffOrder>
     inline void evaluate(
-      const typename std::template array<int,1>& direction,
+      const std::array<int,1>& direction,
       const typename Traits::DomainType& in,
       std::vector<typename Traits::RangeType>& out) const
     {

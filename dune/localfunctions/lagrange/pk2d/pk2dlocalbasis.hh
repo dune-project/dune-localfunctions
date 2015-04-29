@@ -35,7 +35,7 @@ namespace Dune
     enum {O = k};
 
     typedef LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldMatrix<R,1,2> > Traits;
+        Dune::FieldMatrix<R,1,2>, 2 > Traits;
 
     //! \brief Standard constructor
     Pk2DLocalBasis ()
@@ -158,6 +158,59 @@ namespace Dune
 
     }
 
+    //! \brief Evaluate higher derivatives of all shape functions
+    template<unsigned int order> //order of derivative
+    inline void evaluate(const std::array<int,order>& directions, //direction of derivative
+                         const typename Traits::DomainType& in,  //position
+                         std::vector<typename Traits::RangeType>& out) const //return value
+    {
+      out.resize(N);
+
+      if (order > Traits::diffOrder)
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+
+      if (order==0)
+        evaluateFunction(in, out);
+      else if (order==1)
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      else if (order==2)
+      {
+        // specialization for k<2, not clear whether that is needed
+        if (k<2) {
+          std::fill(out.begin(), out.end(), 0.0);
+        return;
+      }
+
+      //f = prod_{i} f_i -> dxa dxb f = sum_{i} {dxa f_i sum_{k \neq i} dxb f_k prod_{l \neq k,i} f_l
+      int n=0;
+      for (unsigned int j=0; j<=k; j++)
+        for (unsigned int i=0; i<=k-j; i++, n++)
+        {
+          R res = 0.0;
+
+          for (unsigned int no1=0; no1 < k; no1++)
+          {
+            R factor1 = lagrangianFactorDerivative(directions[0], no1, i, j, in);
+            for (unsigned int no2=0; no2 < k; no2++)
+            {
+              if (no1 == no2)
+                continue;
+              R factor2 = factor1*lagrangianFactorDerivative(directions[1], no2, i, j, in);
+              for (unsigned int no3=0; no3 < k; no3++)
+              {
+                if (no3 == no1 || no3 == no2)
+                  continue;
+                factor2 *= lagrangianFactor(no3, i, j, in);
+              }
+              res += factor2;
+            }
+
+          }
+          out[n] = res;
+        }
+      }
+    }
+
     //! \brief Polynomial order of the shape functions
     unsigned int order () const
     {
@@ -165,6 +218,30 @@ namespace Dune
     }
 
   private:
+  /** \brief Returns a single Lagrangian factor of l_ij evaluated at x */
+  typename Traits::RangeType lagrangianFactor(const int no, const int i, const int j, const typename Traits::DomainType& x) const
+  {
+    if ( no < i)
+      return (x[0]-pos[no])/(pos[i]-pos[no]);
+    if (no < i+j)
+      return (x[1]-pos[no-i])/(pos[j]-pos[no-i]);
+    return (pos[no+1]-x[0]-x[1])/(pos[no+1]-pos[i]-pos[j]);
+  }
+
+  /** \brief Returns the derivative of a single Lagrangian factor of l_ij evaluated at x
+   * \param direction Derive in x-direction if this is 0, otherwise derive in y direction
+   */
+  typename Traits::RangeType lagrangianFactorDerivative(const int direction, const int no, const int i, const int j, const typename Traits::DomainType& x) const
+  {
+    if ( no < i)
+      return (direction == 0) ? 1.0/(pos[i]-pos[no]) : 0;
+
+    if (no < i+j)
+      return (direction == 0) ? 0: 1.0/(pos[j]-pos[no-i]);
+
+    return -1.0/(pos[no+1]-pos[i]-pos[j]);
+  }
+
     R pos[k+1]; // positions on the interval
   };
 

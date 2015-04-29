@@ -159,21 +159,21 @@ namespace Dune
     }
 
     //! \brief Evaluate higher derivatives of all shape functions
-    template<unsigned int order> //order of derivative
-    inline void evaluate(const std::array<int,order>& directions, //direction of derivative
+    template<unsigned int dOrder> //order of derivative
+    inline void evaluate(const std::array<int,dOrder>& directions, //direction of derivative
                          const typename Traits::DomainType& in,  //position
                          std::vector<typename Traits::RangeType>& out) const //return value
     {
       out.resize(N);
 
-      if (order > Traits::diffOrder)
+      if (dOrder > Traits::diffOrder)
         DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
 
-      if (order==0)
+      if (dOrder==0)
         evaluateFunction(in, out);
-      else if (order==1)
+      else if (dOrder==1)
         DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
-      else if (order==2)
+      else if (dOrder==2)
       {
         // specialization for k<2, not clear whether that is needed
         if (k<2) {

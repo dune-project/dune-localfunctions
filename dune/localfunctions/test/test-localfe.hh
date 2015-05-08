@@ -239,13 +239,294 @@ bool testJacobian(const FE& fe, unsigned order = 2)
   return success;
 }
 
+/** \brief Helper class to test the 'evaluate' method
+ *
+ * It implements a static loop over the available diff orders
+ */
+template<int diffOrder>
+struct TestEvaluate
+{
+  template <class FE>
+  static bool test(const FE& fe,
+                   double eps, double delta, std::size_t order = 2)
+  {
+    std::cout << "No test for differentiability order " << diffOrder << std::endl;
+    return TestEvaluate<diffOrder-1>::test(fe, eps, delta, order);
+  }
+};
+
+/** \brief Specialization to test the 'evaluate' method for zero-order partial derivatives, i.e., values */
+template<>
+struct TestEvaluate<0>
+{
+  template <class FE>
+  static bool test(const FE& fe,
+                   double eps,
+                   double delta,
+                   std::size_t order = 2)
+  {
+    // TODO Implement me!
+    return true;
+  }
+};
+
+/** \brief Specialization to test the 'evaluate' method for first-order partial derivatives */
+template<>
+struct TestEvaluate<1>
+{
+  template <class FE>
+  static bool test(const FE& fe,
+                   double eps,
+                   double delta,
+                   std::size_t order = 2)
+  {
+    typedef typename FE::Traits::LocalBasisType LB;
+    typedef typename LB::Traits::RangeFieldType RangeField;
+
+    bool success = true;
+
+    //////////////////////////////////////////////////////////////
+    //   Check the partial derivatives by comparing them
+    //   to finite difference approximations
+    //////////////////////////////////////////////////////////////
+
+    // A set of test points
+    const Dune::QuadratureRule<double, LB::Traits::dimDomain> quad =
+          Dune::QuadratureRules<double, LB::Traits::dimDomain>::rule(fe.type(),
+                                                                     order);
+
+    // Loop over all quadrature points
+    for (size_t i = 0; i < quad.size(); i++)
+    {
+      // Get a test point
+      const Dune::FieldVector<double, LB::Traits::dimDomain>& testPoint = quad[i].position();
+
+      // Loop over all directions
+      for (int k = 0; k < LB::Traits::dimDomain; k++)
+      {
+        std::array<int, 1> direction = {k};
+
+        // Get the shape function derivatives there
+        std::vector<typename LB::Traits::RangeType> firstDerivatives;
+        fe.localBasis().template evaluate<1>(direction, testPoint, firstDerivatives);
+        if (firstDerivatives.size() != fe.localBasis().size())
+        {
+          std::cout << "Bug in evaluate() for finite element type "
+                    << Dune::className(fe) << std::endl;
+          std::cout << "    firstDerivatives vector has size "
+                    << firstDerivatives.size() << std::endl;
+          std::cout << "    Basis has size " << fe.localBasis().size()
+                    << std::endl;
+          std::cout << std::endl;
+          return false;
+        }
+
+        // Loop over all shape functions in this set
+        for (unsigned int j = 0; j < fe.localBasis().size(); ++j)
+        {
+          // Compute an approximation to the derivative by finite differences
+          Dune::FieldVector<double, LB::Traits::dimDomain> upPos = testPoint;
+          Dune::FieldVector<double, LB::Traits::dimDomain> downPos = testPoint;
+
+          upPos[k] += jacobianTOL;
+          downPos[k] -= jacobianTOL;
+
+          std::vector<typename LB::Traits::RangeType> upValues, downValues;
+
+          fe.localBasis().evaluateFunction(upPos, upValues);
+          fe.localBasis().evaluateFunction(downPos, downValues);
+
+          // Loop over all components
+          for (int l = 0; l < LB::Traits::dimRange; ++l)
+          {
+            // The current partial derivative, just for ease of notation
+            RangeField derivative = firstDerivatives[j][l];
+
+            RangeField finiteDiff = (upValues[j][l] - downValues[j][l])
+                              / (2 * jacobianTOL);
+
+            // Check
+            if (std::abs(derivative - finiteDiff)
+                > TOL / jacobianTOL
+                  * ((std::abs(finiteDiff) > 1) ? std::abs(finiteDiff) : 1.))
+            {
+              std::cout << std::setprecision(16);
+              std::cout << "Bug in evaluate<1>() for finite element type "
+                        << Dune::className(fe) << std::endl;
+              std::cout << "    Shape function derivative does not agree with "
+                        << "FD approximation" << std::endl;
+              std::cout << "    Shape function " << j << " component " << l
+                        << " at position " << testPoint << ": derivative in "
+                        << "direction " << k << " is " << derivative << ", but "
+                        << finiteDiff << " is expected." << std::endl;
+              std::cout << std::endl;
+              success = false;
+            }
+          } // Loop over all directions
+        } //Loop over all components
+      } // Loop over all shape functions in this set
+    } // Loop over all quadrature points
+
+    // Recursively call the zero-order test
+    return success and TestEvaluate<0>::test(fe, eps, delta, order);
+  }
+};
+
+/** \brief Specialization to test second-order partial derivatives */
+template<>
+struct TestEvaluate<2>
+{
+  template <class FE>
+  static bool test(const FE& fe,
+                   double eps,
+                   double delta,
+                   std::size_t order = 2)
+  {
+    typedef typename FE::Traits::LocalBasisType LocalBasis;
+    typedef typename LocalBasis::Traits::DomainFieldType DF;
+    typedef typename LocalBasis::Traits::DomainType Domain;
+    static const int dimDomain = LocalBasis::Traits::dimDomain;
+
+    static const std::size_t dimR = LocalBasis::Traits::dimRange;
+    typedef typename LocalBasis::Traits::RangeType Range;
+    typedef typename LocalBasis::Traits::RangeFieldType RangeField;
+
+    bool success = true;
+
+    //////////////////////////////////////////////////////////////
+    //   Check the partial derivatives by comparing them
+    //   to finite difference approximations
+    //////////////////////////////////////////////////////////////
+
+    // A set of test points
+    const Dune::QuadratureRule<DF, dimDomain> quad
+       = Dune::QuadratureRules<DF,dimDomain>::rule(fe.type(), order);
+
+    // Loop over all quadrature points
+    for (std::size_t i = 0; i < quad.size(); i++)
+    {
+      // Get a test point
+      const Domain& testPoint = quad[i].position();
+
+      std::array<std::vector<Dune::FieldMatrix<RangeField, dimDomain, dimDomain> >, dimR> hessians;
+      for (size_t k = 0; k < dimR; k++)
+        hessians[k].resize(fe.size());
+
+      //loop over all local directions
+      for (int dir0 = 0; dir0 < dimDomain; dir0++)
+      {
+        for (int dir1 = 0; dir1 < dimDomain; dir1++)
+        {
+          std::array<int, 2> directions = { dir0, dir1 };
+
+          // Get the shape function derivatives there
+          std::vector<Range> secondDerivative;
+          fe.localBasis().template evaluate<2>(directions, testPoint, secondDerivative);
+          if (secondDerivative.size() != fe.localBasis().size())
+          {
+            std::cout << "Bug in evaluate<2>() for finite element type "
+                      << Dune::className<FE>() << ":" << std::endl;
+            std::cout << "    return vector has size " << secondDerivative.size()
+                      << std::endl;
+            std::cout << "    Basis has size " << fe.localBasis().size()
+                      << std::endl;
+            std::cout << std::endl;
+            return false;
+          }
+
+          //combine to Hesse matrices
+          for (size_t k = 0; k < dimR; k++)
+            for (std::size_t j = 0; j < fe.localBasis().size(); ++j)
+              hessians[k][j][dir0][dir1] = secondDerivative[j][k];
+        }
+      }  //loop over all directions
+
+      // Loop over all shape functions in this set
+      for (std::size_t j = 0; j < fe.localBasis().size(); ++j)
+      {
+        // Loop over all local directions
+        for (std::size_t dir0 = 0; dir0 < dimDomain; ++dir0)
+        {
+          for (unsigned int dir1 = 0; dir1 < dimDomain; dir1++)
+          {
+            // Compute an approximation to the derivative by finite differences
+            std::vector<Domain> neighbourPos(4);
+            std::fill(neighbourPos.begin(), neighbourPos.end(), testPoint);
+
+            neighbourPos[0][dir0] += delta;
+            neighbourPos[0][dir1] += delta;
+            neighbourPos[1][dir0] -= delta;
+            neighbourPos[1][dir1] += delta;
+            neighbourPos[2][dir0] += delta;
+            neighbourPos[2][dir1] -= delta;
+            neighbourPos[3][dir0] -= delta;
+            neighbourPos[3][dir1] -= delta;
+
+            std::vector<std::vector<Range> > neighbourValues(4);
+            for (int i = 0; i < 4; i++)
+              fe.localBasis().evaluateFunction(neighbourPos[i],
+                                               neighbourValues[i]);
+
+            //Loop over all components
+            for (std::size_t k = 0; k < dimR; ++k)
+            {
+              // The current partial derivative, just for ease of notation
+              RangeField derivative = hessians[k][j][dir0][dir1];
+
+              RangeField finiteDiff = (neighbourValues[0][j][k]
+                  - neighbourValues[1][j][k] - neighbourValues[2][j][k]
+                  + neighbourValues[3][j][k]) / (4 * delta * delta);
+
+              // Check
+              if (std::abs(derivative - finiteDiff)
+                  > eps / delta * (std::max(std::abs(finiteDiff), 1.0)))
+              {
+                std::cout << std::setprecision(16);
+                std::cout << "Bug in evaluate<2>() for finite element type "
+                          << Dune::className<FE>() << ":" << std::endl;
+                std::cout << "    Second shape function derivative does not agree with "
+                          << "FD approximation" << std::endl;
+                std::cout << "    Shape function " << j << " component " << k
+                          << " at position " << testPoint << ": derivative in "
+                          << "local direction (" << dir0 << ", " << dir1 << ") is "
+                          << derivative << ", but " << finiteDiff
+                          << " is expected." << std::endl;
+                std::cout << std::endl;
+                success = false;
+              }
+            } //Loop over all components
+          }
+        } // Loop over all local directions
+      } // Loop over all shape functions in this set
+    } // Loop over all quadrature points
+
+    // Recursively call the first-order test
+    return success and TestEvaluate<1>::test(fe, eps, delta, order);
+  }
+
+};
+
+
+template<>
+struct TestEvaluate<-1>
+{
+  template <class FE>
+  static bool test(const FE& fe,
+                   double eps,
+                   double delta,
+                   std::size_t order = 2)
+  {
+    return true;
+  }
+};
 
 // Flags for disabling parts of testFE
 enum {
   DisableNone = 0,
   DisableLocalInterpolation = 1,
   DisableVirtualInterface = 2,
-  DisableJacobian = 4
+  DisableJacobian = 4,
+  DisableEvaluate = 8
 };
 
 // call tests for given finite element
@@ -310,6 +591,11 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned order = 2)
   {
     // make sure diffOrder is 0
     success = (FE::Traits::LocalBasisType::Traits::diffOrder == 0) and success;
+  }
+
+  if (not (disabledTests & DisableEvaluate))
+  {
+    success = TestEvaluate<FE::Traits::LocalBasisType::Traits::diffOrder>::test(fe, TOL, jacobianTOL, order) and success;
   }
 
   if (not (disabledTests & DisableVirtualInterface))

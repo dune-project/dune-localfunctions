@@ -172,7 +172,23 @@ namespace Dune
       if (dOrder==0)
         evaluateFunction(in, out);
       else if (dOrder==1)
-        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      {
+        int n=0;
+        for (unsigned int j=0; j<=k; j++)
+          for (unsigned int i=0; i<=k-j; i++, n++)
+          {
+            out[n] = 0.0;
+            for (unsigned int no1=0; no1 < k; no1++)
+            {
+              R factor = lagrangianFactorDerivative(directions[0], no1, i, j, in);
+              for (unsigned int no2=0; no2 < k; no2++)
+                if (no1 != no2)
+                  factor *= lagrangianFactor(no2, i, j, in);
+
+              out[n] += factor;
+            }
+          }
+      }
       else if (dOrder==2)
       {
         // specialization for k<2, not clear whether that is needed

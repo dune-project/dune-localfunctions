@@ -155,12 +155,12 @@ namespace Dune
 
         // Initialize: the overall expression is a product
         // if j-th bit of i is set to -1, else 1
-        out[i][j] = dp(alpha[j],in[j]);
+        out[i][0] = dp(alpha[j],in[j]);
 
         // rest of the product
         for (std::size_t l=0; l<d; l++)
           if (l!=j)
-            out[i][j] *= p(alpha[l],in[l]);
+            out[i][0] *= p(alpha[l],in[l]);
       }
     }
 

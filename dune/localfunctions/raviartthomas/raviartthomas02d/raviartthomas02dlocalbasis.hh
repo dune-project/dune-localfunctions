@@ -50,8 +50,8 @@ namespace Dune
                                   std::vector<typename Traits::RangeType>& out) const
     {
       out.resize(3);
-      out[0][0] = sign0*in[0];       out[0][1]=sign0*(in[1]-1.0);
-      out[1][0] = sign1*(in[0]-1.0); out[1][1]=sign1*in[1];
+      out[0][0] = sign0*in[0];       out[0][1]=sign0*(in[1]-D(1));
+      out[1][0] = sign1*(in[0]-D(1)); out[1][1]=sign1*in[1];
       out[2][0] = sign2*in[0];       out[2][1]=sign2*in[1];
     }
 

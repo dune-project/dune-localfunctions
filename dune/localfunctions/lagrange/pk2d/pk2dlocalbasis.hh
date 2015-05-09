@@ -103,7 +103,7 @@ namespace Dune
             R product=factor;
             for (unsigned int alpha=0; alpha<i; alpha++)
               if (alpha==a)
-                product *= 1.0/(pos[i]-pos[alpha]);
+                product *= D(1)/(pos[i]-pos[alpha]);
               else
                 product *= (x[0]-pos[alpha])/(pos[i]-pos[alpha]);
             for (unsigned int gamma=i+j+1; gamma<=k; gamma++)
@@ -117,7 +117,7 @@ namespace Dune
               product *= (x[0]-pos[alpha])/(pos[i]-pos[alpha]);
             for (unsigned int gamma=i+j+1; gamma<=k; gamma++)
               if (gamma==c)
-                product *= -1.0/(pos[gamma]-pos[i]-pos[j]);
+                product *= -D(1)/(pos[gamma]-pos[i]-pos[j]);
               else
                 product *= (pos[gamma]-x[0]-x[1])/(pos[gamma]-pos[i]-pos[j]);
             out[n][0][0] += product;
@@ -133,7 +133,7 @@ namespace Dune
             R product=factor;
             for (unsigned int beta=0; beta<j; beta++)
               if (beta==b)
-                product *= 1.0/(pos[j]-pos[beta]);
+                product *= D(1)/(pos[j]-pos[beta]);
               else
                 product *= (x[1]-pos[beta])/(pos[j]-pos[beta]);
             for (unsigned int gamma=i+j+1; gamma<=k; gamma++)
@@ -147,7 +147,7 @@ namespace Dune
               product *= (x[1]-pos[beta])/(pos[j]-pos[beta]);
             for (unsigned int gamma=i+j+1; gamma<=k; gamma++)
               if (gamma==c)
-                product *= -1.0/(pos[gamma]-pos[i]-pos[j]);
+                product *= -D(1)/(pos[gamma]-pos[i]-pos[j]);
               else
                 product *= (pos[gamma]-x[0]-x[1])/(pos[gamma]-pos[i]-pos[j]);
             out[n][0][1] += product;

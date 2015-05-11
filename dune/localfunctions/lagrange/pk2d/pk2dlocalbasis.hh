@@ -258,7 +258,7 @@ namespace Dune
     return -1.0/(pos[no+1]-pos[i]-pos[j]);
   }
 
-    R pos[k+1]; // positions on the interval
+    D pos[k+1]; // positions on the interval
   };
 
 }

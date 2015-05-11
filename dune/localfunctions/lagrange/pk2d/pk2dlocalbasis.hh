@@ -41,7 +41,7 @@ namespace Dune
     Pk2DLocalBasis ()
     {
       for (unsigned int i=0; i<=k; i++)
-        pos[i] = (1.0*i)/std::max(k,(unsigned int)1);
+        pos_[i] = (1.0*i)/std::max(k,(unsigned int)1);
     }
 
     //! \brief number of shape functions
@@ -67,11 +67,11 @@ namespace Dune
         {
           out[n] = 1.0;
           for (unsigned int alpha=0; alpha<i; alpha++)
-            out[n] *= (x[0]-pos[alpha])/(pos[i]-pos[alpha]);
+            out[n] *= (x[0]-pos_[alpha])/(pos_[i]-pos_[alpha]);
           for (unsigned int beta=0; beta<j; beta++)
-            out[n] *= (x[1]-pos[beta])/(pos[j]-pos[beta]);
+            out[n] *= (x[1]-pos_[beta])/(pos_[j]-pos_[beta]);
           for (unsigned int gamma=i+j+1; gamma<=k; gamma++)
-            out[n] *= (pos[gamma]-x[0]-x[1])/(pos[gamma]-pos[i]-pos[j]);
+            out[n] *= (pos_[gamma]-x[0]-x[1])/(pos_[gamma]-pos_[i]-pos_[j]);
           n++;
         }
     }
@@ -97,29 +97,29 @@ namespace Dune
           out[n][0][0] = 0.0;
           R factor=1.0;
           for (unsigned int beta=0; beta<j; beta++)
-            factor *= (x[1]-pos[beta])/(pos[j]-pos[beta]);
+            factor *= (x[1]-pos_[beta])/(pos_[j]-pos_[beta]);
           for (unsigned int a=0; a<i; a++)
           {
             R product=factor;
             for (unsigned int alpha=0; alpha<i; alpha++)
               if (alpha==a)
-                product *= D(1)/(pos[i]-pos[alpha]);
+                product *= D(1)/(pos_[i]-pos_[alpha]);
               else
-                product *= (x[0]-pos[alpha])/(pos[i]-pos[alpha]);
+                product *= (x[0]-pos_[alpha])/(pos_[i]-pos_[alpha]);
             for (unsigned int gamma=i+j+1; gamma<=k; gamma++)
-              product *= (pos[gamma]-x[0]-x[1])/(pos[gamma]-pos[i]-pos[j]);
+              product *= (pos_[gamma]-x[0]-x[1])/(pos_[gamma]-pos_[i]-pos_[j]);
             out[n][0][0] += product;
           }
           for (unsigned int c=i+j+1; c<=k; c++)
           {
             R product=factor;
             for (unsigned int alpha=0; alpha<i; alpha++)
-              product *= (x[0]-pos[alpha])/(pos[i]-pos[alpha]);
+              product *= (x[0]-pos_[alpha])/(pos_[i]-pos_[alpha]);
             for (unsigned int gamma=i+j+1; gamma<=k; gamma++)
               if (gamma==c)
-                product *= -D(1)/(pos[gamma]-pos[i]-pos[j]);
+                product *= -D(1)/(pos_[gamma]-pos_[i]-pos_[j]);
               else
-                product *= (pos[gamma]-x[0]-x[1])/(pos[gamma]-pos[i]-pos[j]);
+                product *= (pos_[gamma]-x[0]-x[1])/(pos_[gamma]-pos_[i]-pos_[j]);
             out[n][0][0] += product;
           }
 
@@ -127,29 +127,29 @@ namespace Dune
           out[n][0][1] = 0.0;
           factor = 1.0;
           for (unsigned int alpha=0; alpha<i; alpha++)
-            factor *= (x[0]-pos[alpha])/(pos[i]-pos[alpha]);
+            factor *= (x[0]-pos_[alpha])/(pos_[i]-pos_[alpha]);
           for (unsigned int b=0; b<j; b++)
           {
             R product=factor;
             for (unsigned int beta=0; beta<j; beta++)
               if (beta==b)
-                product *= D(1)/(pos[j]-pos[beta]);
+                product *= D(1)/(pos_[j]-pos_[beta]);
               else
-                product *= (x[1]-pos[beta])/(pos[j]-pos[beta]);
+                product *= (x[1]-pos_[beta])/(pos_[j]-pos_[beta]);
             for (unsigned int gamma=i+j+1; gamma<=k; gamma++)
-              product *= (pos[gamma]-x[0]-x[1])/(pos[gamma]-pos[i]-pos[j]);
+              product *= (pos_[gamma]-x[0]-x[1])/(pos_[gamma]-pos_[i]-pos_[j]);
             out[n][0][1] += product;
           }
           for (unsigned int c=i+j+1; c<=k; c++)
           {
             R product=factor;
             for (unsigned int beta=0; beta<j; beta++)
-              product *= (x[1]-pos[beta])/(pos[j]-pos[beta]);
+              product *= (x[1]-pos_[beta])/(pos_[j]-pos_[beta]);
             for (unsigned int gamma=i+j+1; gamma<=k; gamma++)
               if (gamma==c)
-                product *= -D(1)/(pos[gamma]-pos[i]-pos[j]);
+                product *= -D(1)/(pos_[gamma]-pos_[i]-pos_[j]);
               else
-                product *= (pos[gamma]-x[0]-x[1])/(pos[gamma]-pos[i]-pos[j]);
+                product *= (pos_[gamma]-x[0]-x[1])/(pos_[gamma]-pos_[i]-pos_[j]);
             out[n][0][1] += product;
           }
 
@@ -238,10 +238,10 @@ namespace Dune
   typename Traits::RangeType lagrangianFactor(const int no, const int i, const int j, const typename Traits::DomainType& x) const
   {
     if ( no < i)
-      return (x[0]-pos[no])/(pos[i]-pos[no]);
+      return (x[0]-pos_[no])/(pos_[i]-pos_[no]);
     if (no < i+j)
-      return (x[1]-pos[no-i])/(pos[j]-pos[no-i]);
-    return (pos[no+1]-x[0]-x[1])/(pos[no+1]-pos[i]-pos[j]);
+      return (x[1]-pos_[no-i])/(pos_[j]-pos_[no-i]);
+    return (pos_[no+1]-x[0]-x[1])/(pos_[no+1]-pos_[i]-pos_[j]);
   }
 
   /** \brief Returns the derivative of a single Lagrangian factor of l_ij evaluated at x
@@ -250,15 +250,15 @@ namespace Dune
   typename Traits::RangeType lagrangianFactorDerivative(const int direction, const int no, const int i, const int j, const typename Traits::DomainType& x) const
   {
     if ( no < i)
-      return (direction == 0) ? 1.0/(pos[i]-pos[no]) : 0;
+      return (direction == 0) ? 1.0/(pos_[i]-pos_[no]) : 0;
 
     if (no < i+j)
-      return (direction == 0) ? 0: 1.0/(pos[j]-pos[no-i]);
+      return (direction == 0) ? 0: 1.0/(pos_[j]-pos_[no-i]);
 
-    return -1.0/(pos[no+1]-pos[i]-pos[j]);
+    return -1.0/(pos_[no+1]-pos_[i]-pos_[j]);
   }
 
-    D pos[k+1]; // positions on the interval
+    D pos_[k+1]; // positions on the interval
   };
 
 }

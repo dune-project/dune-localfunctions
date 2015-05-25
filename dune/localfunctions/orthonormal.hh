@@ -11,13 +11,15 @@
 namespace Dune
 {
   /**
-   * @brief A class providing orthonormal basis functions
+   * \brief A class providing orthonormal basis functions
    *
    * These basis functions are constructed by l2 orthonormalizing
    * of monomials over a reference element. Thus the span is
    * always Pk. The coefficients and the interpolation are given
    * by the Dune::DGLocalCoefficientsFactory and the
    * Dune::LocalL2InterpolationFactory.
+   *
+   * \ingroup Orthonormal
    *
    * \tparam dimDomain dimension of reference elements
    * \tparam D domain for basis functions

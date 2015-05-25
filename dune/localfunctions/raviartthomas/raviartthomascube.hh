@@ -27,6 +27,8 @@ namespace Dune
    * Generic Raviart-Thomas local finite elements for cubes like for
    * simpleces could be written.
    *
+   * \ingroup RaviartThomas
+   *
    * \tparam D type to represent the field in the domain.
    * \tparam R type to represent the field in the range.
    * \tparam dim dimension of the reference elements, must be 2 or 3.

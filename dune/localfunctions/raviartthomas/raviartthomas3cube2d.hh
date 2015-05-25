@@ -17,6 +17,8 @@ namespace Dune
    *
    * \note The Jacobian is not implemented.
    *
+   * \ingroup RaviartThomas
+   *
    * \tparam D Type to represent the field in the domain.
    * \tparam R Type to represent the field in the range.
    */

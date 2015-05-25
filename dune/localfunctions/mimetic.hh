@@ -10,6 +10,13 @@
 
 namespace Dune
 {
+  /**
+   * \ingroup Mimetic
+   *
+   * \tparam D Type to represent the field in the domain.
+   * \tparam R Type to represent the field in the range.
+   * \tparam dim Domain dimension
+   */
   template<class D, class R, int dim>
   class MimeticLocalFiniteElement
   {

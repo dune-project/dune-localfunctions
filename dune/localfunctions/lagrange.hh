@@ -32,6 +32,8 @@ namespace Dune
    *                         (provided for simplex and generalized prism
    *                         topologies (i.e. not for a 3d pyramid)
    *
+   * \ingroup Lagrange
+   *
    * \tparam LP a template class defining the points for the lagrange interpolation
    * \tparam dimDomain dimension of reference elements
    * \tparam D domain for basis functions

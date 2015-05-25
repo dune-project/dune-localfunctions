@@ -1,3 +1,48 @@
 /**
-  @defgroup LocalFunctions LocalFunctions
-*/
+ * \defgroup LocalFunctions LocalFunctions
+ */
+
+/**
+ * \defgroup BrezziDouglasMarini Brezzi-Douglas-Marini elements
+ * \ingroup LocalFunctions
+ */
+
+/**
+ * \defgroup DualMortar Dual Mortar basis elements
+ * \ingroup LocalFunctions
+ */
+
+/**
+ * \defgroup Lagrange Lagrange elements
+ * \ingroup LocalFunctions
+ */
+
+/**
+ * \defgroup Mimetic Mimetic elements
+ * \ingroup LocalFunctions
+ */
+
+/**
+ * \defgroup Monomial Monomial elements
+ * \ingroup LocalFunctions
+ */
+
+/**
+ * \defgroup Orthonormal Orthonormal elements
+ * \ingroup LocalFunctions
+ */
+
+/**
+ * \defgroup RannacherTurek Rannacher-Turek elements
+ * \ingroup LocalFunctions
+ */
+
+/**
+ * \defgroup RaviartThomas Raviart-Thomas elements
+ * \ingroup LocalFunctions
+ */
+
+/**
+ * \defgroup Whitney Whitney elements
+ * \ingroup LocalFunctions
+ */

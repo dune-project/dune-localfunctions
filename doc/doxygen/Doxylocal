@@ -1,4 +1,4 @@
 # Where to search and which files to use
-INPUT                 += @srcdir@/mainpage \
-                         @srcdir@/modules \
+INPUT                 += @srcdir@/mainpage.txt \
+                         @srcdir@/modules.txt \
                          @top_srcdir@/dune/

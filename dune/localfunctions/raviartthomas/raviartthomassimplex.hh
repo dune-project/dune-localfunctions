@@ -22,6 +22,8 @@ namespace Dune
    * simplex geometry types. The extension to cube and prism
    * elements could be added.
    *
+   * \ingroup RaviartThomas
+   *
    * \tparam dimDomain dimension of reference elements
    * \tparam D domain for basis functions
    * \tparam R range for basis functions

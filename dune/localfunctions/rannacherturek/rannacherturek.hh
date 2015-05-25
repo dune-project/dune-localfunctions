@@ -16,11 +16,13 @@ namespace Dune
 {
 
   /**
-     \brief please doc me
-
-     \tparam D type to represent the field in the domain.
-     \tparam R type to represent the field in the range.
-     \tparam d domain dimension
+   * \brief Rannacher-Turek shape functions.
+   *
+   * \ingroup RannacherTurek
+   *
+   * \tparam D type to represent the field in the domain.
+   * \tparam R type to represent the field in the range.
+   * \tparam d domain dimension
    */
   template< class D, class R, unsigned int d >
   struct RannacherTurekLocalFiniteElement

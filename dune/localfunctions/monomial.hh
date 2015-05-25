@@ -29,6 +29,8 @@ namespace Dune
    * Be careful: Although MonomialLocalInterpolation::interpolate
    * uses an L^2 projection it is unstable for higher polynomial degrees.
    *
+   * \ingroup Monomial
+   *
    * \tparam D Type used for coordinates
    * \tparam R Type used for shape function values
    * \tparam d Dimension of the element

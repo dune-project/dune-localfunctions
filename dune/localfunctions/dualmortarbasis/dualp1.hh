@@ -13,10 +13,14 @@
 namespace Dune
 {
 
-  /** \brief The local dual p1 finite element on simplices
-      \tparam D Domain data type
-      \tparam R Range data type
-      \tparam dim Dimension of the simplex
+  /**
+   * \brief The local dual p1 finite element on simplices
+   *
+   * \ingroup DualMortar
+   *
+   * \tparam D Domain data type
+   * \tparam R Range data type
+   * \tparam dim Dimension of the simplex
    */
   template<class D, class R, int dim>
   class DualP1LocalFiniteElement

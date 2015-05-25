@@ -15,6 +15,8 @@ namespace Dune
   /**
    * \brief First order Brezzi-Douglas-Marini shape functions on quadrilaterals.
    *
+   * \ingroup BrezziDouglasMarini
+   *
    * \tparam D Type to represent the field in the domain.
    * \tparam R Type to represent the field in the range.
    */

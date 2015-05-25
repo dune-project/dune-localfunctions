@@ -19,10 +19,14 @@
 namespace Dune
 {
 
-  /** \brief The local dual Q1 finite element on cubes
-      \tparam D Domain data type
-      \tparam R Range data type
-      \tparam dim Dimension of the hypercube
+  /**
+   * \brief The local dual Q1 finite element on cubes
+   *
+   * \ingroup DualMortar
+   *
+   * \tparam D Domain data type
+   * \tparam R Range data type
+   * \tparam dim Dimension of the hypercube
    */
   template<class D, class R, int dim>
   class DualQ1LocalFiniteElement

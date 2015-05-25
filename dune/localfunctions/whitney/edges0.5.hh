@@ -28,6 +28,8 @@ namespace Dune {
    * and \f$i_1\f$ are the indices of the vertices of edge \f$i\f$ and
    * \f$\ell^i\f$ is the length of edge \f$i\f$.
    *
+   * \ingroup Whitney
+   *
    * \tparam D   Type to represent the field in the domain.
    * \tparam R   Type to represent the field in the range.
    * \tparam dim Dimension of both domain and range.

@@ -16,6 +16,8 @@ namespace Dune
   /**
    * \brief Zero order Raviart-Thomas shape functions on triangles.
    *
+   * \ingroup RaviartThomas
+   *
    * \tparam D Type to represent the field in the domain.
    * \tparam R Type to represent the field in the range.
    */

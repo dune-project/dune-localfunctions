@@ -131,9 +131,9 @@ namespace Dune
     }
 
     /** \brief Evaluate derivative in a given direction
-     * \param in direction
-     * \param in position where to evaluate
-     * \param out The return value
+     * \param [in]  direction The direction to derive in
+     * \param [in]  in        Position where to evaluate
+     * \param [out] out       The return value
      */
     template<int diffOrder>
     inline void evaluate(

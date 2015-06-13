@@ -86,7 +86,7 @@ set(ORTHONORMAL1_SETTINGS  TOPOLOGY=${ORTHONORMAL1_TOPOLOGY})
 
 add_executable(test-orthonormal1 test-orthonormal.cc)
 set_property(TARGET test-orthonormal1 APPEND PROPERTY COMPILE_DEFINITIONS ${ORTHONORMAL1_SETTINGS})
-target_link_libraries(test-orthonormal1 dunegeometry dunecommon)
+target_link_libraries(test-orthonormal1 ${DUNE_LIBS})
 add_dune_gmp_flags(test-orthonormal1)
 
 set(ORTHONORMAL2_TOPOLOGY  "Pyramid< ${ORTHONORMAL1_TOPOLOGY} >")
@@ -94,7 +94,7 @@ set(ORTHONORMAL2_SETTINGS  TOPOLOGY=${ORTHONORMAL2_TOPOLOGY})
 
 add_executable(test-orthonormal2 test-orthonormal.cc)
 set_property(TARGET test-orthonormal2 APPEND PROPERTY COMPILE_DEFINITIONS ${ORTHONORMAL2_SETTINGS})
-target_link_libraries(test-orthonormal2 dunegeometry dunecommon)
+target_link_libraries(test-orthonormal2 ${DUNE_LIBS})
 add_dune_gmp_flags(test-orthonormal2)
 
 add_executable(test-orthonormal3 test-orthonormal.cc)
@@ -138,7 +138,7 @@ target_link_libraries(test-lagrange-all dunecommon)
 
 add_executable(test-orthonormal-all test-orthonormal.cc)
 add_dune_gmp_flags(test-orthonormal-all)
-target_link_libraries(test-orthonormal-all dunecommon)
+target_link_libraries(test-orthonormal-all ${DUNE_LIBS})
 
 foreach(i ${TESTS})
   add_test(${i} ${i})

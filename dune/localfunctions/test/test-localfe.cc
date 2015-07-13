@@ -206,6 +206,9 @@ int main(int argc, char** argv) try
   Dune::QkLocalFiniteElement<double,double,1,1> qk11dlfem;
   TEST_FE(qk11dlfem);
 
+  Dune::QkLocalFiniteElement<double,double,2,0> qk02dlfem;
+  TEST_FE(qk02dlfem);
+
   Dune::QkLocalFiniteElement<double,double,2,1> qk12dlfem;
   TEST_FE(qk12dlfem);
 
@@ -214,6 +217,9 @@ int main(int argc, char** argv) try
 
   Dune::QkLocalFiniteElement<double,double,2,3> qk32dlfem;
   TEST_FE(qk32dlfem);
+
+  Dune::QkLocalFiniteElement<double,double,3,0> qk03dlfem;
+  TEST_FE(qk03dlfem);
 
   Dune::QkLocalFiniteElement<double,double,3,1> qk13dlfem;
   TEST_FE(qk13dlfem);

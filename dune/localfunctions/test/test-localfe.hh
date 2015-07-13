@@ -450,7 +450,7 @@ struct TestEvaluate<2>
           for (unsigned int dir1 = 0; dir1 < dimDomain; dir1++)
           {
             // Compute an approximation to the derivative by finite differences
-            std::vector<Domain> neighbourPos(4);
+            std::array<Domain,4> neighbourPos;
             std::fill(neighbourPos.begin(), neighbourPos.end(), testPoint);
 
             neighbourPos[0][dir0] += delta;
@@ -462,7 +462,7 @@ struct TestEvaluate<2>
             neighbourPos[3][dir0] -= delta;
             neighbourPos[3][dir1] -= delta;
 
-            std::vector<std::vector<Range> > neighbourValues(4);
+            std::array<std::vector<Range>, 4> neighbourValues;
             for (int i = 0; i < 4; i++)
               fe.localBasis().evaluateFunction(neighbourPos[i],
                                                neighbourValues[i]);

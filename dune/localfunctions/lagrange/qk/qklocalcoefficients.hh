@@ -38,7 +38,13 @@ namespace Dune
     /** \brief Set the 'subentity' field for each dof for a 1d element */
     void setup1d(std::vector<unsigned int>& subEntity)
     {
-      assert(k>0);
+      // Special-handling for piecewise constant elements
+      if (k==0)
+      {
+        subEntity[0] = 0;
+        return;
+      }
+
       unsigned lastIndex=0;
 
       /* edge and vertex numbering
@@ -57,7 +63,13 @@ namespace Dune
 
     void setup2d(std::vector<unsigned int>& subEntity)
     {
-      assert(k>0);
+      // Special-handling for piecewise constant elements
+      if (k==0)
+      {
+        subEntity[0] = 0;
+        return;
+      }
+
       unsigned lastIndex=0;
 
       // LocalKey: entity number , entity codim, dof indices within each entity
@@ -100,7 +112,13 @@ namespace Dune
 
     void setup3d(std::vector<unsigned int>& subEntity)
     {
-      assert(k>0);
+      // Special-handling for piecewise constant elements
+      if (k==0)
+      {
+        subEntity[0] = 0;
+        return;
+      }
+
       unsigned lastIndex=0;
 #ifndef NDEBUG
       const unsigned numIndices = StaticPower<k+1,d>::power;
@@ -209,6 +227,8 @@ namespace Dune
 
       for (std::size_t i=0; i<codim.size(); i++) {
         codim[i] = 0;
+        if (k==0)
+          continue;
         // Codimension gets increased by 1 for each coordinate direction
         // where dof is on boundary
         std::array<unsigned int,d> mIdx = multiindex(i);

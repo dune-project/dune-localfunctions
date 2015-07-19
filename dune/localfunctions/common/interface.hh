@@ -33,21 +33,21 @@ namespace Dune {
     {
       //! type of the Basis
       /**
-       * Should be an implementation of BasisIterface
+       * Should be an implementation of BasisInterface
        *
        * \note May be an inline class instead of a typedef.
        */
       typedef ImplementationDefined Basis;
       //! type of the Coefficients
       /**
-       * Should be an implementation of CoefficientsIterface
+       * Should be an implementation of CoefficientsInterface
        *
        * \note May be an inline class instead of a typedef.
        */
       typedef ImplementationDefined Coefficients;
       //! type of the Interpolation
       /**
-       * Should be an implementation of InterpolationIterface
+       * Should be an implementation of InterpolationInterface
        *
        * \note May be an inline class instead of a typedef.
        */
@@ -69,19 +69,19 @@ namespace Dune {
     //! Extract basis of this finite element
     /**
      * The returned lvalue must have a lifetime at least as long as the finite
-     * element object is was aquired from.
+     * element object it was aquired from.
      */
     const Traits::Basis& basis() const;
     //! Extract coefficients of this finite element
     /**
      * The returned lvalue must have a lifetime at least as long as the finite
-     * element object is was aquired from.
+     * element object it was aquired from.
      */
     const Traits::Coefficients& coefficients() const;
     //! Extract interpolation of this finite element
     /**
      * The returned lvalue must have a lifetime at least as long as the finite
-     * element object is was aquired from.
+     * element object it was aquired from.
      */
     const Traits::Interpolation& interpolation() const;
     //! Extract geometry type of this finite element
@@ -117,7 +117,7 @@ namespace Dune {
   public:
     //! Type of the finite element
     /**
-     * Should be an implementation of FiniteElementIterface
+     * Should be an implementation of FiniteElementInterface
      *
      * \note May be an inline class instead of a typedef.
      */

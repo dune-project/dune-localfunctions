@@ -57,7 +57,7 @@ list(APPEND TESTS test-q2)
 add_executable(test-q2 test-q2.cc)
 target_link_libraries(test-q2 ${DUNE_LIBS})
 
-set(LAGRANGE1_TOPOLOGY  "Pyramid< Point >")
+set(LAGRANGE1_TOPOLOGY  "Pyramid<Point>")
 set(LAGRANGE1_SETTINGS  TOPOLOGY=${LAGRANGE1_TOPOLOGY})
 
 add_executable(test-lagrange1 test-lagrange.cc)
@@ -65,7 +65,7 @@ set_property(TARGET test-lagrange1 APPEND PROPERTY COMPILE_DEFINITIONS ${LAGRANG
 target_link_libraries(test-lagrange1 dunecommon)
 add_dune_gmp_flags(test-lagrange1)
 
-set(LAGRANGE2_TOPOLOGY  "Pyramid< ${LAGRANGE1_TOPOLOGY} >")
+set(LAGRANGE2_TOPOLOGY  "Pyramid<${LAGRANGE1_TOPOLOGY}>")
 set(LAGRANGE2_SETTINGS  TOPOLOGY=${LAGRANGE2_TOPOLOGY})
 
 add_executable(test-lagrange2 test-lagrange.cc)
@@ -73,7 +73,7 @@ set_property(TARGET test-lagrange2 APPEND PROPERTY COMPILE_DEFINITIONS ${LAGRANG
 target_link_libraries(test-lagrange2 dunecommon)
 add_dune_gmp_flags(test-lagrange2)
 
-set(LAGRANGE3_TOPOLOGY  "Pyramid< ${LAGRANGE2_TOPOLOGY} >")
+set(LAGRANGE3_TOPOLOGY  "Pyramid<${LAGRANGE2_TOPOLOGY}>")
 set(LAGRANGE3_SETTINGS  TOPOLOGY=${LAGRANGE3_TOPOLOGY})
 
 add_executable(test-lagrange3 test-lagrange.cc)
@@ -81,7 +81,7 @@ set_property(TARGET test-lagrange3 APPEND PROPERTY COMPILE_DEFINITIONS ${LAGRANG
 target_link_libraries(test-lagrange3 dunecommon)
 add_dune_gmp_flags(test-lagrange3)
 
-set(ORTHONORMAL1_TOPOLOGY  "Pyramid< Point >")
+set(ORTHONORMAL1_TOPOLOGY  "Pyramid<Point>")
 set(ORTHONORMAL1_SETTINGS  TOPOLOGY=${ORTHONORMAL1_TOPOLOGY})
 
 add_executable(test-orthonormal1 test-orthonormal.cc)
@@ -89,7 +89,7 @@ set_property(TARGET test-orthonormal1 APPEND PROPERTY COMPILE_DEFINITIONS ${ORTH
 target_link_libraries(test-orthonormal1 ${DUNE_LIBS})
 add_dune_gmp_flags(test-orthonormal1)
 
-set(ORTHONORMAL2_TOPOLOGY  "Pyramid< ${ORTHONORMAL1_TOPOLOGY} >")
+set(ORTHONORMAL2_TOPOLOGY  "Pyramid<${ORTHONORMAL1_TOPOLOGY}>")
 set(ORTHONORMAL2_SETTINGS  TOPOLOGY=${ORTHONORMAL2_TOPOLOGY})
 
 add_executable(test-orthonormal2 test-orthonormal.cc)
@@ -99,14 +99,14 @@ add_dune_gmp_flags(test-orthonormal2)
 
 add_executable(test-orthonormal3 test-orthonormal.cc)
 target_link_libraries(test-orthonormal3 ${DUNE_LIBS})
-set(ORTHONORMAL3_TOPOLOGY  "Prism< ${ORTHONORMAL2_TOPOLOGY} >")
+set(ORTHONORMAL3_TOPOLOGY  "Prism<${ORTHONORMAL2_TOPOLOGY}>")
 set(ORTHONORMAL3_SETTINGS  TOPOLOGY=${ORTHONORMAL3_TOPOLOGY})
 set_property(TARGET test-orthonormal3 APPEND PROPERTY COMPILE_DEFINITIONS ${ORTHONORMAL3_SETTINGS})
 add_dune_gmp_flags(test-orthonormal3)
 
 add_executable(test-raviartthomas1simplex test-raviartthomassimplex.cc)
 target_link_libraries(test-raviartthomas1simplex ${DUNE_LIBS})
-set(RT1_TOPOLOGY "Pyramid< Point >")
+set(RT1_TOPOLOGY "Pyramid<Point>")
 set(RT1_SETTINGS TOPOLOGY=${RT2_TOPOLOGY})
 set_property(TARGET test-raviartthomas1simplex APPEND PROPERTY COMPILE_DEFINITIONS
   TOPOLOGY=Pyramid<Point>)
@@ -114,7 +114,7 @@ add_dune_gmp_flags(test-raviartthomas1simplex)
 
 add_executable(test-raviartthomas2simplex test-raviartthomassimplex.cc)
 target_link_libraries(test-raviartthomas2simplex ${DUNE_LIBS})
-set(RT2_TOPOLOGY "Pyramid< ${RT1_TOPOLOGY} >")
+set(RT2_TOPOLOGY "Pyramid<${RT1_TOPOLOGY}>")
 set(RT2_SETTINGS TOPOLOGY=${RT2_TOPOLOGY})
 set_property(TARGET test-raviartthomas2simplex APPEND PROPERTY COMPILE_DEFINITIONS
   ${RT2_SETTINGS})
@@ -122,7 +122,7 @@ add_dune_gmp_flags(test-raviartthomas2simplex)
 
 add_executable(test-raviartthomas3simplex test-raviartthomassimplex.cc)
 target_link_libraries(test-raviartthomas3simplex ${DUNE_LIBS})
-set(RT3_TOPOLOGY "Pyramid< ${RT2_TOPOLOGY} >")
+set(RT3_TOPOLOGY "Pyramid<${RT2_TOPOLOGY}>")
 set(RT3_SETTINGS TOPOLOGY=${RT3_TOPOLOGY})
 set_property(TARGET test-raviartthomas3simplex APPEND PROPERTY COMPILE_DEFINITIONS
   ${RT3_SETTINGS})

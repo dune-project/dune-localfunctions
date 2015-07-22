@@ -64,7 +64,7 @@ namespace Dune
   /**
    * @brief class for wrapping a basis using the virtual interface
    *
-   * The differentiation order of the traits T might be less then
+   * The differentiation order of the traits T might be less than
    * the one in the traits of the implementation.
    *
    * @tparam T The LocalBasisTraits class
@@ -106,8 +106,8 @@ namespace Dune
       // since the interface provides it redirecting to the virtual method
       // of the derived class
       //
-      // Unfortunately not all compiler can determine Traits::diffOrder from the
-      // type of the arument directions
+      // Unfortunately not all compilers can determine Traits::diffOrder from
+      // the type of the argument directions
       impl_.template evaluate<Traits::diffOrder>(directions, in, out);
     }
 

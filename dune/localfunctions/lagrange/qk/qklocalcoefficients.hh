@@ -51,7 +51,7 @@ namespace Dune
          0----0----1
        */
 
-      // lower edge (2)
+      // edge (0)
       subEntity[lastIndex++] = 0;                 // corner 0
       for (unsigned i = 0; i < k - 1; ++i)
         subEntity[lastIndex++] = 0;               // inner dofs of element (0)
@@ -72,7 +72,7 @@ namespace Dune
 
       unsigned lastIndex=0;
 
-      // LocalKey: entity number , entity codim, dof indices within each entity
+      // LocalKey: entity number, entity codim, dof indices within each entity
       /* edge and vertex numbering
        2----3----3
        |         |
@@ -126,7 +126,7 @@ namespace Dune
 #endif
       const unsigned numInnerEdgeDofs = k-1;
 
-      // LocalKey: entity number , entity codim, dof indices within each entity
+      // LocalKey: entity number, entity codim, dof indices within each entity
       /* edge and vertex numbering
 
               6---(11)--7              6---------7

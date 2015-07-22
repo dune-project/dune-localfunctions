@@ -236,8 +236,8 @@ namespace Dune
    * This class defines the interface using pure virtual methods.
    * In applications you should use the derived class
    * LocalInterpolationVirtualInterface that also
-   * contains a interpolate with function type
-   * as template parameter.
+   * contains a interpolate method where the function type
+   * is a template parameter.
    *
    * This template method cannot be defined in the same
    * class as the virtual method. Otherwise name resolution fails.

@@ -22,21 +22,9 @@ include(DuneMacros)
 # start a dune project with information from dune.module
 dune_project()
 
-# we need the module file to be able to build via dunecontrol
-set(EXTRA_DIST dune.module)
-
-# don't follow the full GNU-standard
-# we need automake 1.9 or newer
-set(AUTOMAKE_OPTIONS  foreign 1.9)
-
-set(SUBDIRS  dune doc m4 cmake/modules)
-
-foreach(i ${SUBDIRS})
-  if(${i} STREQUAL "test")
-    set(opt "EXCLUDE_FROM_ALL")
-  endif(${i} STREQUAL "test")
-  add_subdirectory(${i} ${opt})
-  unset(opt)
-endforeach(i ${SUBDIRS})
+add_subdirectory(doc)
+add_subdirectory(dune)
+add_subdirectory(m4)
+add_subdirectory(cmake/modules)
 
 finalize_dune_project(GENERATE_CONFIG_H_CMAKE)

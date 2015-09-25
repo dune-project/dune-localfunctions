@@ -1,49 +1,36 @@
-set(localfunctionsdir  ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions)
+add_subdirectory(brezzidouglasmarini)
+add_subdirectory(common)
+add_subdirectory(dualmortarbasis)
+add_subdirectory(hierarchical)
+add_subdirectory(lagrange)
+add_subdirectory(meta)
+add_subdirectory(mimetic)
+add_subdirectory(monomial)
+add_subdirectory(orthonormal)
+add_subdirectory(rannacherturek)
+add_subdirectory(raviartthomas)
+add_subdirectory(refined)
+add_subdirectory(test EXCLUDE_FROM_ALL)
+add_subdirectory(utility)
+add_subdirectory(whitney)
 
-set(localfunctions_HEADERS
-        dualmortarbasis.hh
-        lagrange.hh
-        mimetic.hh
-        monom.hh
-        monomial.hh
-        orthonormal.hh
-        rannacherturek.hh
-        raviartthomas.hh
-        refined.hh)
-
-set(SUBDIRS
-        brezzidouglasmarini
-        common
-        dualmortarbasis
-        hierarchical
-        lagrange
-        meta
-        mimetic
-        monomial
-        orthonormal
-        rannacherturek
-        raviartthomas
-        refined
-        test
-        utility
-        whitney)
-
-# include not needed for CMake
-# include $(top_srcdir)/am/global-rules
-
-install(FILES ${localfunctions_HEADERS} DESTINATION ${localfunctionsdir})
-foreach(i ${SUBDIRS})
-  if(${i} STREQUAL "test")
-    set(opt "EXCLUDE_FROM_ALL")
-  endif(${i} STREQUAL "test")
-  add_subdirectory(${i} ${opt})
-  unset(opt)
-endforeach(i ${SUBDIRS})
+install(FILES
+  dualmortarbasis.hh
+  lagrange.hh
+  mimetic.hh
+  monom.hh
+  monomial.hh
+  orthonormal.hh
+  rannacherturek.hh
+  raviartthomas.hh
+  refined.hh
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions)
 
 # Install some test headers, because they might be useful for tests in
 # other modules.
 # We do this here as test will not be considered for make install.
-install(FILES test/geometries.hh
-        test/test-fe.hh
-        test/test-localfe.hh
+install(FILES
+  test/geometries.hh
+  test/test-fe.hh
+  test/test-localfe.hh
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions/test)

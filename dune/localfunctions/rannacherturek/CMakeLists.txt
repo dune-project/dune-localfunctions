@@ -1,18 +1,9 @@
-set(rannacherturekdir  ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions/rannacherturek)
+add_subdirectory(rannacherturek2d)
+add_subdirectory(rannacherturek3d)
 
-set(rannacherturek_HEADERS
+install(FILES ${rannacherturek_HEADERS}
   rannacherturek.hh
   rannachertureklocalbasis.hh
   rannachertureklocalcoefficients.hh
-  rannachertureklocalinterpolation.hh)
-
-set(SUBDIRS  rannacherturek2d rannacherturek3d)
-
-install(FILES ${rannacherturek_HEADERS} DESTINATION ${rannacherturekdir})
-foreach(i ${SUBDIRS})
-  if(${i} STREQUAL "test")
-    set(opt "EXCLUDE_FROM_ALL")
-  endif(${i} STREQUAL "test")
-  add_subdirectory(${i} ${opt})
-  unset(opt)
-endforeach(i ${SUBDIRS})
+  rannachertureklocalinterpolation.hh
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions/rannacherturek)

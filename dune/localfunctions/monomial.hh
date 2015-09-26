@@ -10,8 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include <dune/common/deprecated.hh>
-
 #include <dune/geometry/type.hh>
 
 #include "common/localfiniteelementtraits.hh"

@@ -3,8 +3,7 @@ localfunctionsdir = $(includedir)/dune/localfunctions
 localfunctions_HEADERS =			\
 	dualmortarbasis.hh			\
 	lagrange.hh				\
-	mimetic.hh				\
-        monom.hh                             \
+	mimetic.hh				\                            \
         monomial.hh                             \
 	orthonormal.hh				\
 	rannacherturek.hh			\

@@ -5,7 +5,7 @@ EXTRA_DIST= CMakeLists.txt dune.module
 # we need automake 1.9 or newer
 AUTOMAKE_OPTIONS = foreign 1.9
 
-SUBDIRS = cmake dune doc m4
+SUBDIRS = dune doc m4
 
 # pass most important options when "make distcheck" is used
 DISTCHECK_CONFIGURE_FLAGS = --with-dune-common="$(DUNE_COMMON_ROOT)" CXX="$(CXX)" CC="$(CC)"

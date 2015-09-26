@@ -1,4 +1,4 @@
-set(orthonormaldir  ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions/orthonormal)
-set(orthonormal_HEADERS  orthonormalbasis.hh orthonormalcompute.hh)
-
-install(FILES ${orthonormal_HEADERS} DESTINATION ${orthonormaldir})
+install(FILES
+  orthonormalbasis.hh
+  orthonormalcompute.hh
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions/orthonormal)

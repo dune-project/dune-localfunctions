@@ -1,24 +1,13 @@
-set(brezzidouglasmarinidir  ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions/brezzidouglasmarini)
+add_subdirectory(brezzidouglasmarini1cube2d)
+add_subdirectory(brezzidouglasmarini1cube3d)
+add_subdirectory(brezzidouglasmarini2cube2d)
+add_subdirectory(brezzidouglasmarini1simplex2d)
+add_subdirectory(brezzidouglasmarini2simplex2d)
 
-set(brezzidouglasmarini_HEADERS
+install(FILES
   brezzidouglasmarini1cube2d.hh
   brezzidouglasmarini1cube3d.hh
   brezzidouglasmarini2cube2d.hh
   brezzidouglasmarini1simplex2d.hh
-  brezzidouglasmarini2simplex2d.hh)
-
-set(SUBDIRS
-  brezzidouglasmarini1cube2d
-  brezzidouglasmarini1cube3d
-  brezzidouglasmarini2cube2d
-  brezzidouglasmarini1simplex2d
-  brezzidouglasmarini2simplex2d)
-
-install(FILES ${brezzidouglasmarini_HEADERS} DESTINATION ${brezzidouglasmarinidir})
-foreach(i ${SUBDIRS})
-  if(${i} STREQUAL "test")
-    set(opt "EXCLUDE_FROM_ALL")
-  endif(${i} STREQUAL "test")
-  add_subdirectory(${i} ${opt})
-  unset(opt)
-endforeach(i ${SUBDIRS})
+  brezzidouglasmarini2simplex2d.hh
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions/brezzidouglasmarini)

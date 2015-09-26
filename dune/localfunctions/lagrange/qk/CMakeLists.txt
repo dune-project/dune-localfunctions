@@ -1,7 +1,5 @@
-set(qk_HEADERS
+install(FILES
   qklocalbasis.hh
   qklocalcoefficients.hh
-  qklocalinterpolation.hh)
-
-install(FILES ${qk_HEADERS}
+  qklocalinterpolation.hh
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions/lagrange/qk)

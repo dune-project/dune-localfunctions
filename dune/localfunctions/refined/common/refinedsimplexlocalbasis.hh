@@ -103,12 +103,13 @@ namespace Dune
      *
      * The triangles are ordered according to
      * \verbatim
-     |\
-     |\|2\
-     |\|--\
-     |\|\3|\
-     |\|0\|1\
-       ------ \endverbatim
+       |\
+       |2\
+       |--\
+       |\3|\
+       |0\|1\
+       ------
+       \endverbatim
      *
      * \param[in] global Coordinates in the reference triangle
      * \returns Number of the subtriangle containing <tt>global</tt>

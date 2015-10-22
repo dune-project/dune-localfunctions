@@ -136,8 +136,10 @@ void testPk(const FE& local_fe)
 
 int main (int argc, char *argv[]) try
 {
+#if __linux__
 #if (!defined __INTEL_COMPILER || __INTEL_COMPILER >= 1010)
   feenableexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW);
+#endif
 #endif
 
   P1LocalFiniteElement<double,double,1> p11d;

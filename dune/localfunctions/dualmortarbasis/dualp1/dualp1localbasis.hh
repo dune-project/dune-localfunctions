@@ -13,17 +13,24 @@ namespace Dune
          \brief Dual Lagrange shape functions on the simplex.
 
          Defines the linear dual shape functions on the simplex.
+         Note that if the dual functions are chosen to be dual on the faces,
+         the integrated product of a Lagrange \f$\lambda_p\f$ and dual
+         function \f$\theta_q\f$ over faces not containing \f$q\f$ does in
+         general not vanish.
 
          \tparam D Type to represent the field in the domain.
          \tparam R Type to represent the field in the range.
-     \tparam dim The dimension of the simplex
+         \tparam dim The dimension of the simplex
+         \tparam faceDual If set, the basis functions are bi-orthogonal only on faces containing the corresponding vertex.
 
          \nosubgrouping
    */
-  template<class D, class R, int dim>
+  template<class D, class R, int dim, bool faceDualT=false>
   class DualP1LocalBasis
   {
   public:
+    //! Determines if the basis is only biorthogonal on adjacent faces
+    static const bool faceDual = faceDualT;
     //! \brief export type traits for function signature
     typedef LocalBasisTraits<D,dim,Dune::FieldVector<D,dim>,R,1,Dune::FieldVector<R,1>,
         Dune::FieldMatrix<R,1,dim> > Traits;
@@ -52,7 +59,7 @@ namespace Dune
       out.resize(size());
 
       for (int i=0; i<=dim; i++) {
-        out[i] = (dim+1)*p1Values[i];
+        out[i] = (dim+!faceDual)*p1Values[i];
         for (int j=0; j<i; j++)
           out[i] -= p1Values[j];
 
@@ -81,7 +88,7 @@ namespace Dune
 
       for (size_t i=0; i<=dim; i++) {
         out[i][0] = 0;
-        out[i][0].axpy((dim+1),p1Jacs[i][0]);
+        out[i][0].axpy(dim+!faceDual,p1Jacs[i][0]);
 
         for (size_t j=0; j<i; j++)
           out[i][0] -= p1Jacs[j][0];

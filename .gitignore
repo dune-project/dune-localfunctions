@@ -33,4 +33,4 @@ stamp-h1
 .deps/
 .libs/
 test-driver
-build-cmake/
+build-*/

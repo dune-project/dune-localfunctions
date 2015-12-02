@@ -306,7 +306,7 @@ struct TestEvaluate<1>
       // Loop over all directions
       for (int k = 0; k < LB::Traits::dimDomain; k++)
       {
-        std::array<int, 1> direction = {k};
+        std::array<int, 1> direction = {{k}};
 
         // Get the shape function derivatives there
         std::vector<typename LB::Traits::RangeType> firstDerivatives;
@@ -419,7 +419,7 @@ struct TestEvaluate<2>
       {
         for (int dir1 = 0; dir1 < dimDomain; dir1++)
         {
-          std::array<int, 2> directions = { dir0, dir1 };
+          std::array<int, 2> directions = {{ dir0, dir1 }};
 
           // Get the shape function derivatives there
           std::vector<Range> secondDerivative;

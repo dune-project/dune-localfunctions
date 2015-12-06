@@ -114,7 +114,7 @@ namespace Dune
       delete[] numBaseFunctions_;
     }
 
-    unsigned int operator() ( const unsigned int order ) const
+    unsigned int operator() ( unsigned int order ) const
     {
       return numBaseFunctions_[ order ];
     }
@@ -183,7 +183,7 @@ namespace Dune
       delete[] numBaseFunctions_;
     }
 
-    unsigned int operator() ( const unsigned int order ) const
+    unsigned int operator() ( unsigned int order ) const
     {
       return numBaseFunctions_[ order ];
     }
@@ -258,7 +258,7 @@ namespace Dune
       delete[] numBaseFunctions_;
     }
 
-    unsigned int operator() ( const unsigned int order ) const
+    unsigned int operator() ( unsigned int order ) const
     {
       return numBaseFunctions_[ order ];
     }
@@ -308,8 +308,8 @@ namespace Dune
     typedef MonomialBasisSize< typename GenericGeometry::SimplexTopology< mydim >::type > MySize;
     typedef MonomialBasisSize< typename GenericGeometry::SimplexTopology< dim >::type > Size;
 
-    static void copy ( const unsigned int deriv, F *&wit, F *&rit,
-                       const unsigned int numBaseFunctions, const F &z )
+    static void copy ( unsigned int deriv, F *&wit, F *&rit,
+                       unsigned int numBaseFunctions, const F &z )
     {
       // n(d,k) = size<k>[d];
       MySize &mySize = MySize::instance();
@@ -381,9 +381,9 @@ namespace Dune
     friend class MonomialBasisImpl< GenericGeometry::Pyramid< Topology >, Field >;
 
     template< int dimD >
-    void evaluate ( const unsigned int deriv, const unsigned int order,
+    void evaluate ( unsigned int deriv, unsigned int order,
                     const FieldVector< Field, dimD > &x,
-                    const unsigned int block, const unsigned int *const offsets,
+                    unsigned int block, const unsigned int *const offsets,
                     Field *const values ) const
     {
       *values = Unity< F >();
@@ -392,7 +392,7 @@ namespace Dune
         *it = Zero< F >();
     }
 
-    void integrate ( const unsigned int order,
+    void integrate ( unsigned int order,
                      const unsigned int *const offsets,
                      Field *const values ) const
     {
@@ -427,9 +427,9 @@ namespace Dune
     {}
 
     template< int dimD >
-    void evaluate ( const unsigned int deriv, const unsigned int order,
+    void evaluate ( unsigned int deriv, unsigned int order,
                     const FieldVector< Field, dimD > &x,
-                    const unsigned int block, const unsigned int *const offsets,
+                    unsigned int block, const unsigned int *const offsets,
                     Field *const values ) const
     {
       typedef MonomialBasisHelper< dimDomain, dimD, Field > Helper;
@@ -451,7 +451,7 @@ namespace Dune
       }
     }
 
-    void integrate ( const unsigned int order,
+    void integrate ( unsigned int order,
                      const unsigned int *const offsets,
                      Field *const values ) const
     {
@@ -511,9 +511,9 @@ namespace Dune
     {}
 
     template< int dimD >
-    void evaluateSimplexBase ( const unsigned int deriv, const unsigned int order,
+    void evaluateSimplexBase ( unsigned int deriv, unsigned int order,
                                const FieldVector< Field, dimD > &x,
-                               const unsigned int block, const unsigned int *const offsets,
+                               unsigned int block, const unsigned int *const offsets,
                                Field *const values,
                                const BaseSize &size ) const
     {
@@ -521,9 +521,9 @@ namespace Dune
     }
 
     template< int dimD >
-    void evaluatePyramidBase ( const unsigned int deriv, const unsigned int order,
+    void evaluatePyramidBase ( unsigned int deriv, unsigned int order,
                                const FieldVector< Field, dimD > &x,
-                               const unsigned int block, const unsigned int *const offsets,
+                               unsigned int block, const unsigned int *const offsets,
                                Field *const values,
                                const BaseSize &size ) const
     {
@@ -564,9 +564,9 @@ namespace Dune
     }
 
     template< int dimD >
-    void evaluate ( const unsigned int deriv, const unsigned int order,
+    void evaluate ( unsigned int deriv, unsigned int order,
                     const FieldVector< Field, dimD > &x,
-                    const unsigned int block, const unsigned int *const offsets,
+                    unsigned int block, const unsigned int *const offsets,
                     Field *const values ) const
     {
       typedef MonomialBasisHelper< dimDomain, dimD, Field > Helper;
@@ -587,7 +587,7 @@ namespace Dune
       }
     }
 
-    void integrate ( const unsigned int order,
+    void integrate ( unsigned int order,
                      const unsigned int *const offsets,
                      Field *const values ) const
     {
@@ -669,30 +669,30 @@ namespace Dune
       return sizes( order_ );
     }
 
-    const unsigned int size () const
+    unsigned int size () const
     {
       size_.computeSizes( order_ );
       return size_( order_ );
     }
 
-    const unsigned int derivSize ( const unsigned int deriv ) const
+    unsigned int derivSize ( unsigned int deriv ) const
     {
       typedef typename GenericGeometry::SimplexTopology< dimension >::type SimplexTopology;
       MonomialBasisSize< SimplexTopology >::instance().computeSizes( deriv );
       return MonomialBasisSize< SimplexTopology >::instance() ( deriv );
     }
 
-    const unsigned int order () const
+    unsigned int order () const
     {
       return order_ ;
     }
 
-    const unsigned int topologyId ( ) const
+    unsigned int topologyId ( ) const
     {
       return Topology::id;
     }
 
-    void evaluate ( const unsigned int deriv, const DomainVector &x,
+    void evaluate ( unsigned int deriv, const DomainVector &x,
                     Field *const values ) const
     {
       Base::evaluate( deriv, order_, x, derivSize( deriv ), sizes( order_ ), values );
@@ -826,22 +826,22 @@ namespace Dune
 
     virtual const unsigned int *sizes ( ) const = 0;
 
-    const unsigned int size ( ) const
+    unsigned int size ( ) const
     {
       return sizes( )[ order_ ];
     }
 
-    const unsigned int order () const
+    unsigned int order () const
     {
       return order_;
     }
 
-    const unsigned int topologyId ( ) const
+    unsigned int topologyId ( ) const
     {
       return topologyId_;
     }
 
-    virtual void evaluate ( const unsigned int deriv, const DomainVector &x,
+    virtual void evaluate ( unsigned int deriv, const DomainVector &x,
                             Field *const values ) const = 0;
     template < unsigned int deriv >
     void evaluate ( const DomainVector &x,
@@ -923,7 +923,7 @@ namespace Dune
       return basis_.sizes(order_);
     }
 
-    void evaluate ( const unsigned int deriv, const DomainVector &x,
+    void evaluate ( unsigned int deriv, const DomainVector &x,
                     Field *const values ) const
     {
       basis_.evaluate(deriv,x,values);

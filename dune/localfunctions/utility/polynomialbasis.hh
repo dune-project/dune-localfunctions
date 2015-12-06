@@ -99,12 +99,12 @@ namespace Dune
       return *coeffMatrix_;
     }
 
-    const unsigned int order () const
+    unsigned int order () const
     {
       return order_;
     }
 
-    const unsigned int size () const
+    unsigned int size () const
     {
       return size_;
     }

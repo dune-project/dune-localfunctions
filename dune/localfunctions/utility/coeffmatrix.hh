@@ -64,11 +64,11 @@ namespace Dune
       delete [] skip_;
     }
 
-    const unsigned int size () const
+    unsigned int size () const
     {
       return numRows_/blockSize;
     }
-    const unsigned int baseSize () const
+    unsigned int baseSize () const
     {
       return numCols_;
     }

@@ -333,8 +333,8 @@ namespace Dune
             *wit = z * *rit;
           for (unsigned int j=1; j<d; ++j)
           {
-            const F *const drend = rit + mySize.sizes_[ d-j ] - mySize.sizes_[ d-j-1 ];
-            for( ; rit != drend ; ++prit, ++rit, ++wit )
+            const F *const drend2 = rit + mySize.sizes_[ d-j ] - mySize.sizes_[ d-j-1 ];
+            for( ; rit != drend2 ; ++prit, ++rit, ++wit )
               *wit = F(j) * *prit + z * *rit;
           }
           *wit = F(d) * *prit + z * *rit;
@@ -604,9 +604,9 @@ namespace Dune
         const Field factor = (Field( 1 ) / Field( k + dimDomain ));
 
         Field *const row1 = values+offsets[ k-1 ];
-        Field *const col0End = row1 + baseSizes[ k ];
+        Field *const col0End2 = row1 + baseSizes[ k ];
         Field *it = row1;
-        for( ; it != col0End; ++it )
+        for( ; it != col0End2; ++it )
           *it *= factor;
         for( unsigned int i = 1; i <= k; ++i )
         {

@@ -127,16 +127,16 @@ bool testFaceBiorthogonality(const DualLfe& dualLfe, const LagrangeLfe& lagrange
 
     std::fill(integralLagrange.begin(), integralLagrange.end(), 0.0);
 
-    for(size_t i=0; i<quad.size(); i++) {
+    for(size_t j=0; j < quad.size(); j++) {
 
-      const auto& pos = quad[i].position();
+      const auto& pos = quad[j].position();
       const auto& elementPos = geometry.global(pos);
 
       // evaluate basis functions
       dualLfe.localBasis().evaluateFunction(elementPos,dualValues);
       lagrangeLfe.localBasis().evaluateFunction(elementPos,lagrangeValues);
 
-      auto weight = quad[i].weight();
+      auto weight = quad[j].weight();
 
       for (unsigned int k=0; k<numLagBasFct; k++) {
 

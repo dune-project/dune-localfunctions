@@ -328,9 +328,13 @@ namespace Dune
           #ifndef NDEBUG
           const F *const derivEnd = rit + mySize.sizes_[ d ];
           #endif
-          const F *const drend = rit + mySize.sizes_[ d ] - mySize.sizes_[ d-1 ];
-          for( ; rit != drend ; ++rit, ++wit )
-            *wit = z * *rit;
+
+          {
+            const F *const drend = rit + mySize.sizes_[ d ] - mySize.sizes_[ d-1 ];
+            for( ; rit != drend ; ++rit, ++wit )
+              *wit = z * *rit;
+          }
+
           for (unsigned int j=1; j<d; ++j)
           {
             const F *const drend = rit + mySize.sizes_[ d-j ] - mySize.sizes_[ d-j-1 ];
@@ -594,11 +598,13 @@ namespace Dune
 
       const unsigned int *const baseSizes = size.sizes_;
 
-      Field *const col0End = values + baseSizes[ 0 ];
-      for( Field *it = values; it != col0End; ++it )
-        *it *= Field( 1 ) /  Field( int(dimDomain) );
-      Field *row0 = values;
+      {
+        Field *const col0End = values + baseSizes[ 0 ];
+        for( Field *it = values; it != col0End; ++it )
+          *it *= Field( 1 ) /  Field( int(dimDomain) );
+      }
 
+      Field *row0 = values;
       for( unsigned int k = 1; k <= order; ++k )
       {
         const Field factor = (Field( 1 ) / Field( k + dimDomain ));

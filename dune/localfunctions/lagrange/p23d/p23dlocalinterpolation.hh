@@ -50,11 +50,7 @@ namespace Dune
 
       x[0] = 0.0;   x[1] = 0.5;   x[2] = 0.5;
       f.evaluate(x,y); out[9] = y;
-
     }
-
-  private:
-    typename LB::Traits::DomainType x[4];
   };
 }
 

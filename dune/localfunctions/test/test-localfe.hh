@@ -465,9 +465,9 @@ struct TestEvaluate<2>
             neighbourPos[3][dir1] -= delta;
 
             std::array<std::vector<Range>, 4> neighbourValues;
-            for (int i = 0; i < 4; i++)
-              fe.localBasis().evaluateFunction(neighbourPos[i],
-                                               neighbourValues[i]);
+            for (int k = 0; k < 4; k++)
+              fe.localBasis().evaluateFunction(neighbourPos[k],
+                                               neighbourValues[k]);
 
             //Loop over all components
             for (std::size_t k = 0; k < dimR; ++k)

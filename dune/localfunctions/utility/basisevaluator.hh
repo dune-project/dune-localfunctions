@@ -304,7 +304,7 @@ namespace Dune
         for (int r1=0; r1<dimR; ++r1)
         {
           unsigned int b = 0;
-          apply<Field>(integral_constant<int,deriv>(),r1,x,block,b,vecIter);
+          apply<Field>(std::integral_constant<int,deriv>(),r1,x,block,b,vecIter);
         }
       }
     }
@@ -313,14 +313,14 @@ namespace Dune
                const Block &block,unsigned int &b,
                VecIter &vecIter) const
     {
-      apply<Field>(integral_constant<int,deriv-1>(),r1,x,block,b,vecIter);
+      apply<Field>(std::integral_constant<int,deriv-1>(),r1,x,block,b,vecIter);
       unsigned int bStart = b;
       unsigned int bEnd = b+LFETensor<Field,Domain::dimension,deriv>::size;
       apply<Field>(r1,x,block,bStart,bEnd,vecIter);
       b=bEnd;
     }
     template <class Field, class Domain, class Block,class VecIter>
-    void apply(const integral_constant<int,0>&, int r1, const Domain &x,
+    void apply(const std::integral_constant<int,0>&, int r1, const Domain &x,
                const Block &block,unsigned int &b,
                VecIter &vecIter) const
     {

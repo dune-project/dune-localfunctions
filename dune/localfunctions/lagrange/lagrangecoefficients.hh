@@ -46,7 +46,7 @@ namespace Dune
     {
       if (order == 0 || !Object::template supports<T>(order))
         return 0;
-      typedef typename remove_const<Object>::type LagrangeCoefficients;
+      typedef typename std::remove_const<Object>::type LagrangeCoefficients;
       LagrangeCoefficients *object = new LagrangeCoefficients(order);
       if ( !object->template build<T>() )
       {

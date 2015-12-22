@@ -46,7 +46,7 @@ namespace Dune
 
     static Imp* clone(const Imp& imp)
     {
-      return LocalFiniteElementCloneFactoryHelper<Imp, IsBaseOf<Interface, Imp>::value>::clone(imp);
+      return LocalFiniteElementCloneFactoryHelper<Imp, std::is_base_of<Interface, Imp>::value>::clone(imp);
     }
 
     static Imp* create()

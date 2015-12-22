@@ -66,7 +66,7 @@ namespace Dune {
     static_assert(LocalBasis::Traits::dimRange == 1,
                   "ScalarLocalToGlobalBasisAdaptor can only wrap a "
                   "scalar local basis.");
-    static_assert((is_same<typename LocalBasis::Traits::DomainFieldType,
+    static_assert((std::is_same<typename LocalBasis::Traits::DomainFieldType,
                            typename Geometry::ctype>::value),
                    "ScalarLocalToGlobalBasisAdaptor: LocalBasis must use "
                    "the same ctype as Geometry");

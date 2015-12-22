@@ -264,27 +264,27 @@ namespace Dune
     const Dune::FieldVector<LFETensor<F,dimD,dorder>,dimR> &tensor() const
     {
       // use integral_constant<int,...> here to stay compatible with Int2Type
-      const integral_constant<int,dorder> a = {};
+      const std::integral_constant<int,dorder> a = {};
       return tensor(a);
     }
     template <unsigned int dorder>
     Dune::FieldVector<LFETensor<F,dimD,dorder>,dimR> &tensor()
     {
       // use integral_constant<int,...> here to stay compatible with Int2Type
-      return tensor(integral_constant<int,dorder>());
+      return tensor(std::integral_constant<int,dorder>());
     }
     template <unsigned int dorder>
     const Dune::FieldVector<F,LFETensor<F,dimD,dorder>::size*dimR> &block() const
     {
       // use integral_constant<int,...> here to stay compatible with Int2Type
-      const integral_constant<int,dorder> a = {};
+      const std::integral_constant<int,dorder> a = {};
       return reinterpret_cast<const Dune::FieldVector<F,LFETensor<F,dimD,dorder>::size*dimR>&>(tensor(a));
     }
     template <unsigned int dorder>
     Dune::FieldVector<F,LFETensor<F,dimD,dorder>::size*dimR> &block()
     {
       // use integral_constant<int,...> here to stay compatible with Int2Type
-      const integral_constant<int,dorder> a = {};
+      const std::integral_constant<int,dorder> a = {};
       return reinterpret_cast<Dune::FieldVector<F,LFETensor<F,dimD,dorder>::size*dimR>&>(tensor(a));
     }
     ThisLFETensor &operator[](int r) {
@@ -317,23 +317,23 @@ namespace Dune
 
     template <int dorder>
     const Dune::FieldVector<LFETensor<F,dimD,dorder>,dimR> &
-    tensor(const integral_constant<int,dorder> &dorderVar) const
+    tensor(const std::integral_constant<int,dorder> &dorderVar) const
     {
       return Base::tensor(dorderVar);
     }
     const Dune::FieldVector<LFETensor<F,dimD,deriv>,dimR> &
-    tensor(const integral_constant<int,deriv> &dorderVar) const
+    tensor(const std::integral_constant<int,deriv> &dorderVar) const
     {
       return tensor_;
     }
     template <int dorder>
     Dune::FieldVector<LFETensor<F,dimD,dorder>,dimR> &
-    tensor(const integral_constant<int,dorder> &dorderVar)
+    tensor(const std::integral_constant<int,dorder> &dorderVar)
     {
       return Base::tensor(dorderVar);
     }
     Dune::FieldVector<LFETensor<F,dimD,deriv>,dimR> &
-    tensor(const integral_constant<int,deriv> &dorderVar)
+    tensor(const std::integral_constant<int,deriv> &dorderVar)
     {
       return tensor_;
     }
@@ -440,25 +440,25 @@ namespace Dune
     const Dune::FieldVector<F,LFETensor<F,dimD,dorder>::size*dimR> &block() const
     {
       // use integral_constant<int,...> here to stay compatible with Int2Type
-      const integral_constant<int,dorder> a = {};
+      const std::integral_constant<int,dorder> a = {};
       return reinterpret_cast<const Dune::FieldVector<F,LFETensor<F,dimD,dorder>::size*dimR>&>(tensor(a));
     }
     template <unsigned int dorder>
     Dune::FieldVector<F,LFETensor<F,dimD,dorder>::size*dimR> &block()
     {
       // use integral_constant<int,...> here to stay compatible with Int2Type
-      const integral_constant<int,dorder> a = {};
+      const std::integral_constant<int,dorder> a = {};
       return reinterpret_cast<Dune::FieldVector<F,LFETensor<F,dimD,dorder>::size*dimR>&>(tensor(a));
     }
 
   protected:
     const Dune::FieldVector<LFETensor<F,dimD,0>,dimR> &
-    tensor(const integral_constant<int,0> &dorderVar) const
+    tensor(const std::integral_constant<int,0> &dorderVar) const
     {
       return tensor_;
     }
     Dune::FieldVector<LFETensor<F,dimD,0>,dimR> &
-    tensor(const integral_constant<int,0> &dorderVar)
+    tensor(const std::integral_constant<int,0> &dorderVar)
     {
       return tensor_;
     }

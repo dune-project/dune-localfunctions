@@ -82,7 +82,7 @@ namespace Dune {
   template<class FiniteElement>
   struct FiniteElementInterfaceSwitch<
       FiniteElement,
-      typename enable_if<Std::to_true_type<typename FiniteElement::Traits::
+      typename std::enable_if<Std::to_true_type<typename FiniteElement::Traits::
               LocalBasisType>::value>::type
       >
   {
@@ -173,9 +173,9 @@ namespace Dune {
   //! Switch for uniform treatment of local and global basis classes
   template<class Basis>
   struct BasisInterfaceSwitch<Basis,
-                              typename enable_if<
+                              typename std::enable_if<
                                 Std::to_true_type<
-                                  integral_constant<
+                                  std::integral_constant<
                                     std::size_t,
                                     Basis::Traits::dimDomain
                                     >

@@ -22,12 +22,12 @@ namespace Dune
   template<class Geometry, class RF>
   class Q2FiniteElementFactory :
     public ScalarLocalToGlobalFiniteElementAdaptorFactory<
-      typename conditional<Geometry::mydimension == 1,
+      typename std::conditional<Geometry::mydimension == 1,
         PkLocalFiniteElement<typename Geometry::ctype, RF, 1, 2>,
         QkLocalFiniteElement<typename Geometry::ctype, RF, Geometry::mydimension, 2> >::type,
       Geometry>
   {
-    typedef typename conditional<Geometry::mydimension == 1,
+    typedef typename std::conditional<Geometry::mydimension == 1,
       PkLocalFiniteElement<typename Geometry::ctype, RF, 1, 2>,
       QkLocalFiniteElement<typename Geometry::ctype, RF, Geometry::mydimension, 2> >::type LFE;
     typedef ScalarLocalToGlobalFiniteElementAdaptorFactory<LFE, Geometry> Base;

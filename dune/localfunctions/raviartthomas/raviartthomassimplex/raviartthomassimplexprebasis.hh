@@ -49,8 +49,8 @@ namespace Dune
     {
       RTVecMatrix<Topology,Field> vecMatrix(order);
       typename Traits::MBasis *mbasis = Traits::MBasisFactory::template create<Topology>(order+1);
-      typename remove_const<Object>::type *tmBasis =
-        new typename remove_const<Object>::type(*mbasis);
+      typename std::remove_const<Object>::type *tmBasis =
+        new typename std::remove_const<Object>::type(*mbasis);
       tmBasis->fill(vecMatrix);
       return tmBasis;
     }

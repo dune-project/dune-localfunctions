@@ -405,7 +405,7 @@ namespace Dune
     typedef RaviartThomasL2InterpolationFactoryTraits<dim,Field> Traits;
     typedef RTL2InterpolationBuilder<dim,Field> Builder;
     typedef typename Traits::Object Object;
-    typedef typename remove_const<Object>::type NonConstObject;
+    typedef typename std::remove_const<Object>::type NonConstObject;
     template <class Topology>
     static typename Traits::Object *createObject( const typename Traits::Key &key )
     {

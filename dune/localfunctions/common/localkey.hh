@@ -6,8 +6,6 @@
 #include <array>
 #include <cstddef>
 
-#include <dune/common/array.hh>
-
 namespace Dune
 {
   /**@ingroup LocalLayoutInterface

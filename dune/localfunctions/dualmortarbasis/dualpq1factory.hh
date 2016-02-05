@@ -12,12 +12,12 @@
 
 namespace Dune {
 
-template<class D, class R, int dim>
+template<class D, class R, int dim, bool faceDual=false>
 class DualPQ1LocalFiniteElementCache
 {
 protected:
-  typedef Dune::DualP1LocalFiniteElement<D,R,dim> DualP1;
-  typedef Dune::DualQ1LocalFiniteElement<D,R,dim> DualQ1;
+  typedef Dune::DualP1LocalFiniteElement<D,R,dim,faceDual> DualP1;
+  typedef Dune::DualQ1LocalFiniteElement<D,R,dim,faceDual> DualQ1;
   typedef typename Dune::FixedOrderLocalBasisTraits<typename DualP1::Traits::LocalBasisType::Traits,0>::Traits T;
   typedef Dune::LocalFiniteElementVirtualInterface<T> FE;
   typedef std::map<Dune::GeometryType,FE*> FEMap;

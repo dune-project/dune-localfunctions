@@ -5,6 +5,7 @@
 
 #include <array>
 #include <cstddef>
+#include <ostream>
 
 namespace Dune
 {

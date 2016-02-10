@@ -1,8 +1,8 @@
 Module: dune-localfunctions
-Version: 2.4
+Version: 2.4.1
 Maintainer: dune-devel@dune-project.org
 #depending on
-Depends: dune-geometry (>= 2.4)
+Depends: dune-geometry (>= 2.4.1)
 # Needed for the debugging vtk output program
 Suggests:
 Whitespace-Hook: Yes

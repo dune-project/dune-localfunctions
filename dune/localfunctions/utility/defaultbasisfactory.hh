@@ -22,7 +22,7 @@ namespace Dune
   /************************************************
   * Class for providing a factory for basis
   * functions over the set of reference elements.
-  * Is based on the TopologyFactory but additionaly
+  * Is based on the TopologyFactory but additionally
   * provides rebindes of the field type.
   * The user provides factories for the pre basis and the
   * interpolations. The default construction process of

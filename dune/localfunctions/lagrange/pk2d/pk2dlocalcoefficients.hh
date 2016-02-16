@@ -48,7 +48,7 @@ namespace Dune
         can for instance be generated from the global indices of
         the vertices by reducing those to the integers 0...2.  This may be any
         object which for which the expression \c vertexmap[i] is defined
-        apropriately (like an array, a pointer, a std::vector, or a
+        appropriately (like an array, a pointer, a std::vector, or a
         random-access iterator.
      */
     template<class VertexMap>

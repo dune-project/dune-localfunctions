@@ -219,13 +219,13 @@ namespace Dune
       block().axpy(a,y.block());
     }
 
-    // assign with same layout (only diffrent Field)
+    // assign with same layout (only different Field)
     template <class Fy>
     void assign(const Derivatives<Fy,dimD,dimR,deriv,value> &y)
     {
       field_cast(y.block(),block());
     }
-    // assign with diffrent layout (same dimRange)
+    // assign with different layout (same dimRange)
     template <class Fy>
     void assign(const Derivatives<Fy,dimD,dimR,deriv,derivative> &y)
     {
@@ -306,7 +306,7 @@ namespace Dune
       Base::assign(r,reinterpret_cast<const FieldVector<Fy,Base::size/dimR>&>(y));
       tensor_[r] = reinterpret_cast<const FieldVector<Fy,ThisLFETensor::size>&>(y[Base::size/dimR]);
     }
-    // assign with diffrent layout (same dimRange)
+    // assign with different layout (same dimRange)
     template <class Fy,unsigned int dy>
     void assign(const Derivatives<Fy,dimD,dimR,dy,derivative> &y)
     {
@@ -521,13 +521,13 @@ namespace Dune
     {
       block().axpy(field_cast<F>(a),y.block());
     }
-    // assign with same layout (only diffrent Field)
+    // assign with same layout (only different Field)
     template <class Fy>
     void assign(const Derivatives<Fy,dimD,dimR,deriv,derivative> &y)
     {
       field_cast(y.block(),block());
     }
-    // assign with diffrent layout (same dimRange)
+    // assign with different layout (same dimRange)
     template <class Fy>
     void assign(const Derivatives<Fy,dimD,dimR,deriv,value> &y)
     {

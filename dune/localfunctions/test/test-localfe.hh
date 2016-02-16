@@ -625,6 +625,6 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned order = 2)
 }
 
 #define TEST_FE(A) { bool b = testFE(A); std::cout << "testFE(" #A ") " << (b?"succeeded\n":"failed\n"); success &= b; }
-#define TEST_FE2(A,B) { bool b = testFE(A, B); if (!b) std::cerr << "testFE(" #A ", " #B ") " << (b?"succeded\n":"failed\n"); success &= b; }
+#define TEST_FE2(A,B) { bool b = testFE(A, B); if (!b) std::cerr << "testFE(" #A ", " #B ") " << (b?"succeeded\n":"failed\n"); success &= b; }
 
 #endif // DUNE_LOCALFUNCTIONS_TEST_TEST_LOCALFE_HH

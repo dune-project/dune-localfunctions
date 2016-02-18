@@ -32,9 +32,9 @@ namespace Dune
     typedef CoeffF CoefficientFactory;
     typedef InterpolF InterpolationFactory;
 
-    static_assert(Conversion<Key, typename CoeffF::Key>::sameType,
+    static_assert(std::is_same<Key, typename CoeffF::Key>::value,
                   "incompatible keys between BasisCreator and CoefficientsCreator");
-    static_assert(Conversion<Key, typename InterpolF::Key>::sameType,
+    static_assert(std::is_same<Key, typename InterpolF::Key>::value,
                   "incompatible keys between BasisCreator and InterpolationCreator" );
 
     /** \todo Please doc me */

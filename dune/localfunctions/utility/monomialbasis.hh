@@ -669,25 +669,25 @@ namespace Dune
       return sizes( order_ );
     }
 
-    const unsigned int size () const
+    unsigned int size () const
     {
       size_.computeSizes( order_ );
       return size_( order_ );
     }
 
-    const unsigned int derivSize ( const unsigned int deriv ) const
+    unsigned int derivSize ( const unsigned int deriv ) const
     {
       typedef typename GenericGeometry::SimplexTopology< dimension >::type SimplexTopology;
       MonomialBasisSize< SimplexTopology >::instance().computeSizes( deriv );
       return MonomialBasisSize< SimplexTopology >::instance() ( deriv );
     }
 
-    const unsigned int order () const
+    unsigned int order () const
     {
       return order_ ;
     }
 
-    const unsigned int topologyId ( ) const
+    unsigned int topologyId ( ) const
     {
       return Topology::id;
     }
@@ -826,17 +826,17 @@ namespace Dune
 
     virtual const unsigned int *sizes ( ) const = 0;
 
-    const unsigned int size ( ) const
+    unsigned int size ( ) const
     {
       return sizes( )[ order_ ];
     }
 
-    const unsigned int order () const
+    unsigned int order () const
     {
       return order_;
     }
 
-    const unsigned int topologyId ( ) const
+    unsigned int topologyId ( ) const
     {
       return topologyId_;
     }

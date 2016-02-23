@@ -17,6 +17,9 @@ namespace Dune
     {
       typename LB::Traits::RangeType y;
       typename LB::Traits::DomainType x;
+      // If the dual functions are dual on the faces,
+      // then adjust the interpolation weights
+      const int faceDual(LB::faceDual);
 
       // compute P1 interpolation coefficients
       std::vector<C> p1Interpolation(dim+1);
@@ -38,13 +41,13 @@ namespace Dune
       // compute dual coefficients from the Lagrange ones
       out.resize(dim+1);
       for (int i=0; i<dim+1; i++) {
-        out[i] = 2*p1Interpolation[i]/(dim+2) ;
+        out[i] = 2*p1Interpolation[i]/(dim+2-faceDual);
 
         for (int j=0; j<i; j++)
-          out[i] += p1Interpolation[j]/(dim+2);
+          out[i] += p1Interpolation[j]/(dim+2-faceDual);
 
         for (int j=i+1; j<=dim; j++)
-          out[i] += p1Interpolation[j]/(dim+2);
+          out[i] += p1Interpolation[j]/(dim+2-faceDual);
       }
     }
 

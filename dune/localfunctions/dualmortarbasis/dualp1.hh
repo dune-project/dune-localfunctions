@@ -16,20 +16,26 @@ namespace Dune
   /**
    * \brief The local dual p1 finite element on simplices
    *
+   *    Note that if the dual functions are chosen to be dual on the faces,
+   *    the integrated product of a Lagrange \f$\lambda_p\f$ and dual
+   *    function \f$\theta_q\f$ over faces not containing \f$q\f$ does in
+   *    general not vanish.
+   *
    * \ingroup DualMortar
    *
    * \tparam D Domain data type
    * \tparam R Range data type
    * \tparam dim Dimension of the simplex
+   * \tparam faceDual If set, the basis functions are bi-orthogonal only on faces containing the corresponding vertex.
    */
-  template<class D, class R, int dim>
+  template<class D, class R, int dim, bool faceDual=false>
   class DualP1LocalFiniteElement
   {
   public:
     /** \todo Please doc me !
      */
-    typedef LocalFiniteElementTraits<DualP1LocalBasis<D,R,dim>,DualP1LocalCoefficients<dim>,
-        DualP1LocalInterpolation<dim,DualP1LocalBasis<D,R,dim> > > Traits;
+    typedef LocalFiniteElementTraits<DualP1LocalBasis<D,R,dim,faceDual>,DualP1LocalCoefficients<dim>,
+        DualP1LocalInterpolation<dim,DualP1LocalBasis<D,R,dim,faceDual> > > Traits;
 
     /** \todo Please doc me !
      */
@@ -78,9 +84,9 @@ namespace Dune
     }
 
   private:
-    DualP1LocalBasis<D,R,dim> basis;
+    DualP1LocalBasis<D,R,dim,faceDual> basis;
     DualP1LocalCoefficients<dim> coefficients;
-    DualP1LocalInterpolation<dim,DualP1LocalBasis<D,R,dim> > interpolation;
+    DualP1LocalInterpolation<dim,DualP1LocalBasis<D,R,dim,faceDual> > interpolation;
     GeometryType gt;
   };
 

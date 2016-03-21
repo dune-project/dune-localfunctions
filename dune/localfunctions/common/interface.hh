@@ -69,19 +69,19 @@ namespace Dune {
     //! Extract basis of this finite element
     /**
      * The returned lvalue must have a lifetime at least as long as the finite
-     * element object it was aquired from.
+     * element object it was acquired from.
      */
     const Traits::Basis& basis() const;
     //! Extract coefficients of this finite element
     /**
      * The returned lvalue must have a lifetime at least as long as the finite
-     * element object it was aquired from.
+     * element object it was acquired from.
      */
     const Traits::Coefficients& coefficients() const;
     //! Extract interpolation of this finite element
     /**
      * The returned lvalue must have a lifetime at least as long as the finite
-     * element object it was aquired from.
+     * element object it was acquired from.
      */
     const Traits::Interpolation& interpolation() const;
     //! Extract geometry type of this finite element

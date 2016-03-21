@@ -70,20 +70,20 @@ namespace Dune {
     //! Extract basis of this finite element
     /**
      * The returned lvalue must have a lifetime at least as long as the finite
-     * element object it was aquired from.
+     * element object it was acquired from.
      */
     const typename Traits::Basis& basis() const { return basis_; }
     //! Extract coefficients of this finite element
     /**
      * The returned lvalue must have a lifetime at least as long as the finite
-     * element object it was aquired from.
+     * element object it was acquired from.
      */
     const typename Traits::Coefficients& coefficients() const
     { return coefficients_; }
     //! Extract interpolation of this finite element
     /**
      * The returned lvalue must have a lifetime at least as long as the finite
-     * element object it was aquired from.
+     * element object it was acquired from.
      */
     const typename Traits::Interpolation& interpolation() const
     { return interpolation_; }

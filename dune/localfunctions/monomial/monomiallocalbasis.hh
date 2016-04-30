@@ -248,6 +248,52 @@ namespace Dune
       evaluate<0>(std::array<int, 0>(), in, out);
     }
 
+    /** \brief Evaluate partial derivatives of any order of all shape functions
+     * \param order Order of the partial derivatives, in the classic multi-index notation
+     * \param in Position where to evaluate the derivatives
+     * \param[out] out Return value: the desired partial derivatives
+     */
+    inline void partial(const std::array<unsigned int,d>& order,
+                        const typename Traits::DomainType& in,
+                        std::vector<typename Traits::RangeType>& out) const
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+
+      switch (totalOrder)
+      {
+        case 0:
+          evaluateFunction(in,out);
+          break;
+        case 1:
+        {
+          std::array<int,1> directions;
+          directions[0] = std::find(order.begin(), order.end(), 1)-order.begin();
+          evaluate<1>(directions, in, out);
+          break;
+        }
+        case 2:
+        {
+          std::array<int,2> directions;
+          unsigned int counter = 0;
+          auto nonconstOrder = order;  // need a copy that I can modify
+          for (unsigned int i=0; i<d; i++)
+          {
+            while (nonconstOrder[i])
+            {
+              directions[counter++] = i;
+              nonconstOrder[i]--;
+            }
+          }
+
+          evaluate<2>(directions, in, out);
+          break;
+        }
+        default:
+          // \todo The 'evaluate' method implements higher derivatives
+          DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
+    }
+
     //! return given derivative of all components
     template<unsigned int k>
     inline void evaluate (const std::array<int,k>& directions,

@@ -130,6 +130,46 @@ namespace Dune
       }
     }
 
+    /** \brief Evaluate partial derivatives of any order of all shape functions
+     * \param order Order of the partial derivatives, in the classic multi-index notation
+     * \param in Position where to evaluate the derivatives
+     * \param[out] out Return value: the desired partial derivatives
+     */
+    inline void partial(const std::array<unsigned int,d>& order,
+                        const typename Traits::DomainType& in,
+                        std::vector<typename Traits::RangeType>& out) const
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+
+      switch (totalOrder)
+      {
+        case 0:
+          evaluateFunction(in,out);
+          break;
+        case 1:
+        {
+          out.resize(size());
+
+          // Loop over all shape functions
+          for (size_t i=0; i<size(); i++)
+          {
+            // convert index i to multiindex
+            Dune::FieldVector<int,d> alpha(multiindex(i));
+
+            // Initialize: the overall expression is a product
+            out[i][0] = 1.0;
+
+            // rest of the product
+            for (std::size_t l=0; l<d; l++)
+              out[i][0] *= (order[l]) ? dp(alpha[l],in[l]) : p(alpha[l],in[l]);
+          }
+          break;
+        }
+        default:
+          DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
+    }
+
     /** \brief Evaluate derivative in a given direction
      * \param [in]  direction The direction to derive in
      * \param [in]  in        Position where to evaluate

@@ -64,6 +64,37 @@ namespace Dune
 
     }
 
+    /** \brief Evaluate partial derivatives of any order of all shape functions
+     * \param order Order of the partial derivatives, in the classic multi-index notation
+     * \param in Position where to evaluate the derivatives
+     * \param[out] out Return value: the desired partial derivatives
+     */
+    inline void partial(const std::array<unsigned int,dim>& order,
+                        const typename Traits::DomainType& in,
+                        std::vector<typename Traits::RangeType>& out) const
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+
+      if (totalOrder==0)
+        evaluateFunction(in, out);
+      else if (totalOrder==1)
+      {
+        auto direction = std::find(order.begin(), order.end(), 1);
+        out.resize(size());
+
+        out[0] = -1;
+        for (int i=0; i<dim; i++)
+          out[i+1] = (i==(direction-order.begin()));
+      }
+      else  // all higher order derivatives are zero
+      {
+        out.resize(size());
+
+        for (int i=0; i<dim+1; i++)
+          out[i] = 0;
+      }
+    }
+
     //! \brief Evaluate all shape functions
     template<unsigned int k>
     inline void evaluate (const typename std::array<int,k>& directions,

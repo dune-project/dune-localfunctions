@@ -308,10 +308,28 @@ struct TestEvaluate<1>
       {
         std::array<int, 1> direction = {{k}};
 
-        // Get the shape function derivatives there
+        // Get the shape function derivatives there using the 'evaluate' method
         std::vector<typename LB::Traits::RangeType> firstDerivatives;
         fe.localBasis().template evaluate<1>(direction, testPoint, firstDerivatives);
         if (firstDerivatives.size() != fe.localBasis().size())
+        {
+          std::cout << "Bug in evaluate() for finite element type "
+                    << Dune::className(fe) << std::endl;
+          std::cout << "    firstDerivatives vector has size "
+                    << firstDerivatives.size() << std::endl;
+          std::cout << "    Basis has size " << fe.localBasis().size()
+                    << std::endl;
+          std::cout << std::endl;
+          return false;
+        }
+
+        // Get the shape function derivatives there using the 'partial' method
+        std::vector<typename LB::Traits::RangeType> firstPartialDerivatives;
+        std::array<unsigned int, LB::Traits::dimDomain> multiIndex;
+        std::fill(multiIndex.begin(), multiIndex.end(), 0);
+        multiIndex[k]++;
+        fe.localBasis().partial(multiIndex, testPoint, firstPartialDerivatives);
+        if (firstPartialDerivatives.size() != fe.localBasis().size())
         {
           std::cout << "Bug in evaluate() for finite element type "
                     << Dune::className(fe) << std::endl;
@@ -347,7 +365,7 @@ struct TestEvaluate<1>
             RangeField finiteDiff = (upValues[j][l] - downValues[j][l])
                               / (2 * jacobianTOL);
 
-            // Check
+            // Check the 'evaluate' method
             if (std::abs(derivative - finiteDiff)
                 > TOL / jacobianTOL
                   * ((std::abs(finiteDiff) > 1) ? std::abs(finiteDiff) : 1.))
@@ -364,6 +382,26 @@ struct TestEvaluate<1>
               std::cout << std::endl;
               success = false;
             }
+
+            // Check the 'partial' method
+            RangeField partialDerivative = firstPartialDerivatives[j][l];
+            if (std::abs(partialDerivative - finiteDiff)
+                > TOL / jacobianTOL
+                  * ((std::abs(finiteDiff) > 1) ? std::abs(finiteDiff) : 1.))
+            {
+              std::cout << std::setprecision(16);
+              std::cout << "Bug in partial() for finite element type "
+                        << Dune::className(fe) << std::endl;
+              std::cout << "    Shape function derivative does not agree with "
+                        << "FD approximation" << std::endl;
+              std::cout << "    Shape function " << j << " component " << l
+                        << " at position " << testPoint << ": derivative in "
+                        << "direction " << k << " is " << derivative << ", but "
+                        << finiteDiff << " is expected." << std::endl;
+              std::cout << std::endl;
+              success = false;
+            }
+
           } // Loop over all directions
         } //Loop over all components
       } // Loop over all shape functions in this set
@@ -410,9 +448,15 @@ struct TestEvaluate<2>
       // Get a test point
       const Domain& testPoint = quad[i].position();
 
+      // For testing the 'evaluate' method
       std::array<std::vector<Dune::FieldMatrix<RangeField, dimDomain, dimDomain> >, dimR> hessians;
       for (size_t k = 0; k < dimR; k++)
         hessians[k].resize(fe.size());
+
+      // For testing the 'partial' method
+      std::array<std::vector<Dune::FieldMatrix<RangeField, dimDomain, dimDomain> >, dimR> partialHessians;
+      for (size_t k = 0; k < dimR; k++)
+        partialHessians[k].resize(fe.size());
 
       //loop over all local directions
       for (int dir0 = 0; dir0 < dimDomain; dir0++)
@@ -421,7 +465,7 @@ struct TestEvaluate<2>
         {
           std::array<int, 2> directions = {{ dir0, dir1 }};
 
-          // Get the shape function derivatives there
+          // Get the shape function derivatives there using the 'evaluate' method
           std::vector<Range> secondDerivative;
           fe.localBasis().template evaluate<2>(directions, testPoint, secondDerivative);
           if (secondDerivative.size() != fe.localBasis().size())
@@ -440,6 +484,32 @@ struct TestEvaluate<2>
           for (size_t k = 0; k < dimR; k++)
             for (std::size_t j = 0; j < fe.localBasis().size(); ++j)
               hessians[k][j][dir0][dir1] = secondDerivative[j][k];
+
+          // Get the shape function derivatives there using the 'partial' method
+          std::vector<Range> secondPartialDerivative;
+          std::array<unsigned int,dimDomain> multiIndex;
+          std::fill(multiIndex.begin(), multiIndex.end(), 0);
+          multiIndex[dir0]++;
+          multiIndex[dir1]++;
+          fe.localBasis().partial(multiIndex, testPoint, secondPartialDerivative);
+
+          if (secondPartialDerivative.size() != fe.localBasis().size())
+          {
+            std::cout << "Bug in partial() for finite element type "
+                      << Dune::className<FE>() << ":" << std::endl;
+            std::cout << "    return vector has size " << secondPartialDerivative.size()
+                      << std::endl;
+            std::cout << "    Basis has size " << fe.localBasis().size()
+                      << std::endl;
+            std::cout << std::endl;
+            return false;
+          }
+
+          //combine to Hesse matrices
+          for (size_t k = 0; k < dimR; k++)
+            for (std::size_t j = 0; j < fe.localBasis().size(); ++j)
+              partialHessians[k][j][dir0][dir1] = secondPartialDerivative[j][k];
+
         }
       }  //loop over all directions
 
@@ -472,7 +542,7 @@ struct TestEvaluate<2>
             //Loop over all components
             for (std::size_t k = 0; k < dimR; ++k)
             {
-              // The current partial derivative, just for ease of notation
+              // The current partial derivative, just for ease of notation, evaluated by the 'evaluate' method
               RangeField derivative = hessians[k][j][dir0][dir1];
 
               RangeField finiteDiff = (neighbourValues[0][j][k]
@@ -496,6 +566,28 @@ struct TestEvaluate<2>
                 std::cout << std::endl;
                 success = false;
               }
+
+              // The current partial derivative, just for ease of notation, evaluated by the 'partial' method
+              RangeField partialDerivative = partialHessians[k][j][dir0][dir1];
+
+              // Check
+              if (std::abs(partialDerivative - finiteDiff)
+                  > eps / delta * (std::max(std::abs(finiteDiff), 1.0)))
+              {
+                std::cout << std::setprecision(16);
+                std::cout << "Bug in partial() for finite element type "
+                          << Dune::className<FE>() << ":" << std::endl;
+                std::cout << "    Second shape function derivative does not agree with "
+                          << "FD approximation" << std::endl;
+                std::cout << "    Shape function " << j << " component " << k
+                          << " at position " << testPoint << ": derivative in "
+                          << "local direction (" << dir0 << ", " << dir1 << ") is "
+                          << partialDerivative << ", but " << finiteDiff
+                          << " is expected." << std::endl;
+                std::cout << std::endl;
+                success = false;
+              }
+
             } //Loop over all components
           }
         } // Loop over all local directions

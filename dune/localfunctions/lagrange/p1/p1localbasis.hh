@@ -4,6 +4,7 @@
 #define DUNE_P1_LOCALBASIS_HH
 
 #include <array>
+#include <numeric>
 
 #include <dune/common/fmatrix.hh>
 

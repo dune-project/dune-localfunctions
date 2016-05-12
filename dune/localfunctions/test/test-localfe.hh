@@ -267,7 +267,114 @@ struct TestEvaluate<0>
                    double delta,
                    std::size_t order = 2)
   {
-    // TODO Implement me!
+    typedef typename FE::Traits::LocalBasisType LB;
+    typedef typename LB::Traits::RangeFieldType RangeField;
+
+    bool success = true;
+
+
+    //////////////////////////////////////////////////////////////
+    //   Check the 0-th order derivatives by comparing them
+    //   against evaluateFunction at all quadrature points
+    //////////////////////////////////////////////////////////////
+
+    // A set of test points
+    const Dune::QuadratureRule<double, LB::Traits::dimDomain> quad =
+      Dune::QuadratureRules<double, LB::Traits::dimDomain>::rule(fe.type(),
+                                                                 order);
+
+    // Loop over all quadrature points
+    for (size_t i = 0; i < quad.size(); i++)
+    {
+      // Get a test point
+      const Dune::FieldVector<double, LB::Traits::dimDomain>& testPoint = quad[i].position();
+
+      // Get the shape function values there using the 'evaluate' method
+      std::array<int, 0> direction;
+
+      std::vector<typename LB::Traits::RangeType> evaluate0values;
+      fe.localBasis().template evaluate<0>(direction, testPoint, evaluate0values);
+      if (evaluate0values.size() != fe.localBasis().size())
+      {
+        std::cout << "Bug in evaluate() for finite element type "
+                  << Dune::className(fe) << std::endl;
+        std::cout << "    evaluate0values vector has size "
+                  << evaluate0values.size() << std::endl;
+        std::cout << "    Basis has size " << fe.localBasis().size()
+                  << std::endl;
+        std::cout << std::endl;
+        return false;
+      }
+
+      // Get the shape function values there using the 'partial' method
+      std::array<unsigned int, LB::Traits::dimDomain> multiIndex;
+      std::fill(multiIndex.begin(), multiIndex.end(), 0);
+
+      std::vector<typename LB::Traits::RangeType> partial0values;
+      fe.localBasis().template evaluate<0>(multiIndex, testPoint, partial0values);
+      if (partial0values.size() != fe.localBasis().size())
+      {
+        std::cout << "Bug in partial() for finite element type "
+                  << Dune::className(fe) << std::endl;
+        std::cout << "    partial0values vector has size "
+                  << partial0values.size() << std::endl;
+        std::cout << "    Basis has size " << fe.localBasis().size()
+                  << std::endl;
+        std::cout << std::endl;
+        return false;
+      }
+
+      // Get the shape function values there using the 'evaluateFunction' method
+      std::vector<typename LB::Traits::RangeType> values;
+      fe.localBasis().evaluateFunction(testPoint, values);
+
+      // find mismatch of values in evaluate() function
+      auto mm0 = std::mismatch(evaluate0values.begin(), evaluate0values.end(), values.begin(),
+                               [TOL](typename LB::Traits::RangeType const& a,
+                                     typename LB::Traits::RangeType const& b)
+                               {
+                                 return std::abs(a - b) < TOL;
+                               });
+
+      if (mm0.first != evaluate0values.end() && mm0.second != values.end())
+      {
+        std::cout << std::setprecision(16);
+        std::cout << "Bug in evaluate<0>() for finite element type "
+                  << Dune::className(fe) << std::endl;
+        std::cout << "    Shape function 0th derivative does not agree with "
+                  << "shape function value" << std::endl;
+        std::cout << "    Shape function " << j << " component " << l
+                  << " at position " << testPoint << ": 0th derivative is "
+                  << (*mm0.first) << ", but "
+                  << (*mm0.second) << " is expected." << std::endl;
+        std::cout << std::endl;
+        success = false;
+      }
+
+      // find mismatch of values in partial() function
+      auto mm1 = std::mismatch(partial0values.begin(), partial0values.end(), values.begin(),
+                               [TOL](typename LB::Traits::RangeType const& a,
+                                     typename LB::Traits::RangeType const& b)
+                               {
+                                 return std::abs(a - b) < TOL;
+                               });
+      if (mm1.first != partial0values.end() && mm1.second != values.end())
+      {
+        std::cout << std::setprecision(16);
+        std::cout << "Bug in partial<0>() for finite element type "
+                  << Dune::className(fe) << std::endl;
+        std::cout << "    Shape function 0th derivative does not agree with "
+                  << "shape function value" << std::endl;
+        std::cout << "    Shape function " << j << " component " << l
+                  << " at position " << testPoint << ": 0th derivative is "
+                  << (*mm1.first) << ", but "
+                  << (*mm1.second) << " is expected." << std::endl;
+        std::cout << std::endl;
+        success = false;
+      }
+
+
+    }
     return true;
   }
 };
@@ -294,8 +401,8 @@ struct TestEvaluate<1>
 
     // A set of test points
     const Dune::QuadratureRule<double, LB::Traits::dimDomain> quad =
-          Dune::QuadratureRules<double, LB::Traits::dimDomain>::rule(fe.type(),
-                                                                     order);
+      Dune::QuadratureRules<double, LB::Traits::dimDomain>::rule(fe.type(),
+                                                                 order);
 
     // Loop over all quadrature points
     for (size_t i = 0; i < quad.size(); i++)
@@ -363,12 +470,12 @@ struct TestEvaluate<1>
             RangeField derivative = firstDerivatives[j][l];
 
             RangeField finiteDiff = (upValues[j][l] - downValues[j][l])
-                              / (2 * jacobianTOL);
+                                    / (2 * jacobianTOL);
 
             // Check the 'evaluate' method
             if (std::abs(derivative - finiteDiff)
                 > TOL / jacobianTOL
-                  * ((std::abs(finiteDiff) > 1) ? std::abs(finiteDiff) : 1.))
+                * ((std::abs(finiteDiff) > 1) ? std::abs(finiteDiff) : 1.))
             {
               std::cout << std::setprecision(16);
               std::cout << "Bug in evaluate<1>() for finite element type "
@@ -387,7 +494,7 @@ struct TestEvaluate<1>
             RangeField partialDerivative = firstPartialDerivatives[j][l];
             if (std::abs(partialDerivative - finiteDiff)
                 > TOL / jacobianTOL
-                  * ((std::abs(finiteDiff) > 1) ? std::abs(finiteDiff) : 1.))
+                * ((std::abs(finiteDiff) > 1) ? std::abs(finiteDiff) : 1.))
             {
               std::cout << std::setprecision(16);
               std::cout << "Bug in partial() for finite element type "
@@ -440,7 +547,7 @@ struct TestEvaluate<2>
 
     // A set of test points
     const Dune::QuadratureRule<DF, dimDomain> quad
-       = Dune::QuadratureRules<DF,dimDomain>::rule(fe.type(), order);
+      = Dune::QuadratureRules<DF,dimDomain>::rule(fe.type(), order);
 
     // Loop over all quadrature points
     for (std::size_t i = 0; i < quad.size(); i++)
@@ -546,8 +653,8 @@ struct TestEvaluate<2>
               RangeField derivative = hessians[k][j][dir0][dir1];
 
               RangeField finiteDiff = (neighbourValues[0][j][k]
-                  - neighbourValues[1][j][k] - neighbourValues[2][j][k]
-                  + neighbourValues[3][j][k]) / (4 * delta * delta);
+                                       - neighbourValues[1][j][k] - neighbourValues[2][j][k]
+                                       + neighbourValues[3][j][k]) / (4 * delta * delta);
 
               // Check
               if (std::abs(derivative - finiteDiff)
@@ -716,7 +823,7 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned order = 2)
   return success;
 }
 
-#define TEST_FE(A) { bool b = testFE(A); std::cout << "testFE(" #A ") " << (b?"succeeded\n":"failed\n"); success &= b; }
-#define TEST_FE2(A,B) { bool b = testFE(A, B); if (!b) std::cerr << "testFE(" #A ", " #B ") " << (b?"succeeded\n":"failed\n"); success &= b; }
+#define TEST_FE(A) { bool b = testFE(A); std::cout << "testFE(" #A ") " << (b ? "succeeded\n" : "failed\n"); success &= b; }
+#define TEST_FE2(A,B) { bool b = testFE(A, B); if (!b) std::cerr << "testFE(" #A ", " #B ") " << (b ? "succeeded\n" : "failed\n"); success &= b; }
 
 #endif // DUNE_LOCALFUNCTIONS_TEST_TEST_LOCALFE_HH

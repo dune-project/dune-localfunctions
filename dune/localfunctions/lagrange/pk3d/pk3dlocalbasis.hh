@@ -147,6 +147,55 @@ namespace Dune
       }
     }
 
+    /** \brief Evaluate partial derivatives of any order of all shape functions
+     * \param order Order of the partial derivatives, in the classic multi-index notation
+     * \param in Position where to evaluate the derivatives
+     * \param[out] out Return value: the desired partial derivatives
+     */
+    void partial(const std::array<unsigned int,3>& order,
+                 const typename Traits::DomainType& in,
+                 std::vector<typename Traits::RangeType>& out) const
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else {
+        // Calculate directions from order and call evaluate for the
+        // specific totalOrder value, to calculate the derivatives.
+        int dOrder = staticFindInRange<1, Traits::diffOrder+1>([&](const auto i)
+                                                               {
+                                                                 if (i == totalOrder) {
+                                                                   std::array<int, i> directions;
+                                                                   this->order2directions(order, directions);
+                                                                   this->evaluate<i>(direction, in, out);
+                                                                   return true; // terminate loop
+                                                                 } else {
+                                                                   return false;
+                                                                 }
+                                                               });
+
+        if (dOrder > Traits::diffOrder)
+          DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
+    }
+
+    //! \brief Evaluate higher derivatives of all shape functions
+    template<unsigned int dOrder> //order of derivative
+    inline void evaluate(const std::array<int,dOrder>& directions, //direction of derivative
+                         const typename Traits::DomainType& in,  //position
+                         std::vector<typename Traits::RangeType>& out) const //return value
+    {
+      out.resize(N);
+
+      if (dOrder > Traits::diffOrder)
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+
+      if (dOrder==0)
+        evaluateFunction(in, out);
+      else
+        DUNE_THROW(NotImplemented, "Not yet implemented");
+    }
+
     //! \brief Polynomial order of the shape functions
     unsigned int order () const
     {
@@ -190,6 +239,38 @@ namespace Dune
       out[0][0][0] = 0;
       out[0][0][1] = 0;
       out[0][0][2] = 0;
+    }
+
+    /** \brief Evaluate partial derivatives of any order of all shape functions
+     * \param order Order of the partial derivatives, in the classic multi-index notation
+     * \param in Position where to evaluate the derivatives
+     * \param[out] out Return value: the desired partial derivatives
+     */
+    void partial(const std::array<unsigned int,2>& order,
+                 const typename Traits::DomainType& in,
+                 std::vector<typename Traits::RangeType>& out) const
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else {
+        out.resize(N);
+        out[0] = 0.0;
+      }
+    }
+
+    //! \brief Evaluate higher derivatives of all shape functions
+    template<unsigned int dOrder> //order of derivative
+    inline void evaluate(const std::array<int,dOrder>& directions, //direction of derivative
+                         const typename Traits::DomainType& in,  //position
+                         std::vector<typename Traits::RangeType>& out) const //return value
+    {
+      out.resize(N);
+
+      if (dOrder==0)
+        evaluateFunction(in, out);
+      else
+        out[0] = 0.0;
     }
 
     // local interpolation of a function

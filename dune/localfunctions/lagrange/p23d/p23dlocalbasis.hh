@@ -394,6 +394,67 @@ namespace Dune
 
     }
 
+
+    //! \brief Evaluate Jacobian of all shape functions
+    inline void
+    evaluatePartial0 (const typename Traits::DomainType& in,         // position
+                      std::vector<typename Traits::JacobianType>& out) const      // return value
+    {
+      out.resize(10);
+
+      out[0] =-3.0 + 4.0*(in[0] + in[1] + in[2]);
+      out[1] =-1.0 + 4.0*in[0];
+      out[2] = 0.0;
+      out[3] = 0.0;
+      out[4] = 4.0 - 4.0*(2.0*in[0] + in[1] + in[2]);
+      out[5] = 4.0*in[1];
+      out[6] =-4.0*in[1];
+      out[7] =-4.0*in[2];
+      out[8] = 4.0*in[2];
+      out[9] = 0.0;
+    }
+
+
+    //! \brief Evaluate Jacobian of all shape functions
+    inline void
+    evaluatePartial1 (const typename Traits::DomainType& in,         // position
+                      std::vector<typename Traits::JacobianType>& out) const      // return value
+    {
+      out.resize(10);
+
+      out[0] =-3.0 + 4.0*(in[0] + in[1] + in[2]);
+      out[1] = 0.0;
+      out[2] =-1.0 + 4.0*in[1];
+      out[3] = 0.0;
+      out[4] =-4.0*in[0];
+      out[5] = 4.0*in[0];
+      out[6] = 4.0 - 4.0*(in[0] + 2.0*in[1] + in[2]);
+      out[7] =-4.0*in[2];
+      out[8] = 0.0;
+      out[9] = 4.0*in[2];
+    }
+
+
+    //! \brief Evaluate Jacobian of all shape functions
+    inline void
+    evaluatePartial2 (const typename Traits::DomainType& in,         // position
+                      std::vector<typename Traits::JacobianType>& out) const      // return value
+    {
+      out.resize(10);
+
+      out[0] =-3.0 + 4.0*(in[0] + in[1] + in[2]);
+      out[1] = 0.0;
+      out[2] = 0.0;
+      out[3] =-1.0 + 4.0*in[2];
+      out[4] =-4.0*in[0];
+      out[5] = 0.0;
+      out[6] =-4.0*in[1];
+      out[7] = 4.0 - 4.0*(in[0] + in[1] + 2.0*in[2]);
+      out[8] = 4.0*in[0];
+      out[9] = 4.0*in[1];
+    }
+
+
     //! \brief Polynomial order of the shape functions
     unsigned int order () const
     {

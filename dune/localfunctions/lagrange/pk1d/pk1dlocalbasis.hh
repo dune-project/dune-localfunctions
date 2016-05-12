@@ -70,17 +70,67 @@ namespace Dune
       }
     }
 
-    //! \brief Evaluate Jacobian of all shape functions
+
+    //! \brief Evaluate Jacobian of all shape functions.
     inline void
-    evaluateJacobian (const typename Traits::DomainType& x,             // position
-                      std::vector<typename Traits::JacobianType>& out) const          // return value
+    evaluateJacobianTemplate (const typename Traits::DomainType& x,                                      // position
+                              std::vector<typename Traits::JacobianType>& out) const                             // return value
     {
       out.resize(N);
+      evaluateJacobianTemplate(x, [&out](unsigned int i)->R& { return out[i][0][0]; });
+    }
 
+
+    /** \brief Evaluate partial derivatives of any order of all shape functions
+     * \param order Order of the partial derivatives, in the classic multi-index notation
+     * \param in Position where to evaluate the derivatives
+     * \param[out] out Return value: the desired partial derivatives
+     */
+    void partial(const std::array<unsigned int,1>& order,
+                 const typename Traits::DomainType& in,
+                 std::vector<typename Traits::RangeType>& out) const
+    {
+      auto totalOrder = order[0];
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (totalOrder == 1) {
+        out.resize(N);
+        evaluateJacobianTemplate(in, [&out](unsigned int i)->R& { return out[i][0]; });
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
+    }
+
+    //! \brief Evaluate higher derivatives of all shape functions
+    template<unsigned int dOrder> //order of derivative
+    inline void evaluate(const std::array<int,dOrder>& directions,                              // direction of derivative
+                         const typename Traits::DomainType& in,                                 // position
+                         std::vector<typename Traits::RangeType>& out) const    // return value
+    {
+      std::array<unsigned int,1> order;
+      order[0] = dOrder;
+      partial(order, in, out);
+    }
+
+    //! \brief Polynomial order of the shape functions
+    unsigned int order () const
+    {
+      return k;
+    }
+
+  private:
+
+    // Evaluate Jacobian of all shape functions. Use an assigner argument as
+    // return type, i.e. out(i) must be mutable reference to i'th jacobian entry.
+    template<class Assigner>
+    inline void evaluateJacobianTemplate (const typename Traits::DomainType& x, // position
+                                          Assigner out) const                                                                           // return value
+    {
+      // expects the out-vector to be resized to size == N
       for (unsigned int i=0; i<=k; i++) {
 
         // x_0 derivative
-        out[i][0][0] = 0.0;
+        out(i) = 0.0;
         R factor=1.0;
         for (unsigned int a=0; a<i; a++)
         {
@@ -90,7 +140,7 @@ namespace Dune
                        : (x[0]-pos[alpha])/(pos[i]-pos[alpha]);
           for (unsigned int gamma=i+1; gamma<=k; gamma++)
             product *= (pos[gamma]-x[0])/(pos[gamma]-pos[i]);
-          out[i][0][0] += product;
+          out(i) += product;
         }
         for (unsigned int c=i+1; c<=k; c++)
         {
@@ -100,16 +150,9 @@ namespace Dune
           for (unsigned int gamma=i+1; gamma<=k; gamma++)
             product *= (gamma==c) ? -1.0/(pos[gamma]-pos[i])
                        : (pos[gamma]-x[0])/(pos[gamma]-pos[i]);
-          out[i][0][0] += product;
+          out(i) += product;
         }
       }
-
-    }
-
-    //! \brief Polynomial order of the shape functions
-    unsigned int order () const
-    {
-      return k;
     }
 
   private:

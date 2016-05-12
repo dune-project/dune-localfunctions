@@ -4,7 +4,9 @@
 #define DUNE_PK2DLOCALBASIS_HH
 
 #include <dune/common/fmatrix.hh>
+#include <dune/common/forloop.hh>
 
+#include <dune/localfunctions/common/staticforloop.hh>
 #include <dune/localfunctions/common/localbasis.hh>
 
 namespace Dune
@@ -168,37 +170,24 @@ namespace Dune
                  std::vector<typename Traits::RangeType>& out) const
     {
       auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else {
+        // Calculate directions from order and call evaluate for the
+        // specific totalOrder value, to calculate the derivatives.
+        int dOrder = staticFindInRange<1, Traits::diffOrder+1>([&](const auto i)
+                                                               {
+                                                                 if (i == totalOrder) {
+                                                                   std::array<int, i> directions;
+                                                                   this->order2directions(order, directions);
+                                                                   this->evaluate<i>(direction, in, out);
+                                                                   return true; // terminate loop
+                                                                 } else {
+                                                                   return false;
+                                                                 }
+                                                               });
 
-      switch (totalOrder)
-      {
-        case 0:
-          evaluateFunction(in,out);
-          break;
-        case 1:
-        {
-          std::array<int,1> directions;
-          directions[0] = std::find(order.begin(), order.end(), 1)-order.begin();
-          evaluate<1>(directions, in, out);
-          break;
-        }
-        case 2:
-        {
-          std::array<int,2> directions;
-          unsigned int counter = 0;
-          auto nonconstOrder = order;  // need a copy that I can modify
-          for (int i=0; i<2; i++)
-          {
-            while (nonconstOrder[i])
-            {
-              directions[counter++] = i;
-              nonconstOrder[i]--;
-            }
-          }
-
-          evaluate<2>(directions, in, out);
-          break;
-        }
-        default:
+        if (dOrder > Traits::diffOrder)
           DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
       }
     }
@@ -239,36 +228,36 @@ namespace Dune
         // specialization for k<2, not clear whether that is needed
         if (k<2) {
           std::fill(out.begin(), out.end(), 0.0);
-        return;
-      }
-
-      //f = prod_{i} f_i -> dxa dxb f = sum_{i} {dxa f_i sum_{k \neq i} dxb f_k prod_{l \neq k,i} f_l
-      int n=0;
-      for (unsigned int j=0; j<=k; j++)
-        for (unsigned int i=0; i<=k-j; i++, n++)
-        {
-          R res = 0.0;
-
-          for (unsigned int no1=0; no1 < k; no1++)
-          {
-            R factor1 = lagrangianFactorDerivative(directions[0], no1, i, j, in);
-            for (unsigned int no2=0; no2 < k; no2++)
-            {
-              if (no1 == no2)
-                continue;
-              R factor2 = factor1*lagrangianFactorDerivative(directions[1], no2, i, j, in);
-              for (unsigned int no3=0; no3 < k; no3++)
-              {
-                if (no3 == no1 || no3 == no2)
-                  continue;
-                factor2 *= lagrangianFactor(no3, i, j, in);
-              }
-              res += factor2;
-            }
-
-          }
-          out[n] = res;
+          return;
         }
+
+        //f = prod_{i} f_i -> dxa dxb f = sum_{i} {dxa f_i sum_{k \neq i} dxb f_k prod_{l \neq k,i} f_l
+        int n=0;
+        for (unsigned int j=0; j<=k; j++)
+          for (unsigned int i=0; i<=k-j; i++, n++)
+          {
+            R res = 0.0;
+
+            for (unsigned int no1=0; no1 < k; no1++)
+            {
+              R factor1 = lagrangianFactorDerivative(directions[0], no1, i, j, in);
+              for (unsigned int no2=0; no2 < k; no2++)
+              {
+                if (no1 == no2)
+                  continue;
+                R factor2 = factor1*lagrangianFactorDerivative(directions[1], no2, i, j, in);
+                for (unsigned int no3=0; no3 < k; no3++)
+                {
+                  if (no3 == no1 || no3 == no2)
+                    continue;
+                  factor2 *= lagrangianFactor(no3, i, j, in);
+                }
+                res += factor2;
+              }
+
+            }
+            out[n] = res;
+          }
       }
     }
 
@@ -279,29 +268,29 @@ namespace Dune
     }
 
   private:
-  /** \brief Returns a single Lagrangian factor of l_ij evaluated at x */
-  typename Traits::RangeType lagrangianFactor(const int no, const int i, const int j, const typename Traits::DomainType& x) const
-  {
-    if ( no < i)
-      return (x[0]-pos_[no])/(pos_[i]-pos_[no]);
-    if (no < i+j)
-      return (x[1]-pos_[no-i])/(pos_[j]-pos_[no-i]);
-    return (pos_[no+1]-x[0]-x[1])/(pos_[no+1]-pos_[i]-pos_[j]);
-  }
+    /** \brief Returns a single Lagrangian factor of l_ij evaluated at x */
+    typename Traits::RangeType lagrangianFactor(const int no, const int i, const int j, const typename Traits::DomainType& x) const
+    {
+      if ( no < i)
+        return (x[0]-pos_[no])/(pos_[i]-pos_[no]);
+      if (no < i+j)
+        return (x[1]-pos_[no-i])/(pos_[j]-pos_[no-i]);
+      return (pos_[no+1]-x[0]-x[1])/(pos_[no+1]-pos_[i]-pos_[j]);
+    }
 
-  /** \brief Returns the derivative of a single Lagrangian factor of l_ij evaluated at x
-   * \param direction Derive in x-direction if this is 0, otherwise derive in y direction
-   */
-  typename Traits::RangeType lagrangianFactorDerivative(const int direction, const int no, const int i, const int j, const typename Traits::DomainType& x) const
-  {
-    if ( no < i)
-      return (direction == 0) ? 1.0/(pos_[i]-pos_[no]) : 0;
+    /** \brief Returns the derivative of a single Lagrangian factor of l_ij evaluated at x
+     * \param direction Derive in x-direction if this is 0, otherwise derive in y direction
+     */
+    typename Traits::RangeType lagrangianFactorDerivative(const int direction, const int no, const int i, const int j, const typename Traits::DomainType& x) const
+    {
+      if ( no < i)
+        return (direction == 0) ? 1.0/(pos_[i]-pos_[no]) : 0;
 
-    if (no < i+j)
-      return (direction == 0) ? 0: 1.0/(pos_[j]-pos_[no-i]);
+      if (no < i+j)
+        return (direction == 0) ? 0 : 1.0/(pos_[j]-pos_[no-i]);
 
-    return -1.0/(pos_[no+1]-pos_[i]-pos_[j]);
-  }
+      return -1.0/(pos_[no+1]-pos_[i]-pos_[j]);
+    }
 
     D pos_[k+1]; // positions on the interval
   };

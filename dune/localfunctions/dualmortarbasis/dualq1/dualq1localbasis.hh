@@ -26,7 +26,7 @@ namespace Dune
   {
   public:
     typedef LocalBasisTraits<D,dim,Dune::FieldVector<D,dim>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldMatrix<R,1,dim> > Traits;
+        Dune::FieldMatrix<R,1,dim>, 0 > Traits;
 
     void setCoefficients(const std::array<Dune::FieldVector<R, (1<<dim)> ,(1<<dim)>& coefficients)
     {
@@ -107,6 +107,32 @@ namespace Dune
         for (size_t j=0; j<size(); j++)
           out[i].axpy(coefficients_[i][j],q1Jacs[j]);
 
+    }
+
+    //! \brief Evaluate partial derivatives of all shape functions
+    inline void partial (const std::array<unsigned int, dim>& order,
+                         const typename Traits::DomainType& in,         // position
+                         std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
+    }
+
+    //! \brief Evaluate partial derivatives of all shape functions
+    template <std::size_t dOrder>
+    inline void evaluate (const std::array<int, dOrder>& directions,
+                          const typename Traits::DomainType& in,         // position
+                          std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      if (dOrder == 0) {
+        evaluateFunction(in, out);
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
     }
 
     //! \brief Polynomial order of the shape functions

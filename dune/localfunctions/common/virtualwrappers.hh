@@ -95,6 +95,7 @@ namespace Dune
     using Base::evaluateFunction;
     using Base::evaluateJacobian;
     using Base::evaluate;
+    using Base::partial;
 
     /** \brief Evaluate partial derivatives of any order of all shape functions
      * \param order Order of the partial derivatives, in the classic multi-index notation
@@ -190,7 +191,9 @@ namespace Dune
                  const typename Traits::DomainType& in,
                  std::vector<typename Traits::RangeType>& out) const
     {
-      DUNE_THROW(NotImplemented, "!");
+//       impl_.partial(order,in,out);
+      impl_.evaluateFunction(in,out);
+//       DUNE_THROW(NotImplemented, "!");
     }
 
     //! @copydoc LocalBasisVirtualInterface::evaluate

@@ -21,7 +21,7 @@ namespace Dune
   public:
     typedef LocalBasisTraits< D, 3, FieldVector< D, 3 >,
         R, 1, FieldVector< R, 1 >,
-        FieldMatrix< R, 1, 3 > > Traits;
+        FieldMatrix< R, 1, 3 >, 1 > Traits;
 
     //! \brief number of shape functions
     unsigned int size () const
@@ -67,6 +67,62 @@ namespace Dune
           out[ i ][ 0 ][ 2 ] += coefficients[ i ][ j+1 ]*y2[ j ];
         }
         out[ i ] /= RangeFieldType( 3 );
+      }
+    }
+
+    //! \brief Evaluate partial derivatives of all shape functions
+    inline void partial (const std::array<unsigned int, 3>& order,
+                         const typename Traits::DomainType& in,         // position
+                         std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else {
+        // Calculate directions from order and call evaluate for the
+        // specific totalOrder value, to calculate the derivatives.
+        int dOrder = staticFindInRange<1, Traits::diffOrder+1>([&](const auto i)
+        {
+          if (i == totalOrder) {
+            std::array<int, i> directions;
+            Impl::order2directions(order, directions);
+            this->evaluate<i>(directions, in, out);
+            return true; // terminate loop
+          } else {
+            return false;
+          }
+        });
+
+        if (dOrder > Traits::diffOrder)
+          DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
+    }
+
+
+    //! \brief Evaluate partial derivatives of all shape functions
+    template <std::size_t dOrder>
+    inline void evaluate(const std::array<int, dOrder>& directions,
+                         const typename Traits::DomainType& in,         // position
+                         std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      if (dOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (dOrder == 1) {
+        out.resize(size());
+
+        using RangeFieldType = typename Traits::RangeFieldType;
+        RangeFieldType y[3][5] = { { 1.0, 0.0, 0.0,  2*in[0],      0.0 },
+                                   { 0.0, 1.0, 0.0, -2*in[1],  2*in[1] },
+                                   { 0.0, 0.0, 1.0,      0.0, -2*in[2] } };
+
+        for (std::size_t i = 0; i < size(); ++i) {
+          out[i] = RangeFieldType{0};
+          for (std::size_t j = 0; j < 5; ++j)
+            out[i] += coefficients[i][j+1] * y[directions[0]][j];
+          out[i] /= RangeFieldType{3};
+        }
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
       }
     }
 

@@ -8,6 +8,8 @@
 
 #include <dune/common/fvector.hh>
 
+#define DUNE_MAX_DIFF_ORDER 10
+
 namespace Dune
 {
 

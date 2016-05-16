@@ -72,7 +72,7 @@ namespace Dune
     static const unsigned int dimRange = Evaluator::dimRange*CoefficientMatrix::blockSize;
     typedef LocalBasisTraits<D,dimension,FieldVector<D,dimension>,
         R,dimRange,FieldVector<R,dimRange>,
-        FieldMatrix<R,dimRange,dimension> > Traits;
+        FieldMatrix<R,dimRange,dimension>, 0 > Traits;
     typedef typename Evaluator::Basis Basis;
     typedef typename Evaluator::DomainVector DomainVector;
 
@@ -123,6 +123,31 @@ namespace Dune
     {
       out.resize(size());
       jacobian(x,out);
+    }
+
+    //! \brief Evaluate partial derivatives of all shape functions
+    void partial (const std::array<unsigned int, dimension>& order,
+                  const typename Traits::DomainType& in,         // position
+                  std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
+    }
+
+    template <std::size_t dOrder>
+    inline void evaluate (const std::array<int, dOrder>& directions,
+                          const typename Traits::DomainType& in,         // position
+                          std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      if (dOrder == 0) {
+        evaluateFunction(in, out);
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
     }
 
     template< unsigned int deriv, class F >

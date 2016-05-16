@@ -29,13 +29,13 @@ namespace Dune
     enum {O = k};
 
     typedef LocalBasisTraits<D,3,Dune::FieldVector<D,3>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldMatrix<R,1,3> > Traits;
+        Dune::FieldMatrix<R,1,3>, 0 > Traits;
 
     //! \brief Standard constructor
     Pk3DLocalBasis () {}
 
     //! \brief number of shape functions
-    unsigned int size () const
+    constexpr std::size_t size () const
     {
       return N;
     }
@@ -163,16 +163,16 @@ namespace Dune
         // Calculate directions from order and call evaluate for the
         // specific totalOrder value, to calculate the derivatives.
         int dOrder = staticFindInRange<1, Traits::diffOrder+1>([&](const auto i)
-                                                               {
-                                                                 if (i == totalOrder) {
-                                                                   std::array<int, i> directions;
-                                                                   this->order2directions(order, directions);
-                                                                   this->evaluate<i>(direction, in, out);
-                                                                   return true; // terminate loop
-                                                                 } else {
-                                                                   return false;
-                                                                 }
-                                                               });
+        {
+          if (i == totalOrder) {
+            std::array<int, i> directions;
+            this->order2directions(order, directions);
+            this->evaluate<i>(directions, in, out);
+            return true; // terminate loop
+          } else {
+            return false;
+          }
+        });
 
         if (dOrder > Traits::diffOrder)
           DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
@@ -210,7 +210,7 @@ namespace Dune
   {
   public:
     typedef LocalBasisTraits<D,3,Dune::FieldVector<D,3>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldMatrix<R,1,3> > Traits;
+        Dune::FieldMatrix<R,1,3>, 0 > Traits;
 
     /** \brief Export the number of degrees of freedom */
     enum {N = 1};
@@ -218,7 +218,7 @@ namespace Dune
     /** \brief Export the element order */
     enum {O = 0};
 
-    unsigned int size () const
+    constexpr std::size_t size () const
     {
       return 1;
     }
@@ -246,7 +246,7 @@ namespace Dune
      * \param in Position where to evaluate the derivatives
      * \param[out] out Return value: the desired partial derivatives
      */
-    void partial(const std::array<unsigned int,2>& order,
+    void partial(const std::array<unsigned int,3>& order,
                  const typename Traits::DomainType& in,
                  std::vector<typename Traits::RangeType>& out) const
     {

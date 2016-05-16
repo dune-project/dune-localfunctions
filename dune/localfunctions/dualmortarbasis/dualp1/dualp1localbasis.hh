@@ -33,7 +33,7 @@ namespace Dune
     static const bool faceDual = faceDualT;
     //! \brief export type traits for function signature
     typedef LocalBasisTraits<D,dim,Dune::FieldVector<D,dim>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldMatrix<R,1,dim> > Traits;
+        Dune::FieldMatrix<R,1,dim>, 0 > Traits;
 
     //! \brief number of shape functions
     unsigned int size () const
@@ -95,6 +95,32 @@ namespace Dune
 
         for (int j=i+1; j<=dim; j++)
           out[i][0] -= p1Jacs[j][0];
+      }
+    }
+
+    //! \brief Evaluate partial derivatives of all shape functions
+    inline void partial (const std::array<unsigned int, dim>& order,
+                         const typename Traits::DomainType& in,         // position
+                         std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
+    }
+
+    //! \brief Evaluate partial derivatives of all shape functions
+    template <std::size_t dOrder>
+    inline void evaluate (const std::array<int, dOrder>& directions,
+                          const typename Traits::DomainType& in,         // position
+                          std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      if (dOrder == 0) {
+        evaluateFunction(in, out);
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
       }
     }
 

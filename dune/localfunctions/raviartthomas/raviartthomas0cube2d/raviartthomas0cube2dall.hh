@@ -10,6 +10,8 @@
 
 #include <dune/localfunctions/common/localbasis.hh>
 #include <dune/localfunctions/common/localkey.hh>
+#include <dune/localfunctions/common/partial.hh>
+#include <dune/localfunctions/common/staticLoops.hh>
 
 namespace Dune
 {
@@ -26,7 +28,7 @@ namespace Dune
   {
   public:
     typedef LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,2,Dune::FieldVector<R,2>,
-        Dune::FieldMatrix<R,2,2> > Traits;
+        Dune::FieldMatrix<R,2,2>, DUNE_MAX_DIFF_ORDER > Traits;
 
     //! \brief Standard constructor
     RT0Cube2DLocalBasis ()
@@ -45,7 +47,7 @@ namespace Dune
     }
 
     //! \brief number of shape functions
-    unsigned int size () const
+    constexpr std::size_t size () const
     {
       return 4;
     }
@@ -78,6 +80,56 @@ namespace Dune
 
       out[3][0][0] = 0;           out[3][0][1] = 0;
       out[3][1][0] = 0;           out[3][1][1] = sign3;
+    }
+
+    //! \brief Evaluate partial derivatives of all shape functions
+    inline void partial (const std::array<unsigned int, 2>& order,
+                         const typename Traits::DomainType& in,         // position
+                         std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (totalOrder == 1) {
+        std::array<int, 1> directions;
+        Impl::order2directions(order, directions);
+        evaluate<1>(directions, in, out);
+      } else {
+        out.resize(size());
+        for (std::size_t i = 0; i < size(); ++i)
+          for (std::size_t j = 0; j < 2; ++j)
+            out[i][j] = 0;
+      }
+
+    }
+
+    //! \brief Evaluate partial derivatives of all shape functions
+    template <std::size_t dOrder>
+    inline void evaluate (const std::array<int, dOrder>& directions,
+                          const typename Traits::DomainType& in,         // position
+                          std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      if (dOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (dOrder == 1) {
+        out.resize(size());
+
+        for (std::size_t i = 0; i < size(); ++i)
+          out[i][0] = out[i][1] = 0;
+
+        if (directions[0] == 0) {
+          out[0][0] = sign0;
+          out[1][0] = sign1;
+        } else if (directions[0] == 1) {
+          out[2][1] = sign2;
+          out[3][1] = sign3;
+        }
+      } else {
+        out.resize(size());
+        for (std::size_t i = 0; i < size(); ++i)
+          for (std::size_t j = 0; j < 2; ++j)
+            out[i][j] = 0;
+      }
     }
 
     //! \brief Polynomial order of the shape functions

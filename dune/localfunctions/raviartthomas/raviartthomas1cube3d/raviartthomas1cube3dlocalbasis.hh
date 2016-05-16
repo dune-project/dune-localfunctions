@@ -26,7 +26,7 @@ namespace Dune
 
   public:
     typedef LocalBasisTraits<D,3,Dune::FieldVector<D,3>,R,3,Dune::FieldVector<R,3>,
-        Dune::FieldMatrix<R,3,3> > Traits;
+        Dune::FieldMatrix<R,3,3>, 0 > Traits;
 
     //! \brief Standard constructor
     RT1Cube3DLocalBasis ()
@@ -600,6 +600,31 @@ namespace Dune
       out[35][2][0] = -432.0*in[2] + 864.0*in[1]*in[2] + 432.0*in[2]*in[2] - 864.0*in[1]*in[2]*in[2];
       out[35][2][1] = -432.0*in[2] + 864.0*in[0]*in[2] + 432.0*in[2]*in[2] - 864.0*in[0]*in[2]*in[2];
       out[35][2][2] = 216.0 - 432.0*in[0] - 432.0*in[1] + 864.0*in[0]*in[1] - 432.0*in[2] + 864.0*in[0]*in[2] + 864.0*in[1]*in[2] - 1728.0*in[0]*in[1]*in[2];
+    }
+
+    //! \brief Evaluate partial derivatives of all shape functions
+    inline void partial (const std::array<unsigned int, 3>& order,
+                         const typename Traits::DomainType& in,         // position
+                         std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
+    }
+
+    template <std::size_t dOrder>
+    inline void evaluate (const std::array<int, dOrder>& directions,
+                          const typename Traits::DomainType& in,         // position
+                          std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      if (dOrder == 0) {
+        evaluateFunction(in, out);
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
     }
 
     //! \brief Polynomial order of the shape functions

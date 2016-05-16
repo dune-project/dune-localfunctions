@@ -4,10 +4,10 @@
 #define DUNE_PK2DLOCALBASIS_HH
 
 #include <dune/common/fmatrix.hh>
-#include <dune/common/forloop.hh>
 
-#include <dune/localfunctions/common/staticforloop.hh>
+#include <dune/localfunctions/common/staticLoops.hh>
 #include <dune/localfunctions/common/localbasis.hh>
+#include <dune/localfunctions/common/partial.hh>
 
 namespace Dune
 {
@@ -176,16 +176,16 @@ namespace Dune
         // Calculate directions from order and call evaluate for the
         // specific totalOrder value, to calculate the derivatives.
         int dOrder = staticFindInRange<1, Traits::diffOrder+1>([&](const auto i)
-                                                               {
-                                                                 if (i == totalOrder) {
-                                                                   std::array<int, i> directions;
-                                                                   this->order2directions(order, directions);
-                                                                   this->evaluate<i>(direction, in, out);
-                                                                   return true; // terminate loop
-                                                                 } else {
-                                                                   return false;
-                                                                 }
-                                                               });
+        {
+          if (i == totalOrder) {
+            std::array<int, i> directions;
+            Impl::order2directions(order, directions);
+            this->evaluate<i>(directions, in, out);
+            return true; // terminate loop
+          } else {
+            return false;
+          }
+        });
 
         if (dOrder > Traits::diffOrder)
           DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");

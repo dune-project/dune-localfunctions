@@ -54,10 +54,10 @@ namespace Dune
   public:
     //! \brief export type traits for function signature
     typedef LocalBasisTraits<D,1,Dune::FieldVector<D,1>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldMatrix<R,1,1> > Traits;
+        Dune::FieldMatrix<R,1,1>, DUNE_MAX_DIFF_ORDER > Traits;
 
     //! \brief number of shape functions
-    unsigned int size () const
+    constexpr std::size_t size () const
     {
       return 3;
     }
@@ -118,7 +118,72 @@ namespace Dune
         break;
 
       }
+    }
 
+    //! \brief Evaluate partial derivatives of all shape functions
+    inline void partial (const std::array<unsigned int, 1>& order,
+                         const typename Traits::DomainType& in,         // position
+                         std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      auto totalOrder = order[0];
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (totalOrder == 1) {
+        out.resize(3);
+
+        int subElement;
+        typename Traits::DomainType local;
+        this->getSubElement(in, subElement, local);
+
+        switch (subElement) {
+          case 0:
+            out[0] = -2;
+            out[1] =  2;
+            out[2] =  0;
+            break;
+          case 1:
+            out[0] =  0;
+            out[1] = -2;
+            out[2] =  2;
+            break;
+        }
+      } else {
+        out.resize(3);
+        out[0] = out[1] = out[2] = 0;
+      }
+    }
+
+    //! \brief Evaluate partial derivatives of all shape functions
+    template <std::size_t dOrder>
+    inline void evaluate(const std::array<int, dOrder>& directions,
+                         const typename Traits::DomainType& in,         // position
+                         std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      if (dOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (dOrder == 1) {
+        out.resize(3);
+
+        int subElement;
+        typename Traits::DomainType local;
+        this->getSubElement(in, subElement, local);
+
+        switch (subElement) {
+          case 0:
+            out[0] = -2;
+            out[1] =  2;
+            out[2] =  0;
+            break;
+          case 1:
+            out[0] =  0;
+            out[1] = -2;
+            out[2] =  2;
+            break;
+        }
+      } else {
+        out.resize(3);
+        out[0] = out[1] = out[2] = 0;
+      }
     }
 
     /** \brief Polynomial order of the shape functions
@@ -162,10 +227,10 @@ namespace Dune
   public:
     //! \brief export type traits for function signature
     typedef LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldMatrix<R,1,2> > Traits;
+        Dune::FieldMatrix<R,1,2>, 0 /*DUNE_MAX_DIFF_ORDER*/ > Traits;
 
     //! \brief number of shape functions
-    unsigned int size () const
+    constexpr std::size_t size () const
     {
       return 6;
     }
@@ -272,7 +337,40 @@ namespace Dune
         out[4][0][0] =  2;    out[4][0][1] =  2;
         out[5][0][0] =  0;    out[5][0][1] =  0;
       }
+    }
 
+    //! \brief Evaluate partial derivatives of all shape functions
+    inline void partial (const std::array<unsigned int, 2>& order,
+                         const typename Traits::DomainType& in,         // position
+                         std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (totalOrder == 1) {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      } else {
+        out.resize(size());
+        for (std::size_t i = 0; i < size(); ++i)
+          out[i] = 0;
+      }
+    }
+
+    //! \brief Evaluate partial derivatives of all shape functions
+    template <std::size_t dOrder>
+    inline void evaluate(const std::array<int, dOrder>& directions,
+                         const typename Traits::DomainType& in,         // position
+                         std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      if (dOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (dOrder == 1) {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      } else {
+        out.resize(size());
+        for (std::size_t i = 0; i < size(); ++i)
+          out[i] = 0;
+      }
     }
 
     /** \brief Polynomial order of the shape functions
@@ -320,10 +418,10 @@ namespace Dune
   public:
     //! \brief export type traits for function signature
     typedef LocalBasisTraits<D,3,Dune::FieldVector<D,3>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldMatrix<R,1,3> > Traits;
+        Dune::FieldMatrix<R,1,3>, 0 /*DUNE_MAX_DIFF_ORDER*/ > Traits;
 
     //! \brief number of shape functions
-    unsigned int size () const
+    constexpr std::size_t size () const
     {
       return 10;
     }
@@ -577,6 +675,40 @@ namespace Dune
         out[8][0][0] =  0;    out[8][0][1] =  2;    out[8][0][2] =  2;
         out[9][0][0] =  0;    out[9][0][1] =  0;    out[9][0][2] =  0;
         break;
+      }
+    }
+
+    //! \brief Evaluate partial derivatives of all shape functions
+    inline void partial (const std::array<unsigned int, 3>& order,
+                         const typename Traits::DomainType& in,         // position
+                         std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (totalOrder == 1) {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      } else {
+        out.resize(size());
+        for (std::size_t i = 0; i < size(); ++i)
+          out[i] = 0;
+      }
+    }
+
+    //! \brief Evaluate partial derivatives of all shape functions
+    template <std::size_t dOrder>
+    inline void evaluate(const std::array<int, dOrder>& directions,
+                         const typename Traits::DomainType& in,         // position
+                         std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      if (dOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (dOrder == 1) {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      } else {
+        out.resize(size());
+        for (std::size_t i = 0; i < size(); ++i)
+          out[i] = 0;
       }
     }
 

@@ -45,7 +45,7 @@ namespace Dune {
 
       typedef RF RangeField;
       static const std::size_t dimRange = dimDomainLocal;
-      typedef FieldVector<RangeField, dimRange> Range;
+      typedef FieldVector<RangeField, dimRange> Range; // TODO: rename to RangeType, to fulfill concept
 
       typedef FieldMatrix<RangeField, dimRange, dimDomainGlobal> Jacobian;
 
@@ -137,6 +137,32 @@ namespace Dune {
           for(std::size_t k = 0; k < dim; k++)
             out[i][j][k] = edgel[i] *
                            (p1j[i0][0][k]*p1j[i1][0][j]-p1j[i1][0][k]*p1j[i0][0][j]);
+      }
+    }
+
+    //! \brief Evaluate partial derivatives of all shape functions
+    inline void partial (const std::array<unsigned int, dim>& order,
+                         const typename Traits::DomainLocal& in,         // position
+                         std::vector<typename Traits::Range>& out) const      // return value
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
+    }
+
+    //! \brief Evaluate partial derivatives of all shape functions
+    template <std::size_t dOrder>
+    inline void evaluate (const std::array<int, dOrder>& directions,
+                          const typename Traits::DomainLocal& in,         // position
+                          std::vector<typename Traits::Range>& out) const      // return value
+    {
+      if (dOrder == 0) {
+        evaluateFunction(in, out);
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
       }
     }
 

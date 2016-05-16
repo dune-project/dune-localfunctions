@@ -82,6 +82,86 @@ namespace Dune
 
     }
 
+    /** \brief Evaluate partial derivatives of any order of all shape functions
+     * \param order Order of the partial derivatives, in the classic multi-index notation
+     * \param in Position where to evaluate the derivatives
+     * \param[out] out Return value: the desired partial derivatives
+     */
+    inline void partial(const std::array<unsigned int,dim>& order,
+                        const typename Traits::DomainType& in,
+                        std::vector<typename Traits::RangeType>& out) const
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+
+      if (totalOrder==0) {
+        evaluateFunction(in, out);
+      }
+      else if (totalOrder==1)
+      {
+        auto direction = *std::find(order.begin(), order.end(), 1);
+        out.resize(size());
+
+        // Loop over all shape functions
+        for (size_t i=0; i<size(); i++) {
+
+          // Initialize: the overall expression is a product
+          // if j-th bit of i is set to -1, else 1
+          out[i] = (i & (1<<direction)) ? 1 : -1;
+
+          for (int k=0; k<dim; k++) {
+            if (direction!=k)
+              // if k-th bit of i is set multiply with in[j], else with 1-in[j]
+              out[i] *= (i & (1<<k)) ? in[k] :  1-in[k];
+          }
+
+        }
+      }
+      else if (dim > totalOrder-1)
+      {
+        out.resize(size());
+        auto diagonal = std::find_if(order.begin(), order.end(), [](unsigned int i) { return i > 1; });
+
+        // currently only the trivial case of the vanishing entries is implemented
+        if (diagonal != order.end()) {
+          for (int i=0; i<dim+1; i++)
+            out[i] = 0;
+        } else {
+          DUNE_THROW(NotImplemented, "To be implemented!");
+        }
+      }
+    }
+
+    //! \brief Evaluate all shape functions
+    template<unsigned int dOrder>
+    inline void evaluate (const typename std::array<int,dOrder>& directions,
+                          const typename Traits::DomainType& in,
+                          std::vector<typename Traits::RangeType>& out) const
+    {
+      if (dOrder==0)
+        evaluateFunction(in, out);
+      else if (dOrder==1)
+      {
+        // Loop over all shape functions
+        for (size_t i=0; i<size(); i++) {
+
+          // Initialize: the overall expression is a product
+          // if j-th bit of i is set to -1, else 1
+          out[i] = (i & (1<<directions[0])) ? 1 : -1;
+
+          for (int k=0; k<dim; k++) {
+            if (directions[0]!=k)
+              // if k-th bit of i is set multiply with in[j], else with 1-in[j]
+              out[i] *= (i & (1<<k)) ? in[k] :  1-in[k];
+          }
+
+        }
+      }
+      else
+      {
+        DUNE_THROW(NotImplemented, "To be implemented!");
+      }
+    }
+
     //! \brief Polynomial order of the shape functions
     unsigned int order () const
     {

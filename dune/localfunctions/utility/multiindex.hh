@@ -109,7 +109,7 @@ namespace Dune
         next_ = new This(*(other.next_));
       return *this;
     }
-    This &operator= ( const Zero<This> &f )
+    This &operator= ( const Zero<This> &/*f*/ )
     {
       remove();
       vecZ_ = 0;
@@ -117,7 +117,7 @@ namespace Dune
       factor_ = 0.;
       return *this;
     }
-    This &operator= ( const Unity<This> &f )
+    This &operator= ( const Unity<This> &/*f*/ )
     {
       remove();
       vecZ_ = 0;

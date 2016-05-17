@@ -310,7 +310,7 @@ namespace Dune
     }
 
     template <std::size_t dOrder>
-    inline void evaluate (const std::array<int, dOrder>& directions,
+    inline void evaluate (const std::array<int, dOrder>& /*directions*/,
                           const typename Traits::DomainType& in,         // position
                           std::vector<typename Traits::RangeType>& out) const      // return value
     {

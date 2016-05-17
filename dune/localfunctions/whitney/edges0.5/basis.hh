@@ -102,7 +102,7 @@ namespace Dune {
     }
 
     //! number of shape functions
-    std::size_t size () const { return s; }
+    constexpr std::size_t size() const { return s; }
 
     //! Evaluate all shape functions
     void evaluateFunction(const typename Traits::DomainLocal& xl,
@@ -148,6 +148,17 @@ namespace Dune {
       auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
       if (totalOrder == 0) {
         evaluateFunction(in, out);
+      } else if (totalOrder==1) {
+        auto k = std::size_t( std::find(order.begin(), order.end(), 1) - order.begin() );
+        out.resize(size());
+
+        for(std::size_t i = 0; i < s; i++) {
+          const std::size_t i0 = refelem.subEntity(i,dim-1,0,dim);
+          const std::size_t i1 = refelem.subEntity(i,dim-1,1,dim);
+          for(std::size_t j = 0; j < dim; j++)
+            out[i][j] = edgel[i] *
+              (p1j[i0][0][k]*p1j[i1][0][j] - p1j[i1][0][k]*p1j[i0][0][j]);
+        }
       } else {
         DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
       }
@@ -161,6 +172,17 @@ namespace Dune {
     {
       if (dOrder == 0) {
         evaluateFunction(in, out);
+      } else if (dOrder==1) {
+        auto k = directions[0];
+        out.resize(size());
+
+        for(std::size_t i = 0; i < s; i++) {
+          const std::size_t i0 = refelem.subEntity(i,dim-1,0,dim);
+          const std::size_t i1 = refelem.subEntity(i,dim-1,1,dim);
+          for(std::size_t j = 0; j < dim; j++)
+            out[i][j] = edgel[i] *
+              (p1j[i0][0][k]*p1j[i1][0][j] - p1j[i1][0][k]*p1j[i0][0][j]);
+        }
       } else {
         DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
       }

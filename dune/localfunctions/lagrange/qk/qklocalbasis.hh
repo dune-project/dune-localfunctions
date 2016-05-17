@@ -4,6 +4,8 @@
 #ifndef DUNE_LOCALFUNCTIONS_QKLOCALBASIS_HH
 #define DUNE_LOCALFUNCTIONS_QKLOCALBASIS_HH
 
+#include <numeric>
+
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
 #include <dune/common/power.hh>
@@ -75,7 +77,7 @@ namespace Dune
     typedef LocalBasisTraits<D,d,Dune::FieldVector<D,d>,R,1,Dune::FieldVector<R,1>,Dune::FieldMatrix<R,1,d>, 1> Traits;
 
     //! \brief number of shape functions
-    unsigned int size () const
+    constexpr std::size_t size () const
     {
       return StaticPower<k+1,d>::power;
     }
@@ -141,32 +143,27 @@ namespace Dune
     {
       auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
 
-      switch (totalOrder)
+      if (totalOrder == 0)
+        evaluateFunction(in, out);
+      else if (totalOrder == 1)
       {
-        case 0:
-          evaluateFunction(in,out);
-          break;
-        case 1:
+        out.resize(size());
+
+        // Loop over all shape functions
+        for (std::size_t i = 0; i < size(); ++i)
         {
-          out.resize(size());
+          // convert index i to multiindex
+          Dune::FieldVector<int,d> alpha(multiindex(i));
 
-          // Loop over all shape functions
-          for (size_t i=0; i<size(); i++)
-          {
-            // convert index i to multiindex
-            Dune::FieldVector<int,d> alpha(multiindex(i));
+          // Initialize: the overall expression is a product
+          out[i] = 1.0;
 
-            // Initialize: the overall expression is a product
-            out[i][0] = 1.0;
-
-            // rest of the product
-            for (std::size_t l=0; l<d; l++)
-              out[i][0] *= (order[l]) ? dp(alpha[l],in[l]) : p(alpha[l],in[l]);
-          }
-          break;
+          // rest of the product
+          for (std::size_t l = 0; l < d; ++l)
+            out[i] *= (order[l]) ? dp(alpha[l],in[l]) : p(alpha[l],in[l]);
         }
-        default:
-          DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
       }
     }
 
@@ -175,15 +172,15 @@ namespace Dune
      * \param [in]  in        Position where to evaluate
      * \param [out] out       The return value
      */
-    template<int diffOrder>
-    inline void evaluate(
-      const std::array<int,diffOrder>& direction,
-      const typename Traits::DomainType& in,
-      std::vector<typename Traits::RangeType>& out) const
+    template<std::size_t diffOrder>
+    inline void evaluate(const std::array<int,diffOrder>& direction,
+                         const typename Traits::DomainType& in,
+                         std::vector<typename Traits::RangeType>& out) const
     {
       if (diffOrder == 0)
         evaluateFunction(in, out);
-      else if (diffOrder == 1) {
+      else if (diffOrder == 1)
+      {
         out.resize(size());
 
         // Loop over all shape functions
@@ -197,12 +194,12 @@ namespace Dune
 
           // Initialize: the overall expression is a product
           // if j-th bit of i is set to -1, else 1
-          out[i][0] = dp(alpha[j],in[j]);
+          out[i] = dp(alpha[j],in[j]);
 
           // rest of the product
-          for (std::size_t l=0; l<d; l++)
-            if (l!=j)
-              out[i][0] *= p(alpha[l],in[l]);
+          for (std::size_t l = 0; l < d; ++l)
+            if (l != j)
+              out[i] *= p(alpha[l],in[l]);
         }
       } else {
           DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");

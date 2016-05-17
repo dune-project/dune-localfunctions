@@ -177,9 +177,10 @@ namespace Dune
     Dune::Q1LocalBasis<D,R,dim> q1Basis;
 
     const auto& refElement = Dune::ReferenceElements<D,dim>::general(gt);
+    using SizeType = std::decay_t< decltype(refElement.size(1)) >;
 
     // loop over faces
-    for (size_t i=0; i<refElement.size(1);i++) {
+    for (SizeType i=0; i<refElement.size(1);i++) {
 
       const auto& quad = Dune::QuadratureRules<D,dim-1>::rule(refElement.type(i,1),2*dim);
 
@@ -207,11 +208,11 @@ namespace Dune
 
         D weight = quad[pt].weight();
 
-        for (int k=0; k<refElement.size(i,1,dim); k++) {
+        for (SizeType k=0; k<refElement.size(i,1,dim); k++) {
           int row = refElement.subEntity(i,1,k,dim);
           integral[k] += q1Values[row]*weight;
 
-          for (int l=0; l<refElement.size(i,1,dim); l++) {
+          for (SizeType l=0; l<refElement.size(i,1,dim); l++) {
             int col = refElement.subEntity(i,1,l,dim);
             massMat[k][l] += weight*(q1Values[row]*q1Values[col]);
           }
@@ -221,7 +222,7 @@ namespace Dune
       // solve for the coefficients
       // note that we possibly overwrite coefficients for neighbouring faces
       // this is okay since the coefficients are symmetric
-      for (int l=0; l<refElement.size(i,1,dim); l++) {
+      for (SizeType l=0; l<refElement.size(i,1,dim); l++) {
 
         int row = refElement.subEntity(i,1,l,dim);
         Dune::FieldVector<R, size/2> rhs(0);
@@ -230,7 +231,7 @@ namespace Dune
         Dune::FieldVector<R, size/2> x(0);
         massMat.solve(x ,rhs);
 
-        for (int k=0; k<refElement.size(i,1,dim); k++) {
+        for (SizeType k=0; k<refElement.size(i,1,dim); k++) {
           int col = refElement.subEntity(i,1,k,dim);
           coeffs[row][col]=x[k];
         }

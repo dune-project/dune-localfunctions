@@ -74,7 +74,7 @@ namespace ONBCompute
   struct Integral< Dune::GenericGeometry::Point >
   {
     template< int dim, class scalar_t >
-    static int compute ( const Dune::MultiIndex< dim, scalar_t > &alpha,
+    static int compute ( const Dune::MultiIndex< dim, scalar_t >& /*alpha*/,
                          scalar_t &p, scalar_t &q )
     {
       p = scalar_t( 1 );

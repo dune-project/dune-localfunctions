@@ -24,7 +24,7 @@ namespace Dune
         FieldMatrix< R, 1, 3 >, 1 > Traits;
 
     //! \brief number of shape functions
-    unsigned int size () const
+    constexpr std::size_t size () const
     {
       return 6;
     }
@@ -81,7 +81,7 @@ namespace Dune
       } else {
         // Calculate directions from order and call evaluate for the
         // specific totalOrder value, to calculate the derivatives.
-        int dOrder = staticFindInRange<1, Traits::diffOrder+1>([&](const auto i)
+        int dOrder = staticFindIf<1, Traits::diffOrder+1>([&](const auto i)
         {
           if (i == totalOrder) {
             std::array<int, i> directions;

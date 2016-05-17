@@ -69,256 +69,161 @@ struct PkLocalFiniteElementTest<d, -1>
   }
 };
 
-template<int k>
-bool testMonomials()
+
+template <class... Ts>
+constexpr std::size_t size(std::tuple<Ts...> const&)
 {
-  bool success = true;
-  Dune::GeometryType gt;
-
-  gt.makeLine();
-  Dune::MonomialLocalFiniteElement<double,double,1,k> monom1d(gt);
-  TEST_FE(monom1d);
-
-  gt.makeTriangle();
-  Dune::MonomialLocalFiniteElement<double,double,2,k> monom2d(gt);
-  TEST_FE(monom2d);
-
-  gt.makeTetrahedron();
-  Dune::MonomialLocalFiniteElement<double,double,3,k> monom3d(gt);
-  TEST_FE(monom3d);
-
-  return testMonomials<k-1>() and success;
+  return sizeof...(Ts);
 }
 
-template<>
-bool testMonomials<-1>()
+int main() try
 {
-  return true;
-}
+  using std::make_tuple;
+  using std::make_pair;
 
-int main(int argc, char** argv) try
-{
-  bool success = true;
+  auto simplexGeometry = Dune::GeometryType(Dune::GeometryType::simplex, 2);
 
-  Dune::P0LocalFiniteElement<double,double,2> p0lfem(
-    Dune::GeometryType(Dune::GeometryType::simplex, 2));
-  TEST_FE(p0lfem);
+  auto defaultTests = make_tuple(
+    /* 0*/ make_pair( Dune::P0LocalFiniteElement<double,double,2>(simplexGeometry), "p0lfem"),
+    /* 1*/ make_pair( Dune::P1LocalFiniteElement<double,double,1>(), "p11dlfem"),
+    /* 2*/ make_pair( Dune::P1LocalFiniteElement<double,double,2>(), "p12dlfem"),
+    /* 3*/ make_pair( Dune::P1LocalFiniteElement<double,double,3>(), "p13dlfem"),
+    /* 4*/ make_pair( Dune::Q1LocalFiniteElement<double,double,1>(), "q11dlfem"),
+    /* 5*/ make_pair( Dune::Q1LocalFiniteElement<double,double,2>(), "q12dlfem"),
+    /* 6*/ make_pair( Dune::Q1LocalFiniteElement<double,double,3>(), "q13dlfem"),
+    /* 7*/ make_pair( Dune::PQ22DLocalFiniteElement<double,double>(simplexGeometry), "pq22dlfem"),
+    /* 8*/ make_pair( Dune::RefinedP1LocalFiniteElement<double,double,1>(), "refp11dlfem"),
+    /* 9*/ make_pair( Dune::RefinedP1LocalFiniteElement<double,double,2>(), "refp12dlfem"),
+    /*10*/ make_pair( Dune::RefinedP1LocalFiniteElement<double,double,3>(), "refp13dlfem"),
+    /*11*/ make_pair( Dune::RefinedP0LocalFiniteElement<double,double,1>(), "refp01dlfem"),
+    /*12*/ make_pair( Dune::RefinedP0LocalFiniteElement<double,double,2>(), "refp02dlfem"),
+    /*13*/ make_pair( Dune::P23DLocalFiniteElement<double,double>(), "p23dlfem"),
+    /*14*/ make_pair( Dune::HierarchicalP2LocalFiniteElement<double,double,1>(), "hierarchicalp21dlfem"),
+    /*15*/ make_pair( Dune::HierarchicalP2LocalFiniteElement<double,double,2>(), "hierarchicalp22dlfem"),
+    /*16*/ make_pair( Dune::HierarchicalP2LocalFiniteElement<double,double,3>(), "hierarchicalp23dlfem"),
+    /*17*/ make_pair( Dune::HierarchicalPrismP2LocalFiniteElement<double,double>(), "hierarchicalprismp2lfem"),
+    /*18*/ make_pair( Dune::HierarchicalP2WithElementBubbleLocalFiniteElement<double,double,2>(), "hierarchicalp2bubble2dlfem"),
+    /*19*/ make_pair( Dune::PrismP1LocalFiniteElement<double,double>(), "prismp1fem"),
+    /*20*/ make_pair( Dune::PrismP2LocalFiniteElement<double,double>(), "prismp2fem"),
+    /*21*/ make_pair( Dune::QkLocalFiniteElement<double,double,1,1>(), "qk11dlfem"),
+    /*22*/ make_pair( Dune::QkLocalFiniteElement<double,double,2,0>(), "qk02dlfem"),
+    /*23*/ make_pair( Dune::QkLocalFiniteElement<double,double,2,1>(), "qk12dlfem"),
+    /*24*/ make_pair( Dune::QkLocalFiniteElement<double,double,2,2>(), "qk22dlfem"),
+    /*25*/ make_pair( Dune::QkLocalFiniteElement<double,double,2,3>(), "qk32dlfem"),
+    /*26*/ make_pair( Dune::QkLocalFiniteElement<double,double,3,0>(), "qk03dlfem"),
+    /*27*/ make_pair( Dune::QkLocalFiniteElement<double,double,3,1>(), "qk13dlfem"),
+    /*28*/ make_pair( Dune::QkLocalFiniteElement<double,double,3,2>(), "qk23dlfem"),
+    /*29*/ make_pair( Dune::QkLocalFiniteElement<double,double,3,3>(), "qk33dlfem"),
+    /*30*/ make_pair( Dune::DualP1LocalFiniteElement<double,double,1>(), "dualp11dlfem"),
+    /*31*/ make_pair( Dune::DualP1LocalFiniteElement<double,double,2>(), "dualp12dlfem"),
+    /*32*/ make_pair( Dune::DualP1LocalFiniteElement<double,double,3>(), "dualp13dlfem"),
+    /*33*/ make_pair( Dune::DualQ1LocalFiniteElement<double,double,1>(), "dualq11dlfem"),
+    /*34*/ make_pair( Dune::DualQ1LocalFiniteElement<double,double,2>(), "dualq12dlfem"),
+    /*35*/ make_pair( Dune::DualQ1LocalFiniteElement<double,double,3>(), "dualq13dlfem"),
+    /*36*/ make_pair( Dune::RannacherTurekLocalFiniteElement<double,double,2>(), "rannacher_turek2dfem"),
+    /*37*/ make_pair( Dune::RannacherTurekLocalFiniteElement<double,double,3>(), "rannacher_turek3dfem"),
+    /*38*/ make_pair( Dune::BDM1Cube2DLocalFiniteElement<double,double>(1), "bdm1cube2dlfem"),
+    /*39*/ make_pair( Dune::BDM2Cube2DLocalFiniteElement<double,double>(1), "bdm2cube2dlfem"),
+    /*40*/ make_pair( Dune::BDM1Simplex2DLocalFiniteElement<double,double>(1), "bdm1simplex2dlfem"),
+    /*41*/ make_pair( Dune::RaviartThomasSimplexLocalFiniteElement<2,double,double>(simplexGeometry, 0), "rt0simplex2dlfem"),
+    /*42*/ make_pair( Dune::RaviartThomasSimplexLocalFiniteElement<2,double,double>(simplexGeometry, 1), "rt1simplex2dlfem"),
+    /*43*/ make_pair( Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,0>(1), "rt0cube2dlfem"),
+    /*44*/ make_pair( Dune::RaviartThomasCubeLocalFiniteElement<double,double,3,0>(1), "rt0cube3dlfem"),
+    /*45*/ make_pair( Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,1>(1), "rt1cube2dlfem"),
+    /*46*/ make_pair( Dune::RaviartThomasCubeLocalFiniteElement<double,double,3,1>(1), "rt1cube3dlfem"),
+    /*47*/ make_pair( Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,2>(1), "rt2cube2dlfem")
+    );
 
-  Dune::P1LocalFiniteElement<double,double,1> p11dlfem;
-  TEST_FE(p11dlfem);
+  // Add monomials to the tuple of tests.
+  // Monomials are only tested up to order 2 due to the instability of interpolate()
+  auto defaultTests_ = Dune::staticAccumulate<0, 2+1>([](auto const k)
+  {
+      Dune::GeometryType gt;
 
-  Dune::P1LocalFiniteElement<double,double,2> p12dlfem;
-  TEST_FE(p12dlfem);
+      return std::make_tuple(
+        std::make_pair(Dune::MonomialLocalFiniteElement<double,double,1,k>((gt.makeLine(), gt)),        "monom1d_" + std::to_string(k)),
+        std::make_pair(Dune::MonomialLocalFiniteElement<double,double,2,k>((gt.makeTriangle(), gt)),    "monom2d_" + std::to_string(k)),
+        std::make_pair(Dune::MonomialLocalFiniteElement<double,double,3,k>((gt.makeTetrahedron(), gt)), "monom3d_" + std::to_string(k))
+      );
+  }, defaultTests, [](auto&& a, auto&& b) { return std::tuple_cat(std::forward<decltype(a)>(a), std::forward<decltype(b)>(b)); });
 
-  Dune::P1LocalFiniteElement<double,double,3> p13dlfem;
-  TEST_FE(p13dlfem);
+  // run tests...
+  bool success = Dune::staticAccumulate<0, size(defaultTests_)>([&tests = defaultTests_](auto const i)
+  {
+    bool b = testFE(std::get<i>(tests).first);
+    std::cout << "testFE(" << std::get<i>(tests).second << ") " << (b ? "succeeded\n" : "failed\n");
+    return b;
+  }, true, [](bool a, bool b) { return a && b; });
 
-  Dune::Q1LocalFiniteElement<double,double,1> q11dlfem;
-  TEST_FE(q11dlfem);
 
-  Dune::Q1LocalFiniteElement<double,double,2> q12dlfem;
-  TEST_FE(q12dlfem);
+  // ---------------------------------------------------------------------------
+  // Test some FiniteElements with disabled local-interpolation tests
 
-  Dune::Q1LocalFiniteElement<double,double,3> q13dlfem;
-  TEST_FE(q13dlfem);
+  auto disabledInterpolationTests = make_tuple(
+    /* 0*/ make_pair( Dune::BDM1Cube3DLocalFiniteElement<double,double>(1), "bdm1cube3dlfem"),
+    /* 1*/ make_pair( Dune::BDM2Simplex2DLocalFiniteElement<double,double>(1), "bdm2simplex2dlfem")
+    );
 
-  Dune::PQ22DLocalFiniteElement<double,double> pq22dlfem(
-    Dune::GeometryType( Dune::GeometryType::simplex,2) );
-  TEST_FE(pq22dlfem);
+  // run tests...
+  success = Dune::staticAccumulate<0, size(disabledInterpolationTests)>([&tests = disabledInterpolationTests](auto const i)
+  {
+    bool b = testFE(std::get<i>(tests).first, DisableLocalInterpolation);
+    std::cout << "testFE(" << std::get<i>(tests).second << ", DisableLocalInterpolation) " << (b ? "succeeded\n" : "failed\n");
+    return b;
+  }, success, [](bool a, bool b) { return a && b; });
 
-  Dune::RefinedP1LocalFiniteElement<double,double,1> refp11dlfem;
-  TEST_FE(refp11dlfem);
 
-  Dune::RefinedP1LocalFiniteElement<double,double,2> refp12dlfem;
-  TEST_FE(refp12dlfem);
+  // ---------------------------------------------------------------------------
+  // Test some FiniteElements with disabled jacobian evaluation tests
 
-  Dune::RefinedP1LocalFiniteElement<double,double,3> refp13dlfem;
-  TEST_FE(refp13dlfem);
+  auto disabledJacobianTests = make_tuple(
+    /* 0*/ make_pair( Dune::PyramidP1LocalFiniteElement<double,double>(), "pyramidp1fem"),
+    /* 1*/ make_pair( Dune::PyramidP2LocalFiniteElement<double,double>(), "pyramidp2fem"),
+    /* 2*/ make_pair( Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,3>(1), "rt3cube2dlfem"),
+    /* 3*/ make_pair( Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,4>(1), "rt4cube2dlfem")
+    );
 
-  Dune::RefinedP0LocalFiniteElement<double,double,1> refp01dlfem;
-  TEST_FE(refp01dlfem);
+  // run tests...
+  success = Dune::staticAccumulate<0, size(disabledJacobianTests)>([&tests = disabledJacobianTests](auto const i)
+  {
+    bool b = testFE(std::get<i>(tests).first, DisableJacobian);
+    std::cout << "testFE(" << std::get<i>(tests).second << ", DisableJacobian) " << (b ? "succeeded\n" : "failed\n");
+    return b;
+  }, success, [](bool a, bool b) { return a && b; });
 
-  Dune::RefinedP0LocalFiniteElement<double,double,2> refp02dlfem;
-  TEST_FE(refp02dlfem);
-
-  Dune::P23DLocalFiniteElement<double,double> p23dlfem;
-  TEST_FE(p23dlfem);
-
-  // --------------------------------------------------------
-  //  Test Brezzi-Douglas-Marini finite elements
-  // --------------------------------------------------------
-  Dune::BDM1Cube2DLocalFiniteElement<double,double> bdm1cube2dlfem(1);
-  TEST_FE(bdm1cube2dlfem);
-
-  Dune::BDM1Cube3DLocalFiniteElement<double,double> bdm1cube3dlfem(1);
-  TEST_FE2(bdm1cube3dlfem, DisableLocalInterpolation);
-
-  Dune::BDM2Cube2DLocalFiniteElement<double,double> bdm2cube2dlfem(1);
-  TEST_FE(bdm2cube2dlfem);
-
-  Dune::BDM1Simplex2DLocalFiniteElement<double,double> bdm1simplex2dlfem(1);
-  TEST_FE(bdm1simplex2dlfem);
-
-  Dune::BDM2Simplex2DLocalFiniteElement<double,double> bdm2simplex2dlfem(1);
-  TEST_FE2(bdm2simplex2dlfem, DisableLocalInterpolation);
-
-  // --------------------------------------------------------
-  //  Test hierarchical P2 finite elements
-  // --------------------------------------------------------
-  Dune::HierarchicalP2LocalFiniteElement<double,double,1> hierarchicalp21dlfem;
-  TEST_FE(hierarchicalp21dlfem);
-
-  Dune::HierarchicalP2LocalFiniteElement<double,double,2> hierarchicalp22dlfem;
-  TEST_FE(hierarchicalp22dlfem);
-
-  Dune::HierarchicalP2LocalFiniteElement<double,double,3> hierarchicalp23dlfem;
-  TEST_FE(hierarchicalp23dlfem);
-
-  Dune::HierarchicalPrismP2LocalFiniteElement<double,double> hierarchicalprismp2lfem;
-  TEST_FE(hierarchicalprismp2lfem);
-
-  Dune::HierarchicalP2WithElementBubbleLocalFiniteElement<double,double,2> hierarchicalp2bubble2dlfem;
-  TEST_FE(hierarchicalp2bubble2dlfem);
-
-  Dune::PrismP1LocalFiniteElement<double,double> prismp1fem;
-  TEST_FE(prismp1fem);
-
-  Dune::PrismP2LocalFiniteElement<double,double> prismp2fem;
-  TEST_FE(prismp2fem);
-
-  Dune::PyramidP1LocalFiniteElement<double,double> pyramidp1fem;
-  TEST_FE2(pyramidp1fem, DisableJacobian);
-
-  Dune::PyramidP2LocalFiniteElement<double,double> pyramidp2fem;
-  TEST_FE2(pyramidp2fem, DisableJacobian);
+  // ---------------------------------------------------------------------------
+  // test various Pk Finite-Elements for variing k
 
   success = PkLocalFiniteElementTest<1, 1>::test() and success;
-
   success = PkLocalFiniteElementTest<1, 2>::test() and success;
-
   success = PkLocalFiniteElementTest<2, 10>::test() and success;
-
   success = PkLocalFiniteElementTest<3, 10>::test() and success;
 
-  // --------------------------------------------------------
-  //  Test some instantiations of QkLocalFiniteElement
-  // --------------------------------------------------------
-  Dune::QkLocalFiniteElement<double,double,1,1> qk11dlfem;
-  TEST_FE(qk11dlfem);
-
-  Dune::QkLocalFiniteElement<double,double,2,0> qk02dlfem;
-  TEST_FE(qk02dlfem);
-
-  Dune::QkLocalFiniteElement<double,double,2,1> qk12dlfem;
-  TEST_FE(qk12dlfem);
-
-  Dune::QkLocalFiniteElement<double,double,2,2> qk22dlfem;
-  TEST_FE(qk22dlfem);
-
-  Dune::QkLocalFiniteElement<double,double,2,3> qk32dlfem;
-  TEST_FE(qk32dlfem);
-
-  Dune::QkLocalFiniteElement<double,double,3,0> qk03dlfem;
-  TEST_FE(qk03dlfem);
-
-  Dune::QkLocalFiniteElement<double,double,3,1> qk13dlfem;
-  TEST_FE(qk13dlfem);
-
-  Dune::QkLocalFiniteElement<double,double,3,2> qk23dlfem;
-  TEST_FE(qk23dlfem);
-
-  Dune::QkLocalFiniteElement<double,double,3,3> qk33dlfem;
-  TEST_FE(qk33dlfem);
-
-
-  // --------------------------------------------------------
-  //  Test dual mortar elements
-  // --------------------------------------------------------
-  Dune::DualP1LocalFiniteElement<double,double,1> dualp11dlfem;
-  TEST_FE(dualp11dlfem);
-
-  Dune::DualP1LocalFiniteElement<double,double,2> dualp12dlfem;
-  TEST_FE(dualp12dlfem);
-
-  Dune::DualP1LocalFiniteElement<double,double,3> dualp13dlfem;
-  TEST_FE(dualp13dlfem);
-
-  Dune::DualQ1LocalFiniteElement<double,double,1> dualq11dlfem;
-  TEST_FE(dualq11dlfem);
-
-  Dune::DualQ1LocalFiniteElement<double,double,2> dualq12dlfem;
-  TEST_FE(dualq12dlfem);
-
-  Dune::DualQ1LocalFiniteElement<double,double,3> dualq13dlfem;
-  TEST_FE(dualq13dlfem);
-
-
-  // --------------------------------------------------------
-  //  Test Raviart-Thomas Finite elements
-  // --------------------------------------------------------
-  Dune::RaviartThomasSimplexLocalFiniteElement<2,double,double> rt0simplex2dlfem(Dune::GeometryType(Dune::GeometryType::simplex,2),0);
-  TEST_FE(rt0simplex2dlfem);
-
-  Dune::RaviartThomasSimplexLocalFiniteElement<2,double,double> rt1simplex2dlfem(Dune::GeometryType(Dune::GeometryType::simplex,2),1);
-  TEST_FE(rt1simplex2dlfem);
-
-  Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,0> rt0cube2dlfem(1);
-  TEST_FE(rt0cube2dlfem);
-
-  Dune::RaviartThomasCubeLocalFiniteElement<double,double,3,0> rt0cube3dlfem(1);
-  TEST_FE(rt0cube3dlfem);
-
-  Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,1> rt1cube2dlfem(1);
-  TEST_FE(rt1cube2dlfem);
-
-  Dune::RaviartThomasCubeLocalFiniteElement<double,double,3,1> rt1cube3dlfem(1);
-  TEST_FE(rt1cube3dlfem);
-
-  Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,2> rt2cube2dlfem(1);
-  TEST_FE(rt2cube2dlfem);
-
-  Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,3> rt3cube2dlfem(1);
-  TEST_FE2(rt3cube2dlfem, DisableJacobian);
-
-  Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,4> rt4cube2dlfem(1);
-  TEST_FE2(rt4cube2dlfem, DisableJacobian);
-
-  // --------------------------------------------------------
-  //  Test Rannacher-Turek Finite elements
-  // --------------------------------------------------------
-  Dune::RannacherTurekLocalFiniteElement<double,double,2> rannacher_turek2dfem;
-  TEST_FE(rannacher_turek2dfem);
-
-  Dune::RannacherTurekLocalFiniteElement<double,double,3> rannacher_turek3dfem;
-  TEST_FE(rannacher_turek3dfem);
-
-  std::cout << "Monomials are only tested up to order 2 due to the instability of interpolate()." << std::endl;
-  success = testMonomials<2>() and success;
-
+  // ---------------------------------------------------------------------------
   // test virtualized FEs
-  // notice that testFE add another level of virtualization
-  Dune::LocalFiniteElementVirtualImp< Dune::P1LocalFiniteElement<double,double, 2> >
-  p12dlfemVirtual(p12dlfem);
-  TEST_FE(p12dlfemVirtual);
 
-  Dune::LocalFiniteElementVirtualImp< Dune::PQ22DLocalFiniteElement<double,double> >
-  pq22dlfemVirtual(pq22dlfem);
-  TEST_FE(pq22dlfemVirtual);
+  // run tests...
+  success = Dune::staticAccumulate<0, size(defaultTests)>([&tests = defaultTests](auto const i)
+  {
+    using FE = std::tuple_element_t<0, std::tuple_element_t<i, decltype(defaultTests)>>;
+    Dune::LocalFiniteElementVirtualImp<FE> testVirtual(std::get<i>(tests).first);
 
-  Dune::LocalFiniteElementVirtualImp<
-      Dune::LocalFiniteElementVirtualImp<
-          Dune::P1LocalFiniteElement<double,double, 2> > >
-  p12dlfemVirtualVirtual(p12dlfemVirtual);
-  TEST_FE(p12dlfemVirtualVirtual);
+    bool b1 = testFE(testVirtual);
+    std::cout << "testFE(" << std::get<i>(tests).second << "-virtual1) " << (b1 ? "succeeded\n" : "failed\n");
 
-  Dune::LocalFiniteElementVirtualImp<
-      Dune::LocalFiniteElementVirtualImp<
-          Dune::PQ22DLocalFiniteElement<double,double> > >
-  pq22dlfemVirtualVirtual(pq22dlfemVirtual);
-  TEST_FE(pq22dlfemVirtualVirtual);
+    // notice the second level of virtualization
+    Dune::LocalFiniteElementVirtualImp<Dune::LocalFiniteElementVirtualImp<FE>> testVirtual2(testVirtual);
 
-  typedef Dune::LocalFiniteElementVirtualInterface< Dune::P1LocalFiniteElement<double,double, 2>::Traits::LocalBasisType::Traits > Interface;
-  TEST_FE(static_cast<const Interface&>(p12dlfemVirtual));
+    bool b2 = testFE(testVirtual2);
+    std::cout << "testFE(" << std::get<i>(tests).second << "-virtual2) " << (b2 ? "succeeded\n" : "failed\n");
+
+    using Interface = Dune::LocalFiniteElementVirtualInterface<typename FE::Traits::LocalBasisType::Traits>;
+    bool b3 = testFE(static_cast<const Interface&>(testVirtual));
+    std::cout << "testFE(" << std::get<i>(tests).second << "-virtual3) " << (b3 ? "succeeded\n" : "failed\n");
+
+    return b1 && b2 && b3;
+  }, success, [](bool a, bool b) { return a && b; });
+
 
   return success ? 0 : 1;
 }

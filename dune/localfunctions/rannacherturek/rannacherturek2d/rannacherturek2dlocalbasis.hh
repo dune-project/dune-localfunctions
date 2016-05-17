@@ -64,7 +64,7 @@ namespace Dune
       } else {
         // Calculate directions from order and call evaluate for the
         // specific totalOrder value, to calculate the derivatives.
-        int dOrder = staticFindInRange<1, Traits::diffOrder+1>([&](const auto i)
+        int dOrder = staticFindIf<1, Traits::diffOrder+1>([&](const auto i)
         {
           if (i == totalOrder) {
             std::array<int, i> directions;

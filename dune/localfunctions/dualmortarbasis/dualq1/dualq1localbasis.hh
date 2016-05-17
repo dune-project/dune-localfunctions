@@ -34,7 +34,7 @@ namespace Dune
     }
 
     //! \brief number of shape functions
-    unsigned int size () const
+    constexpr std::size_t size () const
     {
       return 1<<dim;
     }
@@ -124,7 +124,7 @@ namespace Dune
 
     //! \brief Evaluate partial derivatives of all shape functions
     template <std::size_t dOrder>
-    inline void evaluate (const std::array<int, dOrder>& directions,
+    inline void evaluate (const std::array<int, dOrder>& /*directions*/,
                           const typename Traits::DomainType& in,         // position
                           std::vector<typename Traits::RangeType>& out) const      // return value
     {

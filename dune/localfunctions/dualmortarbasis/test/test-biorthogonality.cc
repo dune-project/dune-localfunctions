@@ -97,6 +97,7 @@ bool testFaceBiorthogonality(const DualLfe& dualLfe, const LagrangeLfe& lagrange
   using field_type = typename DualTraits::RangeFieldType;
 
   const auto& refElement = Dune::ReferenceElements<ctype,dim>::general(dualLfe.type());
+  using SizeType = std::decay_t< decltype(refElement.size(1)) >;
 
   const unsigned int numLagBasFct = lagrangeLfe.localBasis().size();
   const unsigned int numDualBasFct = dualLfe.localBasis().size();
@@ -114,7 +115,7 @@ bool testFaceBiorthogonality(const DualLfe& dualLfe, const LagrangeLfe& lagrange
 
   bool biorthog = true;
   // loop over the number of faces
-  for (int i=0; i<refElement.size(1); i++) {
+  for (SizeType i=0; i<refElement.size(1); i++) {
 
     // get geometry
     const auto& geometry = refElement.template geometry<1>(i);
@@ -148,9 +149,9 @@ bool testFaceBiorthogonality(const DualLfe& dualLfe, const LagrangeLfe& lagrange
     }
 
     // check if diagonal of mixedMassMat equals the lagrange integral and the off-diagonals are zero
-    for (unsigned int p=0; p<refElement.size(i,1,dim); p++) {
+    for (SizeType p=0; p<refElement.size(i,1,dim); p++) {
       int k= refElement.subEntity(i,1,p,dim);
-      for (unsigned int q=0; q<refElement.size(i,1,dim); q++) {
+      for (SizeType q=0; q<refElement.size(i,1,dim); q++) {
         int l= refElement.subEntity(i,1,q,dim);
         if(std::fabs(mixedMassMat[k][l] - (k==l)*(integralLagrange[k])) > TOL) {
           std::cout<<"for face "<<i<<" : \n";
@@ -165,7 +166,7 @@ bool testFaceBiorthogonality(const DualLfe& dualLfe, const LagrangeLfe& lagrange
   return biorthog;
 }
 
-int main(int argc, char** argv) try
+int main() try
 {
   bool success = true;
   Dune::DualP1LocalFiniteElement<double,double,1> dualP1lfem1D;

@@ -155,7 +155,7 @@ namespace Dune
 
     //! \brief Evaluate partial derivatives of all shape functions
     template <std::size_t dOrder>
-    inline void evaluate(const std::array<int, dOrder>& directions,
+    inline void evaluate(const std::array<int, dOrder>& /*directions*/,
                          const typename Traits::DomainType& in,         // position
                          std::vector<typename Traits::RangeType>& out) const      // return value
     {
@@ -348,6 +348,7 @@ namespace Dune
       if (totalOrder == 0) {
         evaluateFunction(in, out);
       } else if (totalOrder == 1) {
+        // TODO: implement first derivative
         DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
       } else {
         out.resize(size());
@@ -358,13 +359,14 @@ namespace Dune
 
     //! \brief Evaluate partial derivatives of all shape functions
     template <std::size_t dOrder>
-    inline void evaluate(const std::array<int, dOrder>& directions,
+    inline void evaluate(const std::array<int, dOrder>& /*directions*/,
                          const typename Traits::DomainType& in,         // position
                          std::vector<typename Traits::RangeType>& out) const      // return value
     {
       if (dOrder == 0) {
         evaluateFunction(in, out);
       } else if (dOrder == 1) {
+        // TODO: implement first derivative
         DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
       } else {
         out.resize(size());
@@ -687,6 +689,7 @@ namespace Dune
       if (totalOrder == 0) {
         evaluateFunction(in, out);
       } else if (totalOrder == 1) {
+        // TODO: implement first derivative
         DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
       } else {
         out.resize(size());
@@ -697,13 +700,14 @@ namespace Dune
 
     //! \brief Evaluate partial derivatives of all shape functions
     template <std::size_t dOrder>
-    inline void evaluate(const std::array<int, dOrder>& directions,
+    inline void evaluate(const std::array<int, dOrder>& /*directions*/,
                          const typename Traits::DomainType& in,         // position
                          std::vector<typename Traits::RangeType>& out) const      // return value
     {
       if (dOrder == 0) {
         evaluateFunction(in, out);
       } else if (dOrder == 1) {
+        // TODO: implement first derivative
         DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
       } else {
         out.resize(size());

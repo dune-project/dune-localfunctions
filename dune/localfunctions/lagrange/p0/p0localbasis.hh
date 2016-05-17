@@ -3,6 +3,8 @@
 #ifndef DUNE_P0LOCALBASIS_HH
 #define DUNE_P0LOCALBASIS_HH
 
+#include <numeric>
+
 #include <dune/common/fmatrix.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
@@ -30,13 +32,13 @@ namespace Dune
         Dune::FieldMatrix<R,1,d>, 0> Traits;
 
     //! \brief number of shape functions
-    unsigned int size () const
+    constexpr std::size_t size () const
     {
       return 1;
     }
 
     //! \brief Evaluate all shape functions
-    inline void evaluateFunction (const typename Traits::DomainType& in,
+    inline void evaluateFunction (const typename Traits::DomainType& /*in*/,
                                   std::vector<typename Traits::RangeType>& out) const
     {
       out.resize(1);
@@ -45,7 +47,7 @@ namespace Dune
 
     //! \brief Evaluate Jacobian of all shape functions
     inline void
-    evaluateJacobian (const typename Traits::DomainType& in,         // position
+    evaluateJacobian (const typename Traits::DomainType& /*in*/,         // position
                       std::vector<typename Traits::JacobianType>& out) const      // return value
     {
       out.resize(1);
@@ -72,8 +74,8 @@ namespace Dune
     }
 
     //! \brief Evaluate higher derivatives of all shape functions
-    template<unsigned int dOrder> //order of derivative
-    inline void evaluate(const std::array<int,dOrder>& directions, //direction of derivative
+    template<std::size_t dOrder>
+    inline void evaluate(const std::array<int,dOrder>& /*directions*/,
                          const typename Traits::DomainType& in,  //position
                          std::vector<typename Traits::RangeType>& out) const //return value
     {

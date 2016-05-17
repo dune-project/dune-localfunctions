@@ -35,9 +35,6 @@ T sqr(T const& x)
   return x*x;
 }
 
-template <class T>
-double distance(T const& x, T const& y);
-
 template <class T,
   class = std::enable_if_t< std::is_arithmetic<T>::value > >
 T distance(T const& x, T const& y)
@@ -50,7 +47,7 @@ template <class T, int n,
 T distance(Dune::FieldVector<T, n> const& x, Dune::FieldVector<T, n> const& y)
 {
   T result = 0;
-  for (std::size_t i = 0; i < n; ++i)
+  for (int i = 0; i < n; ++i)
     result += sqr(x[i] - y[i]);
   return std::sqrt(result);
 }
@@ -318,7 +315,6 @@ struct TestEvaluate<0>
                    std::size_t order = 2)
   {
     typedef typename FE::Traits::LocalBasisType LB;
-    typedef typename LB::Traits::RangeFieldType RangeField;
 
     auto condition = std::integral_constant<bool,
       Dune::Concept::localBasisHasEvaluate<LB>() &&
@@ -347,12 +343,11 @@ struct TestEvaluate<0>
   template <class FE>
   static bool testImpl(std::true_type,
                        const FE& fe,
-                       double eps,
-                       double delta,
+                       double /*eps*/,
+                       double /*delta*/,
                        std::size_t order = 2)
   {
     typedef typename FE::Traits::LocalBasisType LB;
-    typedef typename LB::Traits::RangeFieldType RangeField;
 
     bool success = true;
 
@@ -459,7 +454,7 @@ struct TestEvaluate<0>
 
 
     }
-    return true;
+    return success;
   }
 };
 
@@ -587,7 +582,7 @@ struct TestEvaluate<1>
                         << "FD approximation" << std::endl;
               std::cout << "    Shape function " << j << " component " << l
                         << " at position " << testPoint << ": derivative in "
-                        << "direction " << k << " is " << derivative << ", but "
+                        << "direction " << k << " is " << partialDerivative << ", but "
                         << finiteDiff << " is expected." << std::endl;
               std::cout << std::endl;
               success = false;

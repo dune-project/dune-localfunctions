@@ -3,9 +3,12 @@
 #ifndef DUNE_Q1_LOCALBASIS_HH
 #define DUNE_Q1_LOCALBASIS_HH
 
+#include <numeric>
+
 #include <dune/common/fmatrix.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
+#include <dune/localfunctions/common/partial.hh>
 
 namespace Dune
 {
@@ -25,10 +28,10 @@ namespace Dune
   {
   public:
     typedef LocalBasisTraits<D,dim,Dune::FieldVector<D,dim>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldMatrix<R,1,dim> > Traits;
+        Dune::FieldMatrix<R,1,dim>, 1 > Traits;
 
     //! \brief number of shape functions
-    unsigned int size () const
+    constexpr std::size_t size () const
     {
       return 1<<dim;
     }
@@ -93,23 +96,27 @@ namespace Dune
     {
       auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
 
-      if (totalOrder==0) {
+      if (totalOrder == 0) {
         evaluateFunction(in, out);
       }
-      else if (totalOrder==1)
+      else if (totalOrder == 1)
       {
-        auto direction = *std::find(order.begin(), order.end(), 1);
         out.resize(size());
 
+        int direction = find_index(order, 1);
+        if (direction >= dim) {
+          DUNE_THROW(RangeError, "Direction of partial derivative not found!");
+        }
+
         // Loop over all shape functions
-        for (size_t i=0; i<size(); i++) {
+        for (std::size_t i = 0; i < size(); ++i) {
 
           // Initialize: the overall expression is a product
           // if j-th bit of i is set to -1, else 1
           out[i] = (i & (1<<direction)) ? 1 : -1;
 
-          for (int k=0; k<dim; k++) {
-            if (direction!=k)
+          for (int k = 0; k < dim; ++k) {
+            if (direction != k)
               // if k-th bit of i is set multiply with in[j], else with 1-in[j]
               out[i] *= (i & (1<<k)) ? in[k] :  1-in[k];
           }
@@ -123,7 +130,7 @@ namespace Dune
 
         // currently only the trivial case of the vanishing entries is implemented
         if (diagonal != order.end()) {
-          for (int i=0; i<dim+1; i++)
+          for (std::size_t i = 0; i < size(); ++i)
             out[i] = 0;
         } else {
           DUNE_THROW(NotImplemented, "To be implemented!");
@@ -132,7 +139,7 @@ namespace Dune
     }
 
     //! \brief Evaluate all shape functions
-    template<unsigned int dOrder>
+    template<std::size_t dOrder>
     inline void evaluate (const typename std::array<int,dOrder>& directions,
                           const typename Traits::DomainType& in,
                           std::vector<typename Traits::RangeType>& out) const
@@ -141,15 +148,19 @@ namespace Dune
         evaluateFunction(in, out);
       else if (dOrder==1)
       {
+        out.resize(size());
+
+        int direction = directions[0];
+
         // Loop over all shape functions
-        for (size_t i=0; i<size(); i++) {
+        for (std::size_t i = 0; i < size(); ++i) {
 
           // Initialize: the overall expression is a product
           // if j-th bit of i is set to -1, else 1
-          out[i] = (i & (1<<directions[0])) ? 1 : -1;
+          out[i] = (i & (1<<direction)) ? 1 : -1;
 
-          for (int k=0; k<dim; k++) {
-            if (directions[0]!=k)
+          for (int k = 0; k < dim; ++k) {
+            if (direction != k)
               // if k-th bit of i is set multiply with in[j], else with 1-in[j]
               out[i] *= (i & (1<<k)) ? in[k] :  1-in[k];
           }

@@ -3,6 +3,8 @@
 #ifndef DUNE_PK2DLOCALBASIS_HH
 #define DUNE_PK2DLOCALBASIS_HH
 
+#include <numeric>
+
 #include <dune/common/fmatrix.hh>
 
 #include <dune/localfunctions/common/staticLoops.hh>
@@ -46,8 +48,7 @@ namespace Dune
         pos_[i] = (1.0*i)/std::max(k,(unsigned int)1);
     }
 
-    //! \brief number of shape functions
-    unsigned int size () const
+    constexpr std::size_t size () const
     {
       return N;
     }
@@ -175,7 +176,7 @@ namespace Dune
       } else {
         // Calculate directions from order and call evaluate for the
         // specific totalOrder value, to calculate the derivatives.
-        int dOrder = staticFindInRange<1, Traits::diffOrder+1>([&](const auto i)
+        int dOrder = staticFindIf<1, Traits::diffOrder+1>([&](const auto i)
         {
           if (i == totalOrder) {
             std::array<int, i> directions;
@@ -193,7 +194,7 @@ namespace Dune
     }
 
     //! \brief Evaluate higher derivatives of all shape functions
-    template<unsigned int dOrder> //order of derivative
+    template<std::size_t dOrder> //order of derivative
     inline void evaluate(const std::array<int,dOrder>& directions, //direction of derivative
                          const typename Traits::DomainType& in,  //position
                          std::vector<typename Traits::RangeType>& out) const //return value
@@ -281,7 +282,7 @@ namespace Dune
     /** \brief Returns the derivative of a single Lagrangian factor of l_ij evaluated at x
      * \param direction Derive in x-direction if this is 0, otherwise derive in y direction
      */
-    typename Traits::RangeType lagrangianFactorDerivative(const int direction, const int no, const int i, const int j, const typename Traits::DomainType& x) const
+    typename Traits::RangeType lagrangianFactorDerivative(const int direction, const int no, const int i, const int j, const typename Traits::DomainType& /*x*/) const
     {
       if ( no < i)
         return (direction == 0) ? 1.0/(pos_[i]-pos_[no]) : 0;

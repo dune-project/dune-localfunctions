@@ -3,6 +3,8 @@
 #ifndef DUNE_PK3DLOCALBASIS_HH
 #define DUNE_PK3DLOCALBASIS_HH
 
+#include <numeric>
+
 #include <dune/common/fmatrix.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
@@ -162,7 +164,7 @@ namespace Dune
       } else {
         // Calculate directions from order and call evaluate for the
         // specific totalOrder value, to calculate the derivatives.
-        int dOrder = staticFindInRange<1, Traits::diffOrder+1>([&](const auto i)
+        int dOrder = staticFindIf<1, Traits::diffOrder+1>([&](const auto i)
         {
           if (i == totalOrder) {
             std::array<int, i> directions;
@@ -180,8 +182,8 @@ namespace Dune
     }
 
     //! \brief Evaluate higher derivatives of all shape functions
-    template<unsigned int dOrder> //order of derivative
-    inline void evaluate(const std::array<int,dOrder>& directions, //direction of derivative
+    template<std::size_t dOrder>
+    inline void evaluate(const std::array<int,dOrder>& /*directions*/,
                          const typename Traits::DomainType& in,  //position
                          std::vector<typename Traits::RangeType>& out) const //return value
     {
@@ -223,7 +225,7 @@ namespace Dune
       return 1;
     }
 
-    inline void evaluateFunction (const typename Traits::DomainType& in,
+    inline void evaluateFunction (const typename Traits::DomainType& /*in*/,
                                   std::vector<typename Traits::RangeType>& out) const
     {
       out.resize(1);
@@ -232,7 +234,7 @@ namespace Dune
 
     // evaluate derivative of a single component
     inline void
-    evaluateJacobian (const typename Traits::DomainType& in,         // position
+    evaluateJacobian (const typename Traits::DomainType& /*in*/,         // position
                       std::vector<typename Traits::JacobianType>& out) const      // return value
     {
       out.resize(1);
@@ -261,7 +263,7 @@ namespace Dune
 
     //! \brief Evaluate higher derivatives of all shape functions
     template<unsigned int dOrder> //order of derivative
-    inline void evaluate(const std::array<int,dOrder>& directions, //direction of derivative
+    inline void evaluate(const std::array<int,dOrder>& /*directions*/, //direction of derivative
                          const typename Traits::DomainType& in,  //position
                          std::vector<typename Traits::RangeType>& out) const //return value
     {

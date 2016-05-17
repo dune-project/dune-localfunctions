@@ -95,7 +95,6 @@ namespace Dune
     using Base::evaluateFunction;
     using Base::evaluateJacobian;
     using Base::evaluate;
-    using Base::partial;
 
     /** \brief Evaluate partial derivatives of any order of all shape functions
      * \param order Order of the partial derivatives, in the classic multi-index notation
@@ -187,23 +186,25 @@ namespace Dune
      * \param in Position where to evaluate the derivatives
      * \param[out] out Return value: the desired partial derivatives
      */
-    void partial(const std::array<unsigned int,Traits::dimDomain>& order,
+    void partial(const std::array<unsigned int,Traits::dimDomain>& /*order*/,
                  const typename Traits::DomainType& in,
                  std::vector<typename Traits::RangeType>& out) const
     {
-//       impl_.partial(order,in,out);
+      // maxDiffOrder == 0 ---> call evaluateFunction directly
       impl_.evaluateFunction(in,out);
-//       DUNE_THROW(NotImplemented, "!");
+//       impl_.partial(order,in,out);
     }
 
     //! @copydoc LocalBasisVirtualInterface::evaluate
     inline void evaluate(
-      const typename std::template array<int,Traits::diffOrder>& directions,
+      const typename std::template array<int,Traits::diffOrder>& /*directions*/,
       const typename Traits::DomainType& in,
       std::vector<typename Traits::RangeType>& out) const
     {
       //      impl_.template evaluate<Traits::diffOrder> (directions, in,out);
       //      impl_.template evaluate<0> (directions, in,out);
+
+      // maxDiffOrder == 0 ---> call evaluateFunction directly
       impl_.evaluateFunction(in,out);
     }
 

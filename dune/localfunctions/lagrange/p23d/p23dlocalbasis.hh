@@ -3,6 +3,8 @@
 #ifndef DUNE_P2_3DLOCALBASIS_HH
 #define DUNE_P2_3DLOCALBASIS_HH
 
+#include <numeric>
+
 #include <dune/common/fmatrix.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
@@ -30,7 +32,7 @@ namespace Dune
         Dune::FieldMatrix<R,1,3> > Traits;
 
     //! \brief number of shape functions
-    unsigned int size () const
+    constexpr std::size_t size () const
     {
       return 10;
     }
@@ -411,7 +413,7 @@ namespace Dune
       } else {
         // Calculate directions from order and call evaluate for the
         // specific totalOrder value, to calculate the derivatives.
-        int dOrder = staticFindInRange<1, Traits::diffOrder+1>([&](const auto i)
+        int dOrder = staticFindIf<1, Traits::diffOrder+1>([&](const auto i)
         {
           if (i == totalOrder) {
             std::array<int, i> directions;
@@ -429,7 +431,7 @@ namespace Dune
     }
 
     //! \brief Evaluate higher derivatives of all shape functions
-    template<unsigned int dOrder> //order of derivative
+    template<std::size_t dOrder> //order of derivative
     inline void evaluate(const std::array<int,dOrder>& directions, //direction of derivative
                          const typename Traits::DomainType& in,  //position
                          std::vector<typename Traits::RangeType>& out) const //return value

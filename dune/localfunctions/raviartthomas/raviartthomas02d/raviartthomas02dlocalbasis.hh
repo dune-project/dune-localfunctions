@@ -40,7 +40,7 @@ namespace Dune
     }
 
     //! \brief number of shape functions
-    unsigned int size () const
+    constexpr std::size_t size () const
     {
       return 3;
     }

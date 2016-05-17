@@ -61,7 +61,7 @@ namespace Dune
     }
 
     //! \brief number of shape functions
-    unsigned int size () const
+    constexpr std::size_t size () const
     {
       return 40;
     }
@@ -189,7 +189,7 @@ namespace Dune
      * \param in Position
      * \param out return value
      */
-    inline void evaluateJacobian (const typename Traits::DomainType& in,
+    inline void evaluateJacobian (const typename Traits::DomainType& /*in*/,
                                   std::vector<typename Traits::JacobianType>& out) const
     {
       out.resize(40);
@@ -210,7 +210,7 @@ namespace Dune
     }
 
     template <std::size_t dOrder>
-    inline void evaluate (const std::array<int, dOrder>& directions,
+    inline void evaluate (const std::array<int, dOrder>& /*directions*/,
                           const typename Traits::DomainType& in,         // position
                           std::vector<typename Traits::RangeType>& out) const      // return value
     {

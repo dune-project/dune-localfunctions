@@ -4,6 +4,7 @@
 #define DUNE_POLYNOMIALBASIS_HH
 
 #include <fstream>
+#include <numeric>
 
 #include <dune/common/fmatrix.hh>
 
@@ -138,8 +139,9 @@ namespace Dune
       }
     }
 
+    //! \brief Evaluate partial derivatives of all shape functions
     template <std::size_t dOrder>
-    inline void evaluate (const std::array<int, dOrder>& directions,
+    inline void evaluate (const std::array<int, dOrder>& /*directions*/,
                           const typename Traits::DomainType& in,         // position
                           std::vector<typename Traits::RangeType>& out) const      // return value
     {
@@ -149,6 +151,7 @@ namespace Dune
         DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
       }
     }
+
 
     template< unsigned int deriv, class F >
     void evaluate ( const DomainVector &x, F *values ) const

@@ -9,6 +9,7 @@
 #include <dune/common/fmatrix.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
+#include <dune/localfunctions/common/partial.hh>
 
 namespace Dune
 {
@@ -32,9 +33,9 @@ namespace Dune
         Dune::FieldMatrix<R,1,dim>, 2> Traits;
 
     //! \brief number of shape functions
-    unsigned int size () const
+    constexpr std::size_t size () const
     {
-      return dim+1;
+      return dim + 1;
     }
 
     //! \brief Evaluate all shape functions
@@ -51,7 +52,7 @@ namespace Dune
 
     //! \brief Evaluate Jacobian of all shape functions
     inline void
-    evaluateJacobian (const typename Traits::DomainType& in,         // position
+    evaluateJacobian (const typename Traits::DomainType& /*in*/,         // position
                       std::vector<typename Traits::JacobianType>& out) const      // return value
     {
       out.resize(size());
@@ -80,43 +81,43 @@ namespace Dune
         evaluateFunction(in, out);
       else if (totalOrder==1)
       {
-        auto direction = std::find(order.begin(), order.end(), 1);
+        auto direction = find_index(order, 1);
         out.resize(size());
 
         out[0] = -1;
-        for (int i=0; i<dim; i++)
-          out[i+1] = (i==(direction-order.begin()));
+        for (std::size_t i = 0; i < std::size_t(dim); ++i)
+          out[i+1] = (i == direction);
       }
       else  // all higher order derivatives are zero
       {
         out.resize(size());
 
-        for (int i=0; i<dim+1; i++)
+        for (std::size_t i = 0; i < size(); ++i)
           out[i] = 0;
       }
     }
 
     //! \brief Evaluate all shape functions
-    template<unsigned int k>
-    inline void evaluate (const typename std::array<int,k>& directions,
+    template<std::size_t dOrder>
+    inline void evaluate (const typename std::array<int,dOrder>& directions,
                           const typename Traits::DomainType& in,
                           std::vector<typename Traits::RangeType>& out) const
     {
-      if (k==0)
+      if (dOrder==0)
         evaluateFunction(in, out);
-      else if (k==1)
+      else if (dOrder==1)
       {
         out.resize(size());
 
         out[0] = -1;
-        for (int i=0; i<dim; i++)
+        for (int i = 0; i < dim; ++i)
           out[i+1] = (i==directions[0]);
       }
-      else if (k==2)
+      else  // all higher order derivatives are zero
       {
         out.resize(size());
 
-        for (int i=0; i<dim+1; i++)
+        for (std::size_t i = 0; i < size(); ++i)
           out[i] = 0;
       }
     }

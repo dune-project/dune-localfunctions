@@ -159,7 +159,7 @@ namespace Dune
           // the rest of the available exponents, to be used by the other
           // dimensions
           int newbound = bound - e;
-          if(e < derivatives[d])
+          if(e < int(derivatives[d]))
             Evaluate<Traits,c-1>::
             eval(in, derivatives, 0, newbound, index, access);
           else {
@@ -199,7 +199,7 @@ namespace Dune
                         typename Traits::RangeFieldType prod,
                         int bound, int& index, Access &access)
       {
-        if(bound < derivatives[d])
+        if(bound < int(derivatives[d]))
           prod = 0;
         else {
           int coeff = 1;
@@ -237,7 +237,7 @@ namespace Dune
         Dune::FieldMatrix<R,1,d>,diffOrder> Traits;
 
     //! \brief number of shape functions
-    unsigned int size () const
+    constexpr std::size_t size () const
     {
       return MonomImp::Size<d,p>::val;
     }
@@ -288,7 +288,7 @@ namespace Dune
     }
 
     //! return given derivative of all components
-    template<unsigned int dOrder>
+    template<std::size_t dOrder>
     inline void evaluate (const std::array<int,dOrder>& directions,
                           const typename Traits::DomainType& in,
                           std::vector<typename Traits::RangeType>& out) const

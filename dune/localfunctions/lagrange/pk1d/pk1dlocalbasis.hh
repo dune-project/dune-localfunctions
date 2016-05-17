@@ -3,6 +3,8 @@
 #ifndef DUNE_Pk1DLOCALBASIS_HH
 #define DUNE_Pk1DLOCALBASIS_HH
 
+#include <numeric>
+
 #include <dune/common/fmatrix.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
@@ -38,8 +40,8 @@ namespace Dune
         R,
         1,
         Dune::FieldVector<R,1>,
-        Dune::FieldMatrix<R,1,1>
-        > Traits;
+        Dune::FieldMatrix<R,1,1>,
+        1> Traits;
 
     //! \brief Standard constructor
     Pk1DLocalBasis ()
@@ -49,7 +51,7 @@ namespace Dune
     }
 
     //! \brief number of shape functions
-    unsigned int size () const
+    constexpr std::size_t size () const
     {
       return N;
     }
@@ -95,15 +97,15 @@ namespace Dune
         evaluateFunction(in, out);
       } else if (totalOrder == 1) {
         out.resize(N);
-        evaluateJacobianTemplate(in, [&out](unsigned int i)->R& { return out[i][0]; });
+        evaluateJacobianTemplate(in, [&out](unsigned int i)->R& { return out[i]; });
       } else {
         DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
       }
     }
 
     //! \brief Evaluate higher derivatives of all shape functions
-    template<unsigned int dOrder> //order of derivative
-    inline void evaluate(const std::array<int,dOrder>& directions,                              // direction of derivative
+    template<std::size_t dOrder> //order of derivative
+    inline void evaluate(const std::array<int,dOrder>& /*directions*/,                              // direction of derivative
                          const typename Traits::DomainType& in,                                 // position
                          std::vector<typename Traits::RangeType>& out) const    // return value
     {

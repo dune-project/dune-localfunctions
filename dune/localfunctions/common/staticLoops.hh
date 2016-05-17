@@ -1,27 +1,27 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_LOCALFUNCTIONS_COMMON_STATICFORLOOP_HH
-#define DUNE_LOCALFUNCTIONS_COMMON_STATICFORLOOP_HH
+#ifndef DUNE_LOCALFUNCTIONS_COMMON_STATICLOOPS_HH
+#define DUNE_LOCALFUNCTIONS_COMMON_STATICLOOPS_HH
 
 #include <cstddef>
 #include <type_traits>
 
 namespace Dune
 {
-  // implementation of staticForLoop
+  // implementation of StaticFor
   namespace Impl
   {
     template<class ST, ST begin, ST end, bool condition>
-    struct StaticForLoopImpl;
+    struct StaticForImpl;
 
     template<class ST, ST begin, ST end>
-    using StaticForLoop
-      = StaticForLoopImpl<ST, begin, end, (begin < end)>;
+    using StaticFor
+      = StaticForImpl<ST, begin, end, (begin < end)>;
 
     template<class ST, ST begin, ST end>
-    struct StaticForLoopImpl<ST, begin, end, true>
+    struct StaticForImpl<ST, begin, end, true>
     {
-      using Next = StaticForLoop<ST, begin+1, end>;
+      using Next = StaticFor<ST, begin+1, end>;
 
       template<class F, class ... Args>
       static void apply(F&& f, Args&&... args)
@@ -32,7 +32,7 @@ namespace Dune
     };
 
     template<class ST, ST begin, ST end>
-    struct StaticForLoopImpl<ST, begin, end, false>
+    struct StaticForImpl<ST, begin, end, false>
     {
       template<class F, class ... Args>
       static void apply(F&& f, Args&&...)
@@ -54,27 +54,27 @@ namespace Dune
    * are forwarded to the functor.
    */
   template<std::size_t begin_t, std::size_t end_t, class F, class ... Args>
-  void staticForLoop(F&& f, Args&&... args)
+  void staticFor(F&& f, Args&&... args)
   {
-    using Runner = Impl::StaticForLoop<std::size_t, begin_t, end_t>;
+    using Runner = Impl::StaticFor<std::size_t, begin_t, end_t>;
     Runner::apply(std::forward<F>(f), std::forward<Args>(args) ...);
   }
 
 
-  // implementation of staticFindInRange
+  // implementation of staticFindIf
   namespace Impl
   {
     template<class ST, ST begin, ST end, bool condition>
-    struct StaticFindInRangeImpl;
+    struct StaticFindIfImpl;
 
     template<class ST, ST begin, ST end>
-    using StaticFindInRange
-      = StaticFindInRangeImpl<ST, begin, end, (begin < end)>;
+    using StaticFindIf
+      = StaticFindIfImpl<ST, begin, end, (begin < end)>;
 
     template<class ST, ST begin, ST end>
-    struct StaticFindInRangeImpl<ST, begin, end, true>
+    struct StaticFindIfImpl<ST, begin, end, true>
     {
-      using Next = StaticFindInRange<ST, begin+1, end>;
+      using Next = StaticFindIf<ST, begin+1, end>;
 
       template<class F, class ... Args>
       static ST apply(F&& f, Args&&... args)
@@ -86,10 +86,10 @@ namespace Dune
     };
 
     template<class ST, ST begin, ST end>
-    struct StaticFindInRangeImpl<ST, begin, end, false>
+    struct StaticFindIfImpl<ST, begin, end, false>
     {
       template<class F, class ... Args>
-      static ST apply(F&& f, Args&&...)
+      static ST apply(F&&, Args&&...)
       {
         return end;
       }
@@ -112,9 +112,9 @@ namespace Dune
    * termination.
    */
   template<std::size_t begin_t, std::size_t end_t, class F, class ... Args>
-  std::size_t staticFindInRange(F&& f, Args&&... args)
+  std::size_t staticFindIf(F&& f, Args&&... args)
   {
-    using Runner = Impl::StaticFindInRange<std::size_t, begin_t, end_t>;
+    using Runner = Impl::StaticFindIf<std::size_t, begin_t, end_t>;
     return Runner::apply(std::forward<F>(f), std::forward<Args>(args) ...);
   }
 
@@ -148,7 +148,7 @@ namespace Dune
     struct StaticAccumulateImpl<ST, begin, end, false>
     {
       template<class F, class T, class BinaryOp, class ... Args>
-      static auto eval(F&& f, T init, BinaryOp&& op, Args&&... args)
+      static auto eval(F&&, T init, BinaryOp&&, Args&&...)
       {
         return init;
       }
@@ -179,4 +179,4 @@ namespace Dune
 
 
 
-#endif //DUNE_LOCALFUNCTIONS_COMMON_STATICFORLOOP_HH
+#endif //DUNE_LOCALFUNCTIONS_COMMON_STATICLOOPS_HH

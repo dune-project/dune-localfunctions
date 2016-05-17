@@ -36,7 +36,7 @@ namespace Dune
         Dune::FieldMatrix<R,1,dim>, 0 > Traits;
 
     //! \brief number of shape functions
-    unsigned int size () const
+    constexpr std::size_t size () const
     {
       return dim+1;
     }
@@ -70,7 +70,7 @@ namespace Dune
 
     //! \brief Evaluate Jacobian of all shape functions
     inline void
-    evaluateJacobian (const typename Traits::DomainType& in,
+    evaluateJacobian (const typename Traits::DomainType& /*in*/,
                       std::vector<typename Traits::JacobianType>& out) const
     {
       // evaluate P1 jacobians
@@ -113,7 +113,7 @@ namespace Dune
 
     //! \brief Evaluate partial derivatives of all shape functions
     template <std::size_t dOrder>
-    inline void evaluate (const std::array<int, dOrder>& directions,
+    inline void evaluate (const std::array<int, dOrder>& /*directions*/,
                           const typename Traits::DomainType& in,         // position
                           std::vector<typename Traits::RangeType>& out) const      // return value
     {

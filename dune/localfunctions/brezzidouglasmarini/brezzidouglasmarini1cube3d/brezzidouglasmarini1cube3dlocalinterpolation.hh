@@ -92,7 +92,7 @@ namespace Dune
      * \param out return value, vector of coefficients
      */
     template<typename F, typename C>
-    void interpolate(const F& f, std::vector<C>& out) const
+    void interpolate(const F& /*f*/, std::vector<C>& out) const
     {
       // f gives v*outer normal at a point on the edge!
       typedef typename LB::Traits::RangeFieldType Scalar;

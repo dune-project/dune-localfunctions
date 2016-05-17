@@ -80,7 +80,7 @@ namespace Dune
       return localKeys;
     }
     template< class Topology >
-    static bool supports ( const typename Traits::Key &key )
+    static bool supports ( const typename Traits::Key& /*key*/ )
     {
       return GenericGeometry::IsSimplex<Topology>::value;
     }
@@ -416,7 +416,7 @@ namespace Dune
       return interpol;
     }
     template< class Topology >
-    static bool supports ( const typename Traits::Key &key )
+    static bool supports ( const typename Traits::Key& /*key*/ )
     {
       return GenericGeometry::IsSimplex<Topology>::value;
     }

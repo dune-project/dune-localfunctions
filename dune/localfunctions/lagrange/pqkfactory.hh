@@ -34,7 +34,7 @@ namespace Dune
     //! create finite element for given GeometryType
     static LocalFiniteElementVirtualInterface<T>* create(const GeometryType& gt)
     {
-      return 0;
+      return NULL;
     }
   };
 
@@ -54,15 +54,16 @@ namespace Dune
     //! create finite element for given GeometryType
     static LocalFiniteElementVirtualInterface<T>* create(const GeometryType& gt)
     {
-      if ((gt.isPrism())and (k==1))
+      if ((gt.isPrism()) && (k == 1))
         return new LocalFiniteElementVirtualImp<PrismP1>(PrismP1());
-      if ((gt.isPrism())and (k==2))
+      if ((gt.isPrism()) && (k == 2))
         return new LocalFiniteElementVirtualImp<PrismP2>(PrismP2());
-      if ((gt.isPyramid())and (k==1))
+      if ((gt.isPyramid()) && (k == 1))
         return new LocalFiniteElementVirtualImp<PyramidP1>(PyramidP1());
-      if ((gt.isPyramid())and (k==2))
+      if ((gt.isPyramid()) && (k == 2))
         return new LocalFiniteElementVirtualImp<PyramidP2>(PyramidP2());
-      return 0;
+
+      return NULL;
     }
   };
 
@@ -83,7 +84,7 @@ namespace Dune
     //! create finite element for given GeometryType
     static FiniteElementType* create(const GeometryType& gt)
     {
-      if (k==0)
+      if (k == 0)
         return new LocalFiniteElementVirtualImp<P0>(P0(gt));
 
       if (gt.isSimplex())
@@ -111,8 +112,10 @@ namespace Dune
   template<class D, class R, int dim, int k>
   class PQkLocalFiniteElementCache
   {
+    typedef typename P0LocalFiniteElement<D,R,dim>::Traits::LocalBasisType::Traits LocalBasisTraits;
+
   protected:
-    typedef typename FixedOrderLocalBasisTraits<typename P0LocalFiniteElement<D,R,dim>::Traits::LocalBasisType::Traits,0>::Traits T;
+    typedef typename FixedOrderLocalBasisTraits<LocalBasisTraits,0>::Traits T;
     typedef LocalFiniteElementVirtualInterface<T> FE;
     typedef typename std::map<GeometryType,FE*> FEMap;
 
@@ -136,7 +139,7 @@ namespace Dune
     {
       typename FEMap::iterator it = cache_.begin();
       typename FEMap::iterator end = cache_.end();
-      for(; it!=end; ++it)
+      for (; it!=end; ++it)
         delete it->second;
     }
 
@@ -147,9 +150,10 @@ namespace Dune
       if (it==cache_.end())
       {
         FiniteElementType* fe = PQkLocalFiniteElementFactory<D,R,dim,k>::create(gt);
-        if (fe==0)
-          DUNE_THROW(Dune::NotImplemented,"No Pk/Qk like local finite element available for geometry type " << gt << " and order " << k);
-
+        if (fe == NULL) {
+          DUNE_THROW(Dune::NotImplemented,
+            "No Pk/Qk like local finite element available for geometry type " << gt << " and order " << k);
+        }
         cache_[gt] = fe;
         return *fe;
       }
@@ -158,9 +162,8 @@ namespace Dune
 
   protected:
     mutable FEMap cache_;
-
   };
 
-}
+} // end namespace Dune
 
-#endif
+#endif // DUNE_PQK_FACTORY_HH

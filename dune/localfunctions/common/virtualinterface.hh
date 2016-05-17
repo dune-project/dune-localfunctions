@@ -127,10 +127,9 @@ namespace Dune
     typedef T Traits;
 
     //! \todo Please doc me!
-    virtual void evaluate (
-      const typename std::template array<int,Traits::diffOrder>& directions,
-      const typename Traits::DomainType& in,
-      std::vector<typename Traits::RangeType>& out) const = 0;
+    virtual void evaluate (const std::array<int,Traits::diffOrder>& directions,
+                           const typename Traits::DomainType& in,
+                           std::vector<typename Traits::RangeType>& out) const = 0;
 
     using BaseInterface::evaluate;
   };
@@ -172,23 +171,22 @@ namespace Dune
      * \param [in]  in  The position where evaluated
      * \param [out] out The result
      */
-    virtual void evaluateJacobian(const typename Traits::DomainType& in,         // position
-                                  std::vector<typename Traits::JacobianType>& out) const = 0;
+    virtual void evaluateJacobian (const typename Traits::DomainType& in,         // position
+                                   std::vector<typename Traits::JacobianType>& out) const = 0;
 
     /** \brief Evaluate partial derivatives of any order of all shape functions
      * \param order Order of the partial derivatives, in the classic multi-index notation
      * \param in Position where to evaluate the derivatives
      * \param[out] out Return value: the desired partial derivatives
      */
-    virtual void partial(const std::array<unsigned int,n>& order,
-                         const typename Traits::DomainType& in,
-                         std::vector<typename Traits::RangeType>& out) const = 0;
+    virtual void partial (const std::array<unsigned int,n>& order,
+                          const typename Traits::DomainType& in,
+                          std::vector<typename Traits::RangeType>& out) const = 0;
 
     //! \todo Please doc me!
-    virtual void evaluate (
-      const typename std::template array<int,Traits::diffOrder>& directions,
-      const typename Traits::DomainType& in,
-      std::vector<typename Traits::RangeType>& out) const = 0;
+    virtual void evaluate (const std::array<int, Traits::diffOrder>& directions,
+                           const typename Traits::DomainType& in,
+                           std::vector<typename Traits::RangeType>& out) const = 0;
 
   };
 
@@ -210,13 +208,13 @@ namespace Dune
     typedef T Traits;
 
     //! \todo Please doc me!
-    template <int k>
-    void evaluate (
-      const typename std::template array<int,k>& directions,
-      const typename Traits::DomainType& in,
-      std::vector<typename Traits::RangeType>& out) const
+    template <std::size_t k>
+    void evaluate (const std::array<int,k>& directions,
+                   const typename Traits::DomainType& in,
+                   std::vector<typename Traits::RangeType>& out) const
     {
-      typedef LocalBasisVirtualInterfaceBase<typename FixedOrderLocalBasisTraits<T,k>::Traits > OrderKBaseInterface;
+      typedef typename FixedOrderLocalBasisTraits<T,k>::Traits FOTraits;
+      typedef LocalBasisVirtualInterfaceBase<FOTraits> OrderKBaseInterface;
       const OrderKBaseInterface& asBase = *this;
       asBase.evaluate(directions, in, out);
     }
@@ -226,6 +224,7 @@ namespace Dune
     using BaseInterface::partial;
     using BaseInterface::evaluateFunction;
     using BaseInterface::evaluateJacobian;
+
     /* Unfortunately, the intel compiler cannot use the different evaluate
      * methods with varying argument lists. :-( */
 #ifndef __INTEL_COMPILER

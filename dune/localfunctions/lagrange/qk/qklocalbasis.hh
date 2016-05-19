@@ -4,6 +4,8 @@
 #ifndef DUNE_LOCALFUNCTIONS_QKLOCALBASIS_HH
 #define DUNE_LOCALFUNCTIONS_QKLOCALBASIS_HH
 
+#include <numeric>
+
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
 #include <dune/common/power.hh>

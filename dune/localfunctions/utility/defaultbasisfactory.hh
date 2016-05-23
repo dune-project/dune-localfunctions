@@ -19,6 +19,7 @@ namespace Dune
       return t;
     }
   };
+
   /************************************************
   * Class for providing a factory for basis
   * functions over the set of reference elements.
@@ -80,6 +81,7 @@ namespace Dune
 
     typedef typename Traits::Object Object;
     typedef typename Traits::Key Key;
+
     template <unsigned int dd, class FF>
     struct EvaluationBasisFactory
     {
@@ -90,14 +92,18 @@ namespace Dune
     template< class Topology >
     static Object *createObject ( const Key &key )
     {
-      const typename PreBasisFactory::Key preBasisKey = PreBasisKeyExtractor::apply(key);
-      const typename Traits::PreBasis *preBasis = Traits::PreBasisFactory::template create<Topology>( preBasisKey );
-      const typename Traits::Interpolation *interpol = Traits::InterpolationFactory::template create<Topology>( key );
-      BasisMatrix< typename Traits::PreBasis,
-          typename Traits::Interpolation,
-          ComputeField > matrix( *preBasis, *interpol );
+      const typename PreBasisFactory::Key preBasisKey
+        = PreBasisKeyExtractor::apply(key);
+      const typename Traits::PreBasis *preBasis
+        = Traits::PreBasisFactory::template create<Topology>( preBasisKey );
+      const typename Traits::Interpolation *interpol
+        = Traits::InterpolationFactory::template create<Topology>( key );
 
-      const typename Traits::MonomialBasis *monomialBasis = Traits::MonomialBasisFactory::template create< Topology >( preBasis->order() );
+      BasisMatrix<typename Traits::PreBasis, typename Traits::Interpolation, ComputeField>
+        matrix( *preBasis, *interpol );
+
+      const typename Traits::MonomialBasis *monomialBasis
+        = Traits::MonomialBasisFactory::template create< Topology >( preBasis->order() );
 
       Basis *basis = new Basis( *monomialBasis );
 
@@ -108,6 +114,7 @@ namespace Dune
 
       return basis;
     }
+
     //! release the object returned by the create methods
     static void release( Object *object)
     {

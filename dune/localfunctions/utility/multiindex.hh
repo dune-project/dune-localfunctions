@@ -46,6 +46,7 @@ namespace Dune
         factor_( 1. ),
         next_( 0 )
     {}
+
     template <class F>
     explicit MultiIndex (const F &f)
       : vecZ_( 0 ),
@@ -90,10 +91,12 @@ namespace Dune
     {
       return vecZ_[i];
     }
+
     int omz(int i) const
     {
       return vecOMZ_[i];
     }
+
     const Field &factor() const
     {
       return factor_;
@@ -109,6 +112,7 @@ namespace Dune
         next_ = new This(*(other.next_));
       return *this;
     }
+
     This &operator= ( const Zero<This> &/*f*/ )
     {
       remove();
@@ -117,6 +121,7 @@ namespace Dune
       factor_ = 0.;
       return *this;
     }
+
     This &operator= ( const Unity<This> &/*f*/ )
     {
       remove();
@@ -125,6 +130,7 @@ namespace Dune
       factor_ = 1.;
       return *this;
     }
+
     template <class F>
     This &operator= ( const F &f )
     {
@@ -149,6 +155,7 @@ namespace Dune
         (*next_) *= f;
       return *this;
     }
+
     template <class F>
     This &operator/= ( const F &f )
     {
@@ -168,6 +175,7 @@ namespace Dune
         (*next_) *= other;
       return *this;
     }
+
     This &operator/= ( const This &other )
     {
       assert(!other.next_);
@@ -202,6 +210,7 @@ namespace Dune
         factor_ += other.factor_;
       return *this;
     }
+
     This &operator-= ( const This &other )
     {
       assert(!other.next_);
@@ -225,6 +234,7 @@ namespace Dune
       This z = *this;
       return (z *= f);
     }
+
     template <class F>
     This operator/ ( const F &f ) const
     {
@@ -237,6 +247,7 @@ namespace Dune
       This z = *this;
       return (z *= other);
     }
+
     This operator/ ( const This &other ) const
     {
       This z = *this;
@@ -248,6 +259,7 @@ namespace Dune
       This z = *this;
       return (z += other);
     }
+
     This operator- ( const This &other ) const
     {
       This z = *this;
@@ -313,6 +325,7 @@ namespace Dune
     MultiIndex<dim,Field> z = m;
     return (z *= f);
   }
+
   template <int dim, class Field, class F>
   MultiIndex<dim,Field> operator/ ( const F &f,
                                     const MultiIndex<dim,Field> &m)
@@ -332,6 +345,7 @@ namespace Dune
     }
     return out;
   }
+
   template <int d,class F,int dimR>
   std::ostream &operator<<(std::ostream& out,
                            const std::vector<Dune::FieldVector<MultiIndex<d,F>,dimR> >& y) {
@@ -350,6 +364,7 @@ namespace Dune
     out << "\\end{eqnarray*}" << std::endl;
     return out;
   }
+
   template <int d,class F,int dimR1,int dimR2>
   std::ostream &operator<<(std::ostream& out,
                            const std::vector<Dune::FieldMatrix<MultiIndex<d,F>,dimR1,dimR2> >& y) {
@@ -370,6 +385,7 @@ namespace Dune
     out << "\\end{eqnarray*}" << std::endl;
     return out;
   }
+
   template <int d, class F>
   std::ostream &operator<<(std::ostream& out,const MultiIndex<d,F>& val)
   {

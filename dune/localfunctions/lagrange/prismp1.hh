@@ -55,7 +55,7 @@ namespace Dune
     }
 
     /** \brief Number of shape functions in this finite element */
-    unsigned int size () const
+    std::size_t size () const
     {
       return basis.size();
     }

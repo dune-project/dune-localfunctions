@@ -10,7 +10,7 @@ namespace Dune
 {
   namespace Impl
   {
-    // helper function to convert an differentiation-order array used in the
+    // helper function to convert a differentiation-order array used in the
     // LocalBasis::partial methods to a differentiation-direction array used in
     // the LocalBasis::evaluate methods.
     template <std::size_t dim, std::size_t diffOrder>
@@ -23,7 +23,7 @@ namespace Dune
           directions[counter++] = i;
     }
 
-    // helper function to convert an differentiation-direction array used in the
+    // helper function to convert a differentiation-direction array used in the
     // LocalBasis::evaluate methods to a differentiation-order array used in
     // the LocalBasis::partial methods.
     template <std::size_t dim, std::size_t diffOrder>

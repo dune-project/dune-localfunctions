@@ -21,8 +21,7 @@ namespace Dune
   template< template <class,unsigned int> class LP, unsigned int dim, class F >
   struct LagrangeCoefficientsFactory;
 
-  template< template <class,unsigned int> class LP,
-      unsigned int dim, class F>
+  template< template <class,unsigned int> class LP, unsigned int dim, class F>
   struct LagrangeCoefficientsFactoryTraits
   {
     static const unsigned int dimension = dim;
@@ -31,10 +30,9 @@ namespace Dune
     typedef LagrangeCoefficientsFactory< LP,dim,F > Factory;
   };
 
-  template< template <class,unsigned int> class LP,
-      unsigned int dim, class F>
-  struct LagrangeCoefficientsFactory :
-    public TopologyFactory< LagrangeCoefficientsFactoryTraits< LP,dim,F> >
+  template< template <class,unsigned int> class LP, unsigned int dim, class F>
+  struct LagrangeCoefficientsFactory
+    : public TopologyFactory< LagrangeCoefficientsFactoryTraits< LP,dim,F> >
   {
     typedef LagrangeCoefficientsFactoryTraits<LP,dim,F> Traits;
     static const unsigned int dimension = dim;

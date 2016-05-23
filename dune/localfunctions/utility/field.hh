@@ -233,16 +233,19 @@ namespace Dune
   {
     typedef F2 type;
   };
+
   template< class F2,class F1,int dim >
   struct FieldCast< F2, Dune::FieldVector<F1,dim> >
   {
     typedef Dune::FieldVector<F2,dim> type;
   };
+
   template< class F2,class F1,int dim1, int dim2>
   struct FieldCast< F2, Dune::FieldMatrix<F1,dim1,dim2> >
   {
     typedef Dune::FieldMatrix<F2,dim1,dim2> type;
   };
+
   template< class F2,class V >
   inline typename FieldCast<F2,V>::type field_cast ( const V &f1 )
   {

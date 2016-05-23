@@ -10,15 +10,13 @@
 namespace Dune
 {
 
-  template< template <class,unsigned int> class LP,
-      unsigned int dim, class F >
+  template< template <class,unsigned int> class LP, unsigned int dim, class F >
   struct LagrangeInterpolationFactory;
 
   // LocalLagrangeInterpolation
   // --------------------------
 
-  template< template <class,unsigned int> class LP,
-      unsigned int dim, class F >
+  template< template <class,unsigned int> class LP, unsigned int dim, class F >
   class LocalLagrangeInterpolation
   {
     typedef LocalLagrangeInterpolation< LP,dim,F > This;
@@ -36,6 +34,7 @@ namespace Dune
     explicit LocalLagrangeInterpolation ( const LagrangePointSet &lagrangePoints )
       : lagrangePoints_( lagrangePoints )
     {}
+
     const LagrangePointSet *points () const
     {
       return &lagrangePoints_;
@@ -79,11 +78,9 @@ namespace Dune
   };
 
 
-
   // LocalLagrangeInterpolationFactory
   // ---------------------------------
-  template< template <class,unsigned int> class LP,
-      unsigned int dim, class F >
+  template< template <class,unsigned int> class LP, unsigned int dim, class F >
   struct LagrangeInterpolationFactoryTraits
   {
     typedef LagrangeCoefficientsFactory<LP,dim,F> LagrangePointSetFactory;
@@ -96,8 +93,8 @@ namespace Dune
     static const unsigned int dimension = dim;
   };
 
-  template< template <class,unsigned int> class LP,
-      unsigned int dim, class F >
+
+  template< template <class,unsigned int> class LP, unsigned int dim, class F >
   struct LagrangeInterpolationFactory :
     public TopologyFactory< LagrangeInterpolationFactoryTraits< LP,dim,F > >
   {
@@ -115,11 +112,13 @@ namespace Dune
       else
         return new Object( *lagrangeCoeff );
     }
+
     template< class Topology >
     static bool supports ( const typename Traits::Key &key )
     {
       return true;
     }
+
     static void release( Object *object)
     {
       Traits::LagrangePointSetFactory::release( object->points() );

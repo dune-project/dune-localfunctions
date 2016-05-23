@@ -3,8 +3,8 @@ install(FILES
   interface.hh
   interfaceswitch.hh
   localbasis.hh
-  localkey.hh
   localfiniteelementtraits.hh
+  localkey.hh
   localtoglobaladaptors.hh
   partial.hh
   staticIf.hh

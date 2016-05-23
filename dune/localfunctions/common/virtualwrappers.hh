@@ -97,20 +97,8 @@ namespace Dune
     using Base::evaluate;
     using Base::partial;
 
-    /** \brief Evaluate partial derivatives of any order of all shape functions
-     * \param order Order of the partial derivatives, in the classic multi-index notation
-     * \param in Position where to evaluate the derivatives
-     * \param[out] out Return value: the desired partial derivatives
-     */
-//     void partial(const std::array<unsigned int,Traits::dimDomain>& order,
-//                  const typename Traits::DomainType& in,
-//                  std::vector<typename Traits::RangeType>& out) const
-//     {
-//       impl_.partial(order, in, out);
-//     }
 
-
-    //! @copydoc LocalBasisVirtualInterface::evaluate
+    //! @copydoc LocalBasisVirtualInterface::evaluate, \deprecated
     inline void evaluate(const std::array<int,Traits::diffOrder>& directions,
                          const typename Traits::DomainType& in,
                          std::vector<typename Traits::RangeType>& out) const
@@ -155,13 +143,13 @@ namespace Dune
     typedef LocalBasisTraits<DF,n,D,RF,m,R,J,0> Traits;
 
     //! @copydoc LocalBasisVirtualInterface::size
-    unsigned int size () const
+    std::size_t size () const
     {
       return impl_.size();
     }
 
     //! @copydoc LocalBasisVirtualInterface::order
-    unsigned int order () const
+    std::size_t order () const
     {
       return impl_.order();
     }
@@ -190,12 +178,10 @@ namespace Dune
                  const typename Traits::DomainType& in,
                  std::vector<typename Traits::RangeType>& out) const
     {
-      // maxDiffOrder == 0 ---> call evaluateFunction directly
-//       impl_.evaluateFunction(in,out);
       impl_.partial(order,in,out);
     }
 
-    //! @copydoc LocalBasisVirtualInterface::evaluate
+    //! @copydoc LocalBasisVirtualInterface::evaluate, \deprecated
     inline void evaluate(
       const typename std::template array<int,Traits::diffOrder>& /*directions*/,
       const typename Traits::DomainType& in,
@@ -375,7 +361,7 @@ namespace Dune
     }
 
     /** \brief Number of shape functions in this finite element */
-    unsigned int size () const
+    std::size_t size () const
     {
       return impl_->size();
     }

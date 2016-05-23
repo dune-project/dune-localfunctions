@@ -411,22 +411,51 @@ namespace Dune
       if (totalOrder == 0) {
         evaluateFunction(in, out);
       } else {
-        // Calculate directions from order and call evaluate for the
-        // specific totalOrder value, to calculate the derivatives.
-        int dOrder = staticFindIf<1, Traits::diffOrder+1>([&](const auto i)
-        {
-          if (i == totalOrder) {
-            std::array<int, i> directions;
-            Impl::order2directions(order, directions);
-            this->evaluate<i>(directions, in, out);
-            return true; // terminate loop
-          } else {
-            return false;
-          }
-        });
+        auto direction = find_index(order, 1);
+        out.resize(size());
 
-        if (dOrder > Traits::diffOrder)
-          DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+        switch (direction) {
+          case 0:
+            out[0] =-3.0 + 4.0*(in[0] + in[1] + in[2]);
+            out[1] =-1.0 + 4.0*in[0];
+            out[2] = 0.0;
+            out[3] = 0.0;
+            out[4] = 4.0 - 4.0*(2.0*in[0] + in[1] + in[2]);
+            out[5] = 4.0*in[1];
+            out[6] =-4.0*in[1];
+            out[7] =-4.0*in[2];
+            out[8] = 4.0*in[2];
+            out[9] = 0.0;
+            break;
+          case 1:
+            out[0] =-3.0 + 4.0*(in[0] + in[1] + in[2]);
+            out[1] = 0.0;
+            out[2] =-1.0 + 4.0*in[1];
+            out[3] = 0.0;
+            out[4] =-4.0*in[0];
+            out[5] = 4.0*in[0];
+            out[6] = 4.0 - 4.0*(in[0] + 2.0*in[1] + in[2]);
+            out[7] =-4.0*in[2];
+            out[8] = 0.0;
+            out[9] = 4.0*in[2];
+            break;
+          case 2:
+            out[0] =-3.0 + 4.0*(in[0] + in[1] + in[2]);
+            out[1] = 0.0;
+            out[2] = 0.0;
+            out[3] =-1.0 + 4.0*in[2];
+            out[4] =-4.0*in[0];
+            out[5] = 0.0;
+            out[6] =-4.0*in[1];
+            out[7] = 4.0 - 4.0*(in[0] + in[1] + 2.0*in[2]);
+            out[8] = 4.0*in[0];
+            out[9] = 4.0*in[1];
+            break;
+          default:
+            DUNE_THROW(RangeError, "Component out of range.");
+        }
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
       }
     }
 
@@ -487,7 +516,7 @@ namespace Dune
 
 
     //! \brief Polynomial order of the shape functions
-    unsigned int order () const
+    constexpr std::size_t order () const
     {
       return 2;
     }

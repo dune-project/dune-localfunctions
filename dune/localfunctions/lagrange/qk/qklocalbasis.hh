@@ -105,9 +105,8 @@ namespace Dune
      * \param in position where to evaluate
      * \param out The return value
      */
-    inline void
-    evaluateJacobian (const typename Traits::DomainType& in,
-                      std::vector<typename Traits::JacobianType>& out) const
+    inline void evaluateJacobian (const typename Traits::DomainType& in,
+                                  std::vector<typename Traits::JacobianType>& out) const
     {
       out.resize(size());
 
@@ -207,7 +206,7 @@ namespace Dune
     }
 
     //! \brief Polynomial order of the shape functions
-    unsigned int order () const
+    constexpr std::size_t order () const
     {
       return k;
     }

@@ -181,7 +181,7 @@ namespace Dune
       }
     }
 
-    //! \brief Evaluate higher derivatives of all shape functions
+    //! \brief Evaluate higher derivatives of all shape functions. \deprecated
     template<std::size_t dOrder>
     inline void evaluate(const std::array<int,dOrder>& /*directions*/,
                          const typename Traits::DomainType& in,  //position
@@ -199,7 +199,7 @@ namespace Dune
     }
 
     //! \brief Polynomial order of the shape functions
-    unsigned int order () const
+    constexpr std::size_t order () const
     {
       return k;
     }
@@ -233,9 +233,8 @@ namespace Dune
     }
 
     // evaluate derivative of a single component
-    inline void
-    evaluateJacobian (const typename Traits::DomainType& /*in*/,         // position
-                      std::vector<typename Traits::JacobianType>& out) const      // return value
+    inline void evaluateJacobian (const typename Traits::DomainType& /*in*/,         // position
+                                  std::vector<typename Traits::JacobianType>& out) const      // return value
     {
       out.resize(1);
       out[0][0][0] = 0;
@@ -261,7 +260,7 @@ namespace Dune
       }
     }
 
-    //! \brief Evaluate higher derivatives of all shape functions
+    //! \brief Evaluate higher derivatives of all shape functions. \deprecated
     template<unsigned int dOrder> //order of derivative
     inline void evaluate(const std::array<int,dOrder>& /*directions*/, //direction of derivative
                          const typename Traits::DomainType& in,  //position
@@ -288,7 +287,7 @@ namespace Dune
       out[0] = y;
     }
 
-    unsigned int order () const
+    constexpr std::size_t order () const
     {
       return 0;
     }

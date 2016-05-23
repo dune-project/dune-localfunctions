@@ -126,7 +126,7 @@ namespace Dune
   public:
     typedef T Traits;
 
-    //! \todo Please doc me!
+    //! \todo Please doc me! \deprecated
     virtual void evaluate (const std::array<int,Traits::diffOrder>& directions,
                            const typename Traits::DomainType& in,
                            std::vector<typename Traits::RangeType>& out) const = 0;
@@ -150,10 +150,10 @@ namespace Dune
     virtual ~LocalBasisVirtualInterfaceBase() {}
 
     //! \brief Number of shape functions
-    virtual unsigned int size () const = 0;
+    virtual std::size_t size () const = 0;
 
     //! \brief Polynomial order of the shape functions
-    virtual unsigned int order () const = 0;
+    virtual std::size_t order () const = 0;
 
     /** \brief Evaluate all basis function at given position
      *
@@ -183,7 +183,7 @@ namespace Dune
                           const typename Traits::DomainType& in,
                           std::vector<typename Traits::RangeType>& out) const = 0;
 
-    //! \todo Please doc me!
+    //! \todo Please doc me! \deprecated
     virtual void evaluate (const std::array<int, Traits::diffOrder>& directions,
                            const typename Traits::DomainType& in,
                            std::vector<typename Traits::RangeType>& out) const = 0;
@@ -207,7 +207,7 @@ namespace Dune
   public:
     typedef T Traits;
 
-    //! \todo Please doc me!
+    //! \todo Please doc me! \deprecated
     template <std::size_t k>
     void evaluate (const std::array<int,k>& directions,
                    const typename Traits::DomainType& in,
@@ -443,7 +443,7 @@ namespace Dune
     virtual const typename Traits::LocalInterpolationType& localInterpolation () const = 0;
 
     //! \copydoc LocalFiniteElementVirtualInterface::size
-    virtual unsigned int size () const = 0;
+    virtual std::size_t size () const = 0;
 
     //! \copydoc LocalFiniteElementVirtualInterface::type
     virtual const GeometryType type () const = 0;

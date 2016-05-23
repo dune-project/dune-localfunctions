@@ -24,20 +24,20 @@ namespace Dune
 
   public:
     //! construct local keys for n basis functions
-    DGLocalCoefficients ( const unsigned int n )
+    DGLocalCoefficients(const std::size_t n)
       : localKey_( n )
     {
-      for( unsigned i = 0; i < n; ++i )
-        localKey_[ i ] = LocalKey( 0, 0, i );
+      for (std::size_t i = 0; i < n; ++i )
+        localKey_[i] = LocalKey( 0, 0, i );
     }
 
-    const LocalKey &localKey ( const unsigned int i ) const
+    const LocalKey& localKey (const std::size_t i) const
     {
       assert( i < size() );
-      return localKey_[ i ];
+      return localKey_[i];
     }
 
-    unsigned int size () const
+    std::size_t size () const
     {
       return localKey_.size();
     }

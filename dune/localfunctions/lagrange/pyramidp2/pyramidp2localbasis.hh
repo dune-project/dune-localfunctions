@@ -99,9 +99,8 @@ namespace Dune
     }
 
     //! \brief Evaluate Jacobian of all shape functions
-    inline void
-    evaluateJacobian (const typename Traits::DomainType& in,         // position
-                      std::vector<typename Traits::JacobianType>& out) const      // return value
+    inline void evaluateJacobian (const typename Traits::DomainType& in,         // position
+                                  std::vector<typename Traits::JacobianType>& out) const      // return value
     {
       out.resize(14);
 
@@ -322,7 +321,7 @@ namespace Dune
     }
 
     //! \brief Polynomial order of the shape functions
-    unsigned int order () const
+    constexpr std::size_t order () const
     {
       return 2;
     }

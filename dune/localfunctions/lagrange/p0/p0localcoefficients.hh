@@ -22,11 +22,12 @@ namespace Dune
   {
   public:
     //! \brief Standard constructor
-    P0LocalCoefficients () : index(0,0,0)
+    P0LocalCoefficients ()
+      : index(0,0,0)
     {}
 
     //! number of coefficients
-    std::size_t size () const
+    constexpr std::size_t size () const
     {
       return 1;
     }

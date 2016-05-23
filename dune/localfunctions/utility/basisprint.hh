@@ -4,7 +4,8 @@
 #define BASISPRINT
 #include <dune/localfunctions/utility/multiindex.hh>
 #include <dune/localfunctions/utility/polynomialbasis.hh>
-namespace Dune {
+namespace Dune
+{
   /**********************************************
   * Methods for printing a PolynomialBasis.
   * Is achieved by using the MultiIndex class as

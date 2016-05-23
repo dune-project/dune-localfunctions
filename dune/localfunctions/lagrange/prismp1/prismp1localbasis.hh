@@ -68,6 +68,38 @@ namespace Dune
       auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
       if (totalOrder == 0) {
         evaluateFunction(in, out);
+      } else if (totalOrder == 1) {
+        auto direction = find_index(order, 1);
+        out.resize(size());
+
+        switch (direction) {
+          case 0:
+            out[0] = in[2]-1;
+            out[1] = 1-in[2];
+            out[2] = 0;
+            out[3] = -in[2];
+            out[4] = in[2];
+            out[5] = 0;
+            break;
+          case 1:
+            out[0] = in[2]-1;
+            out[1] = 0;
+            out[2] = 1-in[2];
+            out[3] = -in[2];
+            out[4] = 0;
+            out[5] = in[2];
+            break;
+          case 2:
+            out[0] = in[0]+in[1]-1;  // basis function 0
+            out[1] = -in[0];         // basis function 1
+            out[2] = -in[1];         // basis function 2
+            out[3] = 1-in[0]-in[1];  // basis function 3
+            out[4] = in[0];          // basis function 4
+            out[5] = in[1];          // basis function 5
+            break;
+          default:
+            DUNE_THROW(RangeError, "Component out of range.");
+        }
       } else {
         DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
       }
@@ -75,20 +107,21 @@ namespace Dune
 
     //! \brief Evaluate partial derivatives of all shape functions
     template <std::size_t dOrder>
-    inline void evaluate (const std::array<int, dOrder>& /*directions*/,
+    inline void evaluate (const std::array<int, dOrder>& directions,
                           const typename Traits::DomainType& in,         // position
                           std::vector<typename Traits::RangeType>& out) const      // return value
     {
       if (dOrder == 0) {
         evaluateFunction(in, out);
       } else {
-        // TODO: implement partial derivatives
-        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+        std::array<unsigned int,3> order;
+        Impl::directions2order(directions, order);
+        partial(order, in, out);
       }
     }
 
     //! \brief Polynomial order of the shape functions
-    unsigned int order () const
+    constexpr std::size_t order () const
     {
       return 1;
     }

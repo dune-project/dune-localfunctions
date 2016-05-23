@@ -14,7 +14,8 @@ namespace Dune
   class P0LocalInterpolation
   {
   public:
-    P0LocalInterpolation (const GeometryType& gt) : gt_(gt)
+    P0LocalInterpolation (const GeometryType& gt)
+      : gt_(gt)
     {}
 
     //! determine coefficients interpolating a given function

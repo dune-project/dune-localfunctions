@@ -77,9 +77,9 @@ namespace Dune
     {
       auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
 
-      if (totalOrder==0)
+      if (totalOrder == 0)
         evaluateFunction(in, out);
-      else if (totalOrder==1)
+      else if (totalOrder == 1)
       {
         auto direction = find_index(order, 1);
         out.resize(size());
@@ -97,9 +97,9 @@ namespace Dune
       }
     }
 
-    //! \brief Evaluate all shape functions
+    //! \brief Evaluate all shape functions. \deprecated
     template<std::size_t dOrder>
-    inline void evaluate (const typename std::array<int,dOrder>& directions,
+    inline void evaluate (const std::array<int,dOrder>& directions,
                           const typename Traits::DomainType& in,
                           std::vector<typename Traits::RangeType>& out) const
     {
@@ -123,7 +123,7 @@ namespace Dune
     }
 
     //! \brief Polynomial order of the shape functions
-    unsigned int order () const
+    constexpr std::size_t order () const
     {
       return 1;
     }

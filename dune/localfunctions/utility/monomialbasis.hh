@@ -94,11 +94,11 @@ namespace Dune
     friend class MonomialBasisSize< GenericGeometry::Prism< Topology > >;
     friend class MonomialBasisSize< GenericGeometry::Pyramid< Topology > >;
 
-    mutable std::size_t maxOrder_;
+    mutable unsigned int maxOrder_;
     // sizes_[ k ]: number of basis functions of exactly order k
-    mutable std::size_t *sizes_;
+    mutable unsigned int *sizes_;
     // numBaseFunctions_[ k ] = sizes_[ 0 ] + ... + sizes_[ k ]
-    mutable std::size_t *numBaseFunctions_;
+    mutable unsigned int *numBaseFunctions_;
 
     MonomialBasisSize ()
       : maxOrder_( 0 ),
@@ -114,17 +114,17 @@ namespace Dune
       delete[] numBaseFunctions_;
     }
 
-    std::size_t operator() ( const std::size_t order ) const
+    unsigned int operator() ( const unsigned int order ) const
     {
       return numBaseFunctions_[ order ];
     }
 
-    std::size_t maxOrder () const
+    unsigned int maxOrder () const
     {
       return maxOrder_;
     }
 
-    void computeSizes ( std::size_t order ) const
+    void computeSizes ( unsigned int order ) const
     {
       if (order <= maxOrder_)
         return;
@@ -133,12 +133,12 @@ namespace Dune
 
       delete [] sizes_;
       delete [] numBaseFunctions_;
-      sizes_            = new std::size_t[ order+1 ];
-      numBaseFunctions_ = new std::size_t[ order+1 ];
+      sizes_            = new unsigned int[ order+1 ];
+      numBaseFunctions_ = new unsigned int[ order+1 ];
 
       sizes_[ 0 ] = 1;
       numBaseFunctions_[ 0 ] = 1;
-      for( std::size_t k = 1; k <= order; ++k )
+      for( unsigned int k = 1; k <= order; ++k )
       {
         sizes_[ k ]            = 0;
         numBaseFunctions_[ k ] = 1;
@@ -163,11 +163,11 @@ namespace Dune
     friend class MonomialBasisSize< GenericGeometry::Prism< Topology > >;
     friend class MonomialBasisSize< GenericGeometry::Pyramid< Topology > >;
 
-    mutable std::size_t maxOrder_;
+    mutable unsigned int maxOrder_;
     // sizes_[ k ]: number of basis functions of exactly order k
-    mutable std::size_t *sizes_;
+    mutable unsigned int *sizes_;
     // numBaseFunctions_[ k ] = sizes_[ 0 ] + ... + sizes_[ k ]
-    mutable std::size_t *numBaseFunctions_;
+    mutable unsigned int *numBaseFunctions_;
 
     MonomialBasisSize ()
       : maxOrder_( 0 ),
@@ -183,17 +183,17 @@ namespace Dune
       delete[] numBaseFunctions_;
     }
 
-    std::size_t operator() ( const std::size_t order ) const
+    unsigned int operator() ( const unsigned int order ) const
     {
       return numBaseFunctions_[ order ];
     }
 
-    std::size_t maxOrder() const
+    unsigned int maxOrder() const
     {
       return maxOrder_;
     }
 
-    void computeSizes ( std::size_t order ) const
+    void computeSizes ( unsigned int order ) const
     {
       if (order <= maxOrder_)
         return;
@@ -202,18 +202,18 @@ namespace Dune
 
       delete[] sizes_;
       delete[] numBaseFunctions_;
-      sizes_            = new std::size_t[ order+1 ];
-      numBaseFunctions_ = new std::size_t[ order+1 ];
+      sizes_            = new unsigned int[ order+1 ];
+      numBaseFunctions_ = new unsigned int[ order+1 ];
 
       MonomialBasisSize<BaseTopology> &baseBasis =
         MonomialBasisSize<BaseTopology>::instance();
       baseBasis.computeSizes( order );
-      const std::size_t *const baseSizes = baseBasis.sizes_;
-      const std::size_t *const baseNBF   = baseBasis.numBaseFunctions_;
+      const unsigned int *const baseSizes = baseBasis.sizes_;
+      const unsigned int *const baseNBF   = baseBasis.numBaseFunctions_;
 
       sizes_[ 0 ] = 1;
       numBaseFunctions_[ 0 ] = 1;
-      for( std::size_t k = 1; k <= order; ++k )
+      for( unsigned int k = 1; k <= order; ++k )
       {
         sizes_[ k ]            = baseNBF[ k ] + k*baseSizes[ k ];
         numBaseFunctions_[ k ] = numBaseFunctions_[ k-1 ] + sizes_[ k ];
@@ -238,11 +238,11 @@ namespace Dune
     friend class MonomialBasisSize< GenericGeometry::Prism< Topology > >;
     friend class MonomialBasisSize< GenericGeometry::Pyramid< Topology > >;
 
-    mutable std::size_t maxOrder_;
+    mutable unsigned int maxOrder_;
     // sizes_[ k ]: number of basis functions of exactly order k
-    mutable std::size_t *sizes_;
+    mutable unsigned int *sizes_;
     // numBaseFunctions_[ k ] = sizes_[ 0 ] + ... + sizes_[ k ]
-    mutable std::size_t *numBaseFunctions_;
+    mutable unsigned int *numBaseFunctions_;
 
     MonomialBasisSize ()
       : maxOrder_( 0 ),
@@ -258,17 +258,17 @@ namespace Dune
       delete[] numBaseFunctions_;
     }
 
-    std::size_t operator() ( const std::size_t order ) const
+    unsigned int operator() ( const unsigned int order ) const
     {
       return numBaseFunctions_[ order ];
     }
 
-    std::size_t maxOrder() const
+    unsigned int maxOrder() const
     {
       return maxOrder_;
     }
 
-    void computeSizes ( std::size_t order ) const
+    void computeSizes ( unsigned int order ) const
     {
       if (order <= maxOrder_)
         return;
@@ -277,8 +277,8 @@ namespace Dune
 
       delete[] sizes_;
       delete[] numBaseFunctions_;
-      sizes_            = new std::size_t[ order+1 ];
-      numBaseFunctions_ = new std::size_t[ order+1 ];
+      sizes_            = new unsigned int[ order+1 ];
+      numBaseFunctions_ = new unsigned int[ order+1 ];
 
       MonomialBasisSize<BaseTopology> &baseBasis =
         MonomialBasisSize<BaseTopology>::instance();
@@ -288,7 +288,7 @@ namespace Dune
       const unsigned int *const baseNBF = baseBasis.numBaseFunctions_;
       sizes_[ 0 ] = 1;
       numBaseFunctions_[ 0 ] = 1;
-      for( std::size_t k = 1; k <= order; ++k )
+      for(unsigned int k = 1; k <= order; ++k )
       {
         sizes_[ k ]            = baseNBF[ k ];
         numBaseFunctions_[ k ] = numBaseFunctions_[ k-1 ] + sizes_[ k ];
@@ -669,7 +669,7 @@ namespace Dune
       return sizes( order_ );
     }
 
-    std::size_t size () const
+    unsigned int size () const
     {
       size_.computeSizes( order_ );
       return size_( order_ );
@@ -682,7 +682,7 @@ namespace Dune
       return MonomialBasisSize< SimplexTopology >::instance() ( deriv );
     }
 
-    std::size_t order () const
+    unsigned int order () const
     {
       return order_ ;
     }

@@ -284,7 +284,7 @@ namespace Dune
     }
 
     //! number of coefficients
-    constexpr std::size_t size () const
+    static constexpr std::size_t size ()
     {
       return StaticPower<k+1,d>::power;
     }

@@ -95,7 +95,7 @@ namespace Dune
       auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
       if (totalOrder == 0) {
         evaluateFunction(in, out);
-      } else (totalOrder == 1) {
+      } else if (totalOrder == 1) {
         auto direction = find_index(order, 1);
         out.resize(size());
 
@@ -127,7 +127,7 @@ namespace Dune
               DUNE_THROW(RangeError, "Component out of range.");
           }
         }
-        else
+        else /* (in[0] <= in[1]) */
         {
           switch (direction) {
             case 0:

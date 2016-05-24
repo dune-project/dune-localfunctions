@@ -35,7 +35,8 @@ namespace Dune
     };
 
     //! \brief Standard constructor for uninitialized local index
-    LocalKey ()
+    constexpr LocalKey ()
+      : values_{0, 0, 0}
     {}
 
     /** \brief Initialize all components
@@ -43,12 +44,9 @@ namespace Dune
         \param c Codimension of the associated subentity
         \param i Index in the set of all functions associated to this subentity
      */
-    LocalKey (unsigned int s, unsigned int c, unsigned int i)
-    {
-      values_[0] = s;
-      values_[1] = c;
-      values_[2] = i;
-    }
+    constexpr LocalKey (unsigned int s, unsigned int c, unsigned int i)
+      : values_{s, c, i}
+    {}
 
     //! \brief Return number of associated subentity
     inline unsigned int subEntity () const

@@ -63,7 +63,7 @@ namespace Dune
     {}
 
   public:
-    const LagrangePoint &operator[] ( const std::size_T i ) const
+    const LagrangePoint &operator[] ( const std::size_t i ) const
     {
       assert( i < size() );
       return points_[ i ];

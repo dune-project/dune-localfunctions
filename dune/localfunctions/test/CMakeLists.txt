@@ -10,6 +10,8 @@ dune_add_test(SOURCES test-edges0.5.cc)
 
 dune_add_test(SOURCES test-localfe.cc)
 
+dune_add_test(SOURCES test-concepts.cc)
+
 dune_add_test(SOURCES test-monomial)
 
 dune_add_test(SOURCES test-pk2d.cc)

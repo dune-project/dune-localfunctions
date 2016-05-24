@@ -26,11 +26,11 @@ namespace Dune
       (
         //! \brief Number of shape functions
         lb.size(),
-        requireConvertible<unsigned int>( fe.size() ),
+        requireConvertible<unsigned int>( lb.size() ),
 
         //! \brief Polynomial order of the shape functions
         lb.order(),
-        requireConvertible<unsigned int>( fe.order() ),
+        requireConvertible<unsigned int>( lb.order() ),
 
         //! \brief Evaluate all basis function at given position.
         lb.evaluateFunction(std::declval<D>(), vectorR),
@@ -165,11 +165,11 @@ namespace Dune
 
     //! \brief A static concept check that returns true, if the type LI models a
     //! \ref LocalInterpolationConcept.
-    template <class LI>
+    template <class LI,
+              class DomainType = typename LI::FunctionType::DomainType,
+              class RangeType = typename LI::FunctionType::RangeType>
     static constexpr bool isLocalInterpolation()
     {
-      using DomainType = typename LI::FunctionType::DomainType;
-      using RangeType  = typename LI::FunctionType::RangeType;
       return Dune::models< LocalInterpolationConcept<DomainType, RangeType>, LI >();
     }
 
@@ -182,7 +182,7 @@ namespace Dune
       (
         //! \brief number of coefficients
         lc.size(), // -> std::size_t
-        requireConvertible<std::size_t>( fe.size() ),
+        requireConvertible<std::size_t>( lc.size() ),
 
         //! \brief get i'th index
         lc.localKey(std::declval<std::size_t>())
@@ -203,15 +203,18 @@ namespace Dune
     template<class Traits>
     struct LocalFiniteElementConcept;
 
-    template<class DF, int n, class D, class RF, int m, class R, class J, int dOrder>
-    struct LocalFiniteElementConcept< LocalBasisTraits<DF,n,D,RF,m,R,J,dOrder> >
+    template<class LB, class LC, class LI>
+    struct LocalFiniteElementConcept< LocalFiniteElementTraits<LB, LC, LI> >
     {
+      using DomainType = typename LB::Traits::DomainType;
+      using RangeType = typename LB::Traits::RangeType;
+
       template<class FE>
       auto require(FE&& fe) -> decltype
       (
         //! \brief Return `Traits::LocalBasisType const&`
         fe.localBasis(),
-        requireConcept<LocalBasisConcept>( fe.localBasis() ),
+        requireConcept<LocalBasisConcept<typename LB::Traits>>( fe.localBasis() ),
 
         //! \brief Return `Traits::LocalCoefficientsType const&`
         fe.localCoefficients(),
@@ -219,7 +222,7 @@ namespace Dune
 
         //! \brief Return `Traits::LocalInterpolationType const&`
         fe.localInterpolation(),
-        requireConcept<LocalInterpolationConcept>( fe.localInterpolation() ),
+        requireConcept<LocalInterpolationConcept<DomainType, RangeType>>( fe.localInterpolation() ),
 
         //! \brief Number of shape functions in this finite element
         fe.size(),
@@ -227,8 +230,8 @@ namespace Dune
 
         //! \brief Return `const GeometryType`
         fe.type(),
-        requireConvertible<const GeometryType>( fe.type() )
-      );
+        requireConvertible<GeometryType>( fe.type() ),
+      0);
 
     };
 

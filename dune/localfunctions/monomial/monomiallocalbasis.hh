@@ -301,7 +301,7 @@ namespace Dune
     }
 
     //! \brief Polynomial order of the shape functions
-    unsigned int order () const
+    constexpr std::size_t order () const
     {
       return p;
     }

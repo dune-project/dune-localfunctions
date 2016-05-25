@@ -24,8 +24,7 @@ namespace Dune {
    *       FiniteElement::Traits::LocalBasisType.
    */
   template<class FiniteElement, class Dummy = void>
-  struct FiniteElementInterfaceSwitch
-  {
+  struct FiniteElementInterfaceSwitch {
     //! export the type of the basis
     typedef typename FiniteElement::Traits::Basis Basis;
     //! export the type of the interpolation
@@ -34,24 +33,16 @@ namespace Dune {
     typedef typename FiniteElement::Traits::Coefficients Coefficients;
 
     //! access basis
-    static const Basis& basis(const FiniteElement& fe)
-    {
-      return fe.basis();
-    }
-
+    static const Basis &basis(const FiniteElement& fe)
+    { return fe.basis(); }
     //! access interpolation
     static const Interpolation &interpolation(const FiniteElement& fe)
-    {
-      return fe.interpolation();
-    }
-
+    { return fe.interpolation(); }
     //! access coefficients
     static const Coefficients &coefficients(const FiniteElement& fe)
-    {
-      return fe.coefficients(); '
-    }
+    { return fe.coefficients(); }
 
-    //! \brief Type for storing finite elements
+    //! Type for storing finite elements
     /**
      * Some algorithms use one variable to store (a pointer) a finite element
      * and update that pointer while iterating through the grid.  This works
@@ -75,27 +66,25 @@ namespace Dune {
      * dereferencing the store in both cases.
      */
     typedef std::shared_ptr<const FiniteElement> Store;
-
-    //! \brief Store a finite element in the store.
+    //! Store a finite element in the store.
     /**
      * For local finite elements this means storing the address of the passed
      * reference, for global finite element this means creating a new object
      * with allocation and copy-construction and storing that.
      */
     static void setStore(Store& store, const FiniteElement& fe)
-    {
-      store.reset(new FiniteElement(fe));
-    }
+    { store.reset(new FiniteElement(fe)); }
   };
-
 
 #ifndef DOXYGEN
   //! \brief Switch for uniform treatment of finite element with either the
   //!        local or the global interface
   template<class FiniteElement>
-  struct FiniteElementInterfaceSwitch<FiniteElement,
-    std::enable_if_t<
-      Std::to_true_type<typename FiniteElement::Traits::LocalBasisType>::value> >
+  struct FiniteElementInterfaceSwitch<
+      FiniteElement,
+      typename std::enable_if<Std::to_true_type<typename FiniteElement::Traits::
+              LocalBasisType>::value>::type
+      >
   {
     //! export the type of the basis
     typedef typename FiniteElement::Traits::LocalBasisType Basis;
@@ -106,34 +95,22 @@ namespace Dune {
     typedef typename FiniteElement::Traits::LocalCoefficientsType Coefficients;
 
     //! access basis
-    static const Basis& basis(const FiniteElement& fe)
-    {
-      return fe.localBasis();
-    }
-
+    static const Basis &basis(const FiniteElement& fe)
+    { return fe.localBasis(); }
     //! access interpolation
-    static const Interpolation& interpolation(const FiniteElement& fe)
-    {
-      return fe.localInterpolation();
-    }
-
+    static const Interpolation &interpolation(const FiniteElement& fe)
+    { return fe.localInterpolation(); }
     //! access coefficients
-    static const Coefficients& coefficients(const FiniteElement& fe)
-    {
-      return fe.localCoefficients();
-    }
+    static const Coefficients &coefficients(const FiniteElement& fe)
+    { return fe.localCoefficients(); }
 
     //! Type for storing finite elements
-    typedef const FiniteElement* Store;
-
+    typedef const FiniteElement *Store;
     //! Store a finite element in the store.
     static void setStore(Store& store, const FiniteElement& fe)
-    {
-      store = &fe;
-    }
+    { store = &fe; }
   };
 #endif // !DOXYGEN
-
 
   //! Switch for uniform treatment of local and global basis classes
   /**
@@ -152,23 +129,18 @@ namespace Dune {
    *       Basis::Traits::dimDomain exists and has a value greater than 0.
    */
   template<class Basis, class Dummy = void>
-  struct BasisInterfaceSwitch
-  {
+  struct BasisInterfaceSwitch {
     //! export field types of the coordinates
     typedef typename Basis::Traits::DomainField DomainField;
-
     //! export dimension of local coordinates
     static const std::size_t dimDomainLocal = Basis::Traits::dimDomainLocal;
-
     //! export vector type of the local coordinates
     typedef typename Basis::Traits::DomainLocal DomainLocal;
 
     //! export field type of the values
     typedef typename Basis::Traits::RangeField RangeField;
-
     //! export dimension of the values
     static const std::size_t dimRange = Basis::Traits::dimRange;
-
     //! export vector type of the values
     typedef typename Basis::Traits::Range Range;
 
@@ -201,11 +173,15 @@ namespace Dune {
   //! Switch for uniform treatment of local and global basis classes
   template<class Basis>
   struct BasisInterfaceSwitch<Basis,
-    std::enable_if_t<
-      Std::to_true_type<
-        std::integral_constant<std::size_t, Basis::Traits::dimDomain>
-        >::value
-      > >
+                              typename std::enable_if<
+                                Std::to_true_type<
+                                  std::integral_constant<
+                                    std::size_t,
+                                    Basis::Traits::dimDomain
+                                    >
+                                  >::value
+                                >::type
+                              >
   {
     //! export field types of the coordinates
     typedef typename Basis::Traits::DomainFieldType DomainField;

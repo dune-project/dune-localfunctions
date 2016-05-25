@@ -96,7 +96,6 @@ namespace Dune
       auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
       if (totalOrder == 0) {
         evaluateFunction(in, out);
-#if 0 // test fails for jacobian ???
       } else if (totalOrder == 1) {
         auto direction = find_index(order, 1);
         out.resize(size());
@@ -157,7 +156,6 @@ namespace Dune
               DUNE_THROW(RangeError, "Component out of range.");
           }
         }
-#endif
       } else {
         DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
       }

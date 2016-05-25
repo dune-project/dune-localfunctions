@@ -72,21 +72,18 @@ namespace Dune {
      * element object it was acquired from.
      */
     const Traits::Basis& basis() const;
-
     //! Extract coefficients of this finite element
     /**
      * The returned lvalue must have a lifetime at least as long as the finite
      * element object it was acquired from.
      */
     const Traits::Coefficients& coefficients() const;
-
     //! Extract interpolation of this finite element
     /**
      * The returned lvalue must have a lifetime at least as long as the finite
      * element object it was acquired from.
      */
     const Traits::Interpolation& interpolation() const;
-
     //! Extract geometry type of this finite element
     GeometryType type() const;
   };
@@ -213,13 +210,12 @@ namespace Dune {
       //! Type used for range values
       typedef ImplementationDefined Range;
 
-
       //! \}
 
       //! Jacobian properties
       /**
        * \note The Jacobian should be some matrix type with \c dimRange x
-       *       \c dimDomain components of type \c RangeFieldType.
+       *       \c dimDomainGlobal components of type \c RangeField.
        */
       typedef ImplementationDefined Jacobian;
 

@@ -13,27 +13,27 @@
 namespace Dune
 {
 
-  /** \ingroup LocalBasisInterface
-   * \brief Type traits for LocalBasisVirtualInterface
-   *
-   * A shape function is a function
-   * \f[ \hat\phi : \mbox{IR}^n \to \mbox{IR}^m. \f]
-   * This traits class holds information how the signature of this
-   * function is represented in C++ types.
-   *
-   * This is just a convenience class for supplying traits to the
-   * LocalBasisVirtualInterface and its implementations.
-   *
-   * \tparam DF Type to represent the field in the domain.
-   * \tparam n  Dimension of the domain.
-   * \tparam D  Type to represent the domain, allows random access.
-   * \tparam RF Type to represent the field in the range.
-   * \tparam m  Dimension of the range.
-   * \tparam R  Type to represent the range, allows random access.
-   * \tparam J  Type to represent the Jacobian, allows random access.
-   * \tparam dorder Maximal order of implemented partial derivatives
-   *
-   * \nosubgrouping
+  /**@ingroup LocalBasisInterface
+         \brief Type traits for LocalBasisVirtualInterface
+
+         A shape function is a function
+         \f[ \hat\phi : \mbox{IR}^n \to \mbox{IR}^m. \f]
+         This traits class holds information how the signature of this
+         function is represented in C++ types.
+
+         This is just a convenience class for supplying traits to the
+         LocalBasisVirtualInterface and its implementations.
+
+         \tparam DF Type to represent the field in the domain.
+         \tparam n  Dimension of the domain.
+         \tparam D  Type to represent the domain, allows random access.
+         \tparam RF Type to represent the field in the range.
+         \tparam m  Dimension of the range.
+         \tparam R  Type to represent the range, allows random access.
+         \tparam J  Type to represent the Jacobian, allows random access.
+         \tparam dorder Maximal order of implemented partial derivatives
+
+         \nosubgrouping
    */
   template<class DF, int n, class D, class RF, int m, class R, class J, int dorder=0>
   struct LocalBasisTraits
@@ -63,10 +63,10 @@ namespace Dune
     typedef R RangeType;
 
     /** \brief Type to represent derivative
-     *
-     * When \f$ \hat\phi : \mbox{IR}^n \to \mbox{IR}^m \f$ then JacobianType
-     * is an 2D-array of m x n components where entry J[i][j] contains
-     * the derivative  \f$\partial_j \hat\phi_i \f$.
+
+            When \f$ \hat\phi : \mbox{IR}^n \to \mbox{IR}^m \f$ then JacobianType
+            is an 2D-array of m x n components where entry J[i][j] contains
+            the derivative  \f$\partial_j \hat\phi_i \f$.
      */
     typedef J JacobianType;
 
@@ -78,25 +78,25 @@ namespace Dune
   };
 
 
-  /** \ingroup LocalBasisInterface
-   * \brief Type traits for LocalBasisInterface
-   *
-   * A shape function is a function
-   * \f[ \hat\phi : \mbox{IR}^n \to \mbox{IR}^m. \f]
-   * This traits class holds information how the signature of this
-   * function is represented in C++ types.
-   *
-   * This is just a convenience class for supplying traits to the
-   * C0LocalBasisInterface.
-   *
-   * \tparam DF Type to represent the field in the domain.
-   * \tparam n  Dimension of the domain.
-   * \tparam D  Type to represent the domain, allows random access.
-   * \tparam RF Type to represent the field in the range.
-   * \tparam m  Dimension of the range.
-   * \tparam R  Type to represent the range, allows random access.
-   *
-   * \nosubgrouping
+  /**@ingroup LocalBasisInterface
+         \brief Type traits for LocalBasisInterface
+
+         A shape function is a function
+         \f[ \hat\phi : \mbox{IR}^n \to \mbox{IR}^m. \f]
+         This traits class holds information how the signature of this
+         function is represented in C++ types.
+
+         This is just a convenience class for supplying traits to the
+         C0LocalBasisInterface.
+
+         \tparam DF Type to represent the field in the domain.
+         \tparam n  Dimension of the domain.
+         \tparam D  Type to represent the domain, allows random access.
+         \tparam RF Type to represent the field in the range.
+         \tparam m  Dimension of the range.
+         \tparam R  Type to represent the range, allows random access.
+
+         \nosubgrouping
    */
   template<class DF, int n, class D, class RF, int m, class R>
   struct C0LocalBasisTraits
@@ -133,30 +133,30 @@ namespace Dune
   };
 
 
-  /** \ingroup LocalBasisInterface
-   * \brief Type traits for C1LocalBasisInterface
-   *
-   * Extends the traits class LocalBasisTraits for differentiable
-   * shape functions.
-   *
-   * \tparam DF Type to represent the field in the domain.
-   * \tparam n  Dimension of the domain.
-   * \tparam D  Type to represent the domain, allows random access.
-   * \tparam RF Type to represent the field in the range.
-   * \tparam m  Dimension of the range.
-   * \tparam R  Type to represent the range, allows random access.
-   * \tparam J  Type to represent the Jacobian, allows random access.
-   *
-   * \nosubgrouping
+  /**@ingroup LocalBasisInterface
+         \brief Type traits for C1LocalBasisInterface
+
+         Extends the traits class LocalBasisTraits for differentiable
+         shape functions.
+
+         \tparam DF Type to represent the field in the domain.
+         \tparam n  Dimension of the domain.
+         \tparam D  Type to represent the domain, allows random access.
+         \tparam RF Type to represent the field in the range.
+         \tparam m  Dimension of the range.
+         \tparam R  Type to represent the range, allows random access.
+         \tparam J  Type to represent the Jacobian, allows random access.
+
+         \nosubgrouping
    */
   template<class DF, int n, class D, class RF, int m, class R, class J>
   struct C1LocalBasisTraits : public C0LocalBasisTraits<DF,n,D,RF,m,R>
   {
     /** \brief Type to represent derivative
-     *
-     * When \f$ \hat\phi : \mbox{IR}^n \to \mbox{IR}^m \f$ then JacobianType
-     * is an 2D-array of m x n components where entry J[i][j] contains
-     * the derivative  \f$\partial_j \hat\phi_i \f$.
+
+            When \f$ \hat\phi : \mbox{IR}^n \to \mbox{IR}^m \f$ then JacobianType
+            is an 2D-array of m x n components where entry J[i][j] contains
+            the derivative  \f$\partial_j \hat\phi_i \f$.
      */
     typedef J JacobianType;
 

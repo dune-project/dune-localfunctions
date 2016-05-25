@@ -150,10 +150,10 @@ namespace Dune
     virtual ~LocalBasisVirtualInterfaceBase() {}
 
     //! \brief Number of shape functions
-    virtual std::size_t size () const = 0;
+    virtual unsigned int size () const = 0;
 
     //! \brief Polynomial order of the shape functions
-    virtual std::size_t order () const = 0;
+    virtual unsigned int order () const = 0;
 
     /** \brief Evaluate all basis function at given position
      *
@@ -443,7 +443,7 @@ namespace Dune
     virtual const typename Traits::LocalInterpolationType& localInterpolation () const = 0;
 
     //! \copydoc LocalFiniteElementVirtualInterface::size
-    virtual std::size_t size () const = 0;
+    virtual unsigned int size () const = 0;
 
     //! \copydoc LocalFiniteElementVirtualInterface::type
     virtual const GeometryType type () const = 0;

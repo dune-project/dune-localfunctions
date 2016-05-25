@@ -45,14 +45,14 @@ namespace Dune
 
     static const unsigned int dimension = Topology::dimension;
 
-    static constexpr unsigned int size ( const std::size_t /*order*/ )
+    static unsigned int size ( const unsigned int /*order*/ )
     {
       return 1;
     }
 
   private:
     template< unsigned int codim, unsigned int dim >
-    static std::size_t setup ( const std::size_t /*order*/,
+    static unsigned int setup ( const unsigned int /*order*/,
                                 unsigned int *count,
                                 LagrangePoint< Field, dim > *points )
     {
@@ -81,14 +81,14 @@ namespace Dune
 
     static const unsigned int dimension = Topology::dimension;
 
-    static std::size_t size ( const std::size_t order )
+    static unsigned int size ( const unsigned int order )
     {
       return BaseImpl::size( order ) * (order+1);
     }
 
     // private:
     template< unsigned int codim, unsigned int dim >
-    static std::size_t setup ( const std::size_t order,
+    static unsigned int setup ( const unsigned int order,
                                 unsigned int *count,
                                 LagrangePoint< Field, dim > *points )
     {
@@ -151,17 +151,17 @@ namespace Dune
 
     static const unsigned int dimension = Topology::dimension;
 
-    static std::size_t size ( const std::size_t order )
+    static unsigned int size ( const unsigned int order )
     {
-      std::size_t size = BaseImpl::size( order );
-      for( std::size_t i = 1; i <= order; ++i )
+      unsigned int size = BaseImpl::size( order );
+      for( unsigned int i = 1; i <= order; ++i )
         size += BaseImpl::size( order - i );
       return size;
     }
 
     // private:
     template< unsigned int codim, unsigned int dim >
-    static std::size_t setup ( const std::size_t order,
+    static unsigned int setup ( const unsigned int order,
                                 unsigned int *count,
                                 LagrangePoint< Field, dim > *points )
     {

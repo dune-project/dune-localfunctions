@@ -25,8 +25,7 @@ namespace Dune {
    * \implements BasisInterface::Traits
    */
   template<class LocalBasisTraits, std::size_t dimDomainGlobal_>
-  struct LocalToGlobalBasisAdaptorTraits
-  {
+  struct LocalToGlobalBasisAdaptorTraits {
     typedef typename LocalBasisTraits::DomainFieldType DomainField;
     static const std::size_t dimDomainLocal = LocalBasisTraits::dimDomain;
     static const std::size_t dimDomainGlobal = dimDomainGlobal_;
@@ -41,7 +40,6 @@ namespace Dune {
 
     static const std::size_t diffOrder = LocalBasisTraits::diffOrder;
   };
-
 
   //! Convert a simple scalar local basis into a global basis
   /**
@@ -64,8 +62,7 @@ namespace Dune {
    * \implements BasisInterface
    */
   template<class LocalBasis, class Geometry>
-  class ScalarLocalToGlobalBasisAdaptor
-  {
+  class ScalarLocalToGlobalBasisAdaptor {
     static_assert(LocalBasis::Traits::dimRange == 1,
                   "ScalarLocalToGlobalBasisAdaptor can only wrap a "
                   "scalar local basis.");
@@ -83,10 +80,10 @@ namespace Dune {
     Geometry geometry;
 
   public:
-    using Traits
-      = LocalToGlobalBasisAdaptorTraits<typename LocalBasis::Traits, Geometry::coorddimension>;
+    typedef LocalToGlobalBasisAdaptorTraits<typename LocalBasis::Traits,
+        Geometry::coorddimension> Traits;
 
-    //! \brief construct a ScalarLocalToGlobalBasisAdaptor
+    //! construct a ScalarLocalToGlobalBasisAdaptor
     /**
      * \param localBasis_ The local basis object to adapt.
      * \param geometry_   The geometry object to use for adaption.
@@ -97,14 +94,12 @@ namespace Dune {
      *       this class may still be called.
      */
     ScalarLocalToGlobalBasisAdaptor(const LocalBasis& localBasis_,
-                                    const Geometry& geometry_)
-      : localBasis(localBasis_)
-      , geometry(geometry_)
-    {}
+                                    const Geometry& geometry_) :
+      localBasis(localBasis_), geometry(geometry_)
+    { }
 
     std::size_t size() const { return localBasis.size(); }
-
-    //! \brief return maximum polynomial order of the base function
+    //! return maximum polynomial order of the base function
     /**
      * This is to determine the required quadrature order.  For an affine
      * geometry this is the same order as for the local basis.  For other
@@ -112,8 +107,7 @@ namespace Dune {
      * dimension minus 1.  The assumtion for non-affine geometries is that
      * they are still multi-linear.
      */
-    std::size_t order() const
-    {
+    std::size_t order() const {
       if(geometry.affine())
         // affine linear
         return localBasis.order();
@@ -139,11 +133,9 @@ namespace Dune {
         geometry.jacobianInverseTransposed(in);
 
       out.resize(size());
-      for (std::size_t i = 0; i < size(); ++i)
+      for(std::size_t i = 0; i < size(); ++i)
         geoJacobian.mv(localJacobian[i][0], out[i][0]);
     }
-
-    // TODO: implement partial() and evaluate() method.
   };
 
   //! Convert a local interpolation into a global interpolation
@@ -154,12 +146,11 @@ namespace Dune {
    * \implements InterpolationInterface
    */
   template<class LocalInterpolation, class Traits_>
-  class LocalToGlobalInterpolationAdaptor
-  {
+  class LocalToGlobalInterpolationAdaptor {
     const LocalInterpolation& localInterpolation;
 
   public:
-    using Traits = Traits_;
+    typedef Traits_ Traits;
 
     //! construct a LocalToGlobalInterpolationAdaptor
     /**
@@ -170,17 +161,15 @@ namespace Dune {
      *       become invalid results in undefined behaviour.  The exception is
      *       that the destructor of this class may still be called.
      */
-    LocalToGlobalInterpolationAdaptor(const LocalInterpolation& localInterpolation_)
-      : localInterpolation(localInterpolation_)
-    {}
+    LocalToGlobalInterpolationAdaptor
+      ( const LocalInterpolation& localInterpolation_) :
+      localInterpolation(localInterpolation_)
+    { }
 
     template<class Function, class Coeff>
     void interpolate(const Function& function, std::vector<Coeff>& out) const
-    {
-      localInterpolation.interpolate(function, out);
-    }
+    { localInterpolation.interpolate(function, out); }
   };
-
 
   //! \brief Convert a simple scalar local finite element into a global finite
   //!        element
@@ -195,8 +184,7 @@ namespace Dune {
    * \implements FiniteElementInterface
    */
   template<class LocalFiniteElement, class Geometry>
-  struct ScalarLocalToGlobalFiniteElementAdaptor
-  {
+  struct ScalarLocalToGlobalFiniteElementAdaptor {
     /**
      * \implements FiniteElementInterface::Traits
      */
@@ -211,15 +199,14 @@ namespace Dune {
     };
 
   private:
-    const LocalFiniteElement& localFE;
+    const LocalFiniteElement &localFE;
     typename Traits::Basis basis_;
     typename Traits::Interpolation interpolation_;
 
   public:
-
-    //! \brief construct a ScalarLocalToGlobalFiniteElementAdaptor
+    //! construct a ScalarLocalToGlobalFiniteElementAdaptor
     /**
-     * \param localFE  The local finite element object to adapt.
+     * \param localFE_  The local finite element object to adapt.
      * \param geometry  The geometry object to use for adaption.
      *
      * \note This class stores the references passed here.  Any use of this
@@ -227,34 +214,20 @@ namespace Dune {
      *       undefined behaviour.  The exception is that the destructor of
      *       this class may still be called.
      */
-    ScalarLocalToGlobalFiniteElementAdaptor(const LocalFiniteElement& localFE,
-                                            const Geometry& geometry)
-      : localFE(localFE)
-      , basis_(localFE.localBasis(), geometry)
-      , interpolation_(localFE.localInterpolation())
-    {}
+    ScalarLocalToGlobalFiniteElementAdaptor
+      ( const LocalFiniteElement& localFE_, const Geometry &geometry) :
+      localFE(localFE_),
+      basis_(localFE.localBasis(), geometry),
+      interpolation_(localFE.localInterpolation())
+    { }
 
-    const typename Traits::Basis& basis() const
-    {
-      return basis_;
-    }
-
+    const typename Traits::Basis& basis() const { return basis_; }
     const typename Traits::Interpolation& interpolation() const
-    {
-      return interpolation_;
-    }
-
+    { return interpolation_; }
     const typename Traits::Coefficients& coefficients() const
-    {
-      return localFE.localCoefficients();
-    }
-
-    GeometryType type() const
-    {
-      return localFE.type();
-    }
+    { return localFE.localCoefficients(); }
+    GeometryType type() const { return localFE.type(); }
   };
-
 
   //! Factory for ScalarLocalToGlobalFiniteElementAdaptor objects
   /**
@@ -268,28 +241,26 @@ namespace Dune {
    * \implements FiniteElementFactoryInterface
    */
   template<class LocalFiniteElement, class Geometry>
-  class ScalarLocalToGlobalFiniteElementAdaptorFactory
-  {
+  class ScalarLocalToGlobalFiniteElementAdaptorFactory {
     const LocalFiniteElement& localFE;
 
   public:
-    using FiniteElement
-      = ScalarLocalToGlobalFiniteElementAdaptor<LocalFiniteElement, Geometry>;
+    typedef ScalarLocalToGlobalFiniteElementAdaptor<LocalFiniteElement,
+        Geometry> FiniteElement;
 
-    //! \brief construct a ScalarLocalToGlobalFiniteElementAdaptorFactory
+    //! construct a ScalarLocalToGlobalFiniteElementAdaptorFactory
     /**
-     * \param localFE The local finite element object to adapt.
+     * \param localFE_ The local finite element object to adapt.
      *
      * \note This class stores the reference to the local finite element
      *       object passed here.  Any use of this class after this reference
      *       has become invalid results in undefined behaviour.  The exception
      *       is that the destructor of this class may still be called.
      */
-    ScalarLocalToGlobalFiniteElementAdaptorFactory(const LocalFiniteElement& localFE)
-      : localFE(localFE)
-    {}
+    ScalarLocalToGlobalFiniteElementAdaptorFactory
+      (const LocalFiniteElement &localFE_) : localFE(localFE_) {}
 
-    //! \brief construct ScalarLocalToGlobalFiniteElementAdaptor
+    //! construct ScalarLocalToGlobalFiniteElementAdaptor
     /**
      * \param geometry The geometry object to use for adaption.
      *
@@ -300,8 +271,7 @@ namespace Dune {
      *       The exception is that the destructor of the returned value may
      *       still be called.
      */
-    const FiniteElement make(const Geometry& geometry)
-    {
+    const FiniteElement make(const Geometry& geometry) {
       return FiniteElement(localFE, geometry);
     }
   };

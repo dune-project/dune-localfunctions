@@ -58,12 +58,12 @@ namespace Dune
     typedef typename std::vector< LagrangePoint >::const_iterator iterator;
 
   protected:
-    EmptyPointSet ( const std::size_t order )
+    EmptyPointSet ( const unsigned int order )
       : order_( order )
     {}
 
   public:
-    const LagrangePoint &operator[] ( const std::size_t i ) const
+    const LagrangePoint &operator[] ( const unsigned int i ) const
     {
       assert( i < size() );
       return points_[ i ];
@@ -79,23 +79,23 @@ namespace Dune
       return points_.end();
     }
 
-    const LocalKey &localKey ( const std::size_t i ) const
+    const LocalKey &localKey ( const unsigned int i ) const
     {
       return (*this)[ i ].localKey();
     }
 
-    std::size_t order () const
+    unsigned int order () const
     {
       return order_;
     }
 
-    std::size_t size () const
+    unsigned int size () const
     {
       return points_.size();
     }
 
   protected:
-    std::size_t order_;
+    unsigned int order_;
     std::vector< LagrangePoint > points_;
   };
 

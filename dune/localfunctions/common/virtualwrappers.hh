@@ -143,13 +143,13 @@ namespace Dune
     typedef LocalBasisTraits<DF,n,D,RF,m,R,J,0> Traits;
 
     //! @copydoc LocalBasisVirtualInterface::size
-    std::size_t size () const
+    unsigned int size () const
     {
       return impl_.size();
     }
 
     //! @copydoc LocalBasisVirtualInterface::order
-    std::size_t order () const
+    unsigned int order () const
     {
       return impl_.order();
     }
@@ -361,7 +361,7 @@ namespace Dune
     }
 
     /** \brief Number of shape functions in this finite element */
-    std::size_t size () const
+    unsigned int size () const
     {
       return impl_->size();
     }

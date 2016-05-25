@@ -133,8 +133,8 @@ namespace Dune
 
       delete [] sizes_;
       delete [] numBaseFunctions_;
-      sizes_            = new unsigned int[ order+1 ];
-      numBaseFunctions_ = new unsigned int[ order+1 ];
+      sizes_            = new unsigned int [ order+1 ];
+      numBaseFunctions_ = new unsigned int [ order+1 ];
 
       sizes_[ 0 ] = 1;
       numBaseFunctions_[ 0 ] = 1;
@@ -288,7 +288,7 @@ namespace Dune
       const unsigned int *const baseNBF = baseBasis.numBaseFunctions_;
       sizes_[ 0 ] = 1;
       numBaseFunctions_[ 0 ] = 1;
-      for(unsigned int k = 1; k <= order; ++k )
+      for( unsigned int k = 1; k <= order; ++k )
       {
         sizes_[ k ]            = baseNBF[ k ];
         numBaseFunctions_[ k ] = numBaseFunctions_[ k-1 ] + sizes_[ k ];
@@ -745,13 +745,11 @@ namespace Dune
     {
       Base::integrate( order_, sizes( order_ ), values );
     }
-
     template <class Vector>
     void integrate ( Vector &values ) const
     {
       integrate( &(values[ 0 ]) );
     }
-
   private:
     MonomialBasis(const This&);
     This& operator=(const This&);

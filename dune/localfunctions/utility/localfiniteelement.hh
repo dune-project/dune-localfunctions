@@ -82,7 +82,7 @@ namespace Dune
     }
 
     /** \brief Number of shape functions in this finite element */
-    std::size_t size () const
+    unsigned int size () const
     {
       return finiteElement_.basis_->size();
     }
@@ -100,16 +100,10 @@ namespace Dune
     {
       return topologyId_;
     }
-
   private:
     struct FiniteElement
     {
-      FiniteElement()
-        : basis_(0)
-        , coeff_(0)
-        , interpol_(0)
-      {}
-
+      FiniteElement() : basis_(0), coeff_(0), interpol_(0) {}
       template <class Topology>
       void create( const Key &key )
       {
@@ -118,7 +112,6 @@ namespace Dune
         coeff_ = CoeffF::template create<Topology>(key);
         interpol_ = InterpolF::template create<Topology>(key);
       }
-
       void release()
       {
         if (basis_)
@@ -131,7 +124,6 @@ namespace Dune
         coeff_=0;
         interpol_=0;
       }
-
       template< class Topology >
       struct Maker
       {
@@ -140,17 +132,14 @@ namespace Dune
           finiteElement.template create<Topology>(key);
         };
       };
-
       typename Traits::LocalBasisType *basis_;
       typename Traits::LocalCoefficientsType *coeff_;
       typename Traits::LocalInterpolationType *interpol_;
     };
-
     unsigned int topologyId_;
     Key key_;
     FiniteElement finiteElement_;
   };
-
 
   /**
    * @brief Takes the basis and interpolation factory from a given
@@ -176,8 +165,6 @@ namespace Dune
       : Base( gt, key )
     {}
   };
-
-
   /**
    * @brief Takes the basis factory from a given
    *        LocalFiniteElement (derived from GenericLocalFiniteElement)

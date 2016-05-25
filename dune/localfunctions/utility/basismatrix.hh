@@ -20,10 +20,12 @@ namespace Dune
   * but it not derived from the LocalBasis class.
   * It is used to define a ''pre basis''.
   ****************************************/
-  template< class PreBasis, class Interpolation, class Field >
+  template< class PreBasis, class Interpolation,
+      class Field >
   struct BasisMatrix;
 
-  template< class PreBasis, class Interpolation, class Field >
+  template< class PreBasis, class Interpolation,
+      class Field >
   struct BasisMatrixBase : public LFEMatrix<Field>
   {
     typedef LFEMatrix<Field> Matrix;
@@ -39,23 +41,21 @@ namespace Dune
         DUNE_THROW(MathError, "While computing basis a singular matrix was constructed!");
       }
     }
-
     unsigned int cols () const
     {
       return cols_;
     }
-
     unsigned int rows () const
     {
       return Matrix::rows();
     }
-
   private:
     unsigned int cols_;
   };
 
-
-  template< class Topology, class F, class Interpolation, class Field >
+  template< class Topology, class F,
+      class Interpolation,
+      class Field >
   struct BasisMatrix< const MonomialBasis< Topology, F >, Interpolation, Field >
     : public BasisMatrixBase< const MonomialBasis< Topology, F >, Interpolation, Field >
   {
@@ -67,7 +67,6 @@ namespace Dune
                  const Interpolation& localInterpolation )
       : Base(preBasis, localInterpolation)
     {}
-
     template <class Vector>
     void row( const unsigned int row, Vector &vec ) const
     {
@@ -79,9 +78,9 @@ namespace Dune
         field_cast(Matrix::operator()(i,row),vec[i]);
     }
   };
-
-
-  template< int dim, class F, class Interpolation, class Field >
+  template< int dim, class F,
+      class Interpolation,
+      class Field >
   struct BasisMatrix< const Dune::VirtualMonomialBasis< dim, F >, Interpolation, Field >
     : public BasisMatrixBase< const VirtualMonomialBasis< dim, F >, Interpolation, Field >
   {
@@ -93,7 +92,6 @@ namespace Dune
                  const Interpolation& localInterpolation )
       : Base(preBasis, localInterpolation)
     {}
-
     template <class Vector>
     void row( const unsigned int row, Vector &vec ) const
     {
@@ -105,9 +103,9 @@ namespace Dune
         field_cast(Matrix::operator()(i,row),vec[i]);
     }
   };
-
-
-  template< class Eval, class CM, class D, class R, class Interpolation, class Field >
+  template< class Eval, class CM, class D, class R,
+      class Interpolation,
+      class Field >
   struct BasisMatrix< const PolynomialBasis<Eval,CM,D,R>, Interpolation, Field >
     : public BasisMatrixBase< const PolynomialBasis<Eval,CM,D,R>, Interpolation, Field >
   {
@@ -120,12 +118,10 @@ namespace Dune
       : Base(preBasis, localInterpolation),
         preBasis_(preBasis)
     {}
-
     unsigned int cols() const
     {
       return preBasis_.matrix().baseSize() ;
     }
-
     template <class Vector>
     void row( const unsigned int row, Vector &vec ) const
     {
@@ -138,13 +134,12 @@ namespace Dune
         preBasis_.matrix().
         addRow(i,Base::Matrix::operator()(i,row),vec);
     }
-
   private:
     const PreBasis& preBasis_;
   };
-
-
-  template< class Eval, class CM, class Interpolation, class Field >
+  template< class Eval, class CM,
+      class Interpolation,
+      class Field >
   struct BasisMatrix< const PolynomialBasisWithMatrix<Eval,CM>, Interpolation, Field >
     : public BasisMatrixBase< const PolynomialBasisWithMatrix<Eval,CM>, Interpolation, Field >
   {
@@ -157,18 +152,15 @@ namespace Dune
       : Base(preBasis, localInterpolation),
         preBasis_(preBasis)
     {}
-
     unsigned int cols() const
     {
       return preBasis_.matrix().baseSize() ;
     }
-
     unsigned int rows () const
     {
       assert( Matrix::rows() == preBasis_.matrix().size() );
       return preBasis_.matrix().size()*CM::blockSize ;
     }
-
     template <class Vector>
     void row( const unsigned int row, Vector &vec ) const
     {
@@ -183,7 +175,6 @@ namespace Dune
         preBasis_.matrix().
         addRow(i*CM::blockSize+row%CM::blockSize,Base::Matrix::operator()(i,r),vec);
     }
-
   private:
     const PreBasis& preBasis_;
   };

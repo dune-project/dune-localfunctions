@@ -158,7 +158,6 @@ namespace Dune
     {
       coeffMatrix_->mult( eval_.template evaluate<deriv>( x ), size(), values);
     }
-
     template< unsigned int deriv, class DVector, class F >
     void evaluate ( const DVector &x, F *values ) const
     {
@@ -181,7 +180,6 @@ namespace Dune
         return bx;
       }
     };
-
     template <bool dummy>
     struct Convert<dummy,DomainVector>
     {
@@ -190,7 +188,6 @@ namespace Dune
         return x;
       }
     };
-
     template< unsigned int deriv, class DVector, class RVector >
     void evaluate ( const DVector &x, RVector &values ) const
     {
@@ -204,7 +201,6 @@ namespace Dune
     {
       evaluate<0>(x,values);
     }
-
     template< class DVector, class RVector >
     void evaluate ( const DVector &x, RVector &values ) const
     {
@@ -221,14 +217,12 @@ namespace Dune
       assert(values.size()>=size());
       coeffMatrix_->template mult<deriv>( eval_.template evaluate<deriv>( x ), values );
     }
-
     template< unsigned int deriv, class Fy >
     void evaluateSingle ( const DomainVector &x,
                           std::vector< FieldVector<FieldVector<Fy,LFETensor<Fy,dimension,deriv>::size>,dimRange> > &values) const
     {
       evaluateSingle<deriv>(x,reinterpret_cast<std::vector< FieldVector<Fy,LFETensor<Fy,dimension,deriv>::size*dimRange> >&>(values));
     }
-
     template< unsigned int deriv, class Fy >
     void evaluateSingle ( const DomainVector &x,
                           std::vector< FieldVector<LFETensor<Fy,dimension,deriv>,dimRange> > &values) const
@@ -242,7 +236,6 @@ namespace Dune
       assert(values.size()>=size());
       evaluateSingle<1>(x,reinterpret_cast<std::vector<FieldVector<Fy,dimRange*dimension> >&>(values));
     }
-
     template< class DVector, class RVector >
     void jacobian ( const DVector &x, RVector &values ) const
     {
@@ -268,14 +261,11 @@ namespace Dune
         order_(basis_.order()),
         size_(other.size_)
     {}
-
     PolynomialBasis &operator=(const PolynomialBasis&);
-
     const Basis &basis_;
     const CoefficientMatrix* coeffMatrix_;
     mutable Evaluator eval_;
-    unsigned int order_;
-    unsigned int size_;
+    unsigned int order_,size_;
   };
 
 

@@ -19,25 +19,21 @@ namespace Dune
     template <class Func,class Container, bool type>
     struct Helper;
   };
-
   template <class F,unsigned int d>
-    template <class Func,class Vector>
+  template <class Func,class Vector>
   struct InterpolationHelper<F,d>::Helper<Func,Vector,true>
   // Func is of Function type
   {
     typedef std::vector< Dune::FieldVector<F,d> > Result;
-
     Helper(const Func & func, Vector &vec)
       : func_(func),
         vec_(vec),
         tmp_(1)
     {}
-
     const typename Vector::value_type &operator()(unsigned int row,unsigned int col)
     {
       return vec_[row];
     }
-
     template <class Fy>
     void set(unsigned int row,unsigned int col,
              const Fy &val)
@@ -46,7 +42,6 @@ namespace Dune
       assert(row<vec_.size());
       field_cast( val, vec_[row] );
     }
-
     template <class Fy>
     void add(unsigned int row,unsigned int col,
              const Fy &val)
@@ -55,7 +50,6 @@ namespace Dune
       assert(row<vec_.size());
       vec_[row] += field_cast<typename Vector::value_type>(val);
     }
-
     template <class DomainVector>
     const Result &evaluate(const DomainVector &x) const
     {
@@ -66,40 +60,32 @@ namespace Dune
       field_cast(ff, tmp_[0] );
       return tmp_;
     }
-
     unsigned int size() const
     {
       return 1;
     }
-
     const Func &func_;
     Vector &vec_;
     mutable Result tmp_;
   };
-
   template <class F,unsigned int d>
-    template <class Basis,class Matrix>
+  template <class Basis,class Matrix>
   struct InterpolationHelper<F,d>::Helper<Basis,Matrix,false>
   // Func is of Basis type
   {
     typedef std::vector< Dune::FieldVector<F,d> > Result;
-
     Helper(const Basis & basis, Matrix &matrix)
       : basis_(basis),
         matrix_(matrix),
-        tmp_(basis.size())
-    {}
-
+        tmp_(basis.size()) {}
     const F &operator()(unsigned int row,unsigned int col) const
     {
       return matrix_(row,col);
     }
-
     F &operator()(unsigned int row,unsigned int col)
     {
       return matrix_(row,col);
     }
-
     template <class Fy>
     void set(unsigned int row,unsigned int col,
              const Fy &val)
@@ -108,7 +94,6 @@ namespace Dune
       assert(row<matrix_.rows());
       field_cast(val,matrix_(row,col));
     }
-
     template <class Fy>
     void add(unsigned int row,unsigned int col,
              const Fy &val)
@@ -117,15 +102,13 @@ namespace Dune
       assert(row<matrix_.rows());
       matrix_(row,col) += val;
     }
-
     template <class DomainVector>
     const Result &evaluate(const DomainVector &x) const
     {
       basis_.template evaluate<0>(x,tmp_);
       return tmp_;
     }
-
-    std::size_t size() const
+    unsigned int size() const
     {
       return basis_.size();
     }

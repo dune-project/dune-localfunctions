@@ -46,17 +46,17 @@ namespace Dune
       typedef BaseIterator<Derivatives<Field,dimension,1,0,value> > Integrate;
     };
 
-    std::size_t size() const
+    unsigned int size() const
     {
       return size_;
     }
 
   protected:
-    MonomialEvaluator(const Basis &basis, std::size_t order, std::size_t size)
-      : basis_(basis)
-      , order_(order)
-      , size_(size)
-      , container_(0)
+    MonomialEvaluator(const Basis &basis, unsigned int order, unsigned int size)
+      : basis_(basis),
+        order_(order),
+        size_(size),
+        container_(0)
     {}
 
     MonomialEvaluator(const MonomialEvaluator&);
@@ -69,8 +69,7 @@ namespace Dune
     }
 
     const Basis &basis_;
-    std::size_t order_;
-    std::size_t size_;
+    unsigned int order_,size_;
     Container container_;
   };
 
@@ -165,8 +164,8 @@ namespace Dune
     }
 
   protected:
-    StandardEvaluator (const Basis &basis, std::size_t size)
-      : Base(basis, basis.order(), size)
+    StandardEvaluator (const Basis &basis, unsigned int size)
+      : Base( basis, basis.order(), size )
     {}
 
   private:

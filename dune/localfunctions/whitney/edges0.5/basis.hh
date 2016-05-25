@@ -45,7 +45,7 @@ namespace Dune {
 
       typedef RF RangeField;
       static const std::size_t dimRange = dimDomainLocal;
-      typedef FieldVector<RangeField, dimRange> Range; // TODO: rename to RangeType, to fulfill concept
+      typedef FieldVector<RangeField, dimRange> Range;
 
       typedef FieldMatrix<RangeField, dimRange, dimDomainGlobal> Jacobian;
 

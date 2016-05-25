@@ -51,7 +51,7 @@ namespace Dune
     }
 
     //! \brief number of shape functions
-    constexpr std::size_t size () const
+    constexpr unsigned int size () const
     {
       return N;
     }
@@ -115,7 +115,7 @@ namespace Dune
     }
 
     //! \brief Polynomial order of the shape functions
-    constexpr std::size_t order () const
+    constexpr unsigned int order () const
     {
       return k;
     }

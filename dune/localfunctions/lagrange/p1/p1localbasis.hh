@@ -30,10 +30,10 @@ namespace Dune
   public:
     //! \brief export type traits for function signature
     typedef LocalBasisTraits<D,dim,Dune::FieldVector<D,dim>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldMatrix<R,1,dim>, 2> Traits;
+        Dune::FieldMatrix<R,1,dim>, DUNE_MAX_DIFF_ORDER> Traits;
 
     //! \brief number of shape functions
-    constexpr std::size_t size () const
+    constexpr unsigned int size () const
     {
       return dim + 1;
     }
@@ -123,7 +123,7 @@ namespace Dune
     }
 
     //! \brief Polynomial order of the shape functions
-    constexpr std::size_t order () const
+    constexpr unsigned int order () const
     {
       return 1;
     }

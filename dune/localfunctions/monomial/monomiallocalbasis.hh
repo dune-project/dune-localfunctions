@@ -237,7 +237,7 @@ namespace Dune
         Dune::FieldMatrix<R,1,d>,diffOrder> Traits;
 
     //! \brief number of shape functions
-    constexpr std::size_t size () const
+    constexpr unsigned int size () const
     {
       return MonomImp::Size<d,p>::val;
     }
@@ -301,7 +301,7 @@ namespace Dune
     }
 
     //! \brief Polynomial order of the shape functions
-    constexpr std::size_t order () const
+    constexpr unsigned int order () const
     {
       return p;
     }

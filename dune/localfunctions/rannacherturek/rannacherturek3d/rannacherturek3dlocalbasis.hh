@@ -24,7 +24,7 @@ namespace Dune
         FieldMatrix< R, 1, 3 >, 1 > Traits;
 
     //! \brief number of shape functions
-    constexpr std::size_t size () const
+    constexpr unsigned int size () const
     {
       return 6;
     }

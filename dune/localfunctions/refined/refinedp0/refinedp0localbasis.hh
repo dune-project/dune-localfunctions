@@ -42,7 +42,7 @@ namespace Dune
       Dune::FieldVector<R,1>, Dune::FieldMatrix<R,1,dim>, DUNE_MAX_DIFF_ORDER > Traits;
 
     //! \brief number of shape functions
-    constexpr std::size_t size () const
+    constexpr unsigned int size () const
     {
       return N;
     }

@@ -26,11 +26,11 @@ namespace Dune
       (
         //! \brief Number of shape functions
         lb.size(),
-        requireConvertible<std::size_t>( lb.size() ),
+        requireConvertible<unsigned int>( lb.size() ),
 
         //! \brief Polynomial order of the shape functions
         lb.order(),
-        requireConvertible<std::size_t>( lb.order() ),
+        requireConvertible<unsigned int>( lb.order() ),
 
         //! \brief Evaluate all basis function at given position.
         lb.evaluateFunction(std::declval<D>(), vectorR),
@@ -226,7 +226,7 @@ namespace Dune
 
         //! \brief Number of shape functions in this finite element
         fe.size(),
-        requireConvertible<std::size_t>( fe.size() ),
+        requireConvertible<unsigned int>( fe.size() ),
 
         //! \brief Return `const GeometryType`
         fe.type(),

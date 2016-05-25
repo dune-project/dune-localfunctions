@@ -174,7 +174,7 @@ int main() try
 
 
   // ---------------------------------------------------------------------------
-  // Test some FiniteElements with disabled jacobian evaluation tests
+  // Test some FiniteElements with disabled jacobian evaluation tests. (Why is this disabled??)
 
   auto disabledJacobianTests = make_tuple(
     /* 0*/ make_pair( Dune::PyramidP1LocalFiniteElement<double,double>(), "pyramidp1fem"),

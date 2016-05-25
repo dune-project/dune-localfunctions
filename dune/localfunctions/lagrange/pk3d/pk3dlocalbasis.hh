@@ -37,7 +37,7 @@ namespace Dune
     Pk3DLocalBasis () {}
 
     //! \brief number of shape functions
-    constexpr std::size_t size () const
+    constexpr unsigned int size () const
     {
       return N;
     }
@@ -199,7 +199,7 @@ namespace Dune
     }
 
     //! \brief Polynomial order of the shape functions
-    constexpr std::size_t order () const
+    constexpr unsigned int order () const
     {
       return k;
     }
@@ -212,7 +212,7 @@ namespace Dune
   {
   public:
     typedef LocalBasisTraits<D,3,Dune::FieldVector<D,3>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldMatrix<R,1,3>, 0 > Traits;
+        Dune::FieldMatrix<R,1,3>, DUNE_MAX_DIFF_ORDER > Traits;
 
     /** \brief Export the number of degrees of freedom */
     enum {N = 1};
@@ -220,7 +220,7 @@ namespace Dune
     /** \brief Export the element order */
     enum {O = 0};
 
-    constexpr std::size_t size () const
+    constexpr unsigned int size () const
     {
       return 1;
     }
@@ -287,7 +287,7 @@ namespace Dune
       out[0] = y;
     }
 
-    constexpr std::size_t order () const
+    constexpr unsigned int order () const
     {
       return 0;
     }

@@ -45,7 +45,7 @@ namespace Dune
 
     static const unsigned int dimension = Topology::dimension;
 
-    static constexpr std::size_t size ( const std::size_t /*order*/ )
+    static constexpr unsigned int size ( const std::size_t /*order*/ )
     {
       return 1;
     }

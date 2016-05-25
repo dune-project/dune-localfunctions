@@ -31,7 +31,7 @@ namespace Dune
         Dune::FieldMatrix<R,1,dim>, 1 > Traits;
 
     //! \brief number of shape functions
-    constexpr std::size_t size () const
+    constexpr unsigned int size () const
     {
       return 1<<dim;
     }
@@ -122,18 +122,9 @@ namespace Dune
 
         }
       }
-      else if (dim > totalOrder-1)
+      else
       {
-        out.resize(size());
-        auto diagonal = std::find_if(order.begin(), order.end(), [](unsigned int i) { return i > 1; });
-
-        // currently only the trivial case of the vanishing entries is implemented
-        if (diagonal != order.end()) {
-          for (std::size_t i = 0; i < size(); ++i)
-            out[i] = 0;
-        } else {
-          DUNE_THROW(NotImplemented, "To be implemented!");
-        }
+        DUNE_THROW(NotImplemented, "To be implemented!");
       }
     }
 
@@ -173,7 +164,7 @@ namespace Dune
     }
 
     //! \brief Polynomial order of the shape functions
-    constexpr std::size_t order () const
+    constexpr unsigned int order () const
     {
       return 1;
     }

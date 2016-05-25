@@ -47,7 +47,7 @@ namespace Dune
         Dune::FieldMatrix<R,1,1>, DUNE_MAX_DIFF_ORDER > Traits;
 
     //! \brief number of shape functions
-    constexpr std::size_t size () const
+    constexpr unsigned int size () const
     {
       return 3;
     }
@@ -160,7 +160,7 @@ namespace Dune
         Dune::FieldMatrix<R,1,2> > Traits;
 
     //! \brief number of shape functions
-    constexpr std::size_t size () const
+    constexpr unsigned int size () const
     {
       return 6;
     }
@@ -264,7 +264,7 @@ namespace Dune
         Dune::FieldMatrix<R,1,3> > Traits;
 
     //! \brief number of shape functions
-    constexpr std::size_t size () const
+    constexpr unsigned int size () const
     {
       return 10;
     }

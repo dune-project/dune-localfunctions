@@ -23,7 +23,7 @@ namespace Dune
       Dune::FieldMatrix<R,1,3>, 0 > Traits;
 
     //! \brief number of shape functions
-    constexpr unsigned int size () const
+    unsigned int size () const
     {
       return 18;
     }

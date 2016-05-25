@@ -33,7 +33,7 @@ namespace Dune
         Dune::FieldMatrix<R,1,dim>, DUNE_MAX_DIFF_ORDER> Traits;
 
     //! \brief number of shape functions
-    constexpr unsigned int size () const
+    unsigned int size () const
     {
       return dim + 1;
     }
@@ -123,7 +123,7 @@ namespace Dune
     }
 
     //! \brief Polynomial order of the shape functions
-    constexpr unsigned int order () const
+    unsigned int order () const
     {
       return 1;
     }

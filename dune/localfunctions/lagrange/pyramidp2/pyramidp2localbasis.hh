@@ -32,7 +32,7 @@ namespace Dune
         Dune::FieldMatrix<R,1,3>, 0 > Traits;
 
     //! \brief number of shape functions
-    constexpr unsigned int size () const
+    unsigned int size () const
     {
       return 14;
     }
@@ -321,7 +321,7 @@ namespace Dune
     }
 
     //! \brief Polynomial order of the shape functions
-    constexpr unsigned int order () const
+    unsigned int order () const
     {
       return 2;
     }

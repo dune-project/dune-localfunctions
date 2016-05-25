@@ -48,7 +48,7 @@ namespace Dune
         pos_[i] = (1.0*i)/std::max(k,(unsigned int)1);
     }
 
-    constexpr unsigned int size () const
+    unsigned int size () const
     {
       return N;
     }
@@ -263,7 +263,7 @@ namespace Dune
     }
 
     //! \brief Polynomial order of the shape functions
-    constexpr unsigned int order () const
+    unsigned int order () const
     {
       return k;
     }

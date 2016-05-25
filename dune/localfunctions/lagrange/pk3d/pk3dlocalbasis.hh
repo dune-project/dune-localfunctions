@@ -37,7 +37,7 @@ namespace Dune
     Pk3DLocalBasis () {}
 
     //! \brief number of shape functions
-    constexpr unsigned int size () const
+    unsigned int size () const
     {
       return N;
     }
@@ -199,7 +199,7 @@ namespace Dune
     }
 
     //! \brief Polynomial order of the shape functions
-    constexpr unsigned int order () const
+    unsigned int order () const
     {
       return k;
     }
@@ -220,7 +220,7 @@ namespace Dune
     /** \brief Export the element order */
     enum {O = 0};
 
-    constexpr unsigned int size () const
+    unsigned int size () const
     {
       return 1;
     }
@@ -287,7 +287,7 @@ namespace Dune
       out[0] = y;
     }
 
-    constexpr unsigned int order () const
+    unsigned int order () const
     {
       return 0;
     }

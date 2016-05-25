@@ -30,7 +30,7 @@ namespace Dune
 
 
     //! \brief number of shape functions
-    constexpr unsigned int size () const
+    unsigned int size () const
     {
       return 5;
     }
@@ -177,7 +177,7 @@ namespace Dune
     }
 
     //! \brief Polynomial order of the shape functions
-    constexpr unsigned int order () const
+    unsigned int order () const
     {
       return 1;
     }

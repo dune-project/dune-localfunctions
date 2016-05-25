@@ -102,7 +102,7 @@ namespace Dune {
     }
 
     //! number of shape functions
-    constexpr unsigned int size() const { return s; }
+    unsigned int size() const { return s; }
 
     //! Evaluate all shape functions
     void evaluateFunction(const typename Traits::DomainLocal& xl,

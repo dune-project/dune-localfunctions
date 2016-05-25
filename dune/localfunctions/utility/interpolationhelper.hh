@@ -67,7 +67,7 @@ namespace Dune
       return tmp_;
     }
 
-    constexpr unsigned int size() const
+    unsigned int size() const
     {
       return 1;
     }

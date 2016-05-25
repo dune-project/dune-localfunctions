@@ -100,12 +100,12 @@ namespace Dune
       return *coeffMatrix_;
     }
 
-    std::size_t order () const
+    unsigned int order () const
     {
       return order_;
     }
 
-    std::size_t size () const
+    unsigned int size () const
     {
       return size_;
     }
@@ -274,8 +274,8 @@ namespace Dune
     const Basis &basis_;
     const CoefficientMatrix* coeffMatrix_;
     mutable Evaluator eval_;
-    std::size_t order_;
-    std::size_t size_;
+    unsigned int order_;
+    unsigned int size_;
   };
 
 

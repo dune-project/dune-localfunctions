@@ -61,7 +61,7 @@ namespace Dune
     }
 
     //! \brief number of shape functions
-    constexpr unsigned int size () const
+    unsigned int size () const
     {
       return 60;
     }

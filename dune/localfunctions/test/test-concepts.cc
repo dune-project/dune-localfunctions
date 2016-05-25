@@ -43,6 +43,8 @@
 #include "../common/virtualinterface.hh"
 #include "../common/virtualwrappers.hh"
 #include "../common/concepts.hh"
+#include "../common/staticLoops.hh"
+#include "../common/staticIf.hh"
 
 #define FE_PAIR(...) std::make_pair( type<Dune:: __VA_ARGS__ >(), #__VA_ARGS__ )
 
@@ -134,7 +136,6 @@ int main() try
 
     return b;
   }, true, [](bool a, bool b) { return a && b; });
-
 
   // ---------------------------------------------------------------------------
   // test virtualized FEs

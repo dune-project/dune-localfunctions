@@ -78,37 +78,9 @@ namespace Dune
       auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
       if (totalOrder == 0) {
         evaluateFunction(in, out);
-      } else {
-        // Calculate directions from order and call evaluate for the
-        // specific totalOrder value, to calculate the derivatives.
-        int dOrder = staticFindIf<1, Traits::diffOrder+1>([&](const auto i)
-        {
-          if (i == totalOrder) {
-            std::array<int, i> directions;
-            Impl::order2directions(order, directions);
-            this->evaluate<i>(directions, in, out);
-            return true; // terminate loop
-          } else {
-            return false;
-          }
-        });
-
-        if (dOrder > Traits::diffOrder)
-          DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
-      }
-    }
-
-
-    //! \brief Evaluate partial derivatives of all shape functions
-    template <std::size_t dOrder>
-    inline void evaluate(const std::array<int, dOrder>& directions,
-                         const typename Traits::DomainType& in,         // position
-                         std::vector<typename Traits::RangeType>& out) const      // return value
-    {
-      if (dOrder == 0) {
-        evaluateFunction(in, out);
-      } else if (dOrder == 1) {
+      } else if (totalOrder == 1) {
         out.resize(size());
+        auto const direction = find_index(order, 1);
 
         using RangeFieldType = typename Traits::RangeFieldType;
         RangeFieldType y[3][5] = { { 1.0, 0.0, 0.0,  2*in[0],      0.0 },
@@ -118,12 +90,24 @@ namespace Dune
         for (std::size_t i = 0; i < size(); ++i) {
           out[i] = RangeFieldType{0};
           for (std::size_t j = 0; j < 5; ++j)
-            out[i] += coefficients[i][j+1] * y[directions[0]][j];
+            out[i] += coefficients[i][j+1] * y[direction][j];
           out[i] /= RangeFieldType{3};
         }
       } else {
         DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
       }
+    }
+
+
+    //! \brief Evaluate partial derivatives of all shape functions, \deprecated
+    template <std::size_t dOrder>
+    inline void evaluate(const std::array<int, dOrder>& directions,
+                         const typename Traits::DomainType& in,         // position
+                         std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      std::array<unsigned int, 3> order;
+      Impl::directions2order(directions, order);
+      partial(order, in, out);
     }
 
     //! \brief polynomial order of the shape functions

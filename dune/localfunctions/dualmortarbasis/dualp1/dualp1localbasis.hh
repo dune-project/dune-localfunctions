@@ -33,7 +33,7 @@ namespace Dune
     static const bool faceDual = faceDualT;
     //! \brief export type traits for function signature
     typedef LocalBasisTraits<D,dim,Dune::FieldVector<D,dim>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldMatrix<R,1,dim>, 0 > Traits;
+        Dune::FieldMatrix<R,1,dim>, 0> Traits;
 
     //! \brief number of shape functions
     unsigned int size () const
@@ -69,9 +69,8 @@ namespace Dune
     }
 
     //! \brief Evaluate Jacobian of all shape functions
-    inline void
-    evaluateJacobian (const typename Traits::DomainType& /*in*/,
-                      std::vector<typename Traits::JacobianType>& out) const
+    inline void evaluateJacobian (const typename Traits::DomainType& /*in*/,
+                                  std::vector<typename Traits::JacobianType>& out) const
     {
       // evaluate P1 jacobians
       std::vector<typename Traits::JacobianType> p1Jacs(size());
@@ -111,17 +110,15 @@ namespace Dune
       }
     }
 
-    //! \brief Evaluate partial derivatives of all shape functions
+    //! \brief Evaluate partial derivatives of all shape functions, \deprecated
     template <std::size_t dOrder>
-    inline void evaluate (const std::array<int, dOrder>& /*directions*/,
+    inline void evaluate (const std::array<int, dOrder>& directions,
                           const typename Traits::DomainType& in,         // position
                           std::vector<typename Traits::RangeType>& out) const      // return value
     {
-      if (dOrder == 0) {
-        evaluateFunction(in, out);
-      } else {
-        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
-      }
+      std::array<unsigned int, dim> order;
+      Impl::directions2order(directions, order);
+      partial(order, in, out);
     }
 
     //! \brief Polynomial order of the shape functions

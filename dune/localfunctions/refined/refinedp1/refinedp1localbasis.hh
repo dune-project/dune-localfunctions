@@ -92,9 +92,8 @@ namespace Dune
     }
 
     //! \brief Evaluate Jacobian of all shape functions
-    inline void
-    evaluateJacobian (const typename Traits::DomainType& in,         // position
-                      std::vector<typename Traits::JacobianType>& out) const      // return value
+    inline void evaluateJacobian (const typename Traits::DomainType& in,         // position
+                                  std::vector<typename Traits::JacobianType>& out) const      // return value
     {
       out.resize(3);
 
@@ -153,37 +152,15 @@ namespace Dune
       }
     }
 
-    //! \brief Evaluate partial derivatives of all shape functions
+    //! \brief Evaluate partial derivatives of all shape functions, \deprecated
     template <std::size_t dOrder>
-    inline void evaluate(const std::array<int, dOrder>& /*directions*/,
+    inline void evaluate(const std::array<int, dOrder>& directions,
                          const typename Traits::DomainType& in,         // position
                          std::vector<typename Traits::RangeType>& out) const      // return value
     {
-      if (dOrder == 0) {
-        evaluateFunction(in, out);
-      } else if (dOrder == 1) {
-        out.resize(3);
-
-        int subElement;
-        typename Traits::DomainType local;
-        this->getSubElement(in, subElement, local);
-
-        switch (subElement) {
-          case 0:
-            out[0] = -2;
-            out[1] =  2;
-            out[2] =  0;
-            break;
-          case 1:
-            out[0] =  0;
-            out[1] = -2;
-            out[2] =  2;
-            break;
-        }
-      } else {
-        out.resize(3);
-        out[0] = out[1] = out[2] = 0;
-      }
+      std::array<unsigned int, 1> order;
+      Impl::directions2order(directions, order);
+      partial(order, in, out);
     }
 
     /** \brief Polynomial order of the shape functions
@@ -227,7 +204,7 @@ namespace Dune
   public:
     //! \brief export type traits for function signature
     typedef LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldMatrix<R,1,2>, 0 /*DUNE_MAX_DIFF_ORDER*/ > Traits;
+        Dune::FieldMatrix<R,1,2>, DUNE_MAX_DIFF_ORDER > Traits;
 
     //! \brief number of shape functions
     unsigned int size () const
@@ -348,8 +325,62 @@ namespace Dune
       if (totalOrder == 0) {
         evaluateFunction(in, out);
       } else if (totalOrder == 1) {
-        // TODO: implement first derivative
-        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+        int subElement;
+        typename Traits::DomainType local;
+        this->getSubElement(in, subElement, local);
+
+        auto const direction = find_index(order, 1);
+        out.resize(size());
+
+        for (std::size_t i = 0; i < size(); ++i)
+          out[i] = 0;
+
+        switch (direction) {
+        case 0: // direction == 0
+
+          switch (subElement) {
+          case 0 :
+            out[0] = -2;
+            out[1] =  2;
+            break;
+          case 1 :
+            out[1] = -2;
+            out[2] =  2;
+            break;
+          case 2 :
+            out[3] = -2;
+            out[4] =  2;
+            break;
+          case 3 :
+            out[3] = -2;
+            out[4] =  2;
+          }
+          break;
+
+        case 1: // direction == 1
+
+          switch (subElement) {
+          case 0 :
+            out[0] = -2;
+            out[3] =  2;
+            break;
+          case 1 :
+            out[1] = -2;
+            out[4] =  2;
+            break;
+          case 2 :
+            out[3] = -2;
+            out[5] =  2;
+            break;
+          case 3 :
+            out[1] = -2;
+            out[4] =  2;
+          }
+          break;
+
+        default:
+          DUNE_THROW(RangeError, "Component out of range.");
+        }
       } else {
         out.resize(size());
         for (std::size_t i = 0; i < size(); ++i)
@@ -357,22 +388,15 @@ namespace Dune
       }
     }
 
-    //! \brief Evaluate partial derivatives of all shape functions
+    //! \brief Evaluate partial derivatives of all shape functions, \deprecated
     template <std::size_t dOrder>
-    inline void evaluate(const std::array<int, dOrder>& /*directions*/,
+    inline void evaluate(const std::array<int, dOrder>& directions,
                          const typename Traits::DomainType& in,         // position
                          std::vector<typename Traits::RangeType>& out) const      // return value
     {
-      if (dOrder == 0) {
-        evaluateFunction(in, out);
-      } else if (dOrder == 1) {
-        // TODO: implement first derivative
-        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
-      } else {
-        out.resize(size());
-        for (std::size_t i = 0; i < size(); ++i)
-          out[i] = 0;
-      }
+      std::array<unsigned int, 2> order;
+      Impl::directions2order(directions, order);
+      partial(order, in, out);
     }
 
     /** \brief Polynomial order of the shape functions
@@ -420,7 +444,7 @@ namespace Dune
   public:
     //! \brief export type traits for function signature
     typedef LocalBasisTraits<D,3,Dune::FieldVector<D,3>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldMatrix<R,1,3>, 0 /*DUNE_MAX_DIFF_ORDER*/ > Traits;
+        Dune::FieldMatrix<R,1,3>, DUNE_MAX_DIFF_ORDER > Traits;
 
     //! \brief number of shape functions
     unsigned int size () const
@@ -555,9 +579,8 @@ namespace Dune
     }
 
     //! \brief Evaluate Jacobian of all shape functions
-    inline void
-    evaluateJacobian (const typename Traits::DomainType& in,         // position
-                      std::vector<typename Traits::JacobianType>& out) const      // return value
+    inline void evaluateJacobian (const typename Traits::DomainType& in,         // position
+                                  std::vector<typename Traits::JacobianType>& out) const      // return value
     {
       out.resize(10);
 
@@ -689,8 +712,137 @@ namespace Dune
       if (totalOrder == 0) {
         evaluateFunction(in, out);
       } else if (totalOrder == 1) {
-        // TODO: implement first derivative
-        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+        int subElement;
+        typename Traits::DomainType local;
+        this->getSubElement(in, subElement, local);
+
+        auto const direction = find_index(order, 1);
+        out.resize(size());
+
+        for (std::size_t i = 0; i < size(); ++i)
+          out[i] = 0;
+
+        switch (direction) {
+        case 0: // direction == 0
+
+          switch (subElement) {
+          case 0 :
+            out[0] = -2;
+            out[1] =  2;
+            break;
+          case 1 :
+            out[1] = -2;
+            out[2] =  2;
+            break;
+          case 2 :
+            out[3] = -2;
+            out[4] =  2;
+            break;
+          case 3 :
+            out[6] = -2;
+            out[7] =  2;
+            break;
+          case 4 :
+            out[6] = -2;
+            out[7] =  2;
+            break;
+          case 5 :
+            out[3] = -2;
+            out[4] =  2;
+            break;
+          case 6 :
+            out[6] = -2;
+            out[7] =  2;
+            break;
+          case 7 :
+            out[3] = -2;
+            out[4] =  2;
+            break;
+          }
+          break;
+
+        case 1: // direction == 1
+
+          switch (subElement) {
+          case 0 :
+            out[0] = -2;
+            out[3] =  2;
+            break;
+          case 1 :
+            out[1] = -2;
+            out[4] =  2;
+            break;
+          case 2 :
+            out[3] = -2;
+            out[5] =  2;
+            break;
+          case 3 :
+            out[6] = -2;
+            out[8] =  2;
+            break;
+          case 4 :
+            out[1] = -2;
+            out[3] =  2;
+            out[6] = -2;
+            break;
+          case 5 :
+            out[1] = -2;
+            out[4] =  2;
+            break;
+          case 6 :
+            out[6] = -2;
+            out[8] =  2;
+            break;
+          case 7 :
+            out[3] = -2;
+            out[4] =  2;
+            out[7] = -2;
+            out[8] =  2;
+            break;
+          }
+          break;
+
+        case 2: // direction == 2
+
+          switch (subElement) {
+          case 0 :
+            out[0] = -2;
+            out[6] =  2;
+            break;
+          case 1 :
+            out[1] = -2;
+            out[7] =  2;
+            break;
+          case 2 :
+            out[3] = -2;
+            out[8] =  2;
+            break;
+          case 3 :
+            out[6] = -2;
+            out[9] =  2;
+            break;
+          case 4 :
+            out[1] = -2;
+            out[7] =  2;
+            break;
+          case 5 :
+            out[1] = -2;
+            out[7] =  2;
+            break;
+          case 6 :
+            out[3] = -2;
+            out[8] =  2;
+            break;
+          case 7 :
+            out[3] = -2;
+            out[8] =  2;
+            break;
+          }
+          break;
+
+        default:
+          DUNE_THROW(RangeError, "Component out of range.");
+        }
       } else {
         out.resize(size());
         for (std::size_t i = 0; i < size(); ++i)
@@ -698,22 +850,15 @@ namespace Dune
       }
     }
 
-    //! \brief Evaluate partial derivatives of all shape functions
+    //! \brief Evaluate partial derivatives of all shape functions, \deprecated
     template <std::size_t dOrder>
-    inline void evaluate(const std::array<int, dOrder>& /*directions*/,
+    inline void evaluate(const std::array<int, dOrder>& directions,
                          const typename Traits::DomainType& in,         // position
                          std::vector<typename Traits::RangeType>& out) const      // return value
     {
-      if (dOrder == 0) {
-        evaluateFunction(in, out);
-      } else if (dOrder == 1) {
-        // TODO: implement first derivative
-        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
-      } else {
-        out.resize(size());
-        for (std::size_t i = 0; i < size(); ++i)
-          out[i] = 0;
-      }
+      std::array<unsigned int, 3> order;
+      Impl::directions2order(directions, order);
+      partial(order, in, out);
     }
 
 

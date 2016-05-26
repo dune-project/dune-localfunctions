@@ -61,72 +61,57 @@ namespace Dune
       auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
       if (totalOrder == 0) {
         evaluateFunction(in, out);
-      } else {
-        // Calculate directions from order and call evaluate for the
-        // specific totalOrder value, to calculate the derivatives.
-        int dOrder = staticFindIf<1, Traits::diffOrder+1>([&](const auto i)
-        {
-          if (i == totalOrder) {
-            std::array<int, i> directions;
-            Impl::order2directions(order, directions);
-            this->evaluate<i>(directions, in, out);
-            return true; // terminate loop
-          } else {
-            return false;
-          }
-        });
+      } else if (totalOrder == 1) {
+        auto const direction = find_index(order, 1);
+        out.resize(size());
 
-        if (dOrder > Traits::diffOrder)
-          DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+        switch (direction) {
+        case 0:
+          out[0] = -2 + 2*in[0];
+          out[1] =      2*in[0];
+          out[2] =  1 - 2*in[0];
+          out[3] =  1 - 2*in[0];
+          break;
+        case 1:
+          out[0] =  1 - 2*in[1];
+          out[1] =  1 - 2*in[1];
+          out[2] = -2 + 2*in[1];
+          out[3] =      2*in[1];
+          break;
+        default:
+          DUNE_THROW(RangeError, "Component out of range.");
+        }
+      } else if (totalOrder == 2) {
+        auto const direction = find_index(order, 2);
+        out.resize(size());
+
+        switch (direction) {
+        case 0:
+          out[0] = out[1] = 2;
+          out[2] = out[3] =-2;
+          break;
+        case 1:
+          out[0] = out[1] =-2;
+          out[2] = out[3] = 2;
+          break;
+        default:
+          out[0] = out[1] = out[2] = out[3] = 0;
+          break;
+        }
+      } else {
+        out[0] = out[1] = out[2] = out[3] = 0;
       }
     }
 
+    //! \brief Evaluate partial derivatives of all shape functions, \deprecated
     template <std::size_t dOrder>
     inline void evaluate(const std::array<int, dOrder>& directions,
                          const typename Traits::DomainType& in,         // position
                          std::vector<typename Traits::RangeType>& out) const      // return value
     {
-      if (dOrder == 0) {
-        evaluateFunction(in, out);
-      } else if (dOrder == 1) {
-        out.resize(size());
-        switch (directions[0]) {
-          case 0:
-            out[0] = -2 + 2*in[0];
-            out[1] =      2*in[0];
-            out[2] =  1 - 2*in[0];
-            out[3] =  1 - 2*in[0];
-            break;
-          case 1:
-            out[0] =  1 - 2*in[1];
-            out[1] =  1 - 2*in[1];
-            out[2] = -2 + 2*in[1];
-            out[3] =      2*in[1];
-            break;
-          default:
-            DUNE_THROW(RangeError, "Component out of range.");
-        }
-      } else if (dOrder == 2) {
-        out.resize(size());
-        if (directions[0] == directions[1]) {
-          switch (directions[0]) {
-            case 0:
-              out[0] = out[1] = 2;
-              out[2] = out[3] =-2;
-              break;
-            case 1:
-              out[0] = out[1] =-2;
-              out[2] = out[3] = 2;
-              break;
-            default:
-              DUNE_THROW(RangeError, "Component out of range.");
-          }
-        } else {
-          out[0] = out[1] = out[2] = out[3] = 0;
-        }
-      } else {
-        out[0] = out[1] = out[2] = out[3] = 0;
-      }
+      std::array<unsigned int, 2> order;
+      Impl::directions2order(directions, order);
+      partial(order, in, out);
     }
 
     //! \brief polynomial order of the shape functions

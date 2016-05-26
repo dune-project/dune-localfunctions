@@ -149,37 +149,11 @@ namespace Dune
       auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
       if (totalOrder == 0) {
         evaluateFunction(in, out);
-      } else {
-        // Calculate directions from order and call evaluate for the
-        // specific totalOrder value, to calculate the derivatives.
-        int dOrder = staticFindIf<1, Traits::diffOrder+1>([&](const auto i)
-        {
-          if (i == totalOrder) {
-            std::array<int, i> directions;
-            Impl::order2directions(order, directions);
-            this->evaluate<i>(directions, in, out);
-            return true; // terminate loop
-          } else {
-            return false;
-          }
-        });
-
-        if (dOrder > Traits::diffOrder)
-          DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
-      }
-    }
-
-    template <std::size_t dOrder>
-    inline void evaluate (const std::array<int, dOrder>& directions,
-                          const typename Traits::DomainType& in,         // position
-                          std::vector<typename Traits::RangeType>& out) const      // return value
-    {
-      if (dOrder == 0) {
-        evaluateFunction(in, out);
-      } else if (dOrder == 1) {
+      } else if (totalOrder == 1) {
+        auto const direction = find_index(order, 1);
         out.resize(size());
 
-        switch (directions[0]) {
+        switch (direction) {
           case 0:
             out[0][0] = sign0*(1.0 - 4.0*in[1]);
             out[0][1] = 0.0;
@@ -222,6 +196,17 @@ namespace Dune
       } else {
         DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
       }
+    }
+
+    //! \brief Evaluate partial derivatives of all shape functions, \deprecated
+    template <std::size_t dOrder>
+    inline void evaluate (const std::array<int, dOrder>& directions,
+                          const typename Traits::DomainType& in,         // position
+                          std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      std::array<unsigned int, 2> order;
+      Impl::directions2order(directions, order);
+      partial(order, in, out);
     }
 
     //! \brief Polynomial order of the shape functions

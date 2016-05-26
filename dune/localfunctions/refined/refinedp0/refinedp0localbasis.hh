@@ -57,9 +57,8 @@ namespace Dune
         out[i] = (i==subElement) ? 1 : 0;
     }
 
-    inline void
-    evaluateJacobian (const typename Traits::DomainType& /*in*/,         // position
-                      std::vector<typename Traits::JacobianType>& out) const      // return value
+    inline void evaluateJacobian (const typename Traits::DomainType& /*in*/,         // position
+                                  std::vector<typename Traits::JacobianType>& out) const      // return value
     {
       out.resize(N);
       for(int i=0; i<N; ++i)
@@ -81,19 +80,15 @@ namespace Dune
       }
     }
 
-    //! \brief Evaluate partial derivatives of all shape functions
+    //! \brief Evaluate partial derivatives of all shape functions, \deprecated
     template <std::size_t dOrder>
-    inline void evaluate (const std::array<int, dOrder>& /*directions*/,
+    inline void evaluate (const std::array<int, dOrder>& directions,
                           const typename Traits::DomainType& in,         // position
                           std::vector<typename Traits::RangeType>& out) const      // return value
     {
-      if (dOrder == 0) {
-        evaluateFunction(in, out);
-      } else {
-        out.resize(size());
-        for (std::size_t i = 0; i < size(); ++i)
-          out[i] = 0;
-      }
+      std::array<unsigned int, dim> order;
+      Impl::directions2order(directions, order);
+      partial(order, in, out);
     }
 
     /** \brief Polynomial order of the shape functions

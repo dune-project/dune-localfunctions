@@ -35,18 +35,35 @@ namespace Dune
 
     //! \brief Evaluate all shape functions
     inline void evaluateFunction (
-      const typename Traits::DomainType& in,
-      std::vector<typename Traits::RangeType>& out) const
+      const typename Traits::DomainType& /*in*/,
+      std::vector<typename Traits::RangeType>& /*out*/) const
     {
       DUNE_THROW(Dune::Exception,"mimetic basis evaluation not available");
     }
 
     //! \brief Evaluate Jacobian of all shape functions
     inline void evaluateJacobian (
-      const typename Traits::DomainType& in,
-      std::vector<typename Traits::JacobianType>& out) const
+      const typename Traits::DomainType& /*in*/,
+      std::vector<typename Traits::JacobianType>& /*out*/) const
     {
       DUNE_THROW(Dune::Exception,"mimetic basis Jacobian evaluation not available");
+    }
+
+    //! \brief Evaluate partial derivatives of all shape functions
+    inline void partial (const std::array<unsigned int, dim>& /*order*/,
+                         const typename Traits::DomainType& /*in*/,         // position
+                         std::vector<typename Traits::RangeType>& /*out*/) const      // return value
+    {
+      DUNE_THROW(Dune::Exception,"mimetic basis partial derivative evaluation not available");
+    }
+
+    //! \brief Evaluate partial derivatives of all shape functions, \deprecated
+    template <std::size_t dOrder>
+    inline void evaluate (const std::array<int, dOrder>& /*directions*/,
+                          const typename Traits::DomainType& /*in*/,         // position
+                          std::vector<typename Traits::RangeType>& /*out*/) const      // return value
+    {
+      DUNE_THROW(Dune::Exception,"mimetic basis partial derivative evaluation not available");
     }
 
     //! \brief Polynomial order of the shape functions

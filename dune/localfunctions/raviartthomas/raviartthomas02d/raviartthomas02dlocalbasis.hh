@@ -56,9 +56,8 @@ namespace Dune
     }
 
     //! \brief Evaluate Jacobian of all shape functions
-    inline void
-    evaluateJacobian (const typename Traits::DomainType& in,             // position
-                      std::vector<typename Traits::JacobianType>& out) const                          // return value
+    inline void evaluateJacobian (const typename Traits::DomainType& in,             // position
+                                  std::vector<typename Traits::JacobianType>& out) const                          // return value
     {
       out.resize(3);
       out[0][0][0] = sign0;       out[0][0][1] = 0;
@@ -78,9 +77,16 @@ namespace Dune
       if (totalOrder == 0) {
         evaluateFunction(in, out);
       } else if (totalOrder == 1) {
-        std::array<int, 1> directions;
-        Impl::order2directions(order, directions);
-        evaluate<1>(directions, in, out);
+        auto const direction = find_index(order, 1);
+        out.resize(size());
+
+        out[0][direction] = sign0;
+        out[0][1-direction] = 0;
+        out[1][direction] = sign1;
+        out[1][1-direction] = 0;
+        out[2][direction] = sign2;
+        out[2][1-direction] = 0;
+        }
       } else {
         out.resize(size());
         for (std::size_t i = 0; i < size(); ++i)
@@ -90,43 +96,15 @@ namespace Dune
 
     }
 
-    //! \brief Evaluate partial derivatives of all shape functions
+    //! \brief Evaluate partial derivatives of all shape functions, \deprecated
     template <std::size_t dOrder>
     inline void evaluate (const std::array<int, dOrder>& directions,
                           const typename Traits::DomainType& in,         // position
                           std::vector<typename Traits::RangeType>& out) const      // return value
     {
-      if (dOrder == 0) {
-        evaluateFunction(in, out);
-      } else if (dOrder == 1) {
-        out.resize(size());
-
-        switch (directions[0]) {
-          case 0:
-            out[0][0] = sign0;
-            out[0][1] = 0;
-            out[1][0] = sign1;
-            out[1][1] = 0;
-            out[2][0] = sign2;
-            out[2][1] = 0;
-            break;
-          case 1:
-            out[0][0] = 0;
-            out[0][1] = sign0;
-            out[1][0] = 0;
-            out[1][1] = sign1;
-            out[2][0] = 0;
-            out[2][1] = sign2;
-            break;
-          default:
-            DUNE_THROW(RangeError, "Component out of range.");
-        }
-      } else {
-        out.resize(size());
-        for (std::size_t i = 0; i < size(); ++i)
-          for (std::size_t j = 0; j < 2; ++j)
-            out[i][j] = 0;
-      }
+      std::array<unsigned int, 2> order;
+      Impl::directions2order(directions, order);
+      partial(order, in, out);
     }
 
     //! \brief Polynomial order of the shape functions

@@ -28,7 +28,7 @@ namespace Dune
 
   public:
     typedef LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,2,Dune::FieldVector<R,2>,
-        Dune::FieldMatrix<R,2,2>, 0 > Traits;
+        Dune::FieldMatrix<R,2,2>, 1> Traits;
 
     //! \brief Standard constructor
     BDM1Simplex2DLocalBasis ()
@@ -129,22 +129,66 @@ namespace Dune
       auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
       if (totalOrder == 0) {
         evaluateFunction(in, out);
+      } else if (totalOrder == 1) {
+        out.resize(size());
+        auto const direction = find_index(order, 1);
+
+        switch (direction) {
+        case 0:
+          out[0][0] = sign_[0];
+          out[0][1] = 0.0;
+
+          out[1][0] = sign_[1];
+          out[1][1] = 0.0;
+
+          out[2][0] = sign_[2];
+          out[2][1] = 0.0;
+
+          out[3][0] = 3.0;
+          out[3][1] = -6.0;
+
+          out[4][0] = 3.0;
+          out[4][1] = 0.0;
+
+          out[5][0] = -3.0;
+          out[5][1] = 0.0;
+          break;
+        case 1:
+          out[0][0] = 0.0;
+          out[0][1] = sign_[0];
+
+          out[1][0] = 0.0;
+          out[1][1] = sign_[1];
+
+          out[2][0] = 0.0;
+          out[2][1] = sign_[2];
+
+          out[3][0] = 0.0;
+          out[3][1] = -3.0;
+
+          out[4][0] = 6.0;
+          out[4][1] = -3.0;
+
+          out[5][0] = 0.0;
+          out[5][1] = 3.0;
+          break;
+        default:
+          DUNE_THROW(RangeError, "Component out of range.");
+        }
       } else {
         DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
       }
     }
 
-    //! \brief Evaluate partial derivatives of all shape functions
+    //! \brief Evaluate partial derivatives of all shape functions, \deprecated
     template <std::size_t dOrder>
-    inline void evaluate (const std::array<int, dOrder>& /*directions*/,
+    inline void evaluate (const std::array<int, dOrder>& directions,
                           const typename Traits::DomainType& in,         // position
                           std::vector<typename Traits::RangeType>& out) const      // return value
     {
-      if (dOrder == 0) {
-        evaluateFunction(in, out);
-      } else {
-        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
-      }
+      std::array<unsigned int, 2> order;
+      Impl::directions2order(directions, order);
+      partial(order, in, out);
     }
 
     //! \brief Polynomial order of the shape functions

@@ -43,7 +43,7 @@ namespace Dune
     }
 
     //! number of coefficients
-    static constexpr std::size_t size ()
+    std::size_t size () const
     {
       return N;
     }

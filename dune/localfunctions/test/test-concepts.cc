@@ -60,6 +60,14 @@ constexpr std::size_t size(std::tuple<Ts...> const&)
   return sizeof...(Ts);
 }
 
+// some dummy classes for false tests
+struct A {};
+
+struct B
+{
+  using Traits = double;
+};
+
 int main() try
 {
   auto defaultTests = std::make_tuple(
@@ -160,6 +168,36 @@ int main() try
 
     return b1 && b2 && b3;
   }, success, [](bool a, bool b) { return a && b; });
+
+
+  // ---------------------------------------------------------------------------
+  // false tests
+
+  bool b0 = Dune::Concept::isLocalFiniteElement<A>();
+  bool b1 = Dune::Concept::isLocalBasis<A>();
+  bool b2 = Dune::Concept::isLocalCoefficients<A>();
+
+  if (b0)
+    std::cout << "concept(LocalFiniteElement) should not be satisfied for dummy class A\n";
+  if (b1)
+    std::cout << "concept(LocalBasis) should not be satisfied for dummy class A\n";
+  if (b2)
+    std::cout << "concept(LocalCoefficients) should not be satisfied for dummy class A\n";
+
+  success = success && !(b0 || b1 || b2);
+
+  b0 = Dune::Concept::isLocalFiniteElement<B>();
+  b1 = Dune::Concept::isLocalBasis<B>();
+  b2 = Dune::Concept::isLocalCoefficients<B>();
+
+  if (b0)
+    std::cout << "concept(LocalFiniteElement) should not be satisfied for dummy class B\n";
+  if (b1)
+    std::cout << "concept(LocalBasis) should not be satisfied for dummy class B\n";
+  if (b2)
+    std::cout << "concept(LocalCoefficients) should not be satisfied for dummy class B\n";
+
+  success = success && !(b0 || b1 || b2);
 
   if (success)
     std::cout << "Success!\n";

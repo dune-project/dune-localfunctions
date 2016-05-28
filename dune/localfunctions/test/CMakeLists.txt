@@ -18,6 +18,8 @@ dune_add_test(SOURCES test-pk2d.cc)
 
 dune_add_test(SOURCES test-power-monomial.cc)
 
+dune_add_test(SOURCES test-pyramid.cc)
+
 dune_add_test(SOURCES test-q1.cc)
 
 dune_add_test(SOURCES test-q2.cc)

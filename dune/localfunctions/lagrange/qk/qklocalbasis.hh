@@ -142,10 +142,9 @@ namespace Dune
     {
       auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
 
-      if (totalOrder == 0)
+      if (totalOrder == 0) {
         evaluateFunction(in, out);
-      else if (totalOrder == 1)
-      {
+      } else if (totalOrder == 1) {
         out.resize(size());
 
         // Loop over all shape functions
@@ -166,43 +165,19 @@ namespace Dune
       }
     }
 
-    /** \brief Evaluate derivative in a given direction
-     * \param [in]  direction The direction to derive in
+    /** \brief Evaluate derivative in a given direction, \deprecated
+     * \param [in]  directions The direction to derive in
      * \param [in]  in        Position where to evaluate
      * \param [out] out       The return value
      */
     template<std::size_t diffOrder>
-    inline void evaluate(const std::array<int,diffOrder>& direction,
+    inline void evaluate(const std::array<int,diffOrder>& directions,
                          const typename Traits::DomainType& in,
                          std::vector<typename Traits::RangeType>& out) const
     {
-      if (diffOrder == 0)
-        evaluateFunction(in, out);
-      else if (diffOrder == 1)
-      {
-        out.resize(size());
-
-        // Loop over all shape functions
-        for (size_t i=0; i<size(); i++)
-        {
-          // convert index i to multiindex
-          Dune::FieldVector<int,d> alpha(multiindex(i));
-
-          // Loop over all coordinate directions
-          std::size_t j = direction[0];
-
-          // Initialize: the overall expression is a product
-          // if j-th bit of i is set to -1, else 1
-          out[i] = dp(alpha[j],in[j]);
-
-          // rest of the product
-          for (std::size_t l = 0; l < d; ++l)
-            if (l != j)
-              out[i] *= p(alpha[l],in[l]);
-        }
-      } else {
-          DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
-      }
+      std::array<unsigned int,d> order;
+      Impl::directions2order(directions, order);
+      partial(order, in, out);
     }
 
     //! \brief Polynomial order of the shape functions

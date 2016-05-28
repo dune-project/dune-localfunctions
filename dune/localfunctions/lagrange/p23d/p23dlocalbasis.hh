@@ -179,9 +179,8 @@ namespace Dune
     }
 
     //! \brief Evaluate Jacobian of all shape functions
-    inline void
-    evaluateJacobian (const typename Traits::DomainType& in,         // position
-                      std::vector<typename Traits::JacobianType>& out) const      // return value
+    inline void evaluateJacobian (const typename Traits::DomainType& in,         // position
+                                  std::vector<typename Traits::JacobianType>& out) const      // return value
     {
       out.resize(10);
 
@@ -411,9 +410,9 @@ namespace Dune
       if (totalOrder == 0) {
         evaluateFunction(in, out);
       } else if (totalOrder == 1) {
-        auto direction = find_index(order, 1);
         out.resize(size());
 
+        auto const direction = find_index(order, 1);
         switch (direction) {
           case 0:
             out[0] =-3.0 + 4.0*(in[0] + in[1] + in[2]);
@@ -459,59 +458,15 @@ namespace Dune
       }
     }
 
-    //! \brief Evaluate higher derivatives of all shape functions
-    template<std::size_t dOrder> //order of derivative
-    inline void evaluate(const std::array<int,dOrder>& directions, //direction of derivative
+    //! \brief Evaluate higher derivatives of all shape functions, \deprecated
+    template<std::size_t dOrder>
+    inline void evaluate(const std::array<int,dOrder>& directions,
                          const typename Traits::DomainType& in,  //position
                          std::vector<typename Traits::RangeType>& out) const //return value
     {
-      if (dOrder == 0) {
-        evaluateFunction(in, out);
-      } else if (dOrder == 1) {
-        out.resize(size());
-        switch (directions[0]) {
-          case 0:
-            out[0] =-3.0 + 4.0*(in[0] + in[1] + in[2]);
-            out[1] =-1.0 + 4.0*in[0];
-            out[2] = 0.0;
-            out[3] = 0.0;
-            out[4] = 4.0 - 4.0*(2.0*in[0] + in[1] + in[2]);
-            out[5] = 4.0*in[1];
-            out[6] =-4.0*in[1];
-            out[7] =-4.0*in[2];
-            out[8] = 4.0*in[2];
-            out[9] = 0.0;
-            break;
-          case 1:
-            out[0] =-3.0 + 4.0*(in[0] + in[1] + in[2]);
-            out[1] = 0.0;
-            out[2] =-1.0 + 4.0*in[1];
-            out[3] = 0.0;
-            out[4] =-4.0*in[0];
-            out[5] = 4.0*in[0];
-            out[6] = 4.0 - 4.0*(in[0] + 2.0*in[1] + in[2]);
-            out[7] =-4.0*in[2];
-            out[8] = 0.0;
-            out[9] = 4.0*in[2];
-            break;
-          case 2:
-            out[0] =-3.0 + 4.0*(in[0] + in[1] + in[2]);
-            out[1] = 0.0;
-            out[2] = 0.0;
-            out[3] =-1.0 + 4.0*in[2];
-            out[4] =-4.0*in[0];
-            out[5] = 0.0;
-            out[6] =-4.0*in[1];
-            out[7] = 4.0 - 4.0*(in[0] + in[1] + 2.0*in[2]);
-            out[8] = 4.0*in[0];
-            out[9] = 4.0*in[1];
-            break;
-          default:
-            DUNE_THROW(RangeError, "Component out of range.");
-        }
-      } else {
-        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
-      }
+      std::array<unsigned int,3> order;
+      Impl::directions2order(directions, order);
+      partial(order, in, out);
     }
 
 

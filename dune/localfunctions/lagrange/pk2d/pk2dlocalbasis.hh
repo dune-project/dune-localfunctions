@@ -173,41 +173,11 @@ namespace Dune
       auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
       if (totalOrder == 0) {
         evaluateFunction(in, out);
-      } else {
-        // Calculate directions from order and call evaluate for the
-        // specific totalOrder value, to calculate the derivatives.
-        int dOrder = staticFindIf<1, Traits::diffOrder+1>([&](const auto i)
-        {
-          if (i == totalOrder) {
-            std::array<int, i> directions;
-            Impl::order2directions(order, directions);
-            this->evaluate<i>(directions, in, out);
-            return true; // terminate loop
-          } else {
-            return false;
-          }
-        });
+      } else if (totalOrder == 1) {
+        out.resize(size());
 
-        if (dOrder > Traits::diffOrder)
-          DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
-      }
-    }
+        auto const direction = find_index(order, 1);
 
-    //! \brief Evaluate higher derivatives of all shape functions
-    template<std::size_t dOrder> //order of derivative
-    inline void evaluate(const std::array<int,dOrder>& directions, //direction of derivative
-                         const typename Traits::DomainType& in,  //position
-                         std::vector<typename Traits::RangeType>& out) const //return value
-    {
-      out.resize(N);
-
-      if (dOrder > Traits::diffOrder)
-        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
-
-      if (dOrder==0)
-        evaluateFunction(in, out);
-      else if (dOrder==1)
-      {
         int n=0;
         for (unsigned int j=0; j<=k; j++)
           for (unsigned int i=0; i<=k-j; i++, n++)
@@ -215,7 +185,7 @@ namespace Dune
             out[n] = 0.0;
             for (unsigned int no1=0; no1 < k; no1++)
             {
-              R factor = lagrangianFactorDerivative(directions[0], no1, i, j, in);
+              R factor = lagrangianFactorDerivative(direction, no1, i, j, in);
               for (unsigned int no2=0; no2 < k; no2++)
                 if (no1 != no2)
                   factor *= lagrangianFactor(no2, i, j, in);
@@ -223,14 +193,17 @@ namespace Dune
               out[n] += factor;
             }
           }
-      }
-      else if (dOrder==2)
-      {
+      } else if (totalOrder == 2) {
+        out.resize(size());
+
         // specialization for k<2, not clear whether that is needed
         if (k<2) {
           std::fill(out.begin(), out.end(), 0.0);
           return;
         }
+
+        std::array<int, 2> directions;
+        Impl::order2directions(order, directions);
 
         //f = prod_{i} f_i -> dxa dxb f = sum_{i} {dxa f_i sum_{k \neq i} dxb f_k prod_{l \neq k,i} f_l
         int n=0;
@@ -259,7 +232,21 @@ namespace Dune
             }
             out[n] = res;
           }
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
       }
+
+    }
+
+    //! \brief Evaluate higher derivatives of all shape functions, \deprecated
+    template<std::size_t dOrder>
+    inline void evaluate(const std::array<int,dOrder>& directions,
+                         const typename Traits::DomainType& in,  //position
+                         std::vector<typename Traits::RangeType>& out) const //return value
+    {
+      std::array<unsigned int, 2> order;
+      Impl::directions2order(directions, order);
+      partial(order, in, out);
     }
 
     //! \brief Polynomial order of the shape functions

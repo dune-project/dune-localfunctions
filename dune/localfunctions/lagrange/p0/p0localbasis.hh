@@ -8,6 +8,7 @@
 #include <dune/common/fmatrix.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
+#include <dune/localfunctions/common/partial.hh>
 
 namespace Dune
 {
@@ -69,22 +70,19 @@ namespace Dune
         evaluateFunction(in, out);
       } else {
         out.resize(1);
-        out[0] = 0.0;
+        out[0] = 0;
       }
     }
 
     //! \brief Evaluate higher derivatives of all shape functions. \deprecated
     template<std::size_t dOrder>
-    inline void evaluate(const std::array<int,dOrder>& /*directions*/,
+    inline void evaluate(const std::array<int,dOrder>& directions,
                          const typename Traits::DomainType& in,  //position
                          std::vector<typename Traits::RangeType>& out) const //return value
     {
-      if (dOrder==0)
-        evaluateFunction(in, out);
-      else {
-        out.resize(1);
-        out[0] = 0.0;
-      }
+      std::array<unsigned int,d> order;
+      Impl::directions2order(directions, order);
+      partial(order, in, out);
     }
 
     //! \brief Polynomial order of the shape functions

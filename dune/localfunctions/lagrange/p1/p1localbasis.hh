@@ -81,7 +81,7 @@ namespace Dune
         evaluateFunction(in, out);
       else if (totalOrder == 1)
       {
-        auto direction = find_index(order, 1);
+        auto const direction = find_index(order, 1);
         out.resize(size());
 
         out[0] = -1;
@@ -103,23 +103,9 @@ namespace Dune
                           const typename Traits::DomainType& in,
                           std::vector<typename Traits::RangeType>& out) const
     {
-      if (dOrder==0)
-        evaluateFunction(in, out);
-      else if (dOrder==1)
-      {
-        out.resize(size());
-
-        out[0] = -1;
-        for (int i = 0; i < dim; ++i)
-          out[i+1] = (i==directions[0]);
-      }
-      else  // all higher order derivatives are zero
-      {
-        out.resize(size());
-
-        for (std::size_t i = 0; i < size(); ++i)
-          out[i] = 0;
-      }
+      std::array<unsigned int,dim> order;
+      Impl::directions2order(directions, order);
+      partial(order, in, out);
     }
 
     //! \brief Polynomial order of the shape functions

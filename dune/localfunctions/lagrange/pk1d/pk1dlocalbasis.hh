@@ -103,11 +103,11 @@ namespace Dune
       }
     }
 
-    //! \brief Evaluate higher derivatives of all shape functions
-    template<std::size_t dOrder> //order of derivative
-    inline void evaluate(const std::array<int,dOrder>& /*directions*/,                              // direction of derivative
-                         const typename Traits::DomainType& in,                                 // position
-                         std::vector<typename Traits::RangeType>& out) const    // return value
+    //! \brief Evaluate higher derivatives of all shape functions, \deprecated
+    template<std::size_t dOrder>
+    inline void evaluate(const std::array<int,dOrder>& /*directions*/,
+                         const typename Traits::DomainType& in, // position
+                         std::vector<typename Traits::RangeType>& out) const // return value
     {
       std::array<unsigned int,1> order;
       order[0] = dOrder;

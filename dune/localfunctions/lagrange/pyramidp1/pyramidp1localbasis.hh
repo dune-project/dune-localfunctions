@@ -6,6 +6,7 @@
 #include <dune/common/fmatrix.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
+#include <dune/localfunctions/common/partial.hh>
 
 
 namespace Dune
@@ -167,13 +168,9 @@ namespace Dune
                           const typename Traits::DomainType& in,         // position
                           std::vector<typename Traits::RangeType>& out) const      // return value
     {
-      if (dOrder == 0) {
-        evaluateFunction(in, out);
-      } else {
-        std::array<unsigned int,3> order;
-        Impl::directions2order(directions, order);
-        partial(order, in, out);
-      }
+      std::array<unsigned int,3> order;
+      Impl::directions2order(directions, order);
+      partial(order, in, out);
     }
 
     //! \brief Polynomial order of the shape functions

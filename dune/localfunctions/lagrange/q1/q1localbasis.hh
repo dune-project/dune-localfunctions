@@ -98,8 +98,7 @@ namespace Dune
       if (totalOrder == 0) {
         evaluateFunction(in, out);
       }
-      else if (totalOrder == 1)
-      {
+      else if (totalOrder == 1) {
         out.resize(size());
 
         int direction = find_index(order, 1);
@@ -128,39 +127,15 @@ namespace Dune
       }
     }
 
-    //! \brief Evaluate all shape functions
+    //! \brief Evaluate partial derivatives of any order of all shape functions, \deprecated
     template<std::size_t dOrder>
     inline void evaluate (const typename std::array<int,dOrder>& directions,
                           const typename Traits::DomainType& in,
                           std::vector<typename Traits::RangeType>& out) const
     {
-      if (dOrder==0)
-        evaluateFunction(in, out);
-      else if (dOrder==1)
-      {
-        out.resize(size());
-
-        int direction = directions[0];
-
-        // Loop over all shape functions
-        for (std::size_t i = 0; i < size(); ++i) {
-
-          // Initialize: the overall expression is a product
-          // if j-th bit of i is set to -1, else 1
-          out[i] = (i & (1<<direction)) ? 1 : -1;
-
-          for (int k = 0; k < dim; ++k) {
-            if (direction != k)
-              // if k-th bit of i is set multiply with in[j], else with 1-in[j]
-              out[i] *= (i & (1<<k)) ? in[k] :  1-in[k];
-          }
-
-        }
-      }
-      else
-      {
-        DUNE_THROW(NotImplemented, "To be implemented!");
-      }
+      std::array<unsigned int,dim> order;
+      Impl::directions2order(directions, order);
+      partial(order, in, out);
     }
 
     //! \brief Polynomial order of the shape functions

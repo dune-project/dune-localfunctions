@@ -256,22 +256,19 @@ namespace Dune
         evaluateFunction(in, out);
       } else {
         out.resize(N);
-        out[0] = 0.0;
+        out[0] = 0;
       }
     }
 
     //! \brief Evaluate higher derivatives of all shape functions. \deprecated
-    template<unsigned int dOrder> //order of derivative
-    inline void evaluate(const std::array<int,dOrder>& /*directions*/, //direction of derivative
+    template<unsigned int dOrder>
+    inline void evaluate(const std::array<int,dOrder>& directions,
                          const typename Traits::DomainType& in,  //position
                          std::vector<typename Traits::RangeType>& out) const //return value
     {
-      out.resize(N);
-
-      if (dOrder==0)
-        evaluateFunction(in, out);
-      else
-        out[0] = 0.0;
+      std::array<unsigned int,3> order;
+      Impl::directions2order(directions, order);
+      partial(order, in, out);
     }
 
     // local interpolation of a function

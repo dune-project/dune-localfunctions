@@ -25,7 +25,7 @@ namespace Dune
   public:
     //! \brief export type traits for function signature
     typedef LocalBasisTraits<D,3,Dune::FieldVector<D,3>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldMatrix<R,1,3>, 1 > Traits;
+        Dune::FieldMatrix<R,1,3>, DUNE_MAX_DIFF_ORDER> Traits;
 
     //! \brief number of shape functions
     unsigned int size () const
@@ -90,18 +90,40 @@ namespace Dune
             out[5] = in[2];
             break;
           case 2:
-            out[0] = in[0]+in[1]-1;  // basis function 0
-            out[1] = -in[0];         // basis function 1
-            out[2] = -in[1];         // basis function 2
-            out[3] = 1-in[0]-in[1];  // basis function 3
-            out[4] = in[0];          // basis function 4
-            out[5] = in[1];          // basis function 5
+            out[0] = in[0]+in[1]-1;
+            out[1] = -in[0];
+            out[2] = -in[1];
+            out[3] = 1-in[0]-in[1];
+            out[4] = in[0];
+            out[5] = in[1];
             break;
           default:
             DUNE_THROW(RangeError, "Component out of range.");
         }
+      } else if (totalOrder == 2) {
+        out.resize(size());
+        if (order[0] == 1 && order[2] == 1) {
+          out[0] = 1;
+          out[1] =-1;
+          out[2] = 0;
+          out[3] =-1;
+          out[4] = 1;
+          out[5] = 0;
+        } else if (order[1] == 1 && order[2] == 1) {
+          out[0] = 1;
+          out[1] = 0;
+          out[2] =-1;
+          out[3] =-1;
+          out[4] = 0;
+          out[5] = 1;
+        } else {
+          for (std::size_t i = 0; i < size(); ++i)
+            out[i] = 0;
+        }
       } else {
-        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+        out.resize(size());
+        for (std::size_t i = 0; i < size(); ++i)
+          out[i] = 0;
       }
     }
 

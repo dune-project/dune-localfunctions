@@ -64,9 +64,8 @@ namespace Dune
     }
 
     //! \brief Evaluate Jacobian of all shape functions
-    inline void
-    evaluateJacobian (const typename Traits::DomainType& in,         // position
-                      std::vector<typename Traits::JacobianType>& out) const      // return value
+    inline void evaluateJacobian (const typename Traits::DomainType& in,         // position
+                                  std::vector<typename Traits::JacobianType>& out) const      // return value
     {
       out.resize(5);
 
@@ -98,9 +97,9 @@ namespace Dune
       if (totalOrder == 0) {
         evaluateFunction(in, out);
       } else if (totalOrder == 1) {
-        auto direction = find_index(order, 1);
         out.resize(size());
 
+        auto const direction = find_index(order, 1);
         if (in[0] > in[1])
         {
           switch (direction) {
@@ -157,8 +156,26 @@ namespace Dune
               DUNE_THROW(RangeError, "Component out of range.");
           }
         }
+      } else if (totalOrder == 2) {
+        out.resize(size());
+
+        if ((order[0] == 1 && order[1] == 1) ||
+            (order[1] == 1 && order[2] == 1 && in[0] > in[1]) ||
+            (order[0] == 1 && order[2] == 1 && in[0] <=in[1])) {
+          out[0] = 1;
+          out[1] =-1;
+          out[2] =-1;
+          out[3] = 1;
+          out[4] = 0;
+        } else {
+          for (std::size_t i = 0; i < size(); ++i)
+            out[i] = 0;
+        }
+
       } else {
-        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+        out.resize(size());
+        for (std::size_t i = 0; i < size(); ++i)
+          out[i] = 0;
       }
     }
 

@@ -131,7 +131,9 @@ int main() try
     /*44*/ make_pair( Dune::RaviartThomasCubeLocalFiniteElement<double,double,3,0>(1), "rt0cube3dlfem"),
     /*45*/ make_pair( Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,1>(1), "rt1cube2dlfem"),
     /*46*/ make_pair( Dune::RaviartThomasCubeLocalFiniteElement<double,double,3,1>(1), "rt1cube3dlfem"),
-    /*47*/ make_pair( Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,2>(1), "rt2cube2dlfem")
+    /*47*/ make_pair( Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,2>(1), "rt2cube2dlfem"),
+    /*48*/ make_pair( Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,3>(1), "rt3cube2dlfem"),
+    /*49*/ make_pair( Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,4>(1), "rt4cube2dlfem")
     );
 
   // Add monomials to the tuple of tests.
@@ -157,7 +159,8 @@ int main() try
 
 
   // ---------------------------------------------------------------------------
-  // Test some FiniteElements with disabled local-interpolation tests
+  // Test some FiniteElements with disabled local-interpolation tests.
+  // Intepolation is not yet implemented.
 
   auto disabledInterpolationTests = make_tuple(
     /* 0*/ make_pair( Dune::BDM1Cube3DLocalFiniteElement<double,double>(1), "bdm1cube3dlfem"),
@@ -174,13 +177,13 @@ int main() try
 
 
   // ---------------------------------------------------------------------------
-  // Test some FiniteElements with disabled jacobian evaluation tests. (Why is this disabled??)
+  // Test some FiniteElements with disabled jacobian evaluation tests.
+  // These pyramid element have only piecewise linear/quadratic basis functions, i.e.
+  // not continuousely differentiable in the whole pyramid.
 
   auto disabledJacobianTests = make_tuple(
     /* 0*/ make_pair( Dune::PyramidP1LocalFiniteElement<double,double>(), "pyramidp1fem"),
-    /* 1*/ make_pair( Dune::PyramidP2LocalFiniteElement<double,double>(), "pyramidp2fem"),
-    /* 2*/ make_pair( Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,3>(1), "rt3cube2dlfem"),
-    /* 3*/ make_pair( Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,4>(1), "rt4cube2dlfem")
+    /* 1*/ make_pair( Dune::PyramidP2LocalFiniteElement<double,double>(), "pyramidp2fem")
     );
 
   // run tests...

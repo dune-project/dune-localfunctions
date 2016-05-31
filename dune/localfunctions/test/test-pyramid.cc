@@ -32,7 +32,8 @@ int main() try
   auto simplexGeometry = Dune::GeometryType(Dune::GeometryType::simplex, 2);
 
   // ---------------------------------------------------------------------------
-  // Test some FiniteElements with disabled jacobian evaluation tests. (Why is this disabled??)
+  // Test some FiniteElements with disabled jacobian evaluation tests.
+  // Test only whether evaluateGradient() matches with partial()
 
   auto disabledJacobianTests = make_tuple(
     /* 0*/ make_pair( Dune::PyramidP1LocalFiniteElement<double,double>(), "pyramidp1fem"),
@@ -45,7 +46,7 @@ int main() try
     bool b = testFE(std::get<i>(tests).first);
     std::cout << "testFE(" << std::get<i>(tests).second << ") " << (b ? "succeeded\n" : "failed\n");
     return b;
-  }, success, [](bool a, bool b) { return a && b; });
+  }, true, [](bool a, bool b) { return a && b; });
 
   return success ? 0 : 1;
 }

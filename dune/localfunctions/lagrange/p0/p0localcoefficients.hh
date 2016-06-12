@@ -22,8 +22,7 @@ namespace Dune
   {
   public:
     //! \brief Standard constructor
-    P0LocalCoefficients ()
-      : index(0,0,0)
+    P0LocalCoefficients () : index(0,0,0)
     {}
 
     //! number of coefficients
@@ -33,7 +32,7 @@ namespace Dune
     }
 
     //! get i'th index
-    const LocalKey& localKey (std::size_t /*i*/) const
+    const LocalKey& localKey (std::size_t i) const
     {
       return index;
     }

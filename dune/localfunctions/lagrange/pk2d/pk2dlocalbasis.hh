@@ -7,7 +7,6 @@
 
 #include <dune/common/fmatrix.hh>
 
-#include <dune/localfunctions/common/staticLoops.hh>
 #include <dune/localfunctions/common/localbasis.hh>
 #include <dune/localfunctions/common/partial.hh>
 

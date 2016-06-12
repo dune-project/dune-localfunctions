@@ -53,7 +53,7 @@ namespace Dune
 
       // edge (0)
       subEntity[lastIndex++] = 0;                 // corner 0
-      for (int i = 0; i < k - 1; ++i)
+      for (unsigned i = 0; i < k - 1; ++i)
         subEntity[lastIndex++] = 0;               // inner dofs of element (0)
 
       subEntity[lastIndex++] = 1;                 // corner 1
@@ -85,22 +85,22 @@ namespace Dune
 
       // lower edge (2)
       subEntity[lastIndex++] = 0;                 // corner 0
-      for (int i = 0; i < k - 1; ++i)
+      for (unsigned i = 0; i < k - 1; ++i)
         subEntity[lastIndex++] = 2;           // inner dofs of lower edge (2)
 
       subEntity[lastIndex++] = 1;                 // corner 1
 
       // iterate from bottom to top over inner edge dofs
-      for (int e = 0; e < k - 1; ++e) {
+      for (unsigned e = 0; e < k - 1; ++e) {
         subEntity[lastIndex++] = 0;                   // left edge (0)
-        for (int i = 0; i < k - 1; ++i)
+        for (unsigned i = 0; i < k - 1; ++i)
           subEntity[lastIndex++] = 0;                     // face dofs
         subEntity[lastIndex++] = 1;                   // right edge (1)
       }
 
       // upper edge (3)
       subEntity[lastIndex++] = 2;                 // corner 2
-      for (int i = 0; i < k - 1; ++i)
+      for (unsigned i = 0; i < k - 1; ++i)
         subEntity[lastIndex++] = 3;                   // inner dofs of upper edge (3)
 
       subEntity[lastIndex++] = 3;                 // corner 3
@@ -161,7 +161,7 @@ namespace Dune
 
       // upper edge (7)
       subEntity[lastIndex++] = 2;              // corner 2
-      for (int i = 0; i < k - 1; ++i)
+      for (unsigned i = 0; i < k - 1; ++i)
         subEntity[lastIndex++] = 7;                // inner dofs of upper edge (7)
       subEntity[lastIndex++] = 3;                // corner 3
 
@@ -197,21 +197,21 @@ namespace Dune
       ////////////////////////////////////////// top face (5)
       // lower edge (10)
       subEntity[lastIndex++] = 4;              // corner 4
-      for (int i = 0; i < k - 1; ++i)
+      for (unsigned i = 0; i < k - 1; ++i)
         subEntity[lastIndex++] = 10;                // inner dofs on lower edge (10)
       subEntity[lastIndex++] = 5;              // corner 5
 
       // iterate from bottom to top over inner edge dofs
-      for (int e = 0; e < k - 1; ++e) {
+      for (unsigned e = 0; e < k - 1; ++e) {
         subEntity[lastIndex++] = 8;                // left edge (8)
-        for (int i = 0; i < k - 1; ++i)
+        for (unsigned i = 0; i < k - 1; ++i)
           subEntity[lastIndex++] = 5;                  // face dofs
         subEntity[lastIndex++] = 9;                // right edge (9)
       }
 
       // upper edge (11)
       subEntity[lastIndex++] = 6;              // corner 6
-      for (int i = 0; i < k - 1; ++i)
+      for (unsigned i = 0; i < k - 1; ++i)
         subEntity[lastIndex++] = 11;                // inner dofs of upper edge (11)
       subEntity[lastIndex++] = 7;              // corner 7
 
@@ -233,7 +233,7 @@ namespace Dune
         // where dof is on boundary
         std::array<unsigned int,d> mIdx = multiindex(i);
         for (int j=0; j<d; j++)
-          if (mIdx[j]==0 || mIdx[j]==k)
+          if (mIdx[j]==0 or mIdx[j]==k)
             codim[i]++;
       }
 
@@ -251,7 +251,7 @@ namespace Dune
         std::array<unsigned int,d> mIdx = multiindex(i);
 
         for (int j=d-1; j>=0; j--)
-          if (mIdx[j]>0 && mIdx[j]<k)
+          if (mIdx[j]>0 and mIdx[j]<k)
             index[i] = (k-1)*index[i] + (mIdx[j]-1);
 
       }

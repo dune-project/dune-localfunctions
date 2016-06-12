@@ -3,7 +3,7 @@
 #ifndef DUNE_LOCALFUNCTIONS_TEST_TEST_LOCALFE_HH
 #define DUNE_LOCALFUNCTIONS_TEST_TEST_LOCALFE_HH
 
-/** \file \brief Unit tests for LocalFiniteElement objects
+/** \file \brief Unit tests for LocalFiniteElement objects with pyramid geometry
  *
  * \note This header is not part of the official Dune API and might be subject
  *  to change.  You can use this header to test external finite element
@@ -19,7 +19,6 @@
 #include <dune/geometry/quadraturerules.hh>
 #include <dune/geometry/referenceelements.hh>
 
-#include <dune/localfunctions/common/concepts.hh>
 #include <dune/localfunctions/common/partial.hh>
 #include <dune/localfunctions/common/virtualinterface.hh>
 #include <dune/localfunctions/common/virtualwrappers.hh>
@@ -54,84 +53,11 @@ T distance(Dune::FieldVector<T, n> const& x, Dune::FieldVector<T, n> const& y)
 }
 
 
-template<class FE>
-class Func :
-  //  public Dune::LocalFiniteElementFunctionBase<FE>::type
-  public Dune::LocalFiniteElementFunctionBase<FE>::FunctionBase
-  //  public Dune::LocalFiniteElementFunctionBase<FE>::VirtualFunctionBase
-{
-public:
-  typedef typename FE::Traits::LocalBasisType::Traits::DomainType DomainType;
-  typedef typename FE::Traits::LocalBasisType::Traits::RangeType RangeType;
-  typedef typename Dune::Function<const DomainType&, RangeType&> Base;
-
-  void evaluate (const DomainType& x, RangeType& y) const
-  {
-    y = 0;
-    DomainType c(0.5);
-
-    c -= x;
-    y[0] = exp(-3.0*c.two_norm2());
-  }
-};
-
-// This class defines a local finite element function.
-// It is determined by a local finite element and
-// representing the local basis and a coefficient vector.
-// This provides the evaluate method needed by the interpolate()
-// method.
-template<class FE>
-class LocalFEFunction :
-  //  public Dune::LocalFiniteElementFunctionBase<FE>::type
-  public Dune::LocalFiniteElementFunctionBase<FE>::FunctionBase
-  //  public Dune::LocalFiniteElementFunctionBase<FE>::VirtualFunctionBase
-{
-public:
-  typedef typename FE::Traits::LocalBasisType::Traits::DomainType DomainType;
-  typedef typename FE::Traits::LocalBasisType::Traits::RangeType RangeType;
-  typedef typename Dune::Function<const DomainType&, RangeType&> Base;
-
-  typedef typename FE::Traits::LocalBasisType::Traits::RangeFieldType CT;
-
-  LocalFEFunction(const FE& fe) :
-    fe_(fe)
-  {
-    resetCoefficients();
-  }
-
-  void resetCoefficients()
-  {
-    coeff_.resize(fe_.localBasis().size());
-    for(std::size_t i=0; i<coeff_.size(); ++i)
-      coeff_[i] = 0;
-  }
-
-  void setRandom(double max)
-  {
-    coeff_.resize(fe_.localBasis().size());
-    for(std::size_t i=0; i<coeff_.size(); ++i)
-      coeff_[i] = ((1.0*std::rand()) / RAND_MAX - 0.5)*2.0*max;
-  }
-
-
-  void evaluate (const DomainType& x, RangeType& y) const
-  {
-    std::vector<RangeType> yy;
-    fe_.localBasis().evaluateFunction(x, yy);
-
-    y = 0.0;
-    for (std::size_t i=0; i<yy.size(); ++i)
-      y.axpy(coeff_[i], yy[i]);
-  }
-
-  std::vector<CT> coeff_;
-
-private:
-  const FE& fe_;
-};
-
-
-/** \brief Specialization to test the 'evaluate' method for first-order partial derivatives */
+/**
+ * \brief Specialization to test the 'evaluate' method for first-order partial derivatives
+ * Compare the partial() derivative calculation agains evaluateJacobian() method for
+ * consistency.
+ **/
 struct TestEvaluate
 {
   template <class FE>
@@ -201,7 +127,7 @@ struct TestEvaluate
             RangeField derivative = partialDerivatives[j][l];
 
             // Check the 'evaluate' method
-            if (std::abs(derivative - gradients[j][l][k])
+            if (distance(derivative, gradients[j][l][k])
                 > TOL * std::abs(gradients[j][l][k]))
             {
               std::cout << std::setprecision(16);

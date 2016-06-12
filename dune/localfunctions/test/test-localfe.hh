@@ -19,7 +19,6 @@
 #include <dune/geometry/quadraturerules.hh>
 #include <dune/geometry/referenceelements.hh>
 
-#include <dune/localfunctions/common/concepts.hh>
 #include <dune/localfunctions/common/virtualinterface.hh>
 #include <dune/localfunctions/common/virtualwrappers.hh>
 
@@ -27,6 +26,9 @@ double TOL = 1e-9;
 // The FD approximation used for checking the Jacobian uses half of the
 // precision -- so we have to be a little bit more tolerant here.
 double jacobianTOL = 1e-5;  // sqrt(TOL)
+
+/// Some helper functions
+/// \{
 
 template <class T,
   class = std::enable_if_t< std::is_arithmetic<T>::value > >
@@ -52,6 +54,7 @@ T distance(Dune::FieldVector<T, n> const& x, Dune::FieldVector<T, n> const& y)
   return std::sqrt(result);
 }
 
+/// \}
 
 template<class FE>
 class Func :
@@ -178,115 +181,94 @@ bool testLocalInterpolation(const FE& fe, int n=5)
   return success;
 }
 
-namespace Impl
-{
-  template<class FE>
-  bool testJacobian(std::false_type, const FE& fe, unsigned order = 2)
-  {
-    std::cout << "TODO: implement evaluateJacobian() for FE "
-              << "'" << Dune::className<FE>() << "' LocalBasis type!\n";
-    return true;
-  }
-
-  // LocalBasis of FE has method evaluateJacobian()
-  template<class FE>
-  bool testJacobian(std::true_type, const FE& fe, unsigned order = 2)
-  {
-    typedef typename FE::Traits::LocalBasisType LB;
-
-    bool success = true;
-
-    // ////////////////////////////////////////////////////////////
-    //   Check the partial derivatives by comparing them
-    //   to finite difference approximations
-    // ////////////////////////////////////////////////////////////
-
-    // A set of test points
-    const Dune::QuadratureRule<double,LB::Traits::dimDomain> quad =
-      Dune::QuadratureRules<double,LB::Traits::dimDomain>::rule(fe.type(),order);
-
-    // Loop over all quadrature points
-    for (size_t i=0; i<quad.size(); i++) {
-
-      // Get a test point
-      const Dune::FieldVector<double,LB::Traits::dimDomain>& testPoint =
-        quad[i].position();
-
-      // Get the shape function derivatives there
-      std::vector<typename LB::Traits::JacobianType> jacobians;
-      fe.localBasis().evaluateJacobian(testPoint, jacobians);
-      if(jacobians.size() != fe.localBasis().size()) {
-        std::cout << "Bug in evaluateJacobianGlobal() for finite element type "
-                  << Dune::className(fe) << std::endl;
-        std::cout << "    Jacobian vector has size " << jacobians.size()
-                  << std::endl;
-        std::cout << "    Basis has size " << fe.localBasis().size()
-                  << std::endl;
-        std::cout << std::endl;
-        return false;
-      }
-
-      // Loop over all shape functions in this set
-      for (unsigned int j=0; j<fe.localBasis().size(); ++j) {
-        // Loop over all directions
-        for (int k=0; k<LB::Traits::dimDomain; k++) {
-
-          // Compute an approximation to the derivative by finite differences
-          Dune::FieldVector<double,LB::Traits::dimDomain> upPos   = testPoint;
-          Dune::FieldVector<double,LB::Traits::dimDomain> downPos = testPoint;
-
-          upPos[k]   += jacobianTOL;
-          downPos[k] -= jacobianTOL;
-
-          std::vector<typename LB::Traits::RangeType> upValues, downValues;
-
-          fe.localBasis().evaluateFunction(upPos,   upValues);
-          fe.localBasis().evaluateFunction(downPos, downValues);
-
-          //Loop over all components
-          for(int l=0; l < LB::Traits::dimRange; ++l) {
-
-            // The current partial derivative, just for ease of notation
-            double derivative = jacobians[j][l][k];
-
-            double finiteDiff = (upValues[j][l] - downValues[j][l])
-                                / (2*jacobianTOL);
-
-            // Check
-            if ( std::abs(derivative-finiteDiff) >
-                TOL/jacobianTOL*((std::abs(finiteDiff)>1) ? std::abs(finiteDiff) : 1.) )
-            {
-              std::cout << std::setprecision(16);
-              std::cout << "Bug in evaluateJacobian() for finite element type "
-                        << Dune::className(fe) << std::endl;
-              std::cout << "    Shape function derivative does not agree with "
-                        << "FD approximation" << std::endl;
-              std::cout << "    Shape function " << j << " component " << l
-                        << " at position " << testPoint << ": derivative in "
-                        << "direction " << k << " is " << derivative << ", but "
-                        << finiteDiff << " is expected." << std::endl;
-              std::cout << std::endl;
-              success = false;
-            }
-          } //Loop over all components
-        } // Loop over all directions
-      } // Loop over all shape functions in this set
-    } // Loop over all quadrature points
-
-    return success;
-  }
-} // end namespace Impl
-
-// check whether Jacobian agrees with FD approximation
+// LocalBasis of FE has method evaluateJacobian()
 template<class FE>
 bool testJacobian(const FE& fe, unsigned order = 2)
 {
   typedef typename FE::Traits::LocalBasisType LB;
 
-  auto condition = std::integral_constant<bool,
-    Dune::Concept::localBasisHasEvaluateJacobian<LB>()>{};
-  return Impl::testJacobian(condition, fe, order);
+  bool success = true;
+
+  // ////////////////////////////////////////////////////////////
+  //   Check the partial derivatives by comparing them
+  //   to finite difference approximations
+  // ////////////////////////////////////////////////////////////
+
+  // A set of test points
+  const Dune::QuadratureRule<double,LB::Traits::dimDomain> quad =
+    Dune::QuadratureRules<double,LB::Traits::dimDomain>::rule(fe.type(),order);
+
+  // Loop over all quadrature points
+  for (size_t i=0; i<quad.size(); i++) {
+
+    // Get a test point
+    const Dune::FieldVector<double,LB::Traits::dimDomain>& testPoint =
+      quad[i].position();
+
+    // Get the shape function derivatives there
+    std::vector<typename LB::Traits::JacobianType> jacobians;
+    fe.localBasis().evaluateJacobian(testPoint, jacobians);
+    if(jacobians.size() != fe.localBasis().size()) {
+      std::cout << "Bug in evaluateJacobianGlobal() for finite element type "
+                << Dune::className(fe) << std::endl;
+      std::cout << "    Jacobian vector has size " << jacobians.size()
+                << std::endl;
+      std::cout << "    Basis has size " << fe.localBasis().size()
+                << std::endl;
+      std::cout << std::endl;
+      return false;
+    }
+
+    // Loop over all shape functions in this set
+    for (unsigned int j=0; j<fe.localBasis().size(); ++j) {
+      // Loop over all directions
+      for (int k=0; k<LB::Traits::dimDomain; k++) {
+
+        // Compute an approximation to the derivative by finite differences
+        Dune::FieldVector<double,LB::Traits::dimDomain> upPos   = testPoint;
+        Dune::FieldVector<double,LB::Traits::dimDomain> downPos = testPoint;
+
+        upPos[k]   += jacobianTOL;
+        downPos[k] -= jacobianTOL;
+
+        std::vector<typename LB::Traits::RangeType> upValues, downValues;
+
+        fe.localBasis().evaluateFunction(upPos,   upValues);
+        fe.localBasis().evaluateFunction(downPos, downValues);
+
+        //Loop over all components
+        for(int l=0; l < LB::Traits::dimRange; ++l) {
+
+          // The current partial derivative, just for ease of notation
+          double derivative = jacobians[j][l][k];
+
+          double finiteDiff = (upValues[j][l] - downValues[j][l])
+                              / (2*jacobianTOL);
+
+          // Check
+          if ( std::abs(derivative-finiteDiff) >
+              TOL/jacobianTOL*((std::abs(finiteDiff)>1) ? std::abs(finiteDiff) : 1.) )
+          {
+            std::cout << std::setprecision(16);
+            std::cout << "Bug in evaluateJacobian() for finite element type "
+                      << Dune::className(fe) << std::endl;
+            std::cout << "    Shape function derivative does not agree with "
+                      << "FD approximation" << std::endl;
+            std::cout << "    Shape function " << j << " component " << l
+                      << " at position " << testPoint << ": derivative in "
+                      << "direction " << k << " is " << derivative << ", but "
+                      << finiteDiff << " is expected." << std::endl;
+            std::cout << std::endl;
+            success = false;
+          }
+        } //Loop over all components
+      } // Loop over all directions
+    } // Loop over all shape functions in this set
+  } // Loop over all quadrature points
+
+  return success;
 }
+
 
 /** \brief Helper class to test the 'evaluate' method
  *
@@ -308,44 +290,12 @@ struct TestEvaluate
 template<>
 struct TestEvaluate<0>
 {
-  template <class FE>
-  static bool test(const FE& fe,
-                   double eps,
-                   double delta,
-                   std::size_t order = 2)
-  {
-    typedef typename FE::Traits::LocalBasisType LB;
-
-    auto condition = std::integral_constant<bool,
-      Dune::Concept::localBasisHasEvaluate<LB>() &&
-      Dune::Concept::localBasisHasPartial<LB>() >{};
-    return testImpl(condition, fe, eps, delta, order);
-  }
-
-  template <class FE>
-  static bool testImpl(std::false_type,
-                       const FE& fe,
-                       double eps,
-                       double delta,
-                       std::size_t order = 2)
-  {
-    typedef typename FE::Traits::LocalBasisType LB;
-    if (!Dune::Concept::localBasisHasEvaluate<LB>())
-      std::cout << "TODO: implement evaluate<0>() for FE "
-                << "'" << Dune::className<FE>() << "' LocalBasis type!\n";
-    if (!Dune::Concept::localBasisHasPartial<LB>())
-      std::cout << "TODO: implement partial() for FE "
-                << "'" << Dune::className<FE>() << "' LocalBasis type!\n";
-    return true;
-  }
-
   // LocalBasis of FE has methods evaluate<0>() and partial()
   template <class FE>
-  static bool testImpl(std::true_type,
-                       const FE& fe,
-                       double /*eps*/,
-                       double /*delta*/,
-                       std::size_t order = 2)
+  static bool test(const FE& fe,
+                   double /*eps*/,
+                   double /*delta*/,
+                   std::size_t order = 2)
   {
     typedef typename FE::Traits::LocalBasisType LB;
 

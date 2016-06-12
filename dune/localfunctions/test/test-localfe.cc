@@ -178,7 +178,7 @@ int main() try
 
   // ---------------------------------------------------------------------------
   // Test some FiniteElements with disabled jacobian evaluation tests.
-  // These pyramid element have only piecewise linear/quadratic basis functions, i.e.
+  // These pyramid elements have only piecewise linear/quadratic basis functions, i.e.
   // not continuousely differentiable in the whole pyramid.
 
   auto disabledJacobianTests = make_tuple(

@@ -39,8 +39,7 @@ namespace Dune
         setup( QkLocalFiniteElement<D,R,2,2>() );
     }
 
-    PQ22DLocalFiniteElement ( const GeometryType &gt,
-                              const std::vector<unsigned int> vertexmap )
+    PQ22DLocalFiniteElement ( const GeometryType &gt, const std::vector<unsigned int> vertexmap )
       : gt_(gt)
     {
       if ( gt.isTriangle() )

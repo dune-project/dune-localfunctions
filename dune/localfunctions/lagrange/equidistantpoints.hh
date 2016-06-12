@@ -45,14 +45,14 @@ namespace Dune
 
     static const unsigned int dimension = Topology::dimension;
 
-    static unsigned int size ( const unsigned int /*order*/ )
+    static unsigned int size ( const unsigned int order )
     {
       return 1;
     }
 
   private:
     template< unsigned int codim, unsigned int dim >
-    static unsigned int setup ( const unsigned int /*order*/,
+    static unsigned int setup ( const unsigned int order,
                                 unsigned int *count,
                                 LagrangePoint< Field, dim > *points )
     {
@@ -233,11 +233,10 @@ namespace Dune
     bool build ( );
 
     template< class T >
-    static bool supports ( unsigned int /*order*/ )
+    static bool supports ( unsigned int order )
     {
       return true;
     }
-
   private:
     using Base::points_;
   };

@@ -6,6 +6,8 @@
 #include <array>
 #include <cstddef>
 
+#define DUNE_MAX_DIFF_ORDER 4
+
 namespace Dune
 {
   namespace Impl

@@ -43,7 +43,7 @@ void getPkTestPoints(unsigned order, unsigned level, std::vector<FieldVector<dou
 
 // Template specialization to terminate recursion
 template <>
-void getPkTestPoints(unsigned /*order*/, unsigned /*level*/, std::vector<FieldVector<double,0> >& test_points)
+void getPkTestPoints(unsigned order, unsigned level, std::vector<FieldVector<double,0> >& test_points)
 {
   FieldVector<double,0> pos;
   test_points.push_back(pos);
@@ -134,7 +134,7 @@ void testPk(const FE& local_fe)
   }
 }
 
-int main () try
+int main (int argc, char *argv[]) try
 {
 #if __linux__
 #if (!defined __INTEL_COMPILER || __INTEL_COMPILER >= 1010)

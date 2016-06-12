@@ -322,7 +322,7 @@ namespace Dune
       return Base::tensor(dorderVar);
     }
     const Dune::FieldVector<LFETensor<F,dimD,deriv>,dimR> &
-    tensor(const std::integral_constant<int,deriv> &/*dorderVar*/) const
+    tensor(const std::integral_constant<int,deriv> &dorderVar) const
     {
       return tensor_;
     }
@@ -333,7 +333,7 @@ namespace Dune
       return Base::tensor(dorderVar);
     }
     Dune::FieldVector<LFETensor<F,dimD,deriv>,dimR> &
-    tensor(const std::integral_constant<int,deriv> &/*dorderVar*/)
+    tensor(const std::integral_constant<int,deriv> &dorderVar)
     {
       return tensor_;
     }
@@ -567,7 +567,7 @@ namespace Dune
   struct LFETensorAxpy
   {
     template <class Field>
-    static void apply(unsigned int /*r*/,const Field &a,
+    static void apply(unsigned int r,const Field &a,
                       const Vec1 &x, Vec2 &y)
     {
       y.axpy(a,x);
@@ -581,7 +581,7 @@ namespace Dune
   {
     typedef Derivatives<F1,dimD,dimR,d,value> Vec1;
     template <class Field>
-    static void apply(unsigned int /*r*/,const Field &a,
+    static void apply(unsigned int r,const Field &a,
                       const Vec1 &x, Vec2 &y)
     {
       const FieldVector<F1,Vec2::size> &xx = x.template block<deriv>();
@@ -597,7 +597,7 @@ namespace Dune
   {
     typedef Derivatives<F1,dimD,dimR,d,derivative> Vec1;
     template <class Field>
-    static void apply(unsigned int /*r*/,const Field &a,
+    static void apply(unsigned int r,const Field &a,
                       const Vec1 &x, Vec2 &y)
     {
       for (int rr=0; rr<dimR; ++rr)
@@ -645,7 +645,7 @@ namespace Dune
   template <class Vec1,class Vec2>
   struct DerivativeAssign
   {
-    static void apply(unsigned int /*r*/,const Vec1 &vec1,Vec2 &vec2)
+    static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
       field_cast(vec1,vec2);
     }
@@ -657,7 +657,7 @@ namespace Dune
   {
     typedef Derivatives<F1,dimD,dimR,deriv,layout> Vec1;
     typedef Derivatives<F2,dimD,dimR,deriv,layout> Vec2;
-    static void apply(unsigned int /*r*/,const Vec1 &vec1,Vec2 &vec2)
+    static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
       field_cast(vec1.block(),vec2.block());
     }
@@ -669,7 +669,7 @@ namespace Dune
   {
     typedef Derivatives<F1,dimD,dimR,deriv,value> Vec1;
     typedef Derivatives<F2,dimD,dimR,deriv,derivative> Vec2;
-    static void apply(unsigned int /*r*/,const Vec1 &vec1,Vec2 &vec2)
+    static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
       vec2.assign(vec1);
     }
@@ -681,7 +681,7 @@ namespace Dune
   {
     typedef Derivatives<F1,dimD,dimR,deriv,derivative> Vec1;
     typedef Derivatives<F2,dimD,dimR,deriv,value> Vec2;
-    static void apply(unsigned int /*r*/,const Vec1 &vec1,Vec2 &vec2)
+    static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
       vec2.assign(vec1);
     }
@@ -717,7 +717,7 @@ namespace Dune
   {
     typedef Derivatives<F1,dimD,1,deriv,value> Vec1;
     typedef Derivatives<F2,dimD,1,deriv,value> Vec2;
-    static void apply(unsigned int /*r*/,const Vec1 &vec1,Vec2 &vec2)
+    static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
       field_cast(vec1.block(),vec2.block());
     }
@@ -729,7 +729,7 @@ namespace Dune
   {
     typedef Derivatives<F1,dimD,1,deriv,derivative> Vec1;
     typedef Derivatives<F2,dimD,1,deriv,derivative> Vec2;
-    static void apply(unsigned int /*r*/,const Vec1 &vec1,Vec2 &vec2)
+    static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
       field_cast(vec1.block(),vec2.block());
     }
@@ -741,7 +741,7 @@ namespace Dune
   {
     typedef Derivatives<F1,dimD,1,deriv,derivative> Vec1;
     typedef Derivatives<F2,dimD,1,deriv,value> Vec2;
-    static void apply(unsigned int /*r*/,const Vec1 &vec1,Vec2 &vec2)
+    static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
       field_cast(vec1.block(),vec2.block());
     }
@@ -753,7 +753,7 @@ namespace Dune
   {
     typedef Derivatives<F1,dimD,1,deriv,value> Vec1;
     typedef Derivatives<F2,dimD,1,deriv,derivative> Vec2;
-    static void apply(unsigned int /*r*/,const Vec1 &vec1,Vec2 &vec2)
+    static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
       field_cast(vec1.block(),vec2.block());
     }
@@ -765,7 +765,7 @@ namespace Dune
   {
     typedef Derivatives<F1,dimD,1,deriv,layout> Vec1;
     typedef F2 Vec2;
-    static void apply(unsigned int /*r*/,const Vec1 &vec1,Vec2 &vec2)
+    static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
       field_cast(vec1.block(),vec2);
     }
@@ -777,7 +777,7 @@ namespace Dune
   {
     typedef Derivatives<F1,dimD,dimR,deriv,value> Vec1;
     typedef FieldVector<F2,dimR> Vec2;
-    static void apply(unsigned int /*r*/,const Vec1 &vec1,Vec2 &vec2)
+    static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
       field_cast(vec1.template block<0>(),vec2);
     }
@@ -789,7 +789,7 @@ namespace Dune
   {
     typedef Derivatives<F1,dimD,dimR,deriv,derivative> Vec1;
     typedef FieldVector<F2,dimR> Vec2;
-    static void apply(unsigned int /*r*/,const Vec1 &vec1,Vec2 &vec2)
+    static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
       for (int rr=0; rr<dimR; ++rr)
         field_cast(vec1[rr].template tensor<0>()[0].block(),vec2[rr]);
@@ -826,7 +826,7 @@ namespace Dune
   {
     typedef Derivatives<F1,dimD,1,deriv,value> Vec1;
     typedef FieldVector<F2,1> Vec2;
-    static void apply(unsigned int /*r*/,const Vec1 &vec1,Vec2 &vec2)
+    static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
       field_cast(vec1.template tensor<0>()[0].block(),vec2);
     }
@@ -838,7 +838,7 @@ namespace Dune
   {
     typedef Derivatives<F1,dimD,1,deriv,derivative> Vec1;
     typedef FieldVector<F2,1> Vec2;
-    static void apply(unsigned int /*r*/,const Vec1 &vec1,Vec2 &vec2)
+    static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
       field_cast(vec1[0].template tensor<0>()[0].block(),vec2);
     }

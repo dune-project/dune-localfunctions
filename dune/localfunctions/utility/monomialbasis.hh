@@ -381,9 +381,9 @@ namespace Dune
     friend class MonomialBasisImpl< GenericGeometry::Pyramid< Topology >, Field >;
 
     template< int dimD >
-    void evaluate ( const unsigned int /*deriv*/, const unsigned int /*order*/,
-                    const FieldVector< Field, dimD > &/*x*/,
-                    const unsigned int block, const unsigned int *const /*offsets*/,
+    void evaluate ( const unsigned int deriv, const unsigned int order,
+                    const FieldVector< Field, dimD > &x,
+                    const unsigned int block, const unsigned int *const offsets,
                     Field *const values ) const
     {
       *values = Unity< F >();
@@ -392,8 +392,8 @@ namespace Dune
         *it = Zero< F >();
     }
 
-    void integrate ( const unsigned int /*order*/,
-                     const unsigned int *const /*offsets*/,
+    void integrate ( const unsigned int order,
+                     const unsigned int *const offsets,
                      Field *const values ) const
     {
       values[ 0 ] = Unity< Field >();
@@ -515,7 +515,7 @@ namespace Dune
                                const FieldVector< Field, dimD > &x,
                                const unsigned int block, const unsigned int *const offsets,
                                Field *const values,
-                               const BaseSize &/*size*/ ) const
+                               const BaseSize &size ) const
     {
       baseBasis_.evaluate( deriv, order, x, block, offsets, values );
     }

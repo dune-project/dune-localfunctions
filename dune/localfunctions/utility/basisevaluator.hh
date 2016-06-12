@@ -52,22 +52,19 @@ namespace Dune
     }
 
   protected:
-    MonomialEvaluator(const Basis &basis, unsigned int order, unsigned int size)
+    MonomialEvaluator(const Basis &basis,unsigned int order,unsigned int size)
       : basis_(basis),
         order_(order),
         size_(size),
         container_(0)
     {}
-
-    MonomialEvaluator(const MonomialEvaluator&);
-
     template <int deriv>
     void resize()
     {
       const int totalSize = Derivatives<Field,dimension,dimRange,deriv,derivative>::size*size_;
       container_.resize(totalSize);
     }
-
+    MonomialEvaluator(const MonomialEvaluator&);
     const Basis &basis_;
     unsigned int order_,size_;
     Container container_;
@@ -127,7 +124,6 @@ namespace Dune
     const CIter end_;
   };
 
-
   template< class B >
   struct StandardEvaluator
     : public MonomialEvaluator< B >
@@ -145,9 +141,8 @@ namespace Dune
     {};
 
     StandardEvaluator(const Basis &basis)
-      : Base(basis, basis.order(), basis.size())
+      : Base(basis,basis.order(),basis.size())
     {}
-
     template <unsigned int deriv,class DVector>
     typename Iterator<deriv>::All evaluate(const DVector &x)
     {
@@ -155,7 +150,6 @@ namespace Dune
       basis_.template evaluate<deriv>(x,&(container_[0]));
       return typename Iterator<deriv>::All(container_);
     }
-
     typename Iterator<0>::Integrate integrate()
     {
       Base::template resize<0>();
@@ -164,7 +158,7 @@ namespace Dune
     }
 
   protected:
-    StandardEvaluator (const Basis &basis, unsigned int size)
+    StandardEvaluator ( const Basis &basis, unsigned int size )
       : Base( basis, basis.order(), size )
     {}
 
@@ -173,7 +167,6 @@ namespace Dune
     using Base::basis_;
     using Base::container_;
   };
-
 
 #if 0 // OLD OLD
   template< class B, class Fill >

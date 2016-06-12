@@ -27,7 +27,7 @@
 
 #include "test-localfe.hh"
 
-int main() try
+int main(int argc, char** argv) try
 {
   bool success = true;
 

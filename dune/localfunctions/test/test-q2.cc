@@ -41,7 +41,7 @@ void test(const double& eps, const double& delta, int& result)
     result = 1;
 }
 
-int main() {
+int main(int argc, char** argv) {
   try {
     // tolerance for floating-point comparisons
     static const double eps = 1e-9;

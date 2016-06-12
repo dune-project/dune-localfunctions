@@ -9,7 +9,6 @@
 
 #include <dune/localfunctions/common/localbasis.hh>
 #include <dune/localfunctions/common/partial.hh>
-#include <dune/localfunctions/common/staticLoops.hh>
 
 namespace Dune
 {

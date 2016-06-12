@@ -29,7 +29,7 @@
 #include "../brezzidouglasmarini/brezzidouglasmarini2cube2d.hh"
 #include "../brezzidouglasmarini/brezzidouglasmarini1simplex2d.hh"
 #include "../brezzidouglasmarini/brezzidouglasmarini2simplex2d.hh"
-#include <dune/localfunctions/dualmortarbasis.hh>
+#include "../dualmortarbasis.hh"
 #include "../refined/refinedp1.hh"
 #include "../refined/refinedp0.hh"
 #include "../hierarchical/hierarchicalp2.hh"
@@ -40,6 +40,7 @@
 #include "../raviartthomas/raviartthomascube.hh"
 #include "../monomial.hh"
 
+#include "../common/staticLoops.hh"
 #include "../common/virtualinterface.hh"
 #include "../common/virtualwrappers.hh"
 

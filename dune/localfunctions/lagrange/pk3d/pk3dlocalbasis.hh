@@ -162,40 +162,19 @@ namespace Dune
       if (totalOrder == 0) {
         evaluateFunction(in, out);
       } else {
-        // Calculate directions from order and call evaluate for the
-        // specific totalOrder value, to calculate the derivatives.
-        int dOrder = staticFindIf<1, Traits::diffOrder+1>([&](const auto i)
-        {
-          if (i == totalOrder) {
-            std::array<int, i> directions;
-            this->order2directions(order, directions);
-            this->evaluate<i>(directions, in, out);
-            return true; // terminate loop
-          } else {
-            return false;
-          }
-        });
-
-        if (dOrder > Traits::diffOrder)
-          DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
       }
     }
 
     //! \brief Evaluate higher derivatives of all shape functions. \deprecated
     template<std::size_t dOrder>
-    inline void evaluate(const std::array<int,dOrder>& /*directions*/,
+    inline void evaluate(const std::array<int,dOrder>& directions,
                          const typename Traits::DomainType& in,  //position
                          std::vector<typename Traits::RangeType>& out) const //return value
     {
-      out.resize(N);
-
-      if (dOrder > Traits::diffOrder)
-        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
-
-      if (dOrder==0)
-        evaluateFunction(in, out);
-      else
-        DUNE_THROW(NotImplemented, "Not yet implemented");
+      std::array<unsigned int, 3> order;
+      Impl::directions2order(directions, order);
+      partial(order, in, out);
     }
 
     //! \brief Polynomial order of the shape functions

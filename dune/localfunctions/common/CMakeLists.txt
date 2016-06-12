@@ -6,7 +6,6 @@ install(FILES
   localkey.hh
   localtoglobaladaptors.hh
   partial.hh
-  staticIf.hh
   staticLoops.hh
   virtualinterface.hh
   virtualwrappers.hh

@@ -76,26 +76,28 @@ namespace Dune
                                   std::vector<typename Traits::RangeType>& out) const
     {
       out.resize(40);
-      double tmp1=-1.0+16.0*in[0]-60.0*pow(in[0],2)+80.0*pow(in[0],3)-35.0*pow(in[0],4);
-      double tmp2=(1.0-16.0*in[0]+60.0*pow(in[0],2)-80.0*pow(in[0],3)+35.0*pow(in[0],4));
-      double tmp3=(-1.0+2.0*in[1]);
-      double tmp4=(1.0-6.0*in[1]+6.0*pow(in[1],2));
-      double tmp5=(-1.0+12.0*in[1]-30.0*pow(in[1],2)+20.0*pow(in[1],3));
-      double tmp6=in[0]*(-4.0+30.0*in[0]-60.0*pow(in[0],2)+35.0*pow(in[0],3));
-      double tmp7=-1.0+16.0*in[1]-60.0*pow(in[1],2)+80.0*pow(in[1],3)-35.0*pow(in[1],4);
-      double tmp8=(1.0-16.0*in[1]+60.0*pow(in[1],2)-80.0*pow(in[1],3)+35.0*pow(in[1],4));
-      double tmp9=(-1.0+2.0*in[0]);
-      double tmp10=(1.0-6.0*in[0]+6.0*pow(in[0],2));
-      double tmp11=(-1.0+12.0*in[0]-30.0*pow(in[0],2)+20.0*pow(in[0],3));
-      double tmp12=in[1]*(-4.0+30.0*in[1]-60.0*pow(in[1],2)+35.0*pow(in[1],3));
-      double tmp13=in[0]*(2.0-9.0*in[0]+14.0*pow(in[0],2)-7.0*pow(in[0],3));
-      double tmp14=in[0]*(-2.0+9.0*in[0]-14.0*pow(in[0],2)+7.0*pow(in[0],3));
-      double tmp15=in[0]*(1.0-3.0*in[0]+2.0*pow(in[0],2));
-      double tmp16=in[0]*(-1.0+6.0*in[0]-10.0*pow(in[0],2)+5.0*pow(in[0],3));
-      double tmp17=in[1]*(2.0-9.0*in[1]+14.0*pow(in[1],2)-7.0*pow(in[1],3));
-      double tmp18=in[1]*(1.0-3.0*in[1]+2.0*pow(in[1],2));
-      double tmp19=in[1]*(-1.0+6.0*in[1]-10.0*pow(in[1],2)+5.0*pow(in[1],3));
-      double tmp20=in[1]*(-2.0+9.0*in[1]-14.0*pow(in[1],2)+7.0*pow(in[1],3));
+      auto const& x = in[0], y = in[1];
+
+      auto tmp1 = - x*(x*(x*(35*x - 80) + 60) - 16) - 1;
+      auto tmp2 = x*(x*(x*(35*x - 80) + 60) - 16) + 1;
+      auto tmp3 = 2*y - 1;
+      auto tmp4 = y*(6*y - 6) + 1;
+      auto tmp5 = y*(y*(20*y - 30) + 12) - 1;
+      auto tmp6 = x*(x*(x*(35*x - 60) + 30) - 4);
+      auto tmp7 = - y*(y*(y*(35*y - 80) + 60) - 16) - 1;
+      auto tmp8 = y*(y*(y*(35*y - 80) + 60) - 16) + 1;
+      auto tmp9 = 2*x - 1;
+      auto tmp10 = x*(6*x - 6) + 1;
+      auto tmp11 = x*(x*(20*x - 30) + 12) - 1;
+      auto tmp12 = y*(y*(y*(35*y - 60) + 30) - 4);
+      auto tmp13 = -x*(x*(x*(7*x - 14) + 9) - 2);
+      auto tmp14 = x*(x*(x*(7*x - 14) + 9) - 2);
+      auto tmp15 = x*(x*(2*x - 3) + 1);
+      auto tmp16 = x*(x*(x*(5*x - 10) + 6) - 1);
+      auto tmp17 = -y*(y*(y*(7*y - 14) + 9) - 2);
+      auto tmp18 = y*(y*(2*y - 3) + 1);
+      auto tmp19 = y*(y*(y*(5*y - 10) + 6) - 1);
+      auto tmp20 = y*(y*(y*(7*y - 14) + 9) - 2);
 
       out[0][0]=sign0*tmp1;
       out[0][1]=0;

@@ -65,16 +65,16 @@ namespace Dune
     {
       out.resize(60);
 
-      double l1_x=(-1.0+2.0*in[0]);
-      double l1_y=(-1.0+2.0*in[1]);
-      double l2_x=(1.0-6.0*in[0]+6.0*pow(in[0],2));
-      double l2_y=(1.0-6.0*in[1]+6.0*pow(in[1],2));
-      double l3_x=(-1.0+12.0*in[0]-30.0*pow(in[0],2)+20.0*pow(in[0],3));
-      double l3_y=(-1.0+12.0*in[1]-30.0*pow(in[1],2)+20.0*pow(in[1],3));
-      double l4_x=(1.0-20.0*in[0]+90.0*pow(in[0],2)-140.0*pow(in[0],3)+70.0*pow(in[0],4));
-      double l4_y=(1.0-20.0*in[1]+90.0*pow(in[1],2)-140.0*pow(in[1],3)+70.0*pow(in[1],4));
-      double l5_x=(-1.0+30.0*in[0]-210.0*pow(in[0],2)+560.0*pow(in[0],3)-630.0*pow(in[0],4)+252.0*pow(in[0],5));
-      double l5_y=(-1.0+30.0*in[1]-210.0*pow(in[1],2)+560.0*pow(in[1],3)-630.0*pow(in[1],4)+252.0*pow(in[1],5));
+      const auto l1_x=(-1.0+2.0*in[0]);
+      const auto l1_y=(-1.0+2.0*in[1]);
+      const auto l2_x=(1.0-6.0*in[0]+6.0*pow(in[0],2));
+      const auto l2_y=(1.0-6.0*in[1]+6.0*pow(in[1],2));
+      const auto l3_x=(-1.0+12.0*in[0]-30.0*pow(in[0],2)+20.0*pow(in[0],3));
+      const auto l3_y=(-1.0+12.0*in[1]-30.0*pow(in[1],2)+20.0*pow(in[1],3));
+      const auto l4_x=(1.0-20.0*in[0]+90.0*pow(in[0],2)-140.0*pow(in[0],3)+70.0*pow(in[0],4));
+      const auto l4_y=(1.0-20.0*in[1]+90.0*pow(in[1],2)-140.0*pow(in[1],3)+70.0*pow(in[1],4));
+      const auto l5_x=(-1.0+30.0*in[0]-210.0*pow(in[0],2)+560.0*pow(in[0],3)-630.0*pow(in[0],4)+252.0*pow(in[0],5));
+      const auto l5_y=(-1.0+30.0*in[1]-210.0*pow(in[1],2)+560.0*pow(in[1],3)-630.0*pow(in[1],4)+252.0*pow(in[1],5));
 
       out[0][0]=sign0*(0.5*(-l4_x)+0.5*l5_x);
       out[0][1]=0.0;
@@ -214,27 +214,27 @@ namespace Dune
       out.resize(60);
       auto const& x = in[0], y = in[1];
 
-      auto l1_x = 2*x - 1;
-      auto l2_x = x*(6*x - 6) + 1;
-      auto l3_x = x*(x*(20*x - 30) + 12) - 1;
-      auto l4_x = x*(x*(x*(70*x - 140) + 90) - 20) + 1;
-      auto l5_x = x*(x*(x*(x*(252*x - 630) + 560) - 210) + 30) - 1;
-      auto l1_y = 2*y - 1;
-      auto l2_y = y*(6*y - 6) + 1;
-      auto l3_y = y*(y*(20*y - 30) + 12) - 1;
-      auto l4_y = y*(y*(y*(70*y - 140) + 90) - 20) + 1;
-      auto l5_y = y*(y*(y*(y*(252*y - 630) + 560) - 210) + 30) - 1;
+      const auto l1_x = 2*x - 1;
+      const auto l2_x = x*(6*x - 6) + 1;
+      const auto l3_x = x*(x*(20*x - 30) + 12) - 1;
+      const auto l4_x = x*(x*(x*(70*x - 140) + 90) - 20) + 1;
+      const auto l5_x = x*(x*(x*(x*(252*x - 630) + 560) - 210) + 30) - 1;
+      const auto l1_y = 2*y - 1;
+      const auto l2_y = y*(6*y - 6) + 1;
+      const auto l3_y = y*(y*(20*y - 30) + 12) - 1;
+      const auto l4_y = y*(y*(y*(70*y - 140) + 90) - 20) + 1;
+      const auto l5_y = y*(y*(y*(y*(252*y - 630) + 560) - 210) + 30) - 1;
 
-      auto dxl1_x = 2.0;
-      auto dxl2_x = 12*x - 6;
-      auto dxl3_x = x*(60*x - 60) + 12;
-      auto dxl4_x = x*(x*(280*x - 420) + 180) - 20;
-      auto dxl5_x = x*(x*(x*(1260*x - 2520) + 1680) - 420) + 30;
-      auto dyl1_y = 2.0;
-      auto dyl2_y = 12*y - 6;
-      auto dyl3_y = y*(60*y - 60) + 12;
-      auto dyl4_y = y*(y*(280*y - 420) + 180) - 20;
-      auto dyl5_y = y*(y*(y*(1260*y - 2520) + 1680) - 420) + 30;
+      const auto dxl1_x = 2.0;
+      const auto dxl2_x = 12*x - 6;
+      const auto dxl3_x = x*(60*x - 60) + 12;
+      const auto dxl4_x = x*(x*(280*x - 420) + 180) - 20;
+      const auto dxl5_x = x*(x*(x*(1260*x - 2520) + 1680) - 420) + 30;
+      const auto dyl1_y = 2.0;
+      const auto dyl2_y = 12*y - 6;
+      const auto dyl3_y = y*(60*y - 60) + 12;
+      const auto dyl4_y = y*(y*(280*y - 420) + 180) - 20;
+      const auto dyl5_y = y*(y*(y*(1260*y - 2520) + 1680) - 420) + 30;
 
       // x-component
       out[0][0][0]=sign0*(0.5*(-dxl4_x)+0.5*dxl5_x);

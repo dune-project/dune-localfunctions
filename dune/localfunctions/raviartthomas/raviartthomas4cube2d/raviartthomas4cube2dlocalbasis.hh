@@ -4,6 +4,7 @@
 #define DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS4_CUBE2D_LOCALBASIS_HH
 
 #include <vector>
+#include <bitset>
 
 #include <dune/common/fmatrix.hh>
 
@@ -39,25 +40,12 @@ namespace Dune
      *
      * \param s Edge orientation indicator
      */
-    RT4Cube2DLocalBasis (unsigned int s)
+    RT4Cube2DLocalBasis (std::bitset<4> s)
     {
-      sign0 = sign1 = sign2 = sign3 = 1.0;
-      if (s & 1)
-      {
-        sign0 = -1.0;
-      }
-      if (s & 2)
-      {
-        sign1 = -1.0;
-      }
-      if (s & 4)
-      {
-        sign2 = -1.0;
-      }
-      if (s & 8)
-      {
-        sign3 = -1.0;
-      }
+      sign0 = (s[0]) ? -1.0 : 1.0;
+      sign1 = (s[1]) ? -1.0 : 1.0;
+      sign2 = (s[2]) ? -1.0 : 1.0;
+      sign3 = (s[3]) ? -1.0 : 1.0;
     }
 
     //! \brief number of shape functions

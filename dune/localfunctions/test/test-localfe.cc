@@ -278,10 +278,10 @@ int main(int argc, char** argv) try
   TEST_FE(rt2cube2dlfem);
 
   Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,3> rt3cube2dlfem(1);
-  TEST_FE2(rt3cube2dlfem, DisableJacobian);
+  TEST_FE(rt3cube2dlfem);
 
   Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,4> rt4cube2dlfem(1);
-  TEST_FE2(rt4cube2dlfem, DisableJacobian);
+  TEST_FE(rt4cube2dlfem);
 
   // --------------------------------------------------------
   //  Test Rannacher-Turek Finite elements

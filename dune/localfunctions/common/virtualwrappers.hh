@@ -100,7 +100,7 @@ namespace Dune
 
     //! @copydoc LocalBasisVirtualInterface::evaluate
     inline void evaluate(
-      const typename std::template array<int,Traits::diffOrder>& directions,
+      const std::array<int,Traits::diffOrder>& directions,
       const typename Traits::DomainType& in,
       std::vector<typename Traits::RangeType>& out) const
     {
@@ -184,7 +184,7 @@ namespace Dune
 
     //! @copydoc LocalBasisVirtualInterface::evaluate
     inline void evaluate(
-      const typename std::template array<int,Traits::diffOrder>& directions,
+      const std::array<int,Traits::diffOrder>& directions,
       const typename Traits::DomainType& in,
       std::vector<typename Traits::RangeType>& out) const
     {

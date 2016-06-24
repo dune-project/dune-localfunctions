@@ -3,6 +3,8 @@
 #ifndef DUNE_P0LOCALBASIS_HH
 #define DUNE_P0LOCALBASIS_HH
 
+#include <numeric>
+
 #include <dune/common/fmatrix.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
@@ -51,6 +53,24 @@ namespace Dune
       out.resize(1);
       for (int i=0; i<d; i++)
         out[0][0][i] = 0;
+    }
+
+    /** \brief Evaluate partial derivatives of any order of all shape functions
+     * \param order Order of the partial derivatives, in the classic multi-index notation
+     * \param in Position where to evaluate the derivatives
+     * \param[out] out Return value: the desired partial derivatives
+     */
+    void partial(const std::array<unsigned int,d>& order,
+                 const typename Traits::DomainType& in,
+                 std::vector<typename Traits::RangeType>& out) const
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else {
+        out.resize(1);
+        out[0] = 0;
+      }
     }
 
     //! \brief Polynomial order of the shape functions

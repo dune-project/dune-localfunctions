@@ -3,6 +3,8 @@
 #ifndef DUNE_Q1_LOCALBASIS_HH
 #define DUNE_Q1_LOCALBASIS_HH
 
+#include <numeric>
+
 #include <dune/common/fmatrix.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
@@ -80,6 +82,49 @@ namespace Dune
 
       }
 
+    }
+
+    /** \brief Evaluate partial derivatives of any order of all shape functions
+     * \param order Order of the partial derivatives, in the classic multi-index notation
+     * \param in Position where to evaluate the derivatives
+     * \param[out] out Return value: the desired partial derivatives
+     */
+    void partial(const std::array<unsigned int,dim>& order,
+                 const typename Traits::DomainType& in,
+                 std::vector<typename Traits::RangeType>& out) const
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      }
+      else if (totalOrder == 1) {
+        out.resize(size());
+
+        auto direction = std::distance(order.begin(), std::find(order.begin(), order.end(), 1));
+        if (direction >= dim) {
+          DUNE_THROW(RangeError, "Direction of partial derivative not found!");
+        }
+
+        // Loop over all shape functions
+        for (std::size_t i = 0; i < size(); ++i) {
+
+          // Initialize: the overall expression is a product
+          // if j-th bit of i is set to -1, else 1
+          out[i] = (i & (1<<direction)) ? 1 : -1;
+
+          for (int k = 0; k < dim; ++k) {
+            if (direction != k)
+              // if k-th bit of i is set multiply with in[j], else with 1-in[j]
+              out[i] *= (i & (1<<k)) ? in[k] :  1-in[k];
+          }
+
+        }
+      }
+      else
+      {
+        DUNE_THROW(NotImplemented, "To be implemented!");
+      }
     }
 
     //! \brief Polynomial order of the shape functions

@@ -96,6 +96,46 @@ namespace Dune
       out[5][2][0] = 0;           out[5][2][1] = 0;      out[5][2][2] = sign5;
     }
 
+    //! \brief Evaluate partial derivatives of all shape functions
+    void partial (const std::array<unsigned int, 3>& order,
+                  const typename Traits::DomainType& in,         // position
+                  std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (totalOrder == 1) {
+        auto const direction = std::distance(order.begin(), std::find(order.begin(), order.end(), 1));
+        out.resize(size());
+
+        for (std::size_t i = 0; i < size(); ++i)
+          out[i][0] = out[i][1] = out[i][2] = 0;
+
+        switch (direction) {
+        case 0:
+          out[0][0] = sign0;
+          out[1][0] = sign1;
+          break;
+        case 1:
+          out[2][1] = sign2;
+          out[3][1] = sign3;
+          break;
+        case 2:
+          out[4][2] = sign4;
+          out[5][2] = sign5;
+          break;
+        default:
+          DUNE_THROW(RangeError, "Component out of range.");
+        }
+      } else {
+        out.resize(size());
+        for (std::size_t i = 0; i < size(); ++i)
+          for (std::size_t j = 0; j < 2; ++j)
+            out[i][j] = 0;
+      }
+
+    }
+
     //! \brief Polynomial order of the shape functions
     unsigned int order () const
     {

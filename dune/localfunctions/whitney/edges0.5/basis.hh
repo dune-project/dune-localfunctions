@@ -140,6 +140,31 @@ namespace Dune {
       }
     }
 
+    //! \brief Evaluate partial derivatives of all shape functions
+    void partial (const std::array<unsigned int, dim>& order,
+                  const typename Traits::DomainLocal& in,         // position
+                  std::vector<typename Traits::Range>& out) const      // return value
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (totalOrder==1) {
+        auto const k = std::distance(order.begin(), std::find(order.begin(), order.end(), 1));
+        out.resize(size());
+
+        for (std::size_t i = 0; i < s; i++)
+        {
+          const std::size_t i0 = refelem.subEntity(i,dim-1,0,dim);
+          const std::size_t i1 = refelem.subEntity(i,dim-1,1,dim);
+          for(std::size_t j = 0; j < dim; j++)
+            out[i][j] = edgel[i] *
+              (p1j[i0][0][k]*p1j[i1][0][j] - p1j[i1][0][k]*p1j[i0][0][j]);
+        }
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
+    }
+
     //! Polynomial order of the shape functions
     std::size_t order () const { return 1; }
   };

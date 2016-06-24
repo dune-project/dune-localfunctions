@@ -53,6 +53,56 @@ namespace Dune
       out[3][0][0] =  1 - 2*in[0]; out[3][0][1] =      2*in[1];
     }
 
+    //! \brief Evaluate partial derivatives of all shape functions
+    void partial (const std::array<unsigned int, 2>& order,
+                  const typename Traits::DomainType& in,         // position
+                  std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (totalOrder == 1) {
+        auto const direction = std::distance(order.begin(), std::find(order.begin(), order.end(), 1));
+        out.resize(size());
+
+        switch (direction) {
+        case 0:
+          out[0] = -2 + 2*in[0];
+          out[1] =      2*in[0];
+          out[2] =  1 - 2*in[0];
+          out[3] =  1 - 2*in[0];
+          break;
+        case 1:
+          out[0] =  1 - 2*in[1];
+          out[1] =  1 - 2*in[1];
+          out[2] = -2 + 2*in[1];
+          out[3] =      2*in[1];
+          break;
+        default:
+          DUNE_THROW(RangeError, "Component out of range.");
+        }
+      } else if (totalOrder == 2) {
+        auto const direction = std::distance(order.begin(), std::find(order.begin(), order.end(), 2));
+        out.resize(size());
+
+        switch (direction) {
+        case 0:
+          out[0] = out[1] = 2;
+          out[2] = out[3] =-2;
+          break;
+        case 1:
+          out[0] = out[1] =-2;
+          out[2] = out[3] = 2;
+          break;
+        default:
+          out[0] = out[1] = out[2] = out[3] = 0;
+          break;
+        }
+      } else {
+        out[0] = out[1] = out[2] = out[3] = 0;
+      }
+    }
+
     //! \brief polynomial order of the shape functions
     unsigned int order () const
     {

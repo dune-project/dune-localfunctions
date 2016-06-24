@@ -106,6 +106,24 @@ namespace Dune
 
     }
 
+    /** \brief Evaluate partial derivatives of any order of all shape functions
+     * \param order Order of the partial derivatives, in the classic multi-index notation
+     * \param in Position where to evaluate the derivatives
+     * \param[out] out Return value: the desired partial derivatives
+     */
+    void partial(const std::array<unsigned int,1>& order,
+                 const typename Traits::DomainType& in,
+                 std::vector<typename Traits::RangeType>& out) const
+    {
+      switch (order[0])
+      {
+        case 0:
+          evaluateFunction(in,out);
+          break;
+        default:
+          DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
+    }
     //! \brief Polynomial order of the shape functions
     unsigned int order () const
     {

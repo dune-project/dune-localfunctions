@@ -65,6 +65,21 @@ namespace Dune
         out[i][0] = 0;
     }
 
+    //! \brief Evaluate partial derivatives of all shape functions
+    void partial (const std::array<unsigned int, dim>& order,
+                  const typename Traits::DomainType& in,         // position
+                  std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else {
+        out.resize(size());
+        for (std::size_t i = 0; i < size(); ++i)
+          out[i] = 0;
+      }
+    }
+
     /** \brief Polynomial order of the shape functions
      *
      * Doesn't really apply: these shape functions are only piecewise constant

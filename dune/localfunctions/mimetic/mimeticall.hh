@@ -49,6 +49,14 @@ namespace Dune
       DUNE_THROW(Dune::Exception,"mimetic basis Jacobian evaluation not available");
     }
 
+    //! \brief Evaluate partial derivatives of all shape functions
+    void partial (const std::array<unsigned int, dim>& /*order*/,
+                  const typename Traits::DomainType& /*in*/,         // position
+                  std::vector<typename Traits::RangeType>& /*out*/) const      // return value
+    {
+      DUNE_THROW(Dune::Exception,"mimetic basis partial derivative evaluation not available");
+    }
+
     //! \brief Polynomial order of the shape functions
     unsigned int order () const
     {

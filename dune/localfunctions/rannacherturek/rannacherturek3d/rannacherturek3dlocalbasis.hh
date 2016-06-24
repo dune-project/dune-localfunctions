@@ -70,6 +70,34 @@ namespace Dune
       }
     }
 
+    //! \brief Evaluate partial derivatives of all shape functions
+    void partial (const std::array<unsigned int, 3>& order,
+                  const typename Traits::DomainType& in,         // position
+                  std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (totalOrder == 1) {
+        out.resize(size());
+        auto const direction = std::distance(order.begin(), std::find(order.begin(), order.end(), 1));
+
+        using RangeFieldType = typename Traits::RangeFieldType;
+        RangeFieldType y[3][5] = { { 1.0, 0.0, 0.0,  2*in[0],      0.0 },
+                                   { 0.0, 1.0, 0.0, -2*in[1],  2*in[1] },
+                                   { 0.0, 0.0, 1.0,      0.0, -2*in[2] } };
+
+        for (std::size_t i = 0; i < size(); ++i) {
+          out[i] = RangeFieldType{0};
+          for (std::size_t j = 0; j < 5; ++j)
+            out[i] += coefficients[i][j+1] * y[direction][j];
+          out[i] /= RangeFieldType{3};
+        }
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
+    }
+
     //! \brief polynomial order of the shape functions
     unsigned int order () const
     {

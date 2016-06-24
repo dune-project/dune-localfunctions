@@ -3,6 +3,8 @@
 #ifndef DUNE_P2_3DLOCALBASIS_HH
 #define DUNE_P2_3DLOCALBASIS_HH
 
+#include <numeric>
+
 #include <dune/common/fmatrix.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
@@ -392,6 +394,67 @@ namespace Dune
       out[9][0][1] = aa[0][1] + bb[0][1]*in[0] + bb[1][1]*in[1] + bb[2][1]*in[2];
       out[9][0][2] = aa[0][2] + bb[0][2]*in[0] + bb[1][2]*in[1] + bb[2][2]*in[2];
 
+    }
+
+    /** \brief Evaluate partial derivatives of any order of all shape functions
+     * \param order Order of the partial derivatives, in the classic multi-index notation
+     * \param in Position where to evaluate the derivatives
+     * \param[out] out Return value: the desired partial derivatives
+     */
+    void partial(const std::array<unsigned int,3>& order,
+                 const typename Traits::DomainType& in,
+                 std::vector<typename Traits::RangeType>& out) const
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (totalOrder == 1) {
+        out.resize(size());
+
+        auto const direction = std::distance(order.begin(), std::find(order.begin(), order.end(), 1));
+        switch (direction) {
+          case 0:
+            out[0] =-3.0 + 4.0*(in[0] + in[1] + in[2]);
+            out[1] =-1.0 + 4.0*in[0];
+            out[2] = 0.0;
+            out[3] = 0.0;
+            out[4] = 4.0 - 4.0*(2.0*in[0] + in[1] + in[2]);
+            out[5] = 4.0*in[1];
+            out[6] =-4.0*in[1];
+            out[7] =-4.0*in[2];
+            out[8] = 4.0*in[2];
+            out[9] = 0.0;
+            break;
+          case 1:
+            out[0] =-3.0 + 4.0*(in[0] + in[1] + in[2]);
+            out[1] = 0.0;
+            out[2] =-1.0 + 4.0*in[1];
+            out[3] = 0.0;
+            out[4] =-4.0*in[0];
+            out[5] = 4.0*in[0];
+            out[6] = 4.0 - 4.0*(in[0] + 2.0*in[1] + in[2]);
+            out[7] =-4.0*in[2];
+            out[8] = 0.0;
+            out[9] = 4.0*in[2];
+            break;
+          case 2:
+            out[0] =-3.0 + 4.0*(in[0] + in[1] + in[2]);
+            out[1] = 0.0;
+            out[2] = 0.0;
+            out[3] =-1.0 + 4.0*in[2];
+            out[4] =-4.0*in[0];
+            out[5] = 0.0;
+            out[6] =-4.0*in[1];
+            out[7] = 4.0 - 4.0*(in[0] + in[1] + 2.0*in[2]);
+            out[8] = 4.0*in[0];
+            out[9] = 4.0*in[1];
+            break;
+          default:
+            DUNE_THROW(RangeError, "Component out of range.");
+        }
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
     }
 
     //! \brief Polynomial order of the shape functions

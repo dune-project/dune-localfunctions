@@ -69,6 +69,34 @@ namespace Dune
       out[2][1][0] = 0;           out[2][1][1] = sign2;
     }
 
+    //! \brief Evaluate partial derivatives of all shape functions
+    void partial (const std::array<unsigned int, 2>& order,
+                  const typename Traits::DomainType& in,         // position
+                  std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (totalOrder == 1) {
+        auto const direction = std::distance(order.begin(), std::find(order.begin(), order.end(), 1));
+        out.resize(size());
+
+        out[0][direction] = sign0;
+        out[0][1-direction] = 0;
+        out[1][direction] = sign1;
+        out[1][1-direction] = 0;
+        out[2][direction] = sign2;
+        out[2][1-direction] = 0;
+        }
+      } else {
+        out.resize(size());
+        for (std::size_t i = 0; i < size(); ++i)
+          for (std::size_t j = 0; j < 2; ++j)
+            out[i][j] = 0;
+      }
+
+    }
+
     //! \brief Polynomial order of the shape functions
     unsigned int order () const
     {

@@ -697,6 +697,90 @@ namespace Dune
 
     }
 
+    //! \brief Evaluate partial derivatives of all shape functions
+    void partial (const std::array<unsigned int, 3>& order,
+                  const typename Traits::DomainType& in,         // position
+                  std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (totalOrder == 1) {
+        out.resize(size());
+
+        auto const direction = std::distance(order.begin(), std::find(order.begin(), order.end(), 1));
+        switch (direction) {
+        case 0:
+          out[0] = (-3 + 4*(in[0] + in[1])) * (1 - 3*in[2] + 2*in[2]*in[2]);
+          out[1] = (-1 + 4*in[0]) * (1 - 3*in[2] + 2*in[2]*in[2]);
+          out[2] = 0;
+          out[3] = (-3 + 4*(in[0] + in[1])) * (-in[2] + 2*in[2]*in[2]);
+          out[4] = (-1 + 4*in[0]) * (-in[2] + 2*in[2]*in[2]);
+          out[5] = 0;
+          out[6] = (-3 + 4*(in[0] + in[1])) * 4*(in[2] - in[2]*in[2]);
+          out[7] = (-1 + 4*in[0]) * 4*(in[2] - in[2]*in[2]);
+          out[8] = 0;
+          out[9] = (4 - 8*in[0] - 4*in[1]) * (1 - 3*in[2] + 2*in[2]*in[2]);
+          out[10] = -4*in[1] * (1 - 3*in[2] + 2*in[2]*in[2]);
+          out[11] = 4*in[1] * (1 - 3*in[2] + 2*in[2]*in[2]);
+          out[12] = (4 - 8*in[0] - 4*in[1]) * (-in[2] + 2*in[2]*in[2]);
+          out[13] = -4*in[1] * (-in[2] + 2*in[2]*in[2]);
+          out[14] = 4*in[1] * (-in[2] + 2*in[2]*in[2]);
+          out[15] = (4 - 8*in[0] - 4*in[1]) * (4*in[2] - 4*in[2]*in[2]);
+          out[16] = -4*in[1] * (4*in[2] - 4*in[2]*in[2]);
+          out[17] = 4*in[1] * (4*in[2] - 4*in[2]*in[2]);
+          break;
+
+        case 1:
+          out[0] = (-3 + 4*(in[0] + in[1])) * (1 - 3*in[2] + 2*in[2]*in[2]);
+          out[1] = 0;
+          out[2] = (-1 + 4*in[1]) * (1 - 3*in[2] + 2*in[2]*in[2]);
+          out[3] = (-3 + 4*(in[0] + in[1])) * (-in[2] + 2*in[2]*in[2]);
+          out[4] = 0;
+          out[5] = (-1 + 4*in[1]) * (-in[2] + 2*in[2]*in[2]);
+          out[6] = (-3 + 4*(in[0] + in[1])) * 4*(in[2] - in[2]*in[2]);
+          out[7] = 0;
+          out[8] = (-1 + 4*in[1]) * 4*(in[2] - in[2]*in[2]);
+          out[9] = -4*in[0] * (1 - 3*in[2] + 2*in[2]*in[2]);
+          out[10] = (4 - 4*in[0] - 8*in[1]) * (1 - 3*in[2] + 2*in[2]*in[2]);
+          out[11] = 4*in[0] * (1 - 3*in[2] + 2*in[2]*in[2]);
+          out[12] = -4*in[0] * (-in[2] + 2*in[2]*in[2]);
+          out[13] = (4 - 4*in[0] - 8*in[1]) * (-in[2] + 2*in[2]*in[2]);
+          out[14] = 4*in[0] * (-in[2] + 2*in[2]*in[2]);
+          out[15] = -4*in[0] * 4*(in[2] - in[2]*in[2]);
+          out[16] = (4 - 4*in[0] - 8*in[1]) * (4*in[2] - 4*in[2]*in[2]);
+          out[17] = 4*in[0] * (4*in[2] - 4*in[2]*in[2]);
+          break;
+
+        case 2:
+          out[0] = 2 * (1 - in[0] - in[1]) * (0.5 - in[0] - in[1]) * (-3 + 4*in[2]);
+          out[1] = 2 * in[0] * (-0.5 + in[0]) * (-3 + 4*in[2]);
+          out[2] = 2 * in[1] * (-0.5 + in[1]) * (-3 + 4*in[2]);
+          out[3] = 2 * (1 - in[0] - in[1]) * (0.5 - in[0] - in[1]) * (-1 + 4*in[2]);
+          out[4] = 2 * in[0] * (-0.5 + in[0]) * (-1 + 4*in[2]);
+          out[5] = 2 * in[1] * (-0.5 + in[1]) * (-1 + 4*in[2]);
+          out[6] = 2 * (1 - in[0] - in[1]) * (0.5 - in[0] - in[1]) * (4 - 8*in[2]);
+          out[7] = 2 * in[0] * (-0.5 + in[0]) * (4 - 8*in[2]);
+          out[8] = 2*in[1] * (-0.5 + in[1]) * (4 - 8*in[2]);
+          out[9] =  4*in[0] * (1 - in[0] - in[1]) * (-3 + 4*in[2]);
+          out[10] = 4*in[1] * (1 - in[0] - in[1]) * (-3 + 4*in[2]);
+          out[11] = 4*in[0]*in[1] * (-3 + 4*in[2]);
+          out[12] = 4 * in[0] * (1 - in[0] - in[1]) * (-1 + 4*in[2]);
+          out[13] = 4 * in[1] * (1 - in[0] - in[1]) * (-1 + 4*in[2]);
+          out[14] = 4*in[0]*in[1] * (-1 + 4*in[2]);
+          out[15] = 4 * in[0] * (1 - in[0] - in[1]) * (4 - 8*in[2]);
+          out[16] = 4 * in[1] * (1 - in[0] - in[1]) * (4 - 8*in[2]);
+          out[17] = 4*in[0]*in[1] * (4 - 8*in[2]);
+          break;
+
+        default:
+            DUNE_THROW(RangeError, "Component out of range.");
+        }
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
+    }
+
     //! \brief Polynomial order of the shape functions
     unsigned int order () const
     {

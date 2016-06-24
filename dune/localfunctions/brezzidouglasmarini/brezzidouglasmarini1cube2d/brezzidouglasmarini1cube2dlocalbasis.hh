@@ -135,6 +135,77 @@ namespace Dune
       out[7][1][1] = 6.0*in[0] - 3.0;
     }
 
+    //! \brief Evaluate partial derivatives of all shape functions
+    void partial (const std::array<unsigned int, 2>& order,
+                  const typename Traits::DomainType& in,         // position
+                  std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (totalOrder == 1) {
+        out.resize(size());
+        auto const direction = std::distance(order.begin(), std::find(order.begin(), order.end(), 1));
+
+        switch (direction) {
+        case 0:
+          out[0][0] = sign_[0];
+          out[0][1] = 0.0;
+
+          out[1][0] = 6.0*in[1] - 3.0;
+          out[1][1] = 0.0;
+
+          out[2][0] = sign_[1];
+          out[2][1] = 0.0;
+
+          out[3][0] = -6.0*in[1] + 3.0;
+          out[3][1] = 0.0;
+
+          out[4][0] = 0.0;
+          out[4][1] = 0.0;
+
+          out[5][0] = 6.0*in[0] - 3.0;
+          out[5][1] = -6.0*in[1] + 6.0;
+
+          out[6][0] = 0.0;
+          out[6][1] = 0.0;
+
+          out[7][0] = -6.0*in[0] + 3.0;
+          out[7][1] = 6.0*in[1];
+          break;
+        case 1:
+          out[0][0] = 0.0;
+          out[0][1] = 0.0;
+
+          out[1][0] = 6.0*in[0] - 6.0;
+          out[1][1] = -6.0*in[1] + 3.0;
+
+          out[2][0] = 0.0;
+          out[2][1] = 0.0;
+
+          out[3][0] = -6.0*in[0];
+          out[3][1] = 6.0*in[1] - 3.0;
+
+          out[4][0] = 0.0;
+          out[4][1] = sign_[2];
+
+          out[5][0] = 0.0;
+          out[5][1] = -6.0*in[0] + 3.0;
+
+          out[6][0] = 0.0;
+          out[6][1] = sign_[3];
+
+          out[7][0] = 0.0;
+          out[7][1] = 6.0*in[0] - 3.0;
+          break;
+        default:
+          DUNE_THROW(RangeError, "Component out of range.");
+        }
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
+    }
+
     //! \brief Polynomial order of the shape functions
     unsigned int order () const
     {

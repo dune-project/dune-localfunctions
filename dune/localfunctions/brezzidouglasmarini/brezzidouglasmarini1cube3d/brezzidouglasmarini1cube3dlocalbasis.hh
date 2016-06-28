@@ -212,6 +212,246 @@ namespace Dune
       out[17][2][0] = 0.0;             out[17][2][1] = 6*in[2];    out[17][2][2] = 6*in[1]-3;
     }
 
+    //! \brief Evaluate partial derivatives of all shape functions
+    void partial (const std::array<unsigned int, 3>& order,
+                  const typename Traits::DomainType& in,         // position
+                  std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (totalOrder == 1) {
+        out.resize(size());
+        auto const direction = std::distance(order.begin(), std::find(order.begin(), order.end(), 1));
+
+        switch (direction) {
+        case 0:
+          out[0][0] = sign_[0];
+          out[0][1] = 0;
+          out[0][2] = 0;
+
+          out[1][0] = sign_[1];
+          out[1][1] = 0;
+          out[1][2] = 0;
+
+          out[2][0] = 0;
+          out[2][1] = 0;
+          out[2][2] = 0;
+
+          out[3][0] = 0;
+          out[3][1] = 0;
+          out[3][2] = 0;
+
+          out[4][0] = 0;
+          out[4][1] = 0;
+          out[4][2] = 0;
+
+          out[5][0] = 0;
+          out[5][1] = 0;
+          out[5][2] = 0;
+
+          out[6][0]  = 6*in[1]-3;
+          out[6][1]  = 0.0;
+          out[6][2]  = 0.0;
+
+          out[7][0]  = -6*in[1]+3;
+          out[7][1]  = 0.0;
+          out[7][2]  = 0.0;
+
+          out[8][0]  = 6*in[0]-3;
+          out[8][1]  =-6*in[1]+6;
+          out[8][2]  = 0.0;
+
+          out[9][0]  = -6*in[0]+3;
+          out[9][1]  = 6*in[1];
+          out[9][2]  = 0.0;
+
+          out[10][0] = -6*in[0]+3;
+          out[10][1] = 0.0;
+          out[10][2] =6*in[2]-6;
+
+          out[11][0] =6*in[0]-3;
+          out[11][1] = 0.0;
+          out[11][2] = -6*in[2];
+
+          out[12][0] = -6*in[2]+3;
+          out[12][1] = 0.0;
+          out[12][2] = 0.0;
+
+          out[13][0] =6*in[2]-3;
+          out[13][1] = 0.0;
+          out[13][2] = 0.0;
+
+          out[14][0] = 0.0;
+          out[14][1] = 0.0;
+          out[14][2] = 0.0;
+
+          out[15][0] = 0.0;
+          out[15][1] = 0.0;
+          out[15][2] = 0.0;
+
+          out[16][0] = 0.0;
+          out[16][1] = 0.0;
+          out[16][2] = 0.0;
+
+          out[17][0] = 0.0;
+          out[17][1] = 0.0;
+          out[17][2] = 0.0;
+          break;
+        case 1:
+          out[0][0] = 0;
+          out[0][1] = 0;
+          out[0][2] = 0;
+
+          out[1][0] = 0;
+          out[1][1] = 0;
+          out[1][2] = 0;
+
+          out[2][0] = 0;
+          out[2][1] = sign_[2];
+          out[2][2] = 0;
+
+          out[3][0] = 0;
+          out[3][1] = sign_[3];
+          out[3][2] = 0;
+
+          out[4][0] = 0;
+          out[4][1] = 0;
+          out[4][2] = 0;
+
+          out[5][0] = 0;
+          out[5][1] = 0;
+          out[5][2] = 0;
+
+          out[6][0]  = 6*in[0]-6;
+          out[6][1]  =-6*in[1]+3;
+          out[6][2]  = 0.0;
+
+          out[7][0]  =-6*in[0];
+          out[7][1]  = 6*in[1]-3;
+          out[7][2]  = 0.0;
+
+          out[8][0]  = 0.0;
+          out[8][1]  =-6*in[0]+3;
+          out[8][2]  = 0.0;
+
+          out[9][0]  = 0.0;
+          out[9][1]  = 6*in[0]-3;
+          out[9][2]  = 0.0;
+
+          out[10][0] = 0.0;
+          out[10][1] = 0.0;
+          out[10][2] = 0.0;
+
+          out[11][0] = 0.0;
+          out[11][1] = 0.0;
+          out[11][2] = 0.0;
+
+          out[12][0] =0.0;
+          out[12][1] = 0.0;
+          out[12][2] = 0.0;
+
+          out[13][0] = 0.0;
+          out[13][1] = 0.0;
+          out[13][2] = 0.0;
+
+          out[14][0] = 0.0;
+          out[14][1] = 6*in[2]-3;
+          out[14][2] = 0.0;
+
+          out[15][0] = 0.0;
+          out[15][1] =-6*in[2]+3;
+          out[15][2] = 0.0;
+
+          out[16][0] = 0.0;
+          out[16][1] = 6*in[1]-3;
+          out[16][2] =-6*in[2]+6;
+
+          out[17][0] = 0.0;
+          out[17][1] =-6*in[1]+3;
+          out[17][2] = 6*in[2];
+          break;
+        case 2:
+          out[0][0] = 0;
+          out[0][1] = 0;
+          out[0][2] = 0;
+
+          out[1][0] = 0;
+          out[1][1] = 0;
+          out[1][2] = 0;
+
+          out[2][0] = 0;
+          out[2][1] = 0;
+          out[2][2] = 0;
+
+          out[3][0] = 0;
+          out[3][1] = 0;
+          out[3][2] = 0;
+
+          out[4][0] = 0;
+          out[4][1] = 0;
+          out[4][2] = sign_[4];
+
+          out[5][0] = 0;
+          out[5][1] = 0;
+          out[5][2] = sign_[5];
+
+          out[6][0]  = 0.0;
+          out[6][1]  = 0.0;
+          out[6][2]  = 0.0;
+
+          out[7][0]  = 0.0;
+          out[7][1]  = 0.0;
+          out[7][2]  = 0.0;
+
+          out[8][0]  = 0.0;
+          out[8][1]  = 0.0;
+          out[8][2]  = 0.0;
+
+          out[9][0]  = 0.0;
+          out[9][1]  = 0.0;
+          out[9][2]  = 0.0;
+
+          out[10][0] = 0.0;
+          out[10][1] = 0.0;
+          out[10][2] =6*in[0]-3;
+
+          out[11][0] = 0.0;
+          out[11][1] = 0.0;
+          out[11][2] = -6*in[0]+3;
+
+          out[12][0] = -6*in[0]+6;
+          out[12][1] = 0.0;
+          out[12][2] =6*in[2]-3;
+
+          out[13][0] = 6*in[0];
+          out[13][1] = 0.0;
+          out[13][2] =-6*in[2]+3;
+
+          out[14][0] = 0.0;
+          out[14][1] = 6*in[1]-6;
+          out[14][2] =-6*in[2]+3;
+
+          out[15][0] = 0.0;
+          out[15][1] =-6*in[1];
+          out[15][2] = 6*in[2]-3;
+
+          out[16][0] = 0.0;
+          out[16][1] = 0.0;
+          out[16][2] =-6*in[1]+3;
+
+          out[17][0] = 0.0;
+          out[17][1] = 0.0;
+          out[17][2] = 6*in[1]-3;
+          break;
+        default:
+          DUNE_THROW(RangeError, "Component out of range.");
+        }
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
+    }
+
     //! \brief Polynomial order of the shape functions
     unsigned int order() const
     {

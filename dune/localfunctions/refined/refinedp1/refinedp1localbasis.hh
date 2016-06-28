@@ -118,7 +118,40 @@ namespace Dune
         break;
 
       }
+    }
 
+    //! \brief Evaluate partial derivatives of all shape functions
+    void partial (const std::array<unsigned int, 1>& order,
+                  const typename Traits::DomainType& in,         // position
+                  std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      auto totalOrder = order[0];
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (totalOrder == 1)
+      {
+        out.resize(3);
+
+        int subElement;
+        typename Traits::DomainType local;
+        this->getSubElement(in, subElement, local);
+
+        switch (subElement) {
+          case 0:
+            out[0] = -2;
+            out[1] =  2;
+            out[2] =  0;
+            break;
+          case 1:
+            out[0] =  0;
+            out[1] = -2;
+            out[2] =  2;
+            break;
+        }
+      } else {
+        out.resize(3);
+        out[0] = out[1] = out[2] = 0;
+      }
     }
 
     /** \brief Polynomial order of the shape functions
@@ -272,7 +305,78 @@ namespace Dune
         out[4][0][0] =  2;    out[4][0][1] =  2;
         out[5][0][0] =  0;    out[5][0][1] =  0;
       }
+    }
 
+    //! \brief Evaluate partial derivatives of all shape functions
+    void partial (const std::array<unsigned int, 2>& order,
+                  const typename Traits::DomainType& in,         // position
+                  std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (totalOrder == 1) {
+        int subElement;
+        typename Traits::DomainType local;
+        this->getSubElement(in, subElement, local);
+
+        auto const direction = std::distance(order.begin(), std::find(order.begin(), order.end(), 1));
+        out.resize(size());
+
+        for (std::size_t i = 0; i < size(); ++i)
+          out[i] = 0;
+
+        switch (direction) {
+        case 0: // direction == 0
+
+          switch (subElement) {
+          case 0 :
+            out[0] = -2;
+            out[1] =  2;
+            break;
+          case 1 :
+            out[1] = -2;
+            out[2] =  2;
+            break;
+          case 2 :
+            out[3] = -2;
+            out[4] =  2;
+            break;
+          case 3 :
+            out[3] = -2;
+            out[4] =  2;
+          }
+          break;
+
+        case 1: // direction == 1
+
+          switch (subElement) {
+          case 0 :
+            out[0] = -2;
+            out[3] =  2;
+            break;
+          case 1 :
+            out[1] = -2;
+            out[4] =  2;
+            break;
+          case 2 :
+            out[3] = -2;
+            out[5] =  2;
+            break;
+          case 3 :
+            out[1] = -2;
+            out[4] =  2;
+          }
+          break;
+
+        default:
+          DUNE_THROW(RangeError, "Component out of range.");
+        }
+      } else {
+        out.resize(size());
+        for (std::size_t i = 0; i < size(); ++i)
+          out[i] = 0;
+      }
     }
 
     /** \brief Polynomial order of the shape functions
@@ -580,6 +684,152 @@ namespace Dune
       }
     }
 
+    //! \brief Evaluate partial derivatives of all shape functions
+    void partial (const std::array<unsigned int, 3>& order,
+                  const typename Traits::DomainType& in,         // position
+                  std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (totalOrder == 1) {
+        int subElement;
+        typename Traits::DomainType local;
+        this->getSubElement(in, subElement, local);
+
+        auto const direction = std::distance(order.begin(), std::find(order.begin(), order.end(), 1));
+        out.resize(size());
+
+        for (std::size_t i = 0; i < size(); ++i)
+          out[i] = 0;
+
+        switch (direction) {
+        case 0: // direction == 0
+
+          switch (subElement) {
+          case 0 :
+            out[0] = -2;
+            out[1] =  2;
+            break;
+          case 1 :
+            out[1] = -2;
+            out[2] =  2;
+            break;
+          case 2 :
+            out[3] = -2;
+            out[4] =  2;
+            break;
+          case 3 :
+            out[6] = -2;
+            out[7] =  2;
+            break;
+          case 4 :
+            out[6] = -2;
+            out[7] =  2;
+            break;
+          case 5 :
+            out[3] = -2;
+            out[4] =  2;
+            break;
+          case 6 :
+            out[6] = -2;
+            out[7] =  2;
+            break;
+          case 7 :
+            out[3] = -2;
+            out[4] =  2;
+            break;
+          }
+          break;
+
+        case 1: // direction == 1
+
+          switch (subElement) {
+          case 0 :
+            out[0] = -2;
+            out[3] =  2;
+            break;
+          case 1 :
+            out[1] = -2;
+            out[4] =  2;
+            break;
+          case 2 :
+            out[3] = -2;
+            out[5] =  2;
+            break;
+          case 3 :
+            out[6] = -2;
+            out[8] =  2;
+            break;
+          case 4 :
+            out[1] = -2;
+            out[3] =  2;
+            out[6] = -2;
+            break;
+          case 5 :
+            out[1] = -2;
+            out[4] =  2;
+            break;
+          case 6 :
+            out[6] = -2;
+            out[8] =  2;
+            break;
+          case 7 :
+            out[3] = -2;
+            out[4] =  2;
+            out[7] = -2;
+            out[8] =  2;
+            break;
+          }
+          break;
+
+        case 2: // direction == 2
+
+          switch (subElement) {
+          case 0 :
+            out[0] = -2;
+            out[6] =  2;
+            break;
+          case 1 :
+            out[1] = -2;
+            out[7] =  2;
+            break;
+          case 2 :
+            out[3] = -2;
+            out[8] =  2;
+            break;
+          case 3 :
+            out[6] = -2;
+            out[9] =  2;
+            break;
+          case 4 :
+            out[1] = -2;
+            out[7] =  2;
+            break;
+          case 5 :
+            out[1] = -2;
+            out[7] =  2;
+            break;
+          case 6 :
+            out[3] = -2;
+            out[8] =  2;
+            break;
+          case 7 :
+            out[3] = -2;
+            out[8] =  2;
+            break;
+          }
+          break;
+
+        default:
+          DUNE_THROW(RangeError, "Component out of range.");
+        }
+      } else {
+        out.resize(size());
+        for (std::size_t i = 0; i < size(); ++i)
+          out[i] = 0;
+      }
+    }
 
     /** \brief Polynomial order of the shape functions
      *  Doesn't really apply: these shape functions are only piecewise linear

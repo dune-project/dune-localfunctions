@@ -141,6 +141,63 @@ namespace Dune
       out[7][1][1] = 16.0 - 8.0*in[0] - 32.0*in[1];
     }
 
+    //! \brief Evaluate partial derivatives of all shape functions
+    void partial (const std::array<unsigned int, 2>& order,
+                  const typename Traits::DomainType& in,         // position
+                  std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (totalOrder == 1) {
+        auto const direction = std::distance(order.begin(), std::find(order.begin(), order.end(), 1));
+        out.resize(size());
+
+        switch (direction) {
+          case 0:
+            out[0][0] = sign0*(1.0 - 4.0*in[1]);
+            out[0][1] = 0.0;
+            out[1][0] = sign1*(5.0 - 8.0*in[0]);
+            out[1][1] = sign1*(-4.0*in[1]);
+            out[2][0] = sign2*(-3.0 + 8.0*in[0] + 4.0*in[1]);
+            out[2][1] = sign2*(4.0*in[1]);
+            out[3][0] = -5.0 + 16.0*in[0] + 4.0*in[1];
+            out[3][1] = -6.0 + 8.0*in[1];
+            out[4][0] = 7.0 - 8.0*in[0] - 8.0*in[1];
+            out[4][1] = -4.0*in[1];
+            out[5][0] = 1.0 - 8.0*in[0] + 4*in[1];
+            out[5][1] = -4.0*in[1];
+            out[6][0] = 16.0 - 32.0*in[0] - 8.0*in[1];
+            out[6][1] = -16.0*in[1];
+            out[7][0] = 8.0 - 16.0*in[0] - 16.0*in[1];
+            out[7][1] = -8.0*in[1];
+            break;
+          case 1:
+            out[2][1] = sign2*(-3.0 + 4.0*in[0] + 8.0*in[1]);
+            out[2][0] = sign2*(4.0*in[0]);
+            out[1][1] = sign1*(1.0 - 4.0*in[0]);
+            out[1][0] = 0.0;
+            out[0][0] = sign0*(-4.0*in[0]);
+            out[0][1] = sign0*(5.0 - 8.0*in[1]);
+            out[3][0] = 4.0*in[0];
+            out[3][1] = -7.0 + 8.0*in[0] + 8.0*in[1];
+            out[4][0] = 6.0 - 8.0*in[0];
+            out[4][1] = 5.0 - 4.0*in[0] - 16.0*in[1];
+            out[5][0] = 4.0*in[0];
+            out[5][1] = -1.0 - 4.0*in[0] + 8.0*in[1];
+            out[6][0] = -8.0*in[0];
+            out[6][1] = 8.0 - 16.0*in[0] - 16.0*in[1];
+            out[7][0] = -16.0*in[0];
+            out[7][1] = 16.0 - 8.0*in[0] - 32.0*in[1];
+            break;
+          default:
+            DUNE_THROW(RangeError, "Component out of range.");
+        }
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
+    }
+
     //! \brief Polynomial order of the shape functions
     unsigned int order () const
     {

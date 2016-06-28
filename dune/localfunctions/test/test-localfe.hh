@@ -267,8 +267,77 @@ struct TestEvaluate<0>
                    double delta,
                    std::size_t order = 2)
   {
-    // TODO Implement me!
-    return true;
+    typedef typename FE::Traits::LocalBasisType::Traits::RangeType RangeType;
+    constexpr auto dimDomain = FE::Traits::LocalBasisType::Traits::dimDomain;
+
+    bool success = true;
+
+    //////////////////////////////////////////////////////////////
+    //   Check the partial derivatives by comparing them
+    //   to finite difference approximations
+    //////////////////////////////////////////////////////////////
+
+    // A set of test points
+    const auto& quad = Dune::QuadratureRules<double, dimDomain>::rule(fe.type(),
+                                                                      order);
+
+    // Loop over all quadrature points
+    for (size_t i = 0; i < quad.size(); i++)
+    {
+      // Get a test point
+      const Dune::FieldVector<double, dimDomain>& testPoint = quad[i].position();
+
+      // Get the shape function values there using the 'partial' method
+      std::vector<RangeType> partialValues;
+      std::array<unsigned int, dimDomain> multiIndex;
+      std::fill(multiIndex.begin(), multiIndex.end(), 0);
+
+      fe.localBasis().partial(multiIndex, testPoint, partialValues);
+
+      if (partialValues.size() != fe.localBasis().size())
+      {
+        std::cout << "Bug in partial() for finite element type "
+                  << Dune::className(fe) << std::endl;
+        std::cout << "    values vector has size "
+                  << partialValues.size() << std::endl;
+        std::cout << "    Basis has size " << fe.localBasis().size()
+                  << std::endl;
+        std::cout << std::endl;
+        return false;
+      }
+
+      // Get reference values
+      std::vector<RangeType> referenceValues;
+      fe.localBasis().evaluateFunction(testPoint, referenceValues);
+
+      // Loop over all shape functions in this set
+      for (unsigned int j = 0; j < fe.localBasis().size(); ++j)
+      {
+        // Loop over all components
+        for (int l = 0; l < FE::Traits::LocalBasisType::Traits::dimRange; ++l)
+        {
+          // Check the 'partial' method
+          if (std::abs(partialValues[j][l] - referenceValues[j][l])
+              > TOL / jacobianTOL
+                * ((std::abs(referenceValues[j][l]) > 1) ? std::abs(referenceValues[j][l]) : 1.))
+          {
+            std::cout << std::setprecision(16);
+            std::cout << "Bug in partial() for finite element type "
+                      << Dune::className(fe) << std::endl;
+            std::cout << "    Shape function value does not agree with "
+                      << "output of method evaluateFunction." << std::endl;
+            std::cout << "    Shape function " << j << " component " << l
+                      << " at position " << testPoint << ": value is " << partialValues[j][l]
+                      << ", but " << referenceValues[j][l] << " is expected." << std::endl;
+            std::cout << std::endl;
+            success = false;
+          }
+
+        } //Loop over all components
+      } // Loop over all shape functions in this set
+    } // Loop over all quadrature points
+
+    return success;
   }
 };
 

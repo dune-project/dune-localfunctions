@@ -4,6 +4,7 @@
 #ifndef DUNE_LOCALFUNCTIONS_META_POWER_BASIS_HH
 #define DUNE_LOCALFUNCTIONS_META_POWER_BASIS_HH
 
+#include <numeric>
 #include <cstddef>
 #include <vector>
 
@@ -85,6 +86,19 @@ namespace Dune {
       for(std::size_t d = 0; d < dimR; ++d)
         for(std::size_t i = 0; i < backend->size(); ++i)
           out[d*backend->size()+i][d] = backendValues[i][0];
+    }
+
+    //! \brief Evaluate partial derivatives of all shape functions
+    void partial (const std::array<unsigned int, Backend::Traits::dimDomainGlobal>& order,
+                  const typename Traits::DomainLocal& in,         // position
+                  std::vector<typename Traits::Range>& out) const      // return value
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
     }
   };
 

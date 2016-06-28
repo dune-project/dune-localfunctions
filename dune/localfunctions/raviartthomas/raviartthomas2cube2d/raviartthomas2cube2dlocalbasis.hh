@@ -260,6 +260,19 @@ namespace Dune
       out[23][1][1] = -1800.0 + 10800.0*in[0] + 10800.0*in[1] - 10800.0*in[0]*in[0] - 64800.0*in[0]*in[1] - 10800.0*in[1]*in[1] + 64800.0*in[0]*in[0]*in[1] + 64800.0*in[0]*in[1]*in[1] - 64800.0*in[0]*in[0]*in[1]*in[1];
     }
 
+    //! \brief Evaluate partial derivatives of all shape functions
+    void partial (const std::array<unsigned int, 2>& order,
+                  const typename Traits::DomainType& in,         // position
+                  std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
+    }
+
     //! \brief Polynomial order of the shape functions
     unsigned int order () const
     {

@@ -75,6 +75,30 @@ namespace Dune
       out[2][0][0] =  1;
     }
 
+    //! \brief Evaluate partial derivatives of all shape functions
+    void partial (const std::array<unsigned int, 1>& order,
+                  const typename Traits::DomainType& in,         // position
+                  std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      auto totalOrder = order[0];
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (totalOrder == 1) {
+        out.resize(size());
+        out[0] = -1;
+        out[1] = 4-8*in[0];
+        out[2] =  1;
+      } else if (totalOrder == 2) {
+        out.resize(size());
+        out[0] =  0;
+        out[1] = -8;
+        out[2] =  0;
+      } else {
+        out.resize(size());
+        out[0] = out[1] = out[2] = 0;
+      }
+    }
+
     /** \brief Polynomial order of the shape functions  (2, in this case)
      */
     unsigned int order () const
@@ -145,6 +169,43 @@ namespace Dune
       out[3][0][0] = -4*in[1];              out[3][0][1] =  4-4*in[0]-8*in[1];
       out[4][0][0] =  4*in[1];              out[4][0][1] =  4*in[0];
       out[5][0][0] =  0;                    out[5][0][1] =  1;
+    }
+
+    //! \brief Evaluate partial derivatives of all shape functions
+    void partial (const std::array<unsigned int, 2>& order,
+                  const typename Traits::DomainType& in,         // position
+                  std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (totalOrder == 1) {
+        out.resize(size());
+        auto const direction = std::distance(order.begin(), std::find(order.begin(), order.end(), 1));
+
+        switch (direction) {
+        case 0:
+          out[0] = -1;
+          out[1] =  4-8*in[0]-4*in[1];
+          out[2] =  1;
+          out[3] = -4*in[1];
+          out[4] =  4*in[1];
+          out[5] =  0;
+          break;
+        case 1:
+          out[0] = -1;
+          out[1] = -4*in[0];
+          out[2] =  0;
+          out[3] =  4-4*in[0]-8*in[1];
+          out[4] =  4*in[0];
+          out[5] =  1;
+          break;
+        default:
+          DUNE_THROW(RangeError, "Component out of range.");
+        }
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
     }
 
     /** \brief Polynomial order of the shape functions  (2 in this case)
@@ -229,6 +290,62 @@ namespace Dune
       out[9][0][0] =  0;                           out[9][0][1] =  0;                            out[9][0][2] =  1;
     }
 
+    //! \brief Evaluate partial derivatives of all shape functions
+    void partial (const std::array<unsigned int, 3>& order,
+                  const typename Traits::DomainType& in,         // position
+                  std::vector<typename Traits::RangeType>& out) const      // return value
+    {
+      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      if (totalOrder == 0) {
+        evaluateFunction(in, out);
+      } else if (totalOrder == 1) {
+        out.resize(size());
+        auto const direction = std::distance(order.begin(), std::find(order.begin(), order.end(), 1));
+
+        switch (direction) {
+        case 0:
+          out[0] = -1;
+          out[1] =  4-8*in[0]-4*in[1]-4*in[2];
+          out[2] =  1;
+          out[3] = -4*in[1];
+          out[4] =  4*in[1];
+          out[5] =  0;
+          out[6] = -4*in[2];
+          out[7] =  4*in[2];
+          out[8] =  0;
+          out[9] =  0;
+          break;
+        case 1:
+          out[0] = -1;
+          out[1] = -4*in[0];
+          out[2] =  0;
+          out[3] =  4-4*in[0]-8*in[1]-4*in[2];
+          out[4] =  4*in[0];
+          out[5] =  1;
+          out[6] = -4*in[2];
+          out[7] =  0;
+          out[8] =  4*in[2];
+          out[9] =  0;
+          break;
+        case 2:
+          out[0] = -1;
+          out[1] = -4*in[0];
+          out[2] =  0;
+          out[3] = -4*in[1];
+          out[4] =  0;
+          out[5] =  0;
+          out[6] =  4-4*in[0]-4*in[1]-8*in[2];
+          out[7] =  4*in[0];
+          out[8] =  4*in[1];
+          out[9] =  1;
+          break;
+        default:
+          DUNE_THROW(RangeError, "Component out of range.");
+        }
+      } else {
+        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
+    }
 
     /** \brief Polynomial order of the shape functions (2 in this case)
      */

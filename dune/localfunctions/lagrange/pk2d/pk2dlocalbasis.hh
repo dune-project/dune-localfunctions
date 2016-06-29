@@ -3,6 +3,8 @@
 #ifndef DUNE_PK2DLOCALBASIS_HH
 #define DUNE_PK2DLOCALBASIS_HH
 
+#include <numeric>
+
 #include <dune/common/fmatrix.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>

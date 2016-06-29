@@ -5,6 +5,7 @@
 
 #include <array>
 #include <cassert>
+#include <numeric>
 
 #include <dune/common/fmatrix.hh>
 

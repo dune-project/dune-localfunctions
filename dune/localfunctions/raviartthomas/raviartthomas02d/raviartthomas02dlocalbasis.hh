@@ -87,7 +87,6 @@ namespace Dune
         out[1][1-direction] = 0;
         out[2][direction] = sign2;
         out[2][1-direction] = 0;
-        }
       } else {
         out.resize(size());
         for (std::size_t i = 0; i < size(); ++i)

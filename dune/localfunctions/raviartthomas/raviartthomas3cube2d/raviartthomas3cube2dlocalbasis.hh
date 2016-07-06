@@ -185,26 +185,23 @@ namespace Dune
       out.resize(40);
       auto const& x = in[0], y = in[1];
 
-      const auto tmp1 = - x*(x*(x*(35*x - 80) + 60) - 16) - 1;
       const auto tmp2 = x*(x*(x*(35*x - 80) + 60) - 16) + 1;
       const auto tmp3 = 2*y - 1;
       const auto tmp4 = y*(6*y - 6) + 1;
       const auto tmp5 = y*(y*(20*y - 30) + 12) - 1;
       const auto tmp6 = x*(x*(x*(35*x - 60) + 30) - 4);
-      const auto tmp7 = - y*(y*(y*(35*y - 80) + 60) - 16) - 1;
       const auto tmp8 = y*(y*(y*(35*y - 80) + 60) - 16) + 1;
       const auto tmp9 = 2*x - 1;
       const auto tmp10 = x*(6*x - 6) + 1;
       const auto tmp11 = x*(x*(20*x - 30) + 12) - 1;
       const auto tmp12 = y*(y*(y*(35*y - 60) + 30) - 4);
-      const auto tmp13 = -x*(x*(x*(7*x - 14) + 9) - 2);
       const auto tmp14 = x*(x*(x*(7*x - 14) + 9) - 2);
       const auto tmp15 = x*(x*(2*x - 3) + 1);
       const auto tmp16 = x*(x*(x*(5*x - 10) + 6) - 1);
-      const auto tmp17 = -y*(y*(y*(7*y - 14) + 9) - 2);
       const auto tmp18 = y*(y*(2*y - 3) + 1);
       const auto tmp19 = y*(y*(y*(5*y - 10) + 6) - 1);
       const auto tmp20 = y*(y*(y*(7*y - 14) + 9) - 2);
+      // temporaries tmp1, tmp7, tmp13, tmp17 are not used in jacobian
 
       const auto dxtmp1 = 16 - x*(x*(140*x - 240) + 120);
       const auto dxtmp2 = x*(x*(140*x - 240) + 120) - 16;

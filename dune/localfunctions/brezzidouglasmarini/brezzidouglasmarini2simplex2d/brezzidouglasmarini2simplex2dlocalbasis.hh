@@ -5,6 +5,7 @@
 
 #include <array>
 #include <bitset>
+#include <numeric>
 #include <vector>
 
 #include <dune/common/fmatrix.hh>

@@ -3,6 +3,7 @@
 #ifndef DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS2_CUBE2D_LOCALBASIS_HH
 #define DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS2_CUBE2D_LOCALBASIS_HH
 
+#include <numeric>
 #include <vector>
 
 #include <dune/common/fmatrix.hh>

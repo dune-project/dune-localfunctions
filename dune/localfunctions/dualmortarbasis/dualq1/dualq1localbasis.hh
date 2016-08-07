@@ -4,6 +4,7 @@
 #define DUNE_DUAL_Q1_LOCALBASIS_HH
 
 #include <array>
+#include <numeric>
 
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>

@@ -3,6 +3,7 @@
 #ifndef DUNE_RANNACHER_TUREK_3D_LOCALBASIS_HH
 #define DUNE_RANNACHER_TUREK_3D_LOCALBASIS_HH
 
+#include <numeric>
 #include <vector>
 
 #include <dune/common/fvector.hh>

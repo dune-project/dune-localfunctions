@@ -4,8 +4,9 @@
 #define DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI1_CUBE2D_LOCALBASIS_HH
 
 #include <array>
-#include <vector>
 #include <bitset>
+#include <numeric>
+#include <vector>
 
 #include <dune/common/fmatrix.hh>
 

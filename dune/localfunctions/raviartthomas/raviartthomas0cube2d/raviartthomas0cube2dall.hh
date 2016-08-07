@@ -4,6 +4,7 @@
 #define DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS0_CUBE2D_ALL_HH
 
 #include <cstddef>
+#include <numeric>
 #include <vector>
 
 #include <dune/common/fmatrix.hh>

@@ -7,6 +7,8 @@
     \brief Linear Lagrange shape functions on a uniformly refined reference element
  */
 
+#include <numeric>
+
 #include <dune/common/fmatrix.hh>
 
 #include <dune/localfunctions/refined/common/refinedsimplexlocalbasis.hh>

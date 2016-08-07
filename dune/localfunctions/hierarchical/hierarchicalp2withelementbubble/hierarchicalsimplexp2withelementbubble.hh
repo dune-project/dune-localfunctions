@@ -7,7 +7,9 @@
     \brief Hierarchical p2 shape functions for the simplex
  */
 
+#include <numeric>
 #include <vector>
+
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
 

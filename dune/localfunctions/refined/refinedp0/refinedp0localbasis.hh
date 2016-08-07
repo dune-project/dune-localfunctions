@@ -3,6 +3,8 @@
 #ifndef DUNE_REFINED_P0_LOCALBASIS_HH
 #define DUNE_REFINED_P0_LOCALBASIS_HH
 
+#include <numeric>
+
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
 

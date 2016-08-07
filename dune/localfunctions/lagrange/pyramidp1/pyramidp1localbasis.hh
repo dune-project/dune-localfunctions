@@ -3,6 +3,8 @@
 #ifndef DUNE_PYRAMID_P1_LOCALBASIS_HH
 #define DUNE_PYRAMID_P1_LOCALBASIS_HH
 
+#include <numeric>
+
 #include <dune/common/fmatrix.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>

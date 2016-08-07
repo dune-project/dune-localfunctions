@@ -3,6 +3,8 @@
 #ifndef DUNE_RT0TRIANGLELOCALBASIS_HH
 #define DUNE_RT0TRIANGLELOCALBASIS_HH
 
+#include <numeric>
+
 #include <dune/common/fmatrix.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>

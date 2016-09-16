@@ -16,7 +16,7 @@ Differences.
 Dune-localfunctions
 -------------------
 This module provides interfaces and implementations for local
-finite element ansatz spaces, i.e., shape functions, assoziated
+finite element ansatz spaces, i.e., shape functions, associated
 interpolation functionals, and relation to grid entities.
 
 More information

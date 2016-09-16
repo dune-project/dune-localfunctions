@@ -1,4 +1,4 @@
-DUNE-iibrary
+DUNE-library
 ============
 
 DUNE, the Distributed and Unified Numerics Environment is a modular toolbox
@@ -17,7 +17,7 @@ Dune-localfunctions
 -------------------
 This module provides interfaces and implementations for local
 finite element ansatz spaces, i.e., shape functions, assoziated
-interpolation functionals, and relation to grid entitied.
+interpolation functionals, and relation to grid entities.
 
 More information
 ----------------

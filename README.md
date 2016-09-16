@@ -1,4 +1,4 @@
-DUNE-library
+DUNE-iibrary
 ============
 
 DUNE, the Distributed and Unified Numerics Environment is a modular toolbox
@@ -11,11 +11,13 @@ a common interface with a very low overhead.
 
 DUNE was designed with flexibility in mind. It supports easy discretization
 using methods, like Finite Elements, Finite Volume and also Finite
-Differences. Through separation of data structures DUNE allows fast Linear
-Algebra like provided in the ISTL module, or usage of external libraries
-like blas.
+Differences.
 
-This package contains the basic DUNE istl classes.
+Dune-localfunctions
+-------------------
+This module provides interfaces and implementations for local
+finite element ansatz spaces, i.e., shape functions, assoziated
+interpolation functionals, and relation to grid entitied.
 
 More information
 ----------------

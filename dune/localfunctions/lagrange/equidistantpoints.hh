@@ -6,7 +6,8 @@
 #include <algorithm>
 #include <vector>
 
-#include <dune/geometry/genericgeometry/subtopologies.hh>
+#include <dune/geometry/referenceelements.hh>
+
 #include <dune/geometry/genericgeometry/topologytypes.hh>
 
 #include <dune/localfunctions/lagrange/emptypoints.hh>
@@ -53,8 +54,8 @@ namespace Dune
     if( dim > 0 )
     {
       const unsigned int baseId = GenericGeometry::baseTopologyId( topologyId, dim );
-      const unsigned int numBaseN = (codim < dim ? GenericGeometry::size( baseId, dim-1, codim ) : 0);
-      const unsigned int numBaseM = (codim > 0 ? GenericGeometry::size( baseId, dim-1, codim-1 ) : 0);
+      const unsigned int numBaseN = (codim < dim ? Impl::size( baseId, dim-1, codim ) : 0);
+      const unsigned int numBaseM = (codim > 0 ? Impl::size( baseId, dim-1, codim-1 ) : 0);
 
       if( GenericGeometry::isPrism( topologyId, dim ) )
       {
@@ -162,7 +163,7 @@ namespace Dune
       std::vector< unsigned int > count;
       for( unsigned int mydim = 0; mydim <= dimension; ++mydim )
       {
-        count.resize( GenericGeometry::size( gt.id(), dimension, dimension-mydim ) );
+        count.resize( Impl::size( gt.id(), dimension, dimension-mydim ) );
         std::fill( count.begin(), count.end(), 0u );
         p += equidistantLagrangePoints( gt.id(), dimension, dimension-mydim, order(), count.data(), p );
       }

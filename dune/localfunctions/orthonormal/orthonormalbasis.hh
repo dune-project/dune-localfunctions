@@ -57,7 +57,7 @@ namespace Dune
     typedef StandardEvaluator< MonomialBasisType > Evaluator;
     typedef PolynomialBasis< Evaluator, CoefficientMatrix > Basis;
 
-    typedef typename GenericGeometry::SimplexTopology< dim >::type SimplexTopology;
+    typedef typename Impl::SimplexTopology< dim >::type SimplexTopology;
 
     template< class Topology >
     static Object *createObject ( const unsigned int order )

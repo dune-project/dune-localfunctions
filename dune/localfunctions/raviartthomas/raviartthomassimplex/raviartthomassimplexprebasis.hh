@@ -2,10 +2,11 @@
 // vi: set et ts=4 sw=2 sts=2:
 #ifndef DUNE_RAVIARTTHOMASPREBASIS_HH
 #define DUNE_RAVIARTTHOMASPREBASIS_HH
+
 #include <fstream>
 #include <utility>
 
-#include <dune/geometry/genericgeometry/topologytypes.hh>
+#include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/utility/polynomialbasis.hh>
 

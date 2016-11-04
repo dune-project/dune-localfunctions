@@ -9,7 +9,7 @@
 #include <dune/common/fmatrix.hh>
 
 #include <dune/geometry/topologyfactory.hh>
-#include <dune/geometry/genericgeometry/topologytypes.hh>
+#include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/utility/field.hh>
 #include <dune/localfunctions/utility/multiindex.hh>
@@ -78,9 +78,9 @@ namespace Dune
   // -----------------
 
   template<>
-  class MonomialBasisSize< GenericGeometry::Point >
+  class MonomialBasisSize< Impl::Point >
   {
-    typedef MonomialBasisSize< GenericGeometry::Point > This;
+    typedef MonomialBasisSize< Impl::Point > This;
 
   public:
     static This &instance ()
@@ -89,10 +89,10 @@ namespace Dune
       return _instance;
     }
 
-    typedef GenericGeometry::Point Topology;
+    typedef Impl::Point Topology;
 
-    friend class MonomialBasisSize< GenericGeometry::Prism< Topology > >;
-    friend class MonomialBasisSize< GenericGeometry::Pyramid< Topology > >;
+    friend class MonomialBasisSize< Impl::Prism< Topology > >;
+    friend class MonomialBasisSize< Impl::Pyramid< Topology > >;
 
     mutable unsigned int maxOrder_;
     // sizes_[ k ]: number of basis functions of exactly order k
@@ -147,9 +147,9 @@ namespace Dune
   };
 
   template< class BaseTopology >
-  class MonomialBasisSize< GenericGeometry::Prism< BaseTopology > >
+  class MonomialBasisSize< Impl::Prism< BaseTopology > >
   {
-    typedef MonomialBasisSize< GenericGeometry::Prism< BaseTopology > > This;
+    typedef MonomialBasisSize< Impl::Prism< BaseTopology > > This;
 
   public:
     static This &instance ()
@@ -158,10 +158,10 @@ namespace Dune
       return _instance;
     }
 
-    typedef GenericGeometry::Prism< BaseTopology > Topology;
+    typedef Impl::Prism< BaseTopology > Topology;
 
-    friend class MonomialBasisSize< GenericGeometry::Prism< Topology > >;
-    friend class MonomialBasisSize< GenericGeometry::Pyramid< Topology > >;
+    friend class MonomialBasisSize< Impl::Prism< Topology > >;
+    friend class MonomialBasisSize< Impl::Pyramid< Topology > >;
 
     mutable unsigned int maxOrder_;
     // sizes_[ k ]: number of basis functions of exactly order k
@@ -222,9 +222,9 @@ namespace Dune
   };
 
   template< class BaseTopology >
-  class MonomialBasisSize< GenericGeometry::Pyramid< BaseTopology > >
+  class MonomialBasisSize< Impl::Pyramid< BaseTopology > >
   {
-    typedef MonomialBasisSize< GenericGeometry::Pyramid< BaseTopology > > This;
+    typedef MonomialBasisSize< Impl::Pyramid< BaseTopology > > This;
 
   public:
     static This &instance ()
@@ -233,10 +233,10 @@ namespace Dune
       return _instance;
     }
 
-    typedef GenericGeometry::Pyramid< BaseTopology > Topology;
+    typedef Impl::Pyramid< BaseTopology > Topology;
 
-    friend class MonomialBasisSize< GenericGeometry::Prism< Topology > >;
-    friend class MonomialBasisSize< GenericGeometry::Pyramid< Topology > >;
+    friend class MonomialBasisSize< Impl::Prism< Topology > >;
+    friend class MonomialBasisSize< Impl::Pyramid< Topology > >;
 
     mutable unsigned int maxOrder_;
     // sizes_[ k ]: number of basis functions of exactly order k
@@ -305,8 +305,8 @@ namespace Dune
   template< int mydim, int dim, class F >
   struct MonomialBasisHelper
   {
-    typedef MonomialBasisSize< typename GenericGeometry::SimplexTopology< mydim >::type > MySize;
-    typedef MonomialBasisSize< typename GenericGeometry::SimplexTopology< dim >::type > Size;
+    typedef MonomialBasisSize< typename Impl::SimplexTopology< mydim >::type > MySize;
+    typedef MonomialBasisSize< typename Impl::SimplexTopology< dim >::type > Size;
 
     static void copy ( const unsigned int deriv, F *&wit, F *&rit,
                        const unsigned int numBaseFunctions, const F &z )
@@ -363,12 +363,12 @@ namespace Dune
   class MonomialBasisImpl;
 
   template< class F >
-  class MonomialBasisImpl< GenericGeometry::Point, F >
+  class MonomialBasisImpl< Impl::Point, F >
   {
-    typedef MonomialBasisImpl< GenericGeometry::Point, F > This;
+    typedef MonomialBasisImpl< Impl::Point, F > This;
 
   public:
-    typedef GenericGeometry::Point Topology;
+    typedef Impl::Point Topology;
     typedef F Field;
 
     static const unsigned int dimDomain = Topology::dimension;
@@ -377,8 +377,8 @@ namespace Dune
 
   private:
     friend class MonomialBasis< Topology, Field >;
-    friend class MonomialBasisImpl< GenericGeometry::Prism< Topology >, Field >;
-    friend class MonomialBasisImpl< GenericGeometry::Pyramid< Topology >, Field >;
+    friend class MonomialBasisImpl< Impl::Prism< Topology >, Field >;
+    friend class MonomialBasisImpl< Impl::Pyramid< Topology >, Field >;
 
     template< int dimD >
     void evaluate ( const unsigned int deriv, const unsigned int order,
@@ -401,12 +401,12 @@ namespace Dune
   };
 
   template< class BaseTopology, class F >
-  class MonomialBasisImpl< GenericGeometry::Prism< BaseTopology >, F >
+  class MonomialBasisImpl< Impl::Prism< BaseTopology >, F >
   {
-    typedef MonomialBasisImpl< GenericGeometry::Prism< BaseTopology >, F > This;
+    typedef MonomialBasisImpl< Impl::Prism< BaseTopology >, F > This;
 
   public:
-    typedef GenericGeometry::Prism< BaseTopology > Topology;
+    typedef Impl::Prism< BaseTopology > Topology;
     typedef F Field;
 
     static const unsigned int dimDomain = Topology::dimension;
@@ -415,8 +415,8 @@ namespace Dune
 
   private:
     friend class MonomialBasis< Topology, Field >;
-    friend class MonomialBasisImpl< GenericGeometry::Prism< Topology >, Field >;
-    friend class MonomialBasisImpl< GenericGeometry::Pyramid< Topology >, Field >;
+    friend class MonomialBasisImpl< Impl::Prism< Topology >, Field >;
+    friend class MonomialBasisImpl< Impl::Pyramid< Topology >, Field >;
 
     typedef MonomialBasisSize< BaseTopology > BaseSize;
     typedef MonomialBasisSize< Topology > Size;
@@ -485,12 +485,12 @@ namespace Dune
   };
 
   template< class BaseTopology, class F >
-  class MonomialBasisImpl< GenericGeometry::Pyramid< BaseTopology >, F >
+  class MonomialBasisImpl< Impl::Pyramid< BaseTopology >, F >
   {
-    typedef MonomialBasisImpl< GenericGeometry::Pyramid< BaseTopology >, F > This;
+    typedef MonomialBasisImpl< Impl::Pyramid< BaseTopology >, F > This;
 
   public:
-    typedef GenericGeometry::Pyramid< BaseTopology > Topology;
+    typedef Impl::Pyramid< BaseTopology > Topology;
     typedef F Field;
 
     static const unsigned int dimDomain = Topology::dimension;
@@ -499,8 +499,8 @@ namespace Dune
 
   private:
     friend class MonomialBasis< Topology, Field >;
-    friend class MonomialBasisImpl< GenericGeometry::Prism< Topology >, Field >;
-    friend class MonomialBasisImpl< GenericGeometry::Pyramid< Topology >, Field >;
+    friend class MonomialBasisImpl< Impl::Prism< Topology >, Field >;
+    friend class MonomialBasisImpl< Impl::Pyramid< Topology >, Field >;
 
     typedef MonomialBasisSize< BaseTopology > BaseSize;
     typedef MonomialBasisSize< Topology > Size;
@@ -572,7 +572,7 @@ namespace Dune
       typedef MonomialBasisHelper< dimDomain, dimD, Field > Helper;
       const BaseSize &size = BaseSize::instance();
 
-      if( GenericGeometry::IsSimplex< Topology >::value )
+      if( Impl::IsSimplex< Topology >::value )
         evaluateSimplexBase( deriv, order, x, block, offsets, values, size );
       else
         evaluatePyramidBase( deriv, order, x, block, offsets, values, size );
@@ -677,7 +677,7 @@ namespace Dune
 
     unsigned int derivSize ( const unsigned int deriv ) const
     {
-      typedef typename GenericGeometry::SimplexTopology< dimension >::type SimplexTopology;
+      typedef typename Impl::SimplexTopology< dimension >::type SimplexTopology;
       MonomialBasisSize< SimplexTopology >::instance().computeSizes( deriv );
       return MonomialBasisSize< SimplexTopology >::instance() ( deriv );
     }
@@ -764,13 +764,13 @@ namespace Dune
 
   template< int dim,class F >
   class StandardMonomialBasis
-    : public MonomialBasis< typename GenericGeometry::SimplexTopology< dim >::type, F >
+    : public MonomialBasis< typename Impl::SimplexTopology< dim >::type, F >
   {
     typedef StandardMonomialBasis< dim, F > This;
-    typedef MonomialBasis< typename GenericGeometry::SimplexTopology< dim >::type, F > Base;
+    typedef MonomialBasis< typename Impl::SimplexTopology< dim >::type, F > Base;
 
   public:
-    typedef typename GenericGeometry::SimplexTopology< dim >::type Topology;
+    typedef typename Impl::SimplexTopology< dim >::type Topology;
     static const int dimension = dim;
 
     StandardMonomialBasis ( unsigned int order )
@@ -785,13 +785,13 @@ namespace Dune
 
   template< int dim, class F >
   class StandardBiMonomialBasis
-    : public MonomialBasis< typename GenericGeometry::CubeTopology< dim >::type, F >
+    : public MonomialBasis< typename Impl::CubeTopology< dim >::type, F >
   {
     typedef StandardBiMonomialBasis< dim, F > This;
-    typedef MonomialBasis< typename GenericGeometry::CubeTopology< dim >::type, F > Base;
+    typedef MonomialBasis< typename Impl::CubeTopology< dim >::type, F > Base;
 
   public:
-    typedef typename GenericGeometry::CubeTopology< dim >::type Topology;
+    typedef typename Impl::CubeTopology< dim >::type Topology;
     static const int dimension = dim;
 
     StandardBiMonomialBasis ( unsigned int order )

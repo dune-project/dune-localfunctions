@@ -7,8 +7,7 @@
 #include <vector>
 
 #include <dune/geometry/referenceelements.hh>
-
-#include <dune/geometry/genericgeometry/topologytypes.hh>
+#include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/lagrange/emptypoints.hh>
 #include <dune/localfunctions/utility/field.hh>
@@ -21,12 +20,12 @@ namespace Dune
 
   inline std::size_t numLagrangePoints ( unsigned int topologyId, int dim, unsigned int order )
   {
-    assert( topologyId < GenericGeometry::numTopologies( dim ) );
+    assert( topologyId < Impl::numTopologies( dim ) );
 
     if( dim > 0 )
     {
-      const unsigned int baseId = GenericGeometry::baseTopologyId( topologyId, dim );
-      if( GenericGeometry::isPyramid( topologyId, dim ) )
+      const unsigned int baseId = Impl::baseTopologyId( topologyId, dim );
+      if( Impl::isPyramid( topologyId, dim ) )
       {
         std::size_t size = 0;
         for( unsigned int o = 0; o <= order; ++o )
@@ -49,15 +48,15 @@ namespace Dune
   inline static unsigned int equidistantLagrangePoints ( unsigned int topologyId, unsigned int dim, unsigned int codim, unsigned int order, unsigned int *count, LagrangePoint< ct, cdim > *points )
   {
     assert( (0 <= codim) && (codim <= dim) && (dim <= cdim) );
-    assert( topologyId < GenericGeometry::numTopologies( dim ) );
+    assert( topologyId < Impl::numTopologies( dim ) );
 
     if( dim > 0 )
     {
-      const unsigned int baseId = GenericGeometry::baseTopologyId( topologyId, dim );
+      const unsigned int baseId = Impl::baseTopologyId( topologyId, dim );
       const unsigned int numBaseN = (codim < dim ? Impl::size( baseId, dim-1, codim ) : 0);
       const unsigned int numBaseM = (codim > 0 ? Impl::size( baseId, dim-1, codim-1 ) : 0);
 
-      if( GenericGeometry::isPrism( topologyId, dim ) )
+      if( Impl::isPrism( topologyId, dim ) )
       {
         unsigned int size = 0;
         if( codim < dim )

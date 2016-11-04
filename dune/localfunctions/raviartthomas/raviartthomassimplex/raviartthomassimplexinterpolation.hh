@@ -1,17 +1,17 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_RAVIARTTHOMASINTERPOLATION_HH
-#define DUNE_RAVIARTTHOMASINTERPOLATION_HH
+#ifndef DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS_RAVIARTTHOMASSIMPLEX_RAVIARTTHOMASSIMPLEXINTERPOLATION_HH
+#define DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS_RAVIARTTHOMASSIMPLEX_RAVIARTTHOMASSIMPLEXINTERPOLATION_HH
 
 #include <fstream>
 #include <utility>
 
 #include <dune/common/exceptions.hh>
-#include <dune/common/forloop.hh>
 
 #include <dune/geometry/topologyfactory.hh>
-#include <dune/geometry/referenceelements.hh>
 #include <dune/geometry/quadraturerules.hh>
+#include <dune/geometry/referenceelements.hh>
+#include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/common/localkey.hh>
 #include <dune/localfunctions/utility/interpolationhelper.hh>
@@ -21,12 +21,19 @@
 namespace Dune
 {
 
-  // LocalCoefficientsContainer
-  // -------------------
+  // Internal Forward Declarations
+  // -----------------------------
+
   template < unsigned int dim >
   struct RaviartThomasCoefficientsFactory;
+
   template < unsigned int dim, class Field >
   struct RaviartThomasL2InterpolationFactory;
+
+
+
+  // LocalCoefficientsContainer
+  // --------------------------
 
   class LocalCoefficientsContainer
   {
@@ -54,6 +61,11 @@ namespace Dune
     std::vector< LocalKey > localKey_;
   };
 
+
+
+  // RaviartThomasCoefficientsFactoryTraits
+  // --------------------------------------
+
   template < unsigned int dim >
   struct RaviartThomasCoefficientsFactoryTraits
   {
@@ -62,144 +74,137 @@ namespace Dune
     typedef unsigned int Key;
     typedef RaviartThomasCoefficientsFactory<dim> Factory;
   };
+
+
+
+  // RaviartThomasCoefficientsFactory
+  // --------------------------------
+
   template < unsigned int dim >
-  struct RaviartThomasCoefficientsFactory :
-    public TopologyFactory< RaviartThomasCoefficientsFactoryTraits<dim> >
+  struct RaviartThomasCoefficientsFactory
+    : public TopologyFactory< RaviartThomasCoefficientsFactoryTraits< dim > >
   {
-    typedef RaviartThomasCoefficientsFactoryTraits<dim> Traits;
-    template <class Topology>
+    typedef RaviartThomasCoefficientsFactoryTraits< dim > Traits;
+
+    template< class Topology >
     static typename Traits::Object *createObject( const typename Traits::Key &key )
     {
-      typedef RaviartThomasL2InterpolationFactory<dim,double> InterpolationFactory;
-      if (! supports<Topology>(key) )
-        return 0;
-      typename InterpolationFactory::Object *interpol
-        = InterpolationFactory::template create<Topology>(key);
-      typename Traits::Object *localKeys = new typename Traits::Object(*interpol);
-      InterpolationFactory::release(interpol);
+      typedef RaviartThomasL2InterpolationFactory< dim, double > InterpolationFactory;
+      if( !supports< Topology >( key ) )
+        return nullptr;
+      typename InterpolationFactory::Object *interpolation = InterpolationFactory::template create< Topology >( key );
+      typename Traits::Object *localKeys = new typename Traits::Object( *interpolation );
+      InterpolationFactory::release( interpolation );
       return localKeys;
     }
+
     template< class Topology >
     static bool supports ( const typename Traits::Key &key )
     {
-      return GenericGeometry::IsSimplex<Topology>::value;
+      return GenericGeometry::IsSimplex< Topology >::value;
     }
   };
 
-  // LocalInterpolation
-  // -------------------
 
-  // -----------------------------------------
+
   // RTL2InterpolationBuilder
-  // -----------------------------------------
+  // ------------------------
+
   // L2 Interpolation requires:
   // - for element
   //   - test basis
   // - for each face (dynamic)
   //   - test basis
   //   - normal
-  template <unsigned int dim, class Field>
+  template< unsigned int dim, class Field >
   struct RTL2InterpolationBuilder
   {
     static const unsigned int dimension = dim;
-    typedef OrthonormalBasisFactory<dimension,Field> TestBasisFactory;
+    typedef OrthonormalBasisFactory< dimension, Field > TestBasisFactory;
     typedef typename TestBasisFactory::Object TestBasis;
-    typedef OrthonormalBasisFactory<dimension-1,Field> TestFaceBasisFactory;
+    typedef OrthonormalBasisFactory< dimension-1, Field > TestFaceBasisFactory;
     typedef typename TestFaceBasisFactory::Object TestFaceBasis;
-    typedef FieldVector<Field,dimension> Normal;
+    typedef FieldVector< Field, dimension > Normal;
 
-    RTL2InterpolationBuilder()
-    {}
+    RTL2InterpolationBuilder () = default;
 
-    ~RTL2InterpolationBuilder()
-    {
-      TestBasisFactory::release(testBasis_);
-      for (unsigned int i=0; i<faceStructure_.size(); ++i)
-        TestFaceBasisFactory::release(faceStructure_[i].basis_);
-    }
+    RTL2InterpolationBuilder ( const RTL2InterpolationBuilder & ) = delete;
+    RTL2InterpolationBuilder ( RTL2InterpolationBuilder && ) = delete;
 
-    unsigned int topologyId() const
+    ~RTL2InterpolationBuilder ()
     {
-      return topologyId_;
-    }
-    unsigned int order() const
-    {
-      return order_;
-    }
-    unsigned int faceSize() const
-    {
-      return faceSize_;
-    }
-    TestBasis *testBasis() const
-    {
-      return testBasis_;
-    }
-    TestFaceBasis *testFaceBasis( unsigned int f ) const
-    {
-      assert( f < faceSize() );
-      return faceStructure_[f].basis_;
-    }
-    const Normal &normal( unsigned int f ) const
-    {
-      return *(faceStructure_[f].normal_);
+      TestBasisFactory::release( testBasis_ );
+      for( FaceStructure &f : faceStructure_ )
+        TestFaceBasisFactory::release( f.basis_ );
     }
 
-    template <class Topology>
-    void build(unsigned int order)
+    unsigned int topologyId () const { return topologyId_; }
+
+    GeometryType type () const { return GeometryType( topologyId(), dimension ); }
+
+    unsigned int order () const { return order_; }
+
+    unsigned int faceSize () const { return faceSize_; }
+
+    TestBasis *testBasis () const { return testBasis_; }
+    TestFaceBasis *testFaceBasis ( unsigned int f ) const { assert( f < faceSize() ); return faceStructure_[ f ].basis_; }
+
+    const Normal &normal ( unsigned int f ) const { assert( f < faceSize() ); return *(faceStructure_[ f ].normal_); }
+
+    template< class Topology >
+    void build ( unsigned int order )
     {
       order_ = order;
       topologyId_ = Topology::id;
-      if (order>0)
-        testBasis_ = TestBasisFactory::template create<Topology>(order-1);
-      else
-        testBasis_ = 0;
-      const unsigned int size = GenericGeometry::Size<Topology,1>::value;
-      faceSize_ = size;
+
+      testBasis_ = (order > 0 ? TestBasisFactory::template create< Topology >( order-1 ) : nullptr);
+
+      const auto &refElement = ReferenceElements< Field, dimension >::general( type() );
+      faceSize_ = refElement.size( 1 );
       faceStructure_.reserve( faceSize_ );
-      ForLoop< Creator<Topology>::template GetCodim,0,size-1>::apply(order, faceStructure_ );
+      for( unsigned int face = 0; face < faceSize_; ++face )
+      {
+        TestFaceBasis *faceBasis = GenericGeometry::IfTopology< CreateFaceBasis, dimension-1 >::apply( refElement.type( face, 1 ).id(), order );
+        faceStructure_.emplace_back( faceBasis, refElement.integrationOuterNormal( face ) );
+      }
       assert( faceStructure_.size() == faceSize_ );
     }
 
   private:
     struct FaceStructure
     {
-      FaceStructure( TestFaceBasis *tfb,
-                     const Normal &n )
-        : basis_(tfb), normal_(&n)
+      FaceStructure( TestFaceBasis *tfb, const Normal &n )
+        : basis_( tfb ), normal_( &n )
       {}
+
       TestFaceBasis *basis_;
-      const Dune::FieldVector<Field,dimension> *normal_;
-    };
-    template < class Topology >
-    struct Creator
-    {
-      template < int face >
-      struct GetCodim
-      {
-        typedef typename GenericGeometry::SubTopology<Topology,1,face>::type FaceTopology;
-        static void apply( const unsigned int order,
-                           std::vector<FaceStructure> &faceStructure )
-        {
-          static const int dimTopo = Topology::dimension;
-          faceStructure.push_back(
-            FaceStructure(
-              TestFaceBasisFactory::template create<FaceTopology>(order),
-              ReferenceElements<Field,dimTopo>::general(GeometryType( Topology() )).integrationOuterNormal(face)
-              ) );
-        }
-      };
+      const Dune::FieldVector< Field, dimension > *normal_;
     };
 
-    std::vector<FaceStructure> faceStructure_;
-    TestBasis *testBasis_;
+    template< class FaceTopology >
+    struct CreateFaceBasis
+    {
+      static TestFaceBasis *apply ( unsigned int order ) { return TestFaceBasisFactory::template create< FaceTopology >( order ); }
+    };
+
+    std::vector< FaceStructure > faceStructure_;
+    TestBasis *testBasis_ = nullptr;
     unsigned int topologyId_, order_, faceSize_;
   };
 
-  // A L2 based interpolation for Raviart Thomas
-  // --------------------------------------------------
+
+
+  // RaviartThomasL2Interpolation
+  // ----------------------------
+
+  /**
+   * \class RaviartThomasL2Interpolation
+   * \brief An L2-based interpolation for Raviart Thomas
+   *
+   **/
   template< unsigned int dimension, class F>
   class RaviartThomasL2Interpolation
-    : public InterpolationHelper<F,dimension>
+    : public InterpolationHelper< F ,dimension >
   {
     typedef RaviartThomasL2Interpolation< dimension, F > This;
     typedef InterpolationHelper<F,dimension> Base;
@@ -207,7 +212,7 @@ namespace Dune
   public:
     typedef F Field;
     typedef RTL2InterpolationBuilder<dimension,Field> Builder;
-    RaviartThomasL2Interpolation( )
+    RaviartThomasL2Interpolation()
       : order_(0),
         size_(0)
     {}
@@ -421,5 +426,7 @@ namespace Dune
       return GenericGeometry::IsSimplex<Topology>::value;
     }
   };
-}
-#endif // DUNE_RAVIARTTHOMASINTERPOLATION_HH
+
+} // namespace Dune
+
+#endif // #ifndef DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS_RAVIARTTHOMASSIMPLEX_RAVIARTTHOMASSIMPLEXINTERPOLATION_HH

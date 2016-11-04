@@ -3,7 +3,6 @@
 #ifndef DUNE_RANNACHER_TUREK_LOCALFINITEELEMENT_HH
 #define DUNE_RANNACHER_TUREK_LOCALFINITEELEMENT_HH
 
-#include <dune/geometry/genericgeometry/topologytypes.hh>
 #include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
@@ -60,7 +59,7 @@ namespace Dune
     //! \brief return geometry type
     GeometryType type () const
     {
-      return GeometryType( typename GenericGeometry::CubeTopology< d >::type() );
+      return GeometryType( typename Impl::CubeTopology< d >::type() );
     }
 
   private:

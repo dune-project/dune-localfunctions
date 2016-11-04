@@ -43,7 +43,7 @@ namespace Dune
         key_( key ),
         finiteElement_()
     {
-      GenericGeometry::IfTopology< FiniteElement::template Maker, dimDomain >::apply( topologyId_, key_, finiteElement_ );
+      Impl::IfTopology< FiniteElement::template Maker, dimDomain >::apply( topologyId_, key_, finiteElement_ );
     }
 
     /** \todo Please doc me */
@@ -52,7 +52,7 @@ namespace Dune
         key_( other.key_ ),
         finiteElement_()
     {
-      GenericGeometry::IfTopology< FiniteElement::template Maker, dimDomain >::apply( topologyId_, key_, finiteElement_ );
+      Impl::IfTopology< FiniteElement::template Maker, dimDomain >::apply( topologyId_, key_, finiteElement_ );
     }
 
     ~GenericLocalFiniteElement()

@@ -101,7 +101,7 @@ namespace Dune
     template< class Topology >
     static bool supports ( const typename Traits::Key &key )
     {
-      return GenericGeometry::IsSimplex< Topology >::value;
+      return Impl::IsSimplex< Topology >::value;
     }
   };
 
@@ -164,7 +164,7 @@ namespace Dune
       faceStructure_.reserve( faceSize_ );
       for( unsigned int face = 0; face < faceSize_; ++face )
       {
-        TestFaceBasis *faceBasis = GenericGeometry::IfTopology< CreateFaceBasis, dimension-1 >::apply( refElement.type( face, 1 ).id(), order );
+        TestFaceBasis *faceBasis = Impl::IfTopology< CreateFaceBasis, dimension-1 >::apply( refElement.type( face, 1 ).id(), order );
         faceStructure_.emplace_back( faceBasis, refElement.integrationOuterNormal( face ) );
       }
       assert( faceStructure_.size() == faceSize_ );
@@ -423,7 +423,7 @@ namespace Dune
     template< class Topology >
     static bool supports ( const typename Traits::Key &key )
     {
-      return GenericGeometry::IsSimplex<Topology>::value;
+      return Impl::IsSimplex<Topology>::value;
     }
   };
 

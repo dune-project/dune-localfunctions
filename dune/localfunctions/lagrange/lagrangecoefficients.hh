@@ -6,11 +6,9 @@
 #include <vector>
 
 #include <dune/common/fvector.hh>
-#include <dune/common/forloop.hh>
 
 #include <dune/geometry/topologyfactory.hh>
-#include <dune/geometry/genericgeometry/topologytypes.hh>
-#include <dune/geometry/genericgeometry/subtopologies.hh>
+#include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/utility/field.hh>
 #include <dune/localfunctions/common/localkey.hh>
@@ -51,7 +49,7 @@ namespace Dune
       if ( !object->template build<T>() )
       {
         delete object;
-        object = 0;
+        object = nullptr;
       }
       return object;
     }

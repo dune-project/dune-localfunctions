@@ -11,7 +11,7 @@
 
 #include <dune/common/fmatrix.hh>
 
-#include <dune/geometry/genericgeometry/topologytypes.hh>
+#include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/utility/field.hh>
 #include <dune/localfunctions/utility/lfematrix.hh>
@@ -39,7 +39,7 @@ namespace ONBCompute
   struct Integral;
 
   template< class Base >
-  struct Integral< Dune::GenericGeometry::Pyramid< Base > >
+  struct Integral< Dune::Impl::Pyramid< Base > >
   {
     template< int dim, class scalar_t >
     static int compute ( const Dune::MultiIndex< dim, scalar_t > &alpha,
@@ -55,7 +55,7 @@ namespace ONBCompute
   };
 
   template< class Base >
-  struct Integral< Dune::GenericGeometry::Prism< Base > >
+  struct Integral< Dune::Impl::Prism< Base > >
   {
     template< int dim, class scalar_t >
     static int compute ( const Dune::MultiIndex< dim, scalar_t > &alpha,
@@ -71,7 +71,7 @@ namespace ONBCompute
   };
 
   template<>
-  struct Integral< Dune::GenericGeometry::Point >
+  struct Integral< Dune::Impl::Point >
   {
     template< int dim, class scalar_t >
     static int compute ( const Dune::MultiIndex< dim, scalar_t > &alpha,

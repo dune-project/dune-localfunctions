@@ -1,6 +1,5 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-
 #ifndef DUNE_BASISEVALUATOR_HH
 #define DUNE_BASISEVALUATOR_HH
 
@@ -10,7 +9,7 @@
 #include <dune/common/fvector.hh>
 #include <dune/common/typetraits.hh>
 
-#include <dune/geometry/genericgeometry/topologytypes.hh>
+#include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/utility/field.hh>
 #include <dune/localfunctions/utility/multiindex.hh>

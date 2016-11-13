@@ -20,7 +20,7 @@ namespace Dune
   /************************************************
   * Classes for evaluating ''Monomials'' on any order
   * for all reference element type.
-  * For a simplex topology these are the nomral
+  * For a simplex topology these are the normal
   * monomials for cube topologies the bimonomials.
   * The construction follows the construction of the
   * generic geometries using tensor products for
@@ -28,7 +28,7 @@ namespace Dune
   * construction.
   * A derivative argument can be applied, in which case
   * all derivatives up to the desired order are
-  * evaluated. Note that in for higher order derivatives
+  * evaluated. Note that for higher order derivatives
   * only the ''lower'' part of the symmetric tensor
   * is evaluated, e.g., passing derivative equal to 2
   * to the class will provide the vector

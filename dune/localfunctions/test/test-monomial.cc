@@ -10,8 +10,9 @@
 #include <ostream>
 
 #include <dune/common/exceptions.hh>
-#include <dune/common/forloop.hh>
 #include <dune/common/fvector.hh>
+#include <dune/common/hybridutilities.hh>
+#include <dune/common/std/utility.hh>
 
 #include <dune/geometry/type.hh>
 #include <dune/geometry/generalvertexorder.hh>
@@ -26,12 +27,9 @@ const double eps = 1e-9;
 // stepsize for numerical differentiation
 const double delta = 1e-5;
 
-template<int dim>
-struct Dim {
-  template<int p>
-  struct Order {
-
-    static void apply(int &result) {
+template<int dim,int p>
+static void Order(int &result)
+{
       std::cout << "== Checking global-valued monomial elements (with "
                 << "dim=" << dim << ", p=" << p << ")" << std::endl;
 
@@ -53,18 +51,19 @@ struct Dim {
         else
           result = 1;
       }
-    }
-  };
+}
 
-  static void apply(int &result)
-  { Dune::ForLoop<Order, 0, 3>::apply(result); }
-};
+template<int dim>
+static void Dim(int &result)
+{
+  Dune::Hybrid::forEach(Dune::Std::make_index_sequence<4>{},[&](auto i){Order<dim,i>(result);});
+}
 
 int main(int argc, char** argv) {
   try {
     int result = 77;
 
-    Dune::ForLoop<Dim, 1, 3>::apply(result);
+    Dune::Hybrid::forEach(Dune::Std::make_index_sequence<3>{},[&](auto i){Dim<i+1>(result);});
 
     return result;
   }

@@ -10,7 +10,8 @@
 #include <ostream>
 
 #include <dune/common/exceptions.hh>
-#include <dune/common/forloop.hh>
+#include <dune/common/hybridutilities.hh>
+#include <dune/common/std/utility.hh>
 
 #include <dune/localfunctions/meta/power.hh>
 #include <dune/localfunctions/monomial.hh>
@@ -25,14 +26,10 @@ static const double eps = 1e-8;
 // stepsize for numerical differentiation
 static const double delta = 1e-5;
 
-template<int dimD>
-struct DimD {
-  template<int dimR>
-  struct DimR {
-    template<int p>
-    struct Order {
 
-      static void apply(int &result) {
+template<int dimD, int dimR,int p>
+static void Order(int &result)
+{
         std::cout << "== Checking global-valued Power elements (with "
                   << "dimR=" << dimR << ") wrapping Monom elements (with "
                   << "dimD=" << dimD << ", p=" << p << ")" << std::endl;
@@ -62,22 +59,25 @@ struct DimD {
           else
             result = 1;
         }
-      }
-    };
+}
 
-    static void apply(int &result)
-    { Dune::ForLoop<Order, 0, 3>::apply(result); }
-  };
+template<int dimD,int dimR>
+static void DimR(int &result)
+{
+   Dune::Hybrid::forEach(Dune::Std::make_index_sequence<4>{},[&](auto i){Order<dimD,dimR,i>(result);});
+}
 
-  static void apply(int &result)
-  { Dune::ForLoop<DimR, 0, 3>::apply(result); }
-};
+template<int dimD>
+static void DimD(int &result)
+{
+  Dune::Hybrid::forEach(Dune::Std::make_index_sequence<4>{},[&](auto i){DimR<dimD,i>(result);});
+}
 
 int main(int argc, char** argv) {
   try {
     int result = 77;
 
-    Dune::ForLoop<DimD, 1, 3>::apply(result);
+    Dune::Hybrid::forEach(Dune::Std::make_index_sequence<3>{},[&](auto i){DimD<i+1>(result);});
 
     return result;
   }

@@ -10,8 +10,9 @@
 #include <ostream>
 
 #include <dune/common/exceptions.hh>
-#include <dune/common/forloop.hh>
 #include <dune/common/fvector.hh>
+#include <dune/common/hybridutilities.hh>
+#include <dune/common/std/utility.hh>
 
 #include <dune/geometry/type.hh>
 #include <dune/geometry/generalvertexorder.hh>
@@ -27,9 +28,8 @@ static const double eps = 1e-9;
 static const double delta = 1e-5;
 
 template<int k>
-struct Test {
-
-  static void apply(int &result) {
+static void test(int &result)
+{
     std::cout << "== Checking global-valued Pk2D elements (with k=" << k << ")"
               << std::endl;
 
@@ -53,15 +53,14 @@ struct Test {
       result = 0;
     else
       result = 1;
-  }
-};
+}
 
 int main(int argc, char** argv) {
   try {
     int result = 77;
 
-    static const std::size_t max_k = 20;
-    Dune::ForLoop<Test, 0, max_k>::apply(result);
+    static constexpr std::size_t max_k = 20;
+    Dune::Hybrid::forEach(Dune::Std::make_index_sequence<max_k+1>{},[&](auto i){test<i>(result);});
 
     return result;
   }

@@ -162,8 +162,7 @@ namespace Dune
 
   /**
    * @brief A factory class for the local l2 interpolations
-   *        taking a basis factory and using GenericGeometry::Quadrature
-   *        class.
+   *        taking a basis factory.
    **/
   template< class BasisFactory, bool onb >
   struct LocalL2InterpolationFactory;

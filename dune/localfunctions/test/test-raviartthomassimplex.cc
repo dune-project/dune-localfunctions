@@ -77,7 +77,7 @@ bool test(unsigned int order)
 int main ( int argc, char **argv )
 {
   using namespace Dune;
-  using namespace GenericGeometry;
+  using namespace Impl;
 
   const unsigned int order = (argc < 2) ? 5 : atoi(argv[1]);
 

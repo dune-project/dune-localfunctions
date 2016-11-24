@@ -297,7 +297,8 @@ namespace Dune
 
     //! return given derivative of all components
     template<unsigned int k>
-    inline void evaluate (const std::array<int,k>& directions,
+    inline void DUNE_DEPRECATED_MSG("Use method 'partial' instead!")
+    evaluate (const std::array<int,k>& directions,
                           const typename Traits::DomainType& in,
                           std::vector<typename Traits::RangeType>& out) const
     {

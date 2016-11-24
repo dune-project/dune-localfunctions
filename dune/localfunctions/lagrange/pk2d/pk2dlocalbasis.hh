@@ -207,7 +207,8 @@ namespace Dune
 
     //! \brief Evaluate higher derivatives of all shape functions
     template<unsigned int dOrder> //order of derivative
-    inline void evaluate(const std::array<int,dOrder>& directions, //direction of derivative
+    inline void DUNE_DEPRECATED_MSG("Use method 'partial' instead!")
+    evaluate(const std::array<int,dOrder>& directions, //direction of derivative
                          const typename Traits::DomainType& in,  //position
                          std::vector<typename Traits::RangeType>& out) const //return value
     {

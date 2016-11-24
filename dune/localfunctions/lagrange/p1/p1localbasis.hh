@@ -98,9 +98,11 @@ namespace Dune
 
     //! \brief Evaluate all shape functions
     template<unsigned int k>
-    inline void evaluate (const typename std::array<int,k>& directions,
+    inline void DUNE_DEPRECATED_MSG("Use method 'partial' instead!")
+    evaluate (const typename std::array<int,k>& directions,
                           const typename Traits::DomainType& in,
                           std::vector<typename Traits::RangeType>& out) const
+
     {
       if (k==0)
         evaluateFunction(in, out);

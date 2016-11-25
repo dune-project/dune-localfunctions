@@ -16,6 +16,7 @@
 #include <typeinfo>
 
 #include <dune/common/classname.hh>
+#include <dune/common/deprecated.hh>
 #include <dune/geometry/quadraturerules.hh>
 #include <dune/geometry/referenceelements.hh>
 
@@ -379,7 +380,9 @@ struct TestEvaluate<1>
 
         // Get the shape function derivatives there using the 'evaluate' method
         std::vector<typename LB::Traits::RangeType> firstDerivatives;
+        DUNE_NO_DEPRECATED_BEGIN
         fe.localBasis().template evaluate<1>(direction, testPoint, firstDerivatives);
+        DUNE_NO_DEPRECATED_END
         if (firstDerivatives.size() != fe.localBasis().size())
         {
           std::cout << "Bug in evaluate() for finite element type "
@@ -536,7 +539,9 @@ struct TestEvaluate<2>
 
           // Get the shape function derivatives there using the 'evaluate' method
           std::vector<Range> secondDerivative;
+          DUNE_NO_DEPRECATED_BEGIN
           fe.localBasis().template evaluate<2>(directions, testPoint, secondDerivative);
+          DUNE_NO_DEPRECATED_END
           if (secondDerivative.size() != fe.localBasis().size())
           {
             std::cout << "Bug in evaluate<2>() for finite element type "

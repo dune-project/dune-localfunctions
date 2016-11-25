@@ -5,6 +5,7 @@
 
 #include <array>
 
+#include <dune/common/deprecated.hh>
 #include <dune/common/function.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
@@ -110,7 +111,9 @@ namespace Dune
       //
       // Unfortunately not all compilers can determine Traits::diffOrder from
       // the type of the argument directions
+      DUNE_NO_DEPRECATED_BEGIN
       impl_.template evaluate<Traits::diffOrder>(directions, in, out);
+      DUNE_NO_DEPRECATED_END
     }
 
   protected:

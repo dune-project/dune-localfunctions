@@ -6,6 +6,7 @@
 #include <array>
 #include <numeric>
 
+#include <dune/common/deprecated.hh>
 #include <dune/common/fmatrix.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
@@ -98,7 +99,8 @@ namespace Dune
 
     //! \brief Evaluate all shape functions
     template<unsigned int k>
-    inline void evaluate (const typename std::array<int,k>& directions,
+    inline void DUNE_DEPRECATED_MSG("Use method 'partial' instead!")
+    evaluate (const typename std::array<int,k>& directions,
                           const typename Traits::DomainType& in,
                           std::vector<typename Traits::RangeType>& out) const
     {

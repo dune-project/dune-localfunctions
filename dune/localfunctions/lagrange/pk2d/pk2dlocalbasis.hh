@@ -6,6 +6,7 @@
 #include <numeric>
 
 #include <dune/common/fmatrix.hh>
+#include <dune/common/deprecated.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
 
@@ -180,7 +181,9 @@ namespace Dune
         {
           std::array<int,1> directions;
           directions[0] = std::find(order.begin(), order.end(), 1)-order.begin();
+          DUNE_NO_DEPRECATED_BEGIN
           evaluate<1>(directions, in, out);
+          DUNE_NO_DEPRECATED_END
           break;
         }
         case 2:
@@ -197,7 +200,9 @@ namespace Dune
             }
           }
 
+          DUNE_NO_DEPRECATED_BEGIN
           evaluate<2>(directions, in, out);
+          DUNE_NO_DEPRECATED_END
           break;
         }
         default:

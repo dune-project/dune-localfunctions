@@ -6,6 +6,7 @@
 #include <array>
 #include <numeric>
 
+#include <dune/common/deprecated.hh>
 #include <dune/common/fmatrix.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>

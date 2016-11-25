@@ -6,6 +6,7 @@
 
 #include <numeric>
 
+#include <dune/common/deprecated.hh>
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
 #include <dune/common/power.hh>

@@ -8,6 +8,7 @@
 #include <numeric>
 
 #include <dune/common/fmatrix.hh>
+#include <dune/common/deprecated.hh>
 
 #include "../common/localbasis.hh"
 
@@ -246,7 +247,9 @@ namespace Dune
     inline void evaluateFunction (const typename Traits::DomainType& in,
                                   std::vector<typename Traits::RangeType>& out) const
     {
+      DUNE_NO_DEPRECATED_BEGIN
       evaluate<0>(std::array<int, 0>(), in, out);
+      DUNE_NO_DEPRECATED_END
     }
 
     /** \brief Evaluate partial derivatives of any order of all shape functions
@@ -269,7 +272,9 @@ namespace Dune
         {
           std::array<int,1> directions;
           directions[0] = std::find(order.begin(), order.end(), 1)-order.begin();
+          DUNE_NO_DEPRECATED_BEGIN
           evaluate<1>(directions, in, out);
+          DUNE_NO_DEPRECATED_END
           break;
         }
         case 2:
@@ -286,7 +291,9 @@ namespace Dune
             }
           }
 
+          DUNE_NO_DEPRECATED_BEGIN
           evaluate<2>(directions, in, out);
+          DUNE_NO_DEPRECATED_END
           break;
         }
         default:
@@ -297,7 +304,8 @@ namespace Dune
 
     //! return given derivative of all components
     template<unsigned int k>
-    inline void evaluate (const std::array<int,k>& directions,
+    inline void DUNE_DEPRECATED_MSG("Use method 'partial' instead!")
+    evaluate (const std::array<int,k>& directions,
                           const typename Traits::DomainType& in,
                           std::vector<typename Traits::RangeType>& out) const
     {

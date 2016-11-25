@@ -6,6 +6,7 @@
 
 #include <numeric>
 
+#include <dune/common/deprecated.hh>
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
 #include <dune/common/power.hh>
@@ -178,7 +179,8 @@ namespace Dune
      * \param [out] out       The return value
      */
     template<int diffOrder>
-    inline void evaluate(
+    inline void DUNE_DEPRECATED_MSG("Use method 'partial' instead!")
+    evaluate(
       const std::array<int,1>& direction,
       const typename Traits::DomainType& in,
       std::vector<typename Traits::RangeType>& out) const

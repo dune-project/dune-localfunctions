@@ -99,6 +99,8 @@ namespace Dune
       //typedef typename LB::Traits::DomainFieldType Vector;
       typename F::Traits::RangeType y;
 
+      DUNE_THROW( NotImplemented, "Interpolation for BDM1Cube3D finite elements is not implemented." );
+
       out.resize(18);
       fill(out.begin(), out.end(), 0.0);
 

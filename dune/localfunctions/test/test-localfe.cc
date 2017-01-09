@@ -160,7 +160,7 @@ int main(int argc, char** argv) try
   TEST_FE(bdm1simplex2dlfem);
 
   Dune::BDM2Simplex2DLocalFiniteElement<double,double> bdm2simplex2dlfem(1);
-  TEST_FE2(bdm2simplex2dlfem, DisableLocalInterpolation);
+  TEST_FE(bdm2simplex2dlfem);
 
   // --------------------------------------------------------
   //  Test hierarchical P2 finite elements

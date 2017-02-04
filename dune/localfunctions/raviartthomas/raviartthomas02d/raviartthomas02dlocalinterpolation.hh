@@ -5,6 +5,7 @@
 
 #include <cmath>
 #include <array>
+#include <bitset>
 #include <vector>
 
 namespace Dune

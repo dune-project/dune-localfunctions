@@ -126,12 +126,6 @@ namespace Dune
   public:
     typedef T Traits;
 
-    //! \todo Please doc me!
-    virtual void evaluate (
-      const typename std::template array<int,Traits::diffOrder>& directions,
-      const typename Traits::DomainType& in,
-      std::vector<typename Traits::RangeType>& out) const = 0;
-
     using BaseInterface::evaluate;
   };
 #endif // DOXYGEN

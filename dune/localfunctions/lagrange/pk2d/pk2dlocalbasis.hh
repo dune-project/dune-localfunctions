@@ -6,7 +6,6 @@
 #include <numeric>
 
 #include <dune/common/fmatrix.hh>
-#include <dune/common/deprecated.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
 
@@ -179,15 +178,41 @@ namespace Dune
           break;
         case 1:
         {
-          std::array<int,1> directions;
-          directions[0] = std::find(order.begin(), order.end(), 1)-order.begin();
-          DUNE_NO_DEPRECATED_BEGIN
-          evaluate<1>(directions, in, out);
-          DUNE_NO_DEPRECATED_END
+          int direction = std::find(order.begin(), order.end(), 1)-order.begin();
+
+          out.resize(N);
+
+          int n=0;
+          for (unsigned int j=0; j<=k; j++)
+          {
+            for (unsigned int i=0; i<=k-j; i++, n++)
+            {
+              out[n] = 0.0;
+              for (unsigned int no1=0; no1 < k; no1++)
+              {
+                R factor = lagrangianFactorDerivative(direction, no1, i, j, in);
+                for (unsigned int no2=0; no2 < k; no2++)
+                  if (no1 != no2)
+                    factor *= lagrangianFactor(no2, i, j, in);
+
+                out[n] += factor;
+              }
+            }
+          }
+
           break;
         }
         case 2:
         {
+          out.resize(N);
+
+          // specialization for k<2, not clear whether that is needed
+          if (k<2)
+          {
+            std::fill(out.begin(), out.end(), 0.0);
+            return;
+          }
+
           std::array<int,2> directions;
           unsigned int counter = 0;
           auto nonconstOrder = order;  // need a copy that I can modify
@@ -200,83 +225,39 @@ namespace Dune
             }
           }
 
-          DUNE_NO_DEPRECATED_BEGIN
-          evaluate<2>(directions, in, out);
-          DUNE_NO_DEPRECATED_END
+          //f = prod_{i} f_i -> dxa dxb f = sum_{i} {dxa f_i sum_{k \neq i} dxb f_k prod_{l \neq k,i} f_l
+          int n=0;
+          for (unsigned int j=0; j<=k; j++)
+          {
+            for (unsigned int i=0; i<=k-j; i++, n++)
+            {
+              R res = 0.0;
+
+              for (unsigned int no1=0; no1 < k; no1++)
+              {
+                R factor1 = lagrangianFactorDerivative(directions[0], no1, i, j, in);
+                for (unsigned int no2=0; no2 < k; no2++)
+                {
+                  if (no1 == no2)
+                    continue;
+                  R factor2 = factor1*lagrangianFactorDerivative(directions[1], no2, i, j, in);
+                  for (unsigned int no3=0; no3 < k; no3++)
+                  {
+                    if (no3 == no1 || no3 == no2)
+                      continue;
+                    factor2 *= lagrangianFactor(no3, i, j, in);
+                  }
+                  res += factor2;
+                }
+              }
+              out[n] = res;
+            }
+          }
+
           break;
         }
         default:
           DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
-      }
-    }
-
-    //! \brief Evaluate higher derivatives of all shape functions
-    template<unsigned int dOrder> //order of derivative
-    inline void DUNE_DEPRECATED_MSG("Use method 'partial' instead!")
-    evaluate(const std::array<int,dOrder>& directions, //direction of derivative
-                         const typename Traits::DomainType& in,  //position
-                         std::vector<typename Traits::RangeType>& out) const //return value
-    {
-      out.resize(N);
-
-      if (dOrder > Traits::diffOrder)
-        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
-
-      if (dOrder==0)
-        evaluateFunction(in, out);
-      else if (dOrder==1)
-      {
-        int n=0;
-        for (unsigned int j=0; j<=k; j++)
-          for (unsigned int i=0; i<=k-j; i++, n++)
-          {
-            out[n] = 0.0;
-            for (unsigned int no1=0; no1 < k; no1++)
-            {
-              R factor = lagrangianFactorDerivative(directions[0], no1, i, j, in);
-              for (unsigned int no2=0; no2 < k; no2++)
-                if (no1 != no2)
-                  factor *= lagrangianFactor(no2, i, j, in);
-
-              out[n] += factor;
-            }
-          }
-      }
-      else if (dOrder==2)
-      {
-        // specialization for k<2, not clear whether that is needed
-        if (k<2) {
-          std::fill(out.begin(), out.end(), 0.0);
-        return;
-      }
-
-      //f = prod_{i} f_i -> dxa dxb f = sum_{i} {dxa f_i sum_{k \neq i} dxb f_k prod_{l \neq k,i} f_l
-      int n=0;
-      for (unsigned int j=0; j<=k; j++)
-        for (unsigned int i=0; i<=k-j; i++, n++)
-        {
-          R res = 0.0;
-
-          for (unsigned int no1=0; no1 < k; no1++)
-          {
-            R factor1 = lagrangianFactorDerivative(directions[0], no1, i, j, in);
-            for (unsigned int no2=0; no2 < k; no2++)
-            {
-              if (no1 == no2)
-                continue;
-              R factor2 = factor1*lagrangianFactorDerivative(directions[1], no2, i, j, in);
-              for (unsigned int no3=0; no3 < k; no3++)
-              {
-                if (no3 == no1 || no3 == no2)
-                  continue;
-                factor2 *= lagrangianFactor(no3, i, j, in);
-              }
-              res += factor2;
-            }
-
-          }
-          out[n] = res;
-        }
       }
     }
 

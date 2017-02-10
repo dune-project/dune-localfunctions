@@ -89,42 +89,6 @@ void testLocalInterpolation(const LocalInterpolationVirtualInterface<DomainType,
   localInterpolation->interpolate(testFunction, coefficients);
 }
 
-template <class Interface, int order>
-struct EvaluateTest
-{
-  static void test(const Interface& fe)
-  {
-    typedef typename Interface::Traits::LocalBasisType::Traits LBTraits;
-
-    std::array<int,order> d;
-    for(unsigned int i=0; i<d.size(); ++i)
-      d[i] = 0;
-
-    typename LBTraits::DomainType x;
-    x = 0;
-
-    typename std::vector<typename LBTraits::RangeType> y1;
-    typename std::vector<typename LBTraits::RangeType> y2;
-
-    fe.localBasis().evaluate(d,x,y1);
-    fe.localBasis().template evaluate<order>(d,x,y2);
-
-    for(unsigned int i=0; i<d.size(); ++i)
-      if (y1[i] != y2[i])
-        DUNE_THROW(Dune::Exception, "result of template evaluate<order>() and virtual evaluate() do not coincide");
-
-    EvaluateTest<Interface, order-1>::test(fe);
-  }
-};
-
-template <class Interface>
-struct EvaluateTest<Interface, -1>
-{
-  static void test(const Interface& fe)
-  {}
-};
-
-
 // Test all methods of a local finite element given as a pointer to the abstract base class
 template <class T>
 void testLocalFiniteElement(const LocalFiniteElementVirtualInterface<T>* localFiniteElement)
@@ -145,8 +109,6 @@ void testLocalFiniteElement(const LocalFiniteElementVirtualInterface<T>* localFi
   // Test the interpolation
   const typename FEType::Traits::LocalInterpolationType& interp = localFiniteElement->localInterpolation();
   testLocalInterpolation(&interp);
-
-  EvaluateTest<FEType, T::diffOrder>::test(*localFiniteElement);
 }
 
 int main (int argc, char *argv[]) try

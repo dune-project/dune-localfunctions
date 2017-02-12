@@ -383,7 +383,7 @@ struct TestEvaluate<1>
         fe.localBasis().partial(multiIndex, testPoint, firstPartialDerivatives);
         if (firstPartialDerivatives.size() != fe.localBasis().size())
         {
-          std::cout << "Bug in evaluate() for finite element type "
+          std::cout << "Bug in partial() for finite element type "
                     << Dune::className(fe) << std::endl;
           std::cout << "    firstPartialDerivatives vector has size "
                     << firstPartialDerivatives.size() << std::endl;

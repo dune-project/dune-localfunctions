@@ -6,7 +6,6 @@
 #include <array>
 #include <numeric>
 
-#include <dune/common/deprecated.hh>
 #include <dune/common/fmatrix.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
@@ -89,32 +88,6 @@ namespace Dune
           out[i+1] = (i==(direction-order.begin()));
       }
       else  // all higher order derivatives are zero
-      {
-        out.resize(size());
-
-        for (int i=0; i<dim+1; i++)
-          out[i] = 0;
-      }
-    }
-
-    //! \brief Evaluate all shape functions
-    template<unsigned int k>
-    inline void DUNE_DEPRECATED_MSG("Use method 'partial' instead!")
-    evaluate (const typename std::array<int,k>& directions,
-                          const typename Traits::DomainType& in,
-                          std::vector<typename Traits::RangeType>& out) const
-    {
-      if (k==0)
-        evaluateFunction(in, out);
-      else if (k==1)
-      {
-        out.resize(size());
-
-        out[0] = -1;
-        for (int i=0; i<dim; i++)
-          out[i+1] = (i==directions[0]);
-      }
-      else if (k==2)
       {
         out.resize(size());
 

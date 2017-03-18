@@ -64,3 +64,7 @@ dune_add_test(NAME test-lagrange-all
 
 dune_add_test(NAME test-orthonormal-all
               SOURCES test-orthonormal.cc)
+
+dune_add_test(SOURCES test-twists.cc)
+
+dune_symlink_to_source_files(FILES notwist.dgf twist.dgf)

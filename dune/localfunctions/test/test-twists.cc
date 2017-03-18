@@ -198,6 +198,7 @@ try
     GridType grid(bbox,el);
     testTwist(grid);
   }
+#if HAVE_DUNE_ALUGRID
   {
     std::cout << "testing ALUGrid<cube> using a twist free grid" << std::endl;
     typedef Dune::ALUGrid<dimension,dimension,Dune::cube,Dune::nonconforming> GridType;
@@ -212,6 +213,7 @@ try
     GridType &grid = *gridPtr;
     testTwist(grid);
   }
+#endif
 }
 catch (const Dune::Exception &e)
 {

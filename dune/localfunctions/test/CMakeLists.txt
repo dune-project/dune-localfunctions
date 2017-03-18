@@ -60,7 +60,8 @@ dune_add_test(NAME test-raviartthomassimplex-all
               SOURCES test-raviartthomassimplex.cc)
 
 dune_add_test(NAME test-lagrange-all
-              SOURCES test-lagrange.cc)
+              SOURCES test-lagrange.cc
+              TIMEOUT 600)
 
 dune_add_test(NAME test-orthonormal-all
               SOURCES test-orthonormal.cc)

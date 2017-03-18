@@ -96,31 +96,6 @@ namespace Dune
       }
     }
 
-    //! \brief Evaluate all shape functions
-    template<unsigned int k>
-    inline void evaluate (const typename std::array<int,k>& directions,
-                          const typename Traits::DomainType& in,
-                          std::vector<typename Traits::RangeType>& out) const
-    {
-      if (k==0)
-        evaluateFunction(in, out);
-      else if (k==1)
-      {
-        out.resize(size());
-
-        out[0] = -1;
-        for (int i=0; i<dim; i++)
-          out[i+1] = (i==directions[0]);
-      }
-      else if (k==2)
-      {
-        out.resize(size());
-
-        for (int i=0; i<dim+1; i++)
-          out[i] = 0;
-      }
-    }
-
     //! \brief Polynomial order of the shape functions
     unsigned int order () const
     {

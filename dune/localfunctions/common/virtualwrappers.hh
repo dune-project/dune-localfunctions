@@ -97,22 +97,6 @@ namespace Dune
     using Base::evaluate;
     using Base::partial;
 
-
-    //! @copydoc LocalBasisVirtualInterface::evaluate
-    inline void evaluate(
-      const std::array<int,Traits::diffOrder>& directions,
-      const typename Traits::DomainType& in,
-      std::vector<typename Traits::RangeType>& out) const
-    {
-      // Even for double virtualization it is save to call the template method
-      // since the interface provides it redirecting to the virtual method
-      // of the derived class
-      //
-      // Unfortunately not all compilers can determine Traits::diffOrder from
-      // the type of the argument directions
-      impl_.template evaluate<Traits::diffOrder>(directions, in, out);
-    }
-
   protected:
     using Base::impl_;
 

@@ -246,7 +246,13 @@ namespace Dune
     inline void evaluateFunction (const typename Traits::DomainType& in,
                                   std::vector<typename Traits::RangeType>& out) const
     {
-      evaluate<0>(std::array<int, 0>(), in, out);
+      out.resize(size());
+      int index = 0;
+      std::array<int, d> derivatives;
+      std::fill(derivatives.begin(), derivatives.end(), 0);
+      MonomImp::EvalAccess<Traits> access(out);
+      for (unsigned int lp = 0; lp <= p; ++lp)
+        MonomImp::Evaluate<Traits, d>::eval(in, derivatives, 1, lp, index, access);
     }
 
     /** \brief Evaluate partial derivatives of any order of all shape functions
@@ -258,58 +264,13 @@ namespace Dune
                         const typename Traits::DomainType& in,
                         std::vector<typename Traits::RangeType>& out) const
     {
-      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
-
-      switch (totalOrder)
-      {
-        case 0:
-          evaluateFunction(in,out);
-          break;
-        case 1:
-        {
-          std::array<int,1> directions;
-          directions[0] = std::find(order.begin(), order.end(), 1)-order.begin();
-          evaluate<1>(directions, in, out);
-          break;
-        }
-        case 2:
-        {
-          std::array<int,2> directions;
-          unsigned int counter = 0;
-          auto nonconstOrder = order;  // need a copy that I can modify
-          for (unsigned int i=0; i<d; i++)
-          {
-            while (nonconstOrder[i])
-            {
-              directions[counter++] = i;
-              nonconstOrder[i]--;
-            }
-          }
-
-          evaluate<2>(directions, in, out);
-          break;
-        }
-        default:
-          // \todo The 'evaluate' method implements higher derivatives
-          DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
-      }
-    }
-
-    //! return given derivative of all components
-    template<unsigned int k>
-    inline void evaluate (const std::array<int,k>& directions,
-                          const typename Traits::DomainType& in,
-                          std::vector<typename Traits::RangeType>& out) const
-    {
       out.resize(size());
       int index = 0;
-      std::array<int, d> derivatives;
-      for(unsigned int i = 0; i < d; ++i) derivatives[i] = 0;
-      for(unsigned int i = 0; i < k; ++i) ++derivatives[directions[i]];
+      std::array<int, d> derivatives;  // We need 'order' array as a signed int array
+      std::copy(order.begin(), order.end(), derivatives.begin());
       MonomImp::EvalAccess<Traits> access(out);
-      for(unsigned int lp = 0; lp <= p; ++lp)
-        MonomImp::Evaluate<Traits, d>::eval(in, derivatives, 1, lp, index,
-                                            access);
+      for (unsigned int lp = 0; lp <= p; ++lp)
+        MonomImp::Evaluate<Traits, d>::eval(in, derivatives, 1, lp, index, access);
     }
 
     //! \brief Evaluate Jacobian of all shape functions

@@ -73,7 +73,7 @@ bool test(unsigned int order)
       for( unsigned int j = 0; j < size; ++j )
       {
         const double value = m[ i*size + j ];
-        if( std::abs( value - double( i == j ) ) > 1000.*Dune::Zero<double>::epsilon() ) {
+        if( std::abs( value - double( i == j ) ) > 1200.*Dune::Zero<double>::epsilon() ) {
           std::cout << "i = " << i << ", j = " << j << ": " << std::abs( value - double( i == j ) ) << std::endl;
           ret = false;
         }

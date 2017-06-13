@@ -120,7 +120,7 @@ int main ( int argc, char **argv )
   using namespace Dune;
   using namespace Impl;
 
-  const unsigned int order = (argc < 2) ? 5 : atoi(argv[1]);
+  unsigned int order = (argc < 2) ? 5 : atoi(argv[1]);
 
   if (argc < 2)
   {
@@ -143,6 +143,10 @@ int main ( int argc, char **argv )
 
   // tests &= test<Pyramid<Prism<Prism<Point> > > >(order);
   std::cout << "NOT CHECKING PYRAMID!" << std::endl;
+
+  // reduce tested order to 4 in 4d unless explicitly asked for more
+  if (argc < 2)
+    order = 4;
 
   tests &= test<Prism<Prism<Prism<Prism<Point> > > > >(order);
   tests &= test<Pyramid<Pyramid<Pyramid<Pyramid<Point> > > > >(order);

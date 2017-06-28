@@ -655,6 +655,20 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned order = 2)
     success = false;
   }
 
+  const auto& lc = fe.localCoefficients();
+  for(size_t i=0; i<lc.size(); i++)
+  {
+    const auto& lk = lc.localKey(i);
+    if (lk.codim() > fe.type().dim())
+    {
+      std::cout << "Bug in finite element type "
+                << Dune::className(fe) << std::endl;
+      std::cout << "    Codimension reported by localKey(" << i << ") is " << lk.codim() << std::endl;
+      std::cout << "    but geometry is " << fe.type() << " with dimension " << fe.type().dim() << std::endl;
+      success = false;
+    }
+  }
+
   if (not (disabledTests & DisableLocalInterpolation))
   {
     fe.localInterpolation().interpolate(Func<FE>(),c);

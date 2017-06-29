@@ -59,6 +59,11 @@ namespace Dune
 
     void generate_local_keys(const unsigned int vertexmap[4])
     {
+      if (k==0)
+      {
+        li[0] = LocalKey(0,0,0);
+        return;
+      }
       unsigned int subindex[16];
       unsigned int codim_count[4] = {0};
       for (unsigned int m = 1; m < 16; ++m)

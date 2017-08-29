@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <vector>
 
-#include <dune/geometry/referenceelements.hh>
+#include <dune/geometry/referenceelementimplementation.hh>
 #include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/lagrange/emptypoints.hh>
@@ -53,8 +53,8 @@ namespace Dune
     if( dim > 0 )
     {
       const unsigned int baseId = Impl::baseTopologyId( topologyId, dim );
-      const unsigned int numBaseN = (codim < dim ? Impl::size( baseId, dim-1, codim ) : 0);
-      const unsigned int numBaseM = (codim > 0 ? Impl::size( baseId, dim-1, codim-1 ) : 0);
+      const unsigned int numBaseN = (codim < dim ? Geo::Impl::size( baseId, dim-1, codim ) : 0);
+      const unsigned int numBaseM = (codim > 0 ? Geo::Impl::size( baseId, dim-1, codim-1 ) : 0);
 
       if( Impl::isPrism( topologyId, dim ) )
       {
@@ -162,7 +162,7 @@ namespace Dune
       std::vector< unsigned int > count;
       for( unsigned int mydim = 0; mydim <= dimension; ++mydim )
       {
-        count.resize( Impl::size( gt.id(), dimension, dimension-mydim ) );
+        count.resize( Geo::Impl::size( gt.id(), dimension, dimension-mydim ) );
         std::fill( count.begin(), count.end(), 0u );
         p += equidistantLagrangePoints( gt.id(), dimension, dimension-mydim, order(), count.data(), p );
       }

@@ -29,10 +29,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    HierarchicalP2WithElementBubbleLocalFiniteElement ()
-    {
-      gt_.makeTriangle();
-    }
+    HierarchicalP2WithElementBubbleLocalFiniteElement () :
+      gt_(Dune::GeometryTypes::triangle)
+    {}
 
     /** \todo Please doc me !
      */

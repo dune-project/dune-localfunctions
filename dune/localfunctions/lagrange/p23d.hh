@@ -27,10 +27,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    P23DLocalFiniteElement ()
-    {
-      gt.makeTetrahedron();
-    }
+    P23DLocalFiniteElement () :
+      gt(Dune::GeometryTypes::tetrahedron)
+    {}
 
     /** \todo Please doc me !
      */

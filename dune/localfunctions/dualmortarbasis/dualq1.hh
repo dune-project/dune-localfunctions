@@ -46,10 +46,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    DualQ1LocalFiniteElement ()
+    DualQ1LocalFiniteElement () :
+      gt(Dune::GeometryTypes::cube(dim))
     {
-      gt.makeCube(dim);
-
       if (faceDual)
           setupFaceDualCoefficients();
       else

@@ -27,10 +27,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    Pk3DLocalFiniteElement ()
-    {
-      gt.makeTetrahedron();
-    }
+    Pk3DLocalFiniteElement () :
+      gt(Dune::GeometryTypes::tetrahedron)
+    {}
 
     /** Constructor for variants with permuted vertices.
 
@@ -38,10 +37,10 @@ namespace Dune
         can for instance be generated from the global indices of
         the vertices by reducing those to the integers 0...3
      */
-    Pk3DLocalFiniteElement (const unsigned int vertexmap[4]) : coefficients(vertexmap)
-    {
-      gt.makeTetrahedron();
-    }
+    Pk3DLocalFiniteElement (const unsigned int vertexmap[4]) :
+      coefficients(vertexmap),
+      gt(Dune::GeometryTypes::tetrahedron)
+    {}
 
     /** \todo Please doc me !
      */

@@ -33,20 +33,20 @@ namespace Dune
         RT4Cube2DLocalInterpolation<RT4Cube2DLocalBasis<D,R> > > Traits;
 
     //! \brief Standard constructor
-    RT4Cube2DLocalFiniteElement ()
-    {
-      gt.makeQuadrilateral();
-    }
+    RT4Cube2DLocalFiniteElement () :
+      gt(Dune::GeometryTypes::quadrilateral)
+    {}
 
     /**
      * \brief Make set number s, where 0 <= s < 16
      *
      * \param s Edge orientation indicator
      */
-    RT4Cube2DLocalFiniteElement (int s) : basis(s), interpolation(s)
-    {
-      gt.makeQuadrilateral();
-    }
+    RT4Cube2DLocalFiniteElement (int s) :
+      basis(s),
+      interpolation(s),
+      gt(Dune::GeometryTypes::quadrilateral)
+    {}
 
     const typename Traits::LocalBasisType& localBasis () const
     {

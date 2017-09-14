@@ -27,15 +27,15 @@ namespace Dune
         RT0Cube2DLocalCoefficients,
         RT0Cube2DLocalInterpolation<RT0Cube2DLocalBasis<D,R> > > Traits;
 
-    RT0Cube2DLocalFiniteElement ()
-    {
-      gt.makeQuadrilateral();
-    }
+    RT0Cube2DLocalFiniteElement () :
+      gt(Dune::GeometryTypes::quadrilateral)
+    {}
 
-    RT0Cube2DLocalFiniteElement (int s) : basis(s), interpolation(s)
-    {
-      gt.makeQuadrilateral();
-    }
+    RT0Cube2DLocalFiniteElement (int s) :
+      basis(s),
+      interpolation(s),
+      gt(Dune::GeometryTypes::quadrilateral)
+    {}
 
     const typename Traits::LocalBasisType& localBasis () const
     {

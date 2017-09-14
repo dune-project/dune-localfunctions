@@ -46,10 +46,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    RefinedP0LocalFiniteElement ()
-    {
-      gt.makeLine();
-    }
+    RefinedP0LocalFiniteElement () :
+      gt(Dune::GeometryTypes::line)
+    {}
 
     /** \todo Please doc me !
      */
@@ -112,10 +111,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    RefinedP0LocalFiniteElement ()
-    {
-      gt.makeTriangle();
-    }
+    RefinedP0LocalFiniteElement () :
+      gt(Dune::GeometryTypes::triangle)
+    {}
 
     /** \todo Please doc me !
      */
@@ -178,10 +176,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    RefinedP0LocalFiniteElement ()
-    {
-      gt.makeTetrahedron();
-    }
+    RefinedP0LocalFiniteElement () :
+      gt(Dune::GeometryTypes::tetrahedron)
+    {}
 
     /** \todo Please doc me !
      */

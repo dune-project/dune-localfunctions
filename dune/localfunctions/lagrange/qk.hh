@@ -33,10 +33,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    QkLocalFiniteElement ()
-    {
-      gt.makeCube(d);
-    }
+    QkLocalFiniteElement () :
+      gt(Dune::GeometryTypes::cube(d))
+    {}
 
     /** \todo Please doc me !
      */

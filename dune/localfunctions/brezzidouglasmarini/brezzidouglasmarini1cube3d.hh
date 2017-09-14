@@ -31,10 +31,9 @@ namespace Dune
         BDM1Cube3DLocalInterpolation<BDM1Cube3DLocalBasis<D,R> > > Traits;
 
     //! \brief Standard constructor
-    BDM1Cube3DLocalFiniteElement()
-    {
-      gt.makeHexahedron();
-    }
+    BDM1Cube3DLocalFiniteElement() :
+      gt(Dune::GeometryTypes::hexahedron)
+    {}
 
     /**
      * \brief Make set number s, where 0 <= s < 64
@@ -42,10 +41,10 @@ namespace Dune
      * \param s Edge orientation indicator
      */
     BDM1Cube3DLocalFiniteElement(int s)
-      : basis(s), interpolation(s)
-    {
-      gt.makeHexahedron();
-    }
+      : basis(s)
+      , interpolation(s)
+      , gt(Dune::GeometryTypes::hexahedron)
+    {}
 
     const typename Traits::LocalBasisType& localBasis() const
     {

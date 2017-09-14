@@ -33,10 +33,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    HierarchicalP2LocalFiniteElement ()
-    {
-      gt.makeSimplex(dim);
-    }
+    HierarchicalP2LocalFiniteElement () :
+      gt(Dune::GeometryTypes::simplex(dim))
+    {}
 
     /** \todo Please doc me !
      */

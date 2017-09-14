@@ -108,7 +108,7 @@ int main (int argc, char *argv[]) {
 
     {     // dim=1
       Dune::FieldVector<double, 1> pos;
-      gt.makeLine();
+      gt = Dune::GeometryTypes::line;
 
       pos[0] = 0;
       testShapeFunctionValue<1,2>(gt, pos, 0, 1);
@@ -128,7 +128,7 @@ int main (int argc, char *argv[]) {
 
     {     // dim=2
       Dune::FieldVector<double, 2> pos;
-      gt.makeQuadrilateral();
+      gt = Dune::GeometryTypes::quadrilateral;
 
       pos[0] = 0; pos[1] = 0;
       testShapeFunctionValue<2,1>(gt, pos, 0, 1);
@@ -147,25 +147,25 @@ int main (int argc, char *argv[]) {
     }
 
     // Test shape functions for the 1d segment
-    gt.makeLine();
+    gt = Dune::GeometryTypes::line;
     testShapeFunctionDerivative<1,1>(gt);
     testShapeFunctionDerivative<1,2>(gt);
 
-    gt.makeTriangle();
+    gt = Dune::GeometryTypes::triangle;
     testShapeFunctionDerivative<2,1>(gt);
-    gt.makeQuadrilateral();
+    gt = Dune::GeometryTypes::quadrilateral;
     testShapeFunctionDerivative<2,1>(gt);
 
-    gt.makeTetrahedron();
+    gt = Dune::GeometryTypes::tetrahedron;
     testShapeFunctionDerivative<3,1>(gt);
-    gt.makeHexahedron();
+    gt = Dune::GeometryTypes::hexahedron;
     testShapeFunctionDerivative<3,1>(gt);
-    gt.makePyramid();
+    gt = Dune::GeometryTypes::pyramid;
     testShapeFunctionDerivative<3,1>(gt);
-    gt.makePrism();
+    gt = Dune::GeometryTypes::prism;
     testShapeFunctionDerivative<3,1>(gt);
 
-    // gt.makeCube(4);
+    // gt = Dune::GeometryTypes::cube(4);
     // testShapeFunctionDerivative<4,1>(gt);
 
     return success ? 0 : 1;

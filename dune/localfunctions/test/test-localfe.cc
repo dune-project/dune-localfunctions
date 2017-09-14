@@ -75,15 +75,15 @@ bool testMonomials()
   bool success = true;
   Dune::GeometryType gt;
 
-  gt.makeLine();
+  gt = Dune::GeometryTypes::line;
   Dune::MonomialLocalFiniteElement<double,double,1,k> monom1d(gt);
   TEST_FE(monom1d);
 
-  gt.makeTriangle();
+  gt = Dune::GeometryTypes::triangle;
   Dune::MonomialLocalFiniteElement<double,double,2,k> monom2d(gt);
   TEST_FE(monom2d);
 
-  gt.makeTetrahedron();
+  gt = Dune::GeometryTypes::tetrahedron;
   Dune::MonomialLocalFiniteElement<double,double,3,k> monom3d(gt);
   TEST_FE(monom3d);
 

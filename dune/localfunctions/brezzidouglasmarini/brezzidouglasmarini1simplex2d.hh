@@ -32,20 +32,20 @@ namespace Dune
         BDM1Simplex2DLocalInterpolation<BDM1Simplex2DLocalBasis<D,R> > > Traits;
 
     //! \brief Standard constructor
-    BDM1Simplex2DLocalFiniteElement ()
-    {
-      gt.makeTriangle();
-    }
+    BDM1Simplex2DLocalFiniteElement () :
+      gt(Dune::GeometryTypes::triangle)
+    {}
 
     /**
      * \brief Make set number s, where 0 <= s < 8
      *
      * \param s Edge orientation indicator
      */
-    BDM1Simplex2DLocalFiniteElement (int s) : basis(s), interpolation(s)
-    {
-      gt.makeTriangle();
-    }
+    BDM1Simplex2DLocalFiniteElement (int s) :
+      basis(s),
+      interpolation(s),
+      gt(Dune::GeometryTypes::triangle)
+    {}
 
     const typename Traits::LocalBasisType& localBasis () const
     {

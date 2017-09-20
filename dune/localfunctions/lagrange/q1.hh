@@ -31,10 +31,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    Q1LocalFiniteElement ()
-    {
-      gt.makeCube(dim);
-    }
+    Q1LocalFiniteElement () :
+      gt(Dune::GeometryTypes::cube(dim))
+    {}
 
     Q1LocalFiniteElement (const Q1LocalFiniteElement & o) : gt(o.gt)
     {}

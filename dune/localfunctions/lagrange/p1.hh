@@ -29,10 +29,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    P1LocalFiniteElement ()
-    {
-      gt.makeSimplex(dim);
-    }
+    P1LocalFiniteElement () :
+      gt(Dune::GeometryTypes::simplex(dim))
+    {}
 
     /** \todo Please doc me !
      */

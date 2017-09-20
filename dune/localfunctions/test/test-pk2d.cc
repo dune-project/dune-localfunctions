@@ -33,8 +33,7 @@ static void test(int &result)
     std::cout << "== Checking global-valued Pk2D elements (with k=" << k << ")"
               << std::endl;
 
-    Dune::GeometryType gt;
-    gt.makeTriangle();
+    Dune::GeometryType gt(Dune::GeometryTypes::triangle);
 
     typedef TestGeometries<double, 2> TestGeos;
     static const TestGeos testGeos;

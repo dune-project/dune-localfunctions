@@ -30,26 +30,25 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    Pk1DLocalFiniteElement ()
-    {
-      gt.makeLine();
-    }
+    Pk1DLocalFiniteElement () :
+      gt(Dune::GeometryTypes::line)
+    {}
 
     /** \todo Please doc me !
      */
-    Pk1DLocalFiniteElement (int variant) : coefficients(variant)
-    {
-      gt.makeLine();
-    }
+    Pk1DLocalFiniteElement (int variant) :
+      coefficients(variant),
+      gt(Dune::GeometryTypes::line)
+    {}
 
     /** Constructor for two variants with permuted vertices.
 
         \param vertexmap The permutation of the vertices.
      */
-    Pk1DLocalFiniteElement (const unsigned int vertexmap[3]) : coefficients(vertexmap)
-    {
-      gt.makeLine();
-    }
+    Pk1DLocalFiniteElement (const unsigned int vertexmap[3]) :
+      coefficients(vertexmap),
+      gt(Dune::GeometryTypes::line)
+    {}
 
     /** \todo Please doc me !
      */

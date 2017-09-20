@@ -30,8 +30,7 @@ void testEdgeS0_5(int &result) {
   std::cout << "== Checking global-valued EdgeS0_5 elements (with "
             << "dim=" << dim << ")" << std::endl;
 
-  Dune::GeometryType gt;
-  gt.makeSimplex(dim);
+  Dune::GeometryType gt(Dune::GeometryTypes::simplex(dim));
 
   typedef TestGeometries<double, dim> TestGeos;
   static const TestGeos testGeos;

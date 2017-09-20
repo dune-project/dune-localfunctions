@@ -159,20 +159,20 @@ namespace Dune
       GeometryType gt;
       switch(dim) {
       case 0 :
-        gt.makeVertex();        init(gt);
+        gt = Dune::GeometryTypes::vertex;        init(gt);
         break;
       case 1 :
-        gt.makeLine();          init(gt);
+        gt = Dune::GeometryTypes::line;          init(gt);
         break;
       case 2 :
-        gt.makeTriangle();      init(gt);
-        gt.makeQuadrilateral(); init(gt);
+        gt = Dune::GeometryTypes::triangle;      init(gt);
+        gt = Dune::GeometryTypes::quadrilateral; init(gt);
         break;
       case 3 :
-        gt.makeTetrahedron();   init(gt);
-        gt.makePyramid();       init(gt);
-        gt.makePrism();         init(gt);
-        gt.makeHexahedron();    init(gt);
+        gt = Dune::GeometryTypes::tetrahedron;   init(gt);
+        gt = Dune::GeometryTypes::pyramid;       init(gt);
+        gt = Dune::GeometryTypes::prism;         init(gt);
+        gt = Dune::GeometryTypes::hexahedron;    init(gt);
         break;
       default :
         // this should never happen -- it should be caught by the static

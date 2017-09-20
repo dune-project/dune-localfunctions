@@ -31,10 +31,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    HierarchicalPrismP2LocalFiniteElement ()
-    {
-      gt.makePrism();
-    }
+    HierarchicalPrismP2LocalFiniteElement () :
+      gt(Dune::GeometryTypes::prism)
+    {}
 
     /** \todo Please doc me !
      */

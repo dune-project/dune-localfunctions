@@ -31,20 +31,20 @@ namespace Dune
         RT1Cube3DLocalInterpolation<RT1Cube3DLocalBasis<D,R> > > Traits;
 
     //! \brief Standard constructor
-    RT1Cube3DLocalFiniteElement ()
-    {
-      gt.makeHexahedron();
-    }
+    RT1Cube3DLocalFiniteElement () :
+      gt(Dune::GeometryTypes::hexahedron)
+    {}
 
     /**
      * \brief Make set number s, where 0 <= s < 64
      *
      * \param s Edge orientation indicator
      */
-    RT1Cube3DLocalFiniteElement (int s) : basis(s), interpolation(s)
-    {
-      gt.makeHexahedron();
-    }
+    RT1Cube3DLocalFiniteElement (int s) :
+      basis(s),
+      interpolation(s),
+      gt(Dune::GeometryTypes::hexahedron)
+    {}
 
     const typename Traits::LocalBasisType& localBasis () const
     {

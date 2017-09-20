@@ -27,15 +27,15 @@ namespace Dune
         RT0Cube3DLocalCoefficients,
         RT0Cube3DLocalInterpolation<RT0Cube3DLocalBasis<D,R> > > Traits;
 
-    RT0Cube3DLocalFiniteElement ()
-    {
-      gt.makeHexahedron();
-    }
+    RT0Cube3DLocalFiniteElement () :
+      gt(Dune::GeometryTypes::hexahedron)
+    {}
 
-    RT0Cube3DLocalFiniteElement (int s) : basis(s), interpolation(s)
-    {
-      gt.makeHexahedron();
-    }
+    RT0Cube3DLocalFiniteElement (int s) :
+      basis(s),
+      interpolation(s),
+      gt(Dune::GeometryTypes::hexahedron)
+    {}
 
     const typename Traits::LocalBasisType& localBasis () const
     {

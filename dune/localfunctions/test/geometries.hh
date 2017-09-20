@@ -34,7 +34,7 @@ public:
     Dune::GeometryType gt;
     std::vector<Dune::FieldVector<ctype, dim> > coords;
 
-    gt.makeVertex();
+    gt = Dune::GeometryTypes::vertex;
     coords.resize(1);
     this->push_back(Geometry(gt, coords));
   }
@@ -60,7 +60,7 @@ public:
     Dune::GeometryType gt;
     std::vector<Dune::FieldVector<ctype, dim> > coords;
 
-    gt.makeLine();
+    gt = Dune::GeometryTypes::line;
     coords.resize(2);
     coords[0][0] = -.3;
     coords[1][0] =  .7;
@@ -88,14 +88,14 @@ public:
     Dune::GeometryType gt;
     std::vector<Dune::FieldVector<ctype, dim> > coords;
 
-    gt.makeTriangle();
+    gt = Dune::GeometryTypes::triangle;
     coords.resize(3);
     coords[0][0] = -.5; coords[0][1] = -.5;
     coords[1][0] =  .5; coords[1][1] = -.5;
     coords[2][0] = 0  ; coords[2][1] =  .5;
     this->push_back(Geometry(gt, coords));
 
-    gt.makeQuadrilateral();
+    gt = Dune::GeometryTypes::quadrilateral;
     coords.resize(4);
     coords[0][0] = -.5; coords[0][1] = 0;
     coords[1][0] = 0  ; coords[1][1] = -.5;
@@ -125,7 +125,7 @@ public:
     Dune::GeometryType gt;
     std::vector<Dune::FieldVector<ctype, dim> > coords;
 
-    gt.makeTetrahedron();
+    gt = Dune::GeometryTypes::tetrahedron;
     coords.resize(4);
     coords[0][0] = -.5; coords[0][1] = -.5; coords[0][2] = -.5;
     coords[1][0] =  .5; coords[1][1] = -.5; coords[1][2] = -.5;
@@ -133,7 +133,7 @@ public:
     coords[3][0] = 0  ; coords[3][1] =  0 ; coords[3][2] =  .5;
     this->push_back(Geometry(gt, coords));
 
-    gt.makePyramid();
+    gt = Dune::GeometryTypes::pyramid;
     coords.resize(5);
     coords[0][0] = -.5; coords[0][1] = 0;   coords[0][2] = -.5;
     coords[1][0] = 0  ; coords[1][1] = -.5; coords[1][2] = -.5;
@@ -142,7 +142,7 @@ public:
     coords[4][0] =  .1; coords[4][1] =  .1; coords[4][2] =  .1;
     this->push_back(Geometry(gt, coords));
 
-    gt.makePrism();
+    gt = Dune::GeometryTypes::prism;
     coords.resize(6);
     coords[0][0] = -.6; coords[0][1] = -.5; coords[0][2] = -.4;
     coords[1][0] =  .5; coords[1][1] = -.6; coords[1][2] = -.5;
@@ -152,7 +152,7 @@ public:
     coords[5][0] = 0  ; coords[5][1] =  .4; coords[5][2] =  .5;
     this->push_back(Geometry(gt, coords));
 
-    gt.makeHexahedron();
+    gt = Dune::GeometryTypes::hexahedron;
     coords.resize(8);
     coords[0][0] = -.7; coords[0][1] = -.6; coords[0][2] = -.5;
     coords[1][0] =  .4; coords[1][1] = -.3; coords[1][2] = -.7;

@@ -29,8 +29,7 @@ void testQ1(int &result) {
   std::cout << "== Checking global-valued Q1 elements (with dim=" << dim << ")"
             << std::endl;
 
-  Dune::GeometryType gt;
-  gt.makeCube(dim);
+  Dune::GeometryType gt(Dune::GeometryTypes::cube(dim));
 
   typedef TestGeometries<double, dim> TestGeos;
   static const TestGeos testGeos;

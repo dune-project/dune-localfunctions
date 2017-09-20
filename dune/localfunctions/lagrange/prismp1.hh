@@ -27,10 +27,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    PrismP1LocalFiniteElement ()
-    {
-      gt.makePrism();
-    }
+    PrismP1LocalFiniteElement () :
+      gt(Dune::GeometryTypes::prism)
+    {}
 
 
     /** \todo Please doc me !

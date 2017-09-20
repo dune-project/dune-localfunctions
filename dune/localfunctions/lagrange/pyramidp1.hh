@@ -30,10 +30,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    PyramidP1LocalFiniteElement ()
-    {
-      gt.makePyramid();
-    }
+    PyramidP1LocalFiniteElement () :
+      gt(Dune::GeometryTypes::pyramid)
+    {}
 
 
     /** \todo Please doc me !

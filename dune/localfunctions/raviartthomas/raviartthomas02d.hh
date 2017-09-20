@@ -30,20 +30,20 @@ namespace Dune
         RT02DLocalInterpolation<RT02DLocalBasis<D,R> > > Traits;
 
     //! \brief Standard constructor
-    RT02DLocalFiniteElement ()
-    {
-      gt.makeTriangle();
-    }
+    RT02DLocalFiniteElement () :
+      gt(Dune::GeometryTypes::triangle)
+    {}
 
     /**
      * \brief Make set number s, where 0 <= s < 8
      *
      * \param s Edge orientation indicator
      */
-    RT02DLocalFiniteElement (int s) : basis(s), interpolation(s)
-    {
-      gt.makeTriangle();
-    }
+    RT02DLocalFiniteElement (int s) :
+      basis(s),
+      interpolation(s),
+      gt(Dune::GeometryTypes::triangle)
+    {}
 
     const typename Traits::LocalBasisType& localBasis () const
     {

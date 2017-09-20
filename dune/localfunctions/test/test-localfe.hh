@@ -678,8 +678,8 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned order = 2)
   if (not (disabledTests & DisableVirtualInterface))
   {
     typedef typename FE::Traits::LocalBasisType::Traits LBTraits;
-    typedef typename Dune::FixedOrderLocalBasisTraits<LBTraits,0>::Traits C0LBTraits;
-    typedef typename Dune::LocalFiniteElementVirtualInterface<C0LBTraits> VirtualFEInterface;
+    typedef typename Dune::FixedOrderLocalBasisTraits<LBTraits,0>::Traits LBTraits;
+    typedef typename Dune::LocalFiniteElementVirtualInterface<LBTraits> VirtualFEInterface;
     typedef typename Dune::LocalFiniteElementVirtualImp<FE> VirtualFEImp;
 
     const VirtualFEImp virtualFE(fe);

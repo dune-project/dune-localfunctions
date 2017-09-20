@@ -114,8 +114,8 @@ void testLocalFiniteElement(const LocalFiniteElementVirtualInterface<T>* localFi
 int main (int argc, char *argv[]) try
 {
 
-  typedef Dune::P1LocalFiniteElement<double, double, 2>::Traits::LocalBasisType::Traits LBTraits;
-  typedef Dune::FixedOrderLocalBasisTraits<LBTraits,0>::Traits LBTraits;
+  typedef Dune::P1LocalFiniteElement<double, double, 2>::Traits::LocalBasisType::Traits ImplementationLBTraits;
+  typedef Dune::FixedOrderLocalBasisTraits<ImplementationLBTraits,0>::Traits LBTraits;
 
   const Dune::P0LocalFiniteElement<double, double, 2> p0FE(Dune::GeometryType(Dune::GeometryType::cube, 2));
   const Dune::LocalFiniteElementVirtualImp<Dune::P0LocalFiniteElement<double, double, 2> > p0VFE(p0FE);

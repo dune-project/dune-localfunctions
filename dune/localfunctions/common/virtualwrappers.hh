@@ -316,7 +316,6 @@ namespace Dune
   protected:
     const Imp* impl_;
 
-    /** \todo This needs to automatically change to C0LocalBasisBla... to work with C0 shape functions */
     const LocalBasisVirtualImp<LocalBasisTraits, typename Imp::Traits::LocalBasisType> localBasisImp_;
     const LocalCoefficientsVirtualImp<typename Imp::Traits::LocalCoefficientsType> localCoefficientsImp_;
     const LocalInterpolationVirtualImp<typename LocalBasisTraits::DomainType,

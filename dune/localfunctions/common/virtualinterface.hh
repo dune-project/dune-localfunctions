@@ -20,32 +20,9 @@ namespace Dune
   template<class DomainType, class RangeType>
   class LocalInterpolationVirtualInterface;
 
-  template<class T>
-  class LocalBasisVirtualInterface;
-
   // -----------------------------------------------------------------
   // Helper traits classes
   // -----------------------------------------------------------------
-
-  /**
-   * @brief Construct LocalBasisTraits with one diff order lower
-   *
-   * @tparam T A LocalBasisTraits class
-   */
-  template<class T>
-  struct LowerOrderLocalBasisTraits
-  {
-    //! The LocalBasisTraits with one order lower
-    typedef LocalBasisTraits<
-        typename T::DomainFieldType,
-        T::dimDomain,
-        typename T::DomainType,
-        typename T::RangeFieldType,
-        T::dimRange,
-        typename T::RangeType,
-        typename T::JacobianType,
-        T::diffOrder-1> Traits;
-  };
 
   /**
    * @brief Construct LocalBasisTraits with fixed diff order
@@ -101,48 +78,20 @@ namespace Dune
   // Basis
   // -----------------------------------------------------------------
 
-  // current versions of doxygen (<= 1.6.2) enter an infinite loop when parsing
-  // the following class
-#ifndef DOXYGEN
   /**
    * @brief virtual base class for a local basis
    *
    * Provides the local basis interface with pure virtual methods.
-   * The class derives from the interface with one differentiation order lower.
-   *
    * This class defines the interface using pure virtual methods.
-   * In applications you should use the derived class
-   * LocalBasisVirtualInterface that also
-   * contains an evaluate with order as template parameter.
-   *
-   * This template method cannot be defined in the same
-   * class as the virtual method. Otherwise name resolution fails.
    */
   template<class T>
-  class LocalBasisVirtualInterfaceBase :
-    public virtual LocalBasisVirtualInterface<typename LowerOrderLocalBasisTraits<T>::Traits>
-  {
-    typedef LocalBasisVirtualInterface<typename LowerOrderLocalBasisTraits<T>::Traits> BaseInterface;
-  public:
-    typedef T Traits;
-
-    using BaseInterface::evaluate;
-  };
-#endif // DOXYGEN
-
-  /**
-   * @brief virtual base class for a local basis
-   *
-   * Provides the local basis interface with pure virtual methods.
-   * This is the base interface with differentiation order 0.
-   */
-  template<class DF, int n, class D, class RF, int m, class R, class J>
-  class LocalBasisVirtualInterfaceBase<LocalBasisTraits<DF,n,D,RF,m,R,J,0> >
+  class LocalBasisVirtualInterface
   {
   public:
-    typedef LocalBasisTraits<DF,n,D,RF,m,R,J,0> Traits;
+    using Traits = T;
 
-    virtual ~LocalBasisVirtualInterfaceBase() {}
+
+    virtual ~LocalBasisVirtualInterface() {}
 
     //! \brief Number of shape functions
     virtual unsigned int size () const = 0;
@@ -174,59 +123,10 @@ namespace Dune
      * \param in Position where to evaluate the derivatives
      * \param[out] out Return value: the desired partial derivatives
      */
-    virtual void partial(const std::array<unsigned int,n>& order,
+    virtual void partial(const std::array<unsigned int,Traits::dimDomain>& order,
                          const typename Traits::DomainType& in,
                          std::vector<typename Traits::RangeType>& out) const = 0;
-
-    //! \todo Please doc me!
-    virtual void evaluate (
-      const typename std::template array<int,Traits::diffOrder>& directions,
-      const typename Traits::DomainType& in,
-      std::vector<typename Traits::RangeType>& out) const = 0;
-
   };
-
-  /**
-   * @brief virtual base class for a local basis
-   *
-   * Provides the local basis interface with pure virtual methods.
-   * The class derives from the interface with one differentiation order lower.
-   *
-   * This class defines the interface using pure virtual methods.
-   * It also contains the evaluate method with order as template parameter.
-   */
-  template<class T>
-  class LocalBasisVirtualInterface :
-    public virtual LocalBasisVirtualInterfaceBase<T>
-  {
-    typedef LocalBasisVirtualInterfaceBase<T> BaseInterface;
-  public:
-    typedef T Traits;
-
-    //! \todo Please doc me!
-    template <int k>
-    void evaluate (
-      const typename std::template array<int,k>& directions,
-      const typename Traits::DomainType& in,
-      std::vector<typename Traits::RangeType>& out) const
-    {
-      typedef LocalBasisVirtualInterfaceBase<typename FixedOrderLocalBasisTraits<T,k>::Traits > OrderKBaseInterface;
-      const OrderKBaseInterface& asBase = *this;
-      asBase.evaluate(directions, in, out);
-    }
-
-    using BaseInterface::size;
-    using BaseInterface::order;
-    using BaseInterface::partial;
-    using BaseInterface::evaluateFunction;
-    using BaseInterface::evaluateJacobian;
-    /* Unfortunately, the intel compiler cannot use the different evaluate
-     * methods with varying argument lists. :-( */
-#ifndef __INTEL_COMPILER
-    using BaseInterface::evaluate;
-#endif
-  };
-
 
 
 
@@ -375,58 +275,27 @@ namespace Dune
   // Finite Element
   // -----------------------------------------------------------------
 
-  /**
-   * @brief virtual base class for local finite elements with functions
-   *
-   * This class defines the same interface using pure virtual methods.
-   * The class derives from the interface with one differentiation order lower.
+
+  /*
+   * This class is necessary to canonicalize the diffOrder
+   * in the LocalDerivativeTraits to the value zero. Doing
+   * this via the template alias LocalFiniteElementVirtualInterface
+   * has the consequence that you get exactly the same interface
+   * class regardless of the diffOrder in the passed LocalBasisTraits.
    */
   template<class T>
-  class LocalFiniteElementVirtualInterface
-    : public virtual LocalFiniteElementVirtualInterface<typename LowerOrderLocalBasisTraits<T>::Traits >
+  class LocalFiniteElementVirtualInterfaceImp
   {
-    typedef LocalFiniteElementVirtualInterface<typename LowerOrderLocalBasisTraits<T>::Traits > BaseInterface;
-
+    using LocalBasisTraits = T;
   public:
     typedef LocalFiniteElementTraits<
-        LocalBasisVirtualInterface<T>,
+        LocalBasisVirtualInterface<LocalBasisTraits>,
         LocalCoefficientsVirtualInterface,
         LocalInterpolationVirtualInterface<
-            typename T::DomainType,
-            typename T::RangeType> > Traits;
+            typename LocalBasisTraits::DomainType,
+            typename LocalBasisTraits::RangeType> > Traits;
 
-    //! \copydoc LocalFiniteElementVirtualInterface::localBasis
-    virtual const typename Traits::LocalBasisType& localBasis () const = 0;
-
-    using BaseInterface::localBasis;
-    using BaseInterface::localCoefficients;
-    using BaseInterface::localInterpolation;
-    using BaseInterface::type;
-
-    virtual LocalFiniteElementVirtualInterface<T>* clone() const = 0;
-  };
-
-
-  /**
-   * @brief virtual base class for local finite elements with functions
-   *
-   * This class defines the same interface using pure virtual methods.
-   * This is the base interface with differentiation order 0.
-   */
-  template<class DF, int n, class D, class RF, int m, class R, class J>
-  class LocalFiniteElementVirtualInterface<LocalBasisTraits<DF,n,D,RF,m,R,J,0> >
-  {
-    typedef LocalBasisTraits<DF,n,D,RF,m,R,J,0> T;
-
-  public:
-    typedef LocalFiniteElementTraits<
-        LocalBasisVirtualInterface<T>,
-        LocalCoefficientsVirtualInterface,
-        LocalInterpolationVirtualInterface<
-            typename T::DomainType,
-            typename T::RangeType> > Traits;
-
-    virtual ~LocalFiniteElementVirtualInterface() {}
+    virtual ~LocalFiniteElementVirtualInterfaceImp() {}
 
     //! \copydoc LocalFiniteElementVirtualInterface::localBasis
     virtual const typename Traits::LocalBasisType& localBasis () const = 0;
@@ -443,8 +312,15 @@ namespace Dune
     //! \copydoc LocalFiniteElementVirtualInterface::type
     virtual const GeometryType type () const = 0;
 
-    virtual LocalFiniteElementVirtualInterface<T>* clone() const = 0;
+    virtual LocalFiniteElementVirtualInterfaceImp<T>* clone() const = 0;
   };
 
+  /**
+   * @brief virtual base class for local finite elements with functions
+   *
+   * This class defines the same interface using pure virtual methods.
+   */
+  template<class T>
+  using LocalFiniteElementVirtualInterface = LocalFiniteElementVirtualInterfaceImp<typename FixedOrderLocalBasisTraits<T,0>::Traits>;
 }
 #endif

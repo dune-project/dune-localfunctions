@@ -61,58 +61,17 @@ namespace Dune
   // Basis
   // -----------------------------------------------------------------
 
+
+
   /**
    * @brief class for wrapping a basis using the virtual interface
-   *
-   * The differentiation order of the traits T might be less than
-   * the one in the traits of the implementation.
    *
    * @tparam T The LocalBasisTraits class
    * @tparam Imp LocalBasisInterface implementation
    */
   template<class T , class Imp>
   class LocalBasisVirtualImp
-    : public virtual LocalBasisVirtualInterface<T>,
-      public LocalBasisVirtualImp<typename LowerOrderLocalBasisTraits<T>::Traits,Imp>
-  {
-    template<class FEImp>
-    friend class LocalFiniteElementVirtualImp;
-
-    typedef LocalBasisVirtualImp<typename LowerOrderLocalBasisTraits<T>::Traits,Imp> Base;
-
-  protected:
-
-    //! constructor taking an implementation of the interface
-    LocalBasisVirtualImp( const Imp &imp )
-      : Base(imp)
-    {}
-
-  public:
-    typedef T Traits;
-
-    using Base::size;
-    using Base::order;
-    using Base::evaluateFunction;
-    using Base::evaluateJacobian;
-    using Base::evaluate;
-    using Base::partial;
-
-  protected:
-    using Base::impl_;
-
-  };
-
-
-  /**
-   * @brief class for wrapping a basis using the virtual interface
-   *
-   * This is the base class of all wrappers. It has differentiation order 0.
-   *
-   * @tparam Imp LocalBasisInterface implementation
-   */
-  template<class DF, int n, class D, class RF, int m, class R, class J, class Imp>
-  class LocalBasisVirtualImp<LocalBasisTraits<DF,n,D,RF,m,R,J,0>, Imp>
-    : public virtual LocalBasisVirtualInterface<LocalBasisTraits<DF,n,D,RF,m,R,J,0> >
+    : public LocalBasisVirtualInterface<T>
   {
     template<class FEImp>
     friend class LocalFiniteElementVirtualImp;
@@ -125,7 +84,7 @@ namespace Dune
     {}
 
   public:
-    typedef LocalBasisTraits<DF,n,D,RF,m,R,J,0> Traits;
+    using Traits = T;
 
     //! @copydoc LocalBasisVirtualInterface::size
     unsigned int size () const
@@ -164,17 +123,6 @@ namespace Dune
                  std::vector<typename Traits::RangeType>& out) const
     {
       impl_.partial(order,in,out);
-    }
-
-    //! @copydoc LocalBasisVirtualInterface::evaluate
-    inline void evaluate(
-      const std::array<int,Traits::diffOrder>& directions,
-      const typename Traits::DomainType& in,
-      std::vector<typename Traits::RangeType>& out) const
-    {
-      //      impl_.template evaluate<Traits::diffOrder> (directions, in,out);
-      //      impl_.template evaluate<0> (directions, in,out);
-      impl_.evaluateFunction(in,out);
     }
 
   protected:
@@ -288,10 +236,10 @@ namespace Dune
    */
   template<class Imp>
   class LocalFiniteElementVirtualImp
-    : public virtual LocalFiniteElementVirtualInterface<typename Imp::Traits::LocalBasisType::Traits>
+    : public LocalFiniteElementVirtualInterface<typename FixedOrderLocalBasisTraits<typename Imp::Traits::LocalBasisType::Traits,0>::Traits>
   {
-    typedef typename Imp::Traits::LocalBasisType::Traits T;
-    typedef LocalFiniteElementVirtualInterface<T> Interface;
+    using LocalBasisTraits = typename FixedOrderLocalBasisTraits<typename Imp::Traits::LocalBasisType::Traits,0>::Traits;
+    using Interface = LocalFiniteElementVirtualInterface<LocalBasisTraits>;
 
   public:
     typedef typename Interface::Traits Traits;
@@ -369,10 +317,10 @@ namespace Dune
     const Imp* impl_;
 
     /** \todo This needs to automatically change to C0LocalBasisBla... to work with C0 shape functions */
-    const LocalBasisVirtualImp<T, typename Imp::Traits::LocalBasisType> localBasisImp_;
+    const LocalBasisVirtualImp<LocalBasisTraits, typename Imp::Traits::LocalBasisType> localBasisImp_;
     const LocalCoefficientsVirtualImp<typename Imp::Traits::LocalCoefficientsType> localCoefficientsImp_;
-    const LocalInterpolationVirtualImp<typename T::DomainType,
-        typename T::RangeType,
+    const LocalInterpolationVirtualImp<typename LocalBasisTraits::DomainType,
+        typename LocalBasisTraits::RangeType,
         typename Imp::Traits::LocalInterpolationType> localInterpolationImp_;
   };
 }

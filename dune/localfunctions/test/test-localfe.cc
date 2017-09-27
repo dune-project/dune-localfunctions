@@ -11,6 +11,7 @@
 #include <vector>
 
 #include <dune/common/function.hh>
+#include <dune/common/hybridutilities.hh>
 
 #include "../lagrange/p0.hh"
 #include "../lagrange/p1.hh"
@@ -44,30 +45,6 @@
 #include "../common/virtualwrappers.hh"
 
 #include "test-localfe.hh"
-
-// tmp for testing arbitrary order finite elements
-template<unsigned int d, int k>
-struct PkLocalFiniteElementTest
-{
-  static bool test()
-  {
-    bool success = true;
-
-    Dune::PkLocalFiniteElement<double,double,d,k> pklfem;
-    TEST_FE3(pklfem,DisableNone,(d==2) ? 2 : 0);
-
-    return PkLocalFiniteElementTest<d, k-1>::test() and success;
-  }
-};
-
-template<unsigned int d>
-struct PkLocalFiniteElementTest<d, -1>
-{
-  static bool test()
-  {
-    return true;
-  }
-};
 
 template<int k>
 bool testMonomials()
@@ -196,11 +173,23 @@ int main(int argc, char** argv) try
   Dune::PyramidP2LocalFiniteElement<double,double> pyramidp2fem;
   TEST_FE2(pyramidp2fem, DisableJacobian);
 
-  success = PkLocalFiniteElementTest<1, 2>::test() and success;
+  Dune::Hybrid::forEach(std::make_index_sequence<3>{},[&success](auto i)
+  {
+    Dune::PkLocalFiniteElement<double,double,1,i> pklfem;
+    TEST_FE(pklfem);
+  });
 
-  success = PkLocalFiniteElementTest<2, 10>::test() and success;
+  Dune::Hybrid::forEach(std::make_index_sequence<11>{},[&success](auto i)
+  {
+    Dune::PkLocalFiniteElement<double,double,2,i> pklfem;
+    TEST_FE3(pklfem,DisableNone,2);
+  });
 
-  success = PkLocalFiniteElementTest<3, 10>::test() and success;
+  Dune::Hybrid::forEach(std::make_index_sequence<11>{},[&success](auto i)
+  {
+    Dune::PkLocalFiniteElement<double,double,3,i> pklfem;
+    TEST_FE(pklfem);
+  });
 
   // --------------------------------------------------------
   //  Test some instantiations of QkLocalFiniteElement

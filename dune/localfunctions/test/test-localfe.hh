@@ -241,25 +241,25 @@ bool testJacobian(const FE& fe, unsigned order = 2)
   return success;
 }
 
-/** \brief Helper class to test the 'evaluate' method
+/** \brief Helper class to test the 'partial' method
  *
  * It implements a static loop over the available diff orders
  */
 template<int diffOrder>
-struct TestEvaluate
+struct TestPartial
 {
   template <class FE>
   static bool test(const FE& fe,
                    double eps, double delta, std::size_t order = 2)
   {
     std::cout << "No test for differentiability order " << diffOrder << std::endl;
-    return TestEvaluate<diffOrder-1>::test(fe, eps, delta, order);
+    return TestPartial<diffOrder-1>::test(fe, eps, delta, order);
   }
 };
 
-/** \brief Specialization to test the 'evaluate' method for zero-order partial derivatives, i.e., values */
+/** \brief Specialization to test the 'partial' method for zero-order partial derivatives, i.e., values */
 template<>
-struct TestEvaluate<0>
+struct TestPartial<0>
 {
   template <class FE>
   static bool test(const FE& fe,
@@ -341,9 +341,9 @@ struct TestEvaluate<0>
   }
 };
 
-/** \brief Specialization to test the 'evaluate' method for first-order partial derivatives */
+/** \brief Specialization to test the 'partial' method for first-order partial derivatives */
 template<>
-struct TestEvaluate<1>
+struct TestPartial<1>
 {
   template <class FE>
   static bool test(const FE& fe,
@@ -439,13 +439,13 @@ struct TestEvaluate<1>
     } // Loop over all quadrature points
 
     // Recursively call the zero-order test
-    return success and TestEvaluate<0>::test(fe, eps, delta, order);
+    return success and TestPartial<0>::test(fe, eps, delta, order);
   }
 };
 
 /** \brief Specialization to test second-order partial derivatives */
 template<>
-struct TestEvaluate<2>
+struct TestPartial<2>
 {
   template <class FE>
   static bool test(const FE& fe,
@@ -578,14 +578,14 @@ struct TestEvaluate<2>
     } // Loop over all quadrature points
 
     // Recursively call the first-order test
-    return success and TestEvaluate<1>::test(fe, eps, delta, order);
+    return success and TestPartial<1>::test(fe, eps, delta, order);
   }
 
 };
 
 
 template<>
-struct TestEvaluate<-1>
+struct TestPartial<-1>
 {
   template <class FE>
   static bool test(const FE& fe,
@@ -672,7 +672,7 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned order = 2)
 
   if (not (disabledTests & DisableEvaluate))
   {
-    success = TestEvaluate<FE::Traits::LocalBasisType::Traits::diffOrder>::test(fe, TOL, jacobianTOL, order) and success;
+    success = TestPartial<FE::Traits::LocalBasisType::Traits::diffOrder>::test(fe, TOL, jacobianTOL, order) and success;
   }
 
   if (not (disabledTests & DisableVirtualInterface))

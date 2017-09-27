@@ -114,40 +114,32 @@ void testLocalFiniteElement(const LocalFiniteElementVirtualInterface<T>* localFi
 int main (int argc, char *argv[]) try
 {
 
-  typedef Dune::P1LocalFiniteElement<double, double, 2>::Traits::LocalBasisType::Traits LBTraits;
-  typedef Dune::FixedOrderLocalBasisTraits<LBTraits,0>::Traits C0LBTraits;
-  typedef Dune::FixedOrderLocalBasisTraits<LBTraits,1>::Traits C1LBTraits;
-  typedef Dune::FixedOrderLocalBasisTraits<LBTraits,2>::Traits C2LBTraits;
+  typedef Dune::P1LocalFiniteElement<double, double, 2>::Traits::LocalBasisType::Traits ImplementationLBTraits;
+  typedef Dune::FixedOrderLocalBasisTraits<ImplementationLBTraits,0>::Traits LBTraits;
 
   const Dune::P0LocalFiniteElement<double, double, 2> p0FE(Dune::GeometryType(Dune::GeometryType::cube, 2));
   const Dune::LocalFiniteElementVirtualImp<Dune::P0LocalFiniteElement<double, double, 2> > p0VFE(p0FE);
-  testLocalFiniteElement<C0LBTraits>(&p0VFE);
+  testLocalFiniteElement<LBTraits>(&p0VFE);
 
   const Dune::PQ22DLocalFiniteElement<double, double> pq2FE(Dune::GeometryType(Dune::GeometryType::cube, 2));
   const Dune::PQ22DLocalFiniteElement<double, double> pq2FE2(pq2FE);
 
   const Dune::LocalFiniteElementVirtualImp<Dune::PQ22DLocalFiniteElement<double, double> > pq2VFE(pq2FE);
-  testLocalFiniteElement<C0LBTraits>(&pq2VFE);
+  testLocalFiniteElement<LBTraits>(&pq2VFE);
 
   const Dune::LocalFiniteElementVirtualImp<Dune::P1LocalFiniteElement<double, double, 2> > p1VFE;
-  testLocalFiniteElement<C0LBTraits>(&p1VFE);
-  testLocalFiniteElement<C1LBTraits>(&p1VFE);
-  testLocalFiniteElement<C2LBTraits>(&p1VFE);
+  testLocalFiniteElement<LBTraits>(&p1VFE);
 
   const Dune::LocalFiniteElementVirtualImp<
       Dune::LocalFiniteElementVirtualImp<Dune::P1LocalFiniteElement<double, double, 2> > > p1VVFE;
-  testLocalFiniteElement<C0LBTraits>(&p1VVFE);
-  testLocalFiniteElement<C1LBTraits>(&p1VVFE);
-  testLocalFiniteElement<C2LBTraits>(&p1VVFE);
+  testLocalFiniteElement<LBTraits>(&p1VVFE);
 
   typedef Dune::MonomialLocalFiniteElement<double, double, 2, 7> Monom7;
   const Monom7 monom7FE(Dune::GeometryType(Dune::GeometryType::cube, 2));
   const Dune::LocalFiniteElementVirtualImp<Monom7> monom7VFE(monom7FE);
   const Dune::LocalFiniteElementVirtualImp<
       Dune::LocalFiniteElementVirtualImp<Monom7> > monom7VVFE(monom7VFE);
-  testLocalFiniteElement<C0LBTraits>(&monom7VVFE);
-  testLocalFiniteElement<C1LBTraits>(&monom7VVFE);
-  testLocalFiniteElement<C2LBTraits>(&monom7VVFE);
+  testLocalFiniteElement<LBTraits>(&monom7VVFE);
 
   return 0;
 

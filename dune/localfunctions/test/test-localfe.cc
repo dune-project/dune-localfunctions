@@ -196,8 +196,6 @@ int main(int argc, char** argv) try
   Dune::PyramidP2LocalFiniteElement<double,double> pyramidp2fem;
   TEST_FE2(pyramidp2fem, DisableJacobian);
 
-  success = PkLocalFiniteElementTest<1, 1>::test() and success;
-
   success = PkLocalFiniteElementTest<1, 2>::test() and success;
 
   success = PkLocalFiniteElementTest<2, 10>::test() and success;

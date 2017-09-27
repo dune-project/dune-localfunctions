@@ -591,7 +591,7 @@ enum {
 
 // call tests for given finite element
 template<class FE>
-bool testFE(const FE& fe, char disabledTests = DisableNone)
+bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned int diffOrder = 0)
 {
   std::vector<double> c;
 
@@ -652,12 +652,12 @@ bool testFE(const FE& fe, char disabledTests = DisableNone)
   else
   {
     // make sure diffOrder is 0
-    success = (FE::Traits::LocalBasisType::Traits::diffOrder == 0) and success;
+    success = (diffOrder == 0) and success;
   }
 
   if (not (disabledTests & DisableEvaluate))
   {
-    success = TestPartial::test(fe, TOL, jacobianTOL, FE::Traits::LocalBasisType::Traits::diffOrder, quadOrder) and success;
+    success = TestPartial::test(fe, TOL, jacobianTOL, diffOrder, quadOrder) and success;
   }
 
   if (not (disabledTests & DisableVirtualInterface))
@@ -677,7 +677,7 @@ bool testFE(const FE& fe, char disabledTests = DisableNone)
     else
     {
       // make sure diffOrder is 0
-      success = (VirtualFEInterface::Traits::LocalBasisType::Traits::diffOrder == 0) and success;
+      success = (diffOrder == 0) and success;
     }
   }
 
@@ -686,5 +686,6 @@ bool testFE(const FE& fe, char disabledTests = DisableNone)
 
 #define TEST_FE(A) { bool b = testFE(A); std::cout << "testFE(" #A ") " << (b?"succeeded\n":"failed\n"); success &= b; }
 #define TEST_FE2(A,B) { bool b = testFE(A, B); std::cout << "testFE(" #A ", " #B ") " << (b?"succeeded\n":"failed\n"); success &= b; }
+#define TEST_FE3(A,B,C) { bool b = testFE(A, B, C); std::cout << "testFE(" #A ", " #B ", " #C ") " << (b?"succeeded\n":"failed\n"); success &= b; }
 
 #endif // DUNE_LOCALFUNCTIONS_TEST_TEST_LOCALFE_HH

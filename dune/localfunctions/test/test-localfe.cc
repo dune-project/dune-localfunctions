@@ -54,7 +54,7 @@ struct PkLocalFiniteElementTest
     bool success = true;
 
     Dune::PkLocalFiniteElement<double,double,d,k> pklfem;
-    TEST_FE(pklfem);
+    TEST_FE3(pklfem,DisableNone,(d==2) ? 2 : 0);
 
     return PkLocalFiniteElementTest<d, k-1>::test() and success;
   }
@@ -73,19 +73,23 @@ template<int k>
 bool testMonomials()
 {
   bool success = true;
+
+  // Test partial derivatives up to second order
+  unsigned int testedDiffOrder = 2;
+
   Dune::GeometryType gt;
 
   gt = Dune::GeometryTypes::line;
   Dune::MonomialLocalFiniteElement<double,double,1,k> monom1d(gt);
-  TEST_FE(monom1d);
+  TEST_FE3(monom1d,DisableNone,testedDiffOrder);
 
   gt = Dune::GeometryTypes::triangle;
   Dune::MonomialLocalFiniteElement<double,double,2,k> monom2d(gt);
-  TEST_FE(monom2d);
+  TEST_FE3(monom2d,DisableNone,testedDiffOrder);
 
   gt = Dune::GeometryTypes::tetrahedron;
   Dune::MonomialLocalFiniteElement<double,double,3,k> monom3d(gt);
-  TEST_FE(monom3d);
+  TEST_FE3(monom3d,DisableNone,testedDiffOrder);
 
   return testMonomials<k-1>() and success;
 }
@@ -105,13 +109,13 @@ int main(int argc, char** argv) try
   TEST_FE(p0lfem);
 
   Dune::P1LocalFiniteElement<double,double,1> p11dlfem;
-  TEST_FE(p11dlfem);
+  TEST_FE3(p11dlfem,DisableNone,2);
 
   Dune::P1LocalFiniteElement<double,double,2> p12dlfem;
-  TEST_FE(p12dlfem);
+  TEST_FE3(p12dlfem,DisableNone,2);
 
   Dune::P1LocalFiniteElement<double,double,3> p13dlfem;
-  TEST_FE(p13dlfem);
+  TEST_FE3(p13dlfem,DisableNone,2);
 
   Dune::Q1LocalFiniteElement<double,double,1> q11dlfem;
   TEST_FE(q11dlfem);
@@ -204,31 +208,31 @@ int main(int argc, char** argv) try
   //  Test some instantiations of QkLocalFiniteElement
   // --------------------------------------------------------
   Dune::QkLocalFiniteElement<double,double,1,1> qk11dlfem;
-  TEST_FE(qk11dlfem);
+  TEST_FE3(qk11dlfem,DisableNone,1);
 
   Dune::QkLocalFiniteElement<double,double,2,0> qk02dlfem;
-  TEST_FE(qk02dlfem);
+  TEST_FE3(qk02dlfem,DisableNone,1);
 
   Dune::QkLocalFiniteElement<double,double,2,1> qk12dlfem;
-  TEST_FE(qk12dlfem);
+  TEST_FE3(qk12dlfem,DisableNone,1);
 
   Dune::QkLocalFiniteElement<double,double,2,2> qk22dlfem;
-  TEST_FE(qk22dlfem);
+  TEST_FE3(qk22dlfem,DisableNone,1);
 
   Dune::QkLocalFiniteElement<double,double,2,3> qk32dlfem;
-  TEST_FE(qk32dlfem);
+  TEST_FE3(qk32dlfem,DisableNone,1);
 
   Dune::QkLocalFiniteElement<double,double,3,0> qk03dlfem;
-  TEST_FE(qk03dlfem);
+  TEST_FE3(qk03dlfem,DisableNone,1);
 
   Dune::QkLocalFiniteElement<double,double,3,1> qk13dlfem;
-  TEST_FE(qk13dlfem);
+  TEST_FE3(qk13dlfem,DisableNone,1);
 
   Dune::QkLocalFiniteElement<double,double,3,2> qk23dlfem;
-  TEST_FE(qk23dlfem);
+  TEST_FE3(qk23dlfem,DisableNone,1);
 
   Dune::QkLocalFiniteElement<double,double,3,3> qk33dlfem;
-  TEST_FE(qk33dlfem);
+  TEST_FE3(qk33dlfem,DisableNone,1);
 
 
   // --------------------------------------------------------

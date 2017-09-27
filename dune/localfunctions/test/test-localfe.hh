@@ -608,10 +608,12 @@ enum {
 
 // call tests for given finite element
 template<class FE>
-bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned order = 2)
+bool testFE(const FE& fe, char disabledTests = DisableNone)
 {
   std::vector<double> c;
 
+  // Order of the quadrature rule used to generate test points
+  unsigned int quadOrder = 2;
 
   bool success = true;
 
@@ -662,7 +664,7 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned order = 2)
   }
   if (not (disabledTests & DisableJacobian))
   {
-    success = testJacobian<FE>(fe, order) and success;
+    success = testJacobian<FE>(fe, quadOrder) and success;
   }
   else
   {
@@ -672,7 +674,7 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned order = 2)
 
   if (not (disabledTests & DisableEvaluate))
   {
-    success = TestPartial<FE::Traits::LocalBasisType::Traits::diffOrder>::test(fe, TOL, jacobianTOL, order) and success;
+    success = TestPartial<FE::Traits::LocalBasisType::Traits::diffOrder>::test(fe, TOL, jacobianTOL, quadOrder) and success;
   }
 
   if (not (disabledTests & DisableVirtualInterface))

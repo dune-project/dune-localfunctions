@@ -84,7 +84,7 @@ namespace Dune
       fill(out.begin(), out.end(), 0.0);
 
       const int qOrder = 4;
-      const QuadratureRule<Scalar,1>& rule = QuadratureRules<Scalar,1>::rule(GeometryType(GeometryType::cube,1), qOrder);
+      const QuadratureRule<Scalar,1>& rule = QuadratureRules<Scalar,1>::rule(GeometryTypes::cube(1), qOrder);
 
       for (typename QuadratureRule<Scalar,1>::const_iterator it = rule.begin();
            it != rule.end(); ++it)

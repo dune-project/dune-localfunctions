@@ -84,7 +84,7 @@ namespace Dune
       fill(out.begin(), out.end(), 0.0);
 
       const int qOrder = 9;
-      const QuadratureRule<Scalar,1>& rule = QuadratureRules<Scalar,1>::rule(GeometryType(GeometryType::cube,1), qOrder);
+      const QuadratureRule<Scalar,1>& rule = QuadratureRules<Scalar,1>::rule(GeometryTypes::cube(1), qOrder);
 
       for (typename QuadratureRule<Scalar,1>::const_iterator it=rule.begin(); it!=rule.end(); ++it)
       {
@@ -124,7 +124,7 @@ namespace Dune
         out[15] += (y[0]*n3[0] + y[1]*n3[1])*(20.0*qPos*qPos*qPos - 30.0*qPos*qPos + 12.0*qPos - 1.0)*it->weight();
       }
 
-      const QuadratureRule<Vector,2>& rule2 = QuadratureRules<Vector,2>::rule(GeometryType(GeometryType::cube,2), qOrder);
+      const QuadratureRule<Vector,2>& rule2 = QuadratureRules<Vector,2>::rule(GeometryTypes::cube(2), qOrder);
 
       for (typename QuadratureRule<Vector,2>::const_iterator it = rule2.begin();
            it != rule2.end(); ++it)

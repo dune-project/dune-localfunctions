@@ -117,11 +117,11 @@ int main (int argc, char *argv[]) try
   typedef Dune::P1LocalFiniteElement<double, double, 2>::Traits::LocalBasisType::Traits ImplementationLBTraits;
   typedef Dune::FixedOrderLocalBasisTraits<ImplementationLBTraits,0>::Traits LBTraits;
 
-  const Dune::P0LocalFiniteElement<double, double, 2> p0FE(Dune::GeometryType(Dune::GeometryType::cube, 2));
+  const Dune::P0LocalFiniteElement<double, double, 2> p0FE(Dune::GeometryTypes::cube(2));
   const Dune::LocalFiniteElementVirtualImp<Dune::P0LocalFiniteElement<double, double, 2> > p0VFE(p0FE);
   testLocalFiniteElement<LBTraits>(&p0VFE);
 
-  const Dune::PQ22DLocalFiniteElement<double, double> pq2FE(Dune::GeometryType(Dune::GeometryType::cube, 2));
+  const Dune::PQ22DLocalFiniteElement<double, double> pq2FE(Dune::GeometryTypes::cube(2));
   const Dune::PQ22DLocalFiniteElement<double, double> pq2FE2(pq2FE);
 
   const Dune::LocalFiniteElementVirtualImp<Dune::PQ22DLocalFiniteElement<double, double> > pq2VFE(pq2FE);
@@ -135,7 +135,7 @@ int main (int argc, char *argv[]) try
   testLocalFiniteElement<LBTraits>(&p1VVFE);
 
   typedef Dune::MonomialLocalFiniteElement<double, double, 2, 7> Monom7;
-  const Monom7 monom7FE(Dune::GeometryType(Dune::GeometryType::cube, 2));
+  const Monom7 monom7FE(Dune::GeometryTypes::cube(2));
   const Dune::LocalFiniteElementVirtualImp<Monom7> monom7VFE(monom7FE);
   const Dune::LocalFiniteElementVirtualImp<
       Dune::LocalFiniteElementVirtualImp<Monom7> > monom7VVFE(monom7VFE);

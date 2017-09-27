@@ -85,8 +85,7 @@ namespace Dune {
 
   template<class Geometry, class RF>
   const GeometryType
-  EdgeS0_5FiniteElement<Geometry, RF>::gt(GeometryType::simplex,
-                                          Geometry::mydimension);
+  EdgeS0_5FiniteElement<Geometry, RF>::gt(GeometryTypes::simplex(Geometry::mydimension));
 
   ////////////////////////////////////////////////////////////////////////
   //

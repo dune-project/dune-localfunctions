@@ -191,23 +191,23 @@ bool testJacobian(const FE& fe, unsigned order = 2)
       return false;
     }
 
-    // Loop over all shape functions in this set
-    for (unsigned int j=0; j<fe.localBasis().size(); ++j) {
-      // Loop over all directions
-      for (int k=0; k<LB::Traits::dimDomain; k++) {
+    // Loop over all directions
+    for (int k=0; k<LB::Traits::dimDomain; k++) {
 
-        // Compute an approximation to the derivative by finite differences
-        Dune::FieldVector<double,LB::Traits::dimDomain> upPos   = testPoint;
-        Dune::FieldVector<double,LB::Traits::dimDomain> downPos = testPoint;
+      // Compute an approximation to the derivative by finite differences
+      Dune::FieldVector<double,LB::Traits::dimDomain> upPos   = testPoint;
+      Dune::FieldVector<double,LB::Traits::dimDomain> downPos = testPoint;
 
-        upPos[k]   += jacobianTOL;
-        downPos[k] -= jacobianTOL;
+      upPos[k]   += jacobianTOL;
+      downPos[k] -= jacobianTOL;
 
-        std::vector<typename LB::Traits::RangeType> upValues, downValues;
+      std::vector<typename LB::Traits::RangeType> upValues, downValues;
 
-        fe.localBasis().evaluateFunction(upPos,   upValues);
-        fe.localBasis().evaluateFunction(downPos, downValues);
+      fe.localBasis().evaluateFunction(upPos,   upValues);
+      fe.localBasis().evaluateFunction(downPos, downValues);
 
+      // Loop over all shape functions in this set
+      for (unsigned int j=0; j<fe.localBasis().size(); ++j) {
         //Loop over all components
         for(int l=0; l < LB::Traits::dimRange; ++l) {
 
@@ -234,8 +234,8 @@ bool testJacobian(const FE& fe, unsigned order = 2)
             success = false;
           }
         } //Loop over all components
-      } // Loop over all directions
-    } // Loop over all shape functions in this set
+      } // Loop over all shape functions in this set
+    } // Loop over all directions
   } // Loop over all quadrature points
 
   return success;
@@ -393,21 +393,21 @@ struct TestEvaluate<1>
           return false;
         }
 
+        // Compute an approximation to the derivative by finite differences
+        Dune::FieldVector<double, LB::Traits::dimDomain> upPos = testPoint;
+        Dune::FieldVector<double, LB::Traits::dimDomain> downPos = testPoint;
+
+        upPos[k] += jacobianTOL;
+        downPos[k] -= jacobianTOL;
+
+        std::vector<typename LB::Traits::RangeType> upValues, downValues;
+
+        fe.localBasis().evaluateFunction(upPos, upValues);
+        fe.localBasis().evaluateFunction(downPos, downValues);
+
         // Loop over all shape functions in this set
         for (unsigned int j = 0; j < fe.localBasis().size(); ++j)
         {
-          // Compute an approximation to the derivative by finite differences
-          Dune::FieldVector<double, LB::Traits::dimDomain> upPos = testPoint;
-          Dune::FieldVector<double, LB::Traits::dimDomain> downPos = testPoint;
-
-          upPos[k] += jacobianTOL;
-          downPos[k] -= jacobianTOL;
-
-          std::vector<typename LB::Traits::RangeType> upValues, downValues;
-
-          fe.localBasis().evaluateFunction(upPos, upValues);
-          fe.localBasis().evaluateFunction(downPos, downValues);
-
           // Loop over all components
           for (int l = 0; l < LB::Traits::dimRange; ++l)
           {
@@ -434,8 +434,8 @@ struct TestEvaluate<1>
             }
 
           } // Loop over all directions
-        } //Loop over all components
-      } // Loop over all shape functions in this set
+        } // Loop over all shape functions in this set
+      } //Loop over all components
     } // Loop over all quadrature points
 
     // Recursively call the zero-order test
@@ -517,32 +517,32 @@ struct TestEvaluate<2>
         }
       }  //loop over all directions
 
-      // Loop over all shape functions in this set
-      for (std::size_t j = 0; j < fe.localBasis().size(); ++j)
+      // Loop over all local directions
+      for (std::size_t dir0 = 0; dir0 < dimDomain; ++dir0)
       {
-        // Loop over all local directions
-        for (std::size_t dir0 = 0; dir0 < dimDomain; ++dir0)
+        for (unsigned int dir1 = 0; dir1 < dimDomain; dir1++)
         {
-          for (unsigned int dir1 = 0; dir1 < dimDomain; dir1++)
+          // Compute an approximation to the derivative by finite differences
+          std::array<Domain,4> neighbourPos;
+          std::fill(neighbourPos.begin(), neighbourPos.end(), testPoint);
+
+          neighbourPos[0][dir0] += delta;
+          neighbourPos[0][dir1] += delta;
+          neighbourPos[1][dir0] -= delta;
+          neighbourPos[1][dir1] += delta;
+          neighbourPos[2][dir0] += delta;
+          neighbourPos[2][dir1] -= delta;
+          neighbourPos[3][dir0] -= delta;
+          neighbourPos[3][dir1] -= delta;
+
+          std::array<std::vector<Range>, 4> neighbourValues;
+          for (int k = 0; k < 4; k++)
+            fe.localBasis().evaluateFunction(neighbourPos[k],
+                                             neighbourValues[k]);
+
+          // Loop over all shape functions in this set
+          for (std::size_t j = 0; j < fe.localBasis().size(); ++j)
           {
-            // Compute an approximation to the derivative by finite differences
-            std::array<Domain,4> neighbourPos;
-            std::fill(neighbourPos.begin(), neighbourPos.end(), testPoint);
-
-            neighbourPos[0][dir0] += delta;
-            neighbourPos[0][dir1] += delta;
-            neighbourPos[1][dir0] -= delta;
-            neighbourPos[1][dir1] += delta;
-            neighbourPos[2][dir0] += delta;
-            neighbourPos[2][dir1] -= delta;
-            neighbourPos[3][dir0] -= delta;
-            neighbourPos[3][dir1] -= delta;
-
-            std::array<std::vector<Range>, 4> neighbourValues;
-            for (int k = 0; k < 4; k++)
-              fe.localBasis().evaluateFunction(neighbourPos[k],
-                                               neighbourValues[k]);
-
             //Loop over all components
             for (std::size_t k = 0; k < dimR; ++k)
             {

@@ -101,7 +101,7 @@ int main(int argc, char** argv) try
   bool success = true;
 
   Dune::P0LocalFiniteElement<double,double,2> p0lfem(
-    Dune::GeometryType(Dune::GeometryType::simplex, 2));
+    Dune::GeometryTypes::simplex(2));
   TEST_FE(p0lfem);
 
   Dune::P1LocalFiniteElement<double,double,1> p11dlfem;
@@ -123,7 +123,7 @@ int main(int argc, char** argv) try
   TEST_FE(q13dlfem);
 
   Dune::PQ22DLocalFiniteElement<double,double> pq22dlfem(
-    Dune::GeometryType( Dune::GeometryType::simplex,2) );
+    Dune::GeometryTypes::simplex(2));
   TEST_FE(pq22dlfem);
 
   Dune::RefinedP1LocalFiniteElement<double,double,1> refp11dlfem;
@@ -256,10 +256,10 @@ int main(int argc, char** argv) try
   // --------------------------------------------------------
   //  Test Raviart-Thomas Finite elements
   // --------------------------------------------------------
-  Dune::RaviartThomasSimplexLocalFiniteElement<2,double,double> rt0simplex2dlfem(Dune::GeometryType(Dune::GeometryType::simplex,2),0);
+  Dune::RaviartThomasSimplexLocalFiniteElement<2,double,double> rt0simplex2dlfem(Dune::GeometryTypes::simplex(2),0);
   TEST_FE(rt0simplex2dlfem);
 
-  Dune::RaviartThomasSimplexLocalFiniteElement<2,double,double> rt1simplex2dlfem(Dune::GeometryType(Dune::GeometryType::simplex,2),1);
+  Dune::RaviartThomasSimplexLocalFiniteElement<2,double,double> rt1simplex2dlfem(Dune::GeometryTypes::simplex(2),1);
   TEST_FE(rt1simplex2dlfem);
 
   Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,0> rt0cube2dlfem(1);

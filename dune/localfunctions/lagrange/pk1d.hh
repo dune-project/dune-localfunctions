@@ -164,7 +164,7 @@ namespace Dune
 
   template<class Geometry, class RF, std::size_t k>
   const GeometryType
-  Pk1DFiniteElement<Geometry, RF, k>::gt(GeometryType::simplex, 2);
+  Pk1DFiniteElement<Geometry, RF, k>::gt(GeometryTypes::simplex(2));
 
   template<class Geometry, class RF, std::size_t k>
   const typename Pk1DFiniteElement<Geometry, RF, k>::LocalBasis

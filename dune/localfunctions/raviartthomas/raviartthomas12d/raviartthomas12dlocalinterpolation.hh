@@ -80,7 +80,7 @@ namespace Dune
       fill(out.begin(), out.end(), 0.0);
 
       const int qOrder1 = 4;
-      const Dune::QuadratureRule<Scalar,1>& rule1 = Dune::QuadratureRules<Scalar,1>::rule(Dune::GeometryType(Dune::GeometryType::simplex,1), qOrder1);
+      const Dune::QuadratureRule<Scalar,1>& rule1 = Dune::QuadratureRules<Scalar,1>::rule(Dune::GeometryTypes::simplex(1), qOrder1);
 
       for (typename Dune::QuadratureRule<Scalar,1>::const_iterator it = rule1.begin();
            it != rule1.end(); ++it)
@@ -108,7 +108,7 @@ namespace Dune
       }
 
       const int qOrder2 = 8;
-      const Dune::QuadratureRule<Vector,2>& rule2 = Dune::QuadratureRules<Vector,2>::rule(Dune::GeometryType(Dune::GeometryType::simplex,2), qOrder2);
+      const Dune::QuadratureRule<Vector,2>& rule2 = Dune::QuadratureRules<Vector,2>::rule(Dune::GeometryTypes::simplex(2), qOrder2);
 
       for (typename Dune::QuadratureRule<Vector,2>::const_iterator it = rule2.begin();
            it != rule2.end(); ++it)

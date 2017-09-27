@@ -37,7 +37,7 @@ int main(int argc, char** argv) try
   {
     std::cout << "order : " << order << std::endl;
     Dune::LagrangeLocalFiniteElement<Dune::EquidistantPointSet,3,double,double>
-    lagrangeSimplex(Dune::GeometryType(Dune::GeometryType::simplex, 3), order);
+    lagrangeSimplex(Dune::GeometryTypes::simplex(3), order);
     TEST_FE(lagrangeSimplex);
   }
   std::cout << "Testing LagrangeLocalFiniteElement<EquidistantPointSet> on 2d"
@@ -46,7 +46,7 @@ int main(int argc, char** argv) try
   {
     std::cout << "order : " << order << std::endl;
     Dune::LagrangeLocalFiniteElement<Dune::EquidistantPointSet,2,double,double>
-    lagrangeCube(Dune::GeometryType(Dune::GeometryType::cube, 2), order);
+    lagrangeCube(Dune::GeometryTypes::cube(2), order);
     TEST_FE(lagrangeCube);
   }
 #if HAVE_GMP
@@ -57,7 +57,7 @@ int main(int argc, char** argv) try
     std::cout << "order : " << order << std::endl;
     Dune::LagrangeLocalFiniteElement<Dune::EquidistantPointSet,2,double,double,
         Dune::GMPField<64>,Dune::GMPField<256> >
-    lagrangeSimplex(Dune::GeometryType(Dune::GeometryType::simplex, 2), order);
+    lagrangeSimplex(Dune::GeometryTypes::simplex(2), order);
     TEST_FE(lagrangeSimplex);
   }
 #endif
@@ -67,7 +67,7 @@ int main(int argc, char** argv) try
   {
     std::cout << "order : " << order << std::endl;
     typedef Dune::LagrangeLocalFiniteElement<Dune::EquidistantPointSet,3,double,double> FE;
-    Dune::DGLocalFiniteElement<FE> dglagrangeCube(Dune::GeometryType(Dune::GeometryType::cube, 3), order);
+    Dune::DGLocalFiniteElement<FE> dglagrangeCube(Dune::GeometryTypes::cube(3), order);
     TEST_FE(dglagrangeCube);
   }
   std::cout << "Testing L2LagrangeLocalFiniteElement<EquidistantPointSet> on 3d"
@@ -76,7 +76,7 @@ int main(int argc, char** argv) try
   {
     std::cout << "order : " << order << std::endl;
     typedef Dune::LagrangeLocalFiniteElement<Dune::EquidistantPointSet,3,double,double> FE;
-    Dune::L2LocalFiniteElement<FE> dglagrangeCube(Dune::GeometryType(Dune::GeometryType::cube, 3), order);
+    Dune::L2LocalFiniteElement<FE> dglagrangeCube(Dune::GeometryTypes::cube(3), order);
     TEST_FE(dglagrangeCube);
   }
 #if HAVE_GMP
@@ -87,7 +87,7 @@ int main(int argc, char** argv) try
     std::cout << "order : " << order << std::endl;
     Dune::OrthonormalLocalFiniteElement<3,double,double,
         Dune::GMPField<64>,Dune::GMPField<256> >
-    onbPrism(Dune::GeometryType(Dune::GeometryType::prism, 3), order);
+    onbPrism(Dune::GeometryTypes::prism, order);
     TEST_FE(onbPrism);
   }
 #endif
@@ -97,7 +97,7 @@ int main(int argc, char** argv) try
   {
     std::cout << "order : " << order << std::endl;
     Dune::OrthonormalLocalFiniteElement<3,double,double>
-    onbPrism(Dune::GeometryType(Dune::GeometryType::prism, 3), order);
+    onbPrism(Dune::GeometryTypes::prism, order);
     TEST_FE(onbPrism);
   }
   std::cout << "Testing RaviartThomasSimplexFiniteElement on 3d"
@@ -106,7 +106,7 @@ int main(int argc, char** argv) try
   {
     std::cout << "order : " << order << std::endl;
     Dune::RaviartThomasSimplexLocalFiniteElement<3,double,double>
-    rtSimplex(Dune::GeometryType(Dune::GeometryType::simplex, 3), order);
+    rtSimplex(Dune::GeometryTypes::simplex(3), order);
     TEST_FE(rtSimplex);
   }
   return success ? 0 : 1;

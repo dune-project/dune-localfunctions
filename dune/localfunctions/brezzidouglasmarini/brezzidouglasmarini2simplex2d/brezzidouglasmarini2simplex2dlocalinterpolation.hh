@@ -87,7 +87,7 @@ namespace Dune
       fill(out.begin(), out.end(), 0.0);
 
       const int qOrder = 4;
-      const Dune::QuadratureRule<Scalar,1>& rule = Dune::QuadratureRules<Scalar,1>::rule(Dune::GeometryType(Dune::GeometryType::simplex,1), qOrder);
+      const Dune::QuadratureRule<Scalar,1>& rule = Dune::QuadratureRules<Scalar,1>::rule(Dune::GeometryTypes::simplex(1), qOrder);
 
       for (typename Dune::QuadratureRule<Scalar,1>::const_iterator it=rule.begin(); it!=rule.end(); ++it)
       {
@@ -118,7 +118,7 @@ namespace Dune
       }
 
       // a volume part is needed here for dofs: 9 10 11
-      const QuadratureRule<Vector,2>& rule2 = QuadratureRules<Vector,2>::rule(GeometryType(GeometryType::simplex,2), qOrder);
+      const QuadratureRule<Vector,2>& rule2 = QuadratureRules<Vector,2>::rule(GeometryTypes::simplex(2), qOrder);
 
       for (typename QuadratureRule<Vector,2>::const_iterator it=rule2.begin(); it!=rule2.end(); ++it)
       {

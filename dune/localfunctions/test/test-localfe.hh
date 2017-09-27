@@ -245,24 +245,31 @@ bool testJacobian(const FE& fe, unsigned order = 2)
  *
  * It implements a static loop over the available diff orders
  */
-template<int diffOrder>
 struct TestPartial
 {
   template <class FE>
   static bool test(const FE& fe,
-                   double eps, double delta, std::size_t order = 2)
+                   double eps, double delta, unsigned int diffOrder, std::size_t order = 2)
   {
-    std::cout << "No test for differentiability order " << diffOrder << std::endl;
-    return TestPartial<diffOrder-1>::test(fe, eps, delta, order);
-  }
-};
+    bool success = true;
 
-/** \brief Specialization to test the 'partial' method for zero-order partial derivatives, i.e., values */
-template<>
-struct TestPartial<0>
-{
+    if (diffOrder > 2)
+      std::cout << "No test for differentiability orders larger than 2!" << std::endl;
+
+    if (diffOrder >= 2)
+      success = success and testOrder2(fe, eps, delta, order);
+
+    if (diffOrder >= 1)
+      success = success and testOrder1(fe, eps, delta, order);
+
+    success = success and testOrder0(fe, eps, delta, order);
+
+    return success;
+  }
+
+  /** \brief Test the 'partial' method for zero-order partial derivatives, i.e., values */
   template <class FE>
-  static bool test(const FE& fe,
+  static bool testOrder0(const FE& fe,
                    double eps,
                    double delta,
                    std::size_t order = 2)
@@ -339,14 +346,10 @@ struct TestPartial<0>
 
     return success;
   }
-};
 
-/** \brief Specialization to test the 'partial' method for first-order partial derivatives */
-template<>
-struct TestPartial<1>
-{
+  /** \brief Test the 'partial' method for first-order partial derivatives */
   template <class FE>
-  static bool test(const FE& fe,
+  static bool testOrder1(const FE& fe,
                    double eps,
                    double delta,
                    std::size_t order = 2)
@@ -438,17 +441,12 @@ struct TestPartial<1>
       } // Loop over all shape functions in this set
     } // Loop over all quadrature points
 
-    // Recursively call the zero-order test
-    return success and TestPartial<0>::test(fe, eps, delta, order);
+    return success;
   }
-};
 
-/** \brief Specialization to test second-order partial derivatives */
-template<>
-struct TestPartial<2>
-{
+  /** \brief Test second-order partial derivatives */
   template <class FE>
-  static bool test(const FE& fe,
+  static bool testOrder2(const FE& fe,
                    double eps,
                    double delta,
                    std::size_t order = 2)
@@ -577,24 +575,9 @@ struct TestPartial<2>
       } // Loop over all shape functions in this set
     } // Loop over all quadrature points
 
-    // Recursively call the first-order test
-    return success and TestPartial<1>::test(fe, eps, delta, order);
+    return success;
   }
 
-};
-
-
-template<>
-struct TestPartial<-1>
-{
-  template <class FE>
-  static bool test(const FE& fe,
-                   double eps,
-                   double delta,
-                   std::size_t order = 2)
-  {
-    return true;
-  }
 };
 
 // Flags for disabling parts of testFE
@@ -674,7 +657,7 @@ bool testFE(const FE& fe, char disabledTests = DisableNone)
 
   if (not (disabledTests & DisableEvaluate))
   {
-    success = TestPartial<FE::Traits::LocalBasisType::Traits::diffOrder>::test(fe, TOL, jacobianTOL, quadOrder) and success;
+    success = TestPartial::test(fe, TOL, jacobianTOL, FE::Traits::LocalBasisType::Traits::diffOrder, quadOrder) and success;
   }
 
   if (not (disabledTests & DisableVirtualInterface))

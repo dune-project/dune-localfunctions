@@ -8,87 +8,44 @@
 #include <dune/geometry/quadraturerules.hh>
 
 #include <dune/localfunctions/monomial.hh>
+#include <dune/localfunctions/test/test-localfe.hh>
 
 /** \file
     \brief Performs some tests for the monomial shape functions
  */
 
-bool success = true;
 double epsilon = 1e-8;
 
 using namespace Dune;
 
-template <int dim, int order>
-void testShapeFunctionDerivative(const GeometryType& type)
+template<int k>
+bool testMonomials()
 {
+  bool success = true;
 
-  MonomialLocalFiniteElement<double,double,dim,order> shapeFunctionSet(type);
-  typedef typename MonomialLocalFiniteElement<double,double,dim,order>::Traits::LocalBasisType::Traits LBTraits;
+  Hybrid::forEach(std::make_index_sequence<k+1>{},[&success](auto i)
+  {
+    Dune::MonomialLocalFiniteElement<double,double,1,k> monom1d(GeometryTypes::line);
+    TEST_FE(monom1d);
 
-  // ////////////////////////////////////////////////////////////
-  //   Check the partial derivatives by comparing them
-  //   to finite difference approximations
-  // ////////////////////////////////////////////////////////////
+    Dune::MonomialLocalFiniteElement<double,double,2,k> monom2d(GeometryTypes::triangle);
+    TEST_FE(monom2d);
 
-  // A set of test points
-  const QuadratureRule<double,dim> quad = QuadratureRules<double,dim>::rule(type,order);
+    Dune::MonomialLocalFiniteElement<double,double,3,k> monom3d(GeometryTypes::tetrahedron);
+    TEST_FE(monom3d);
+  });
 
-  for (size_t i=0; i<quad.size(); i++) {
-
-    // Get a test point
-    const FieldVector<double,dim>& testPoint = quad[i].position();
-
-    // Get the shape function derivatives there
-    std::vector<typename LBTraits::JacobianType> jacobians;
-    shapeFunctionSet.localBasis().evaluateJacobian(testPoint, jacobians);
-
-    // Loop over all shape functions in this set
-    for (unsigned int j=0; j<shapeFunctionSet.localBasis().size(); ++j) {
-
-      // Loop over all partial derivatives
-      for (int k=0; k<dim; k++) {
-
-        // The current partial derivative, just for ease of notation
-        double derivative = jacobians[j][0][k];
-
-        // Compute an approximation to the derivative by finite differences
-        FieldVector<double,dim> upPos   = testPoint;
-        FieldVector<double,dim> downPos = testPoint;
-
-        upPos[k]   += epsilon;
-        downPos[k] -= epsilon;
-
-        std::vector<FieldVector<double,1> > upValues, downValues;
-
-        shapeFunctionSet.localBasis().evaluateFunction(upPos,   upValues);
-        shapeFunctionSet.localBasis().evaluateFunction(downPos, downValues);
-        double finiteDiff = (upValues[j] - downValues[j]) / (2*epsilon);
-
-        // Check
-        if (std::abs(derivative-finiteDiff) > epsilon) {
-          std::cerr << "Bug in shape function of order " << order << " for " << type << "." << std::endl;
-          std::cerr << "Shape function derivative does not agree with FD approximation" << std::endl;
-          std::cerr << "Shape function " << j << " at position " << testPoint
-                    << ":  derivative in direction " << k << " is " << derivative
-                    << ", but " << finiteDiff << " is expected." << std::endl;
-          success = false;
-        }
-
-      }
-
-    }
-
-  }
-
+  return success;
 }
 
+
 template<int dim, int order>
-void testShapeFunctionValue(const GeometryType& gt,
-                            const Dune::FieldVector<double, dim> &pos,
+bool testShapeFunctionValue(const GeometryType& gt,
+                            const FieldVector<double, dim> &pos,
                             int comp, double expected)
 {
   MonomialLocalFiniteElement<double,double,dim,order> shapeFunctionSet(gt);
-  std::vector<Dune::FieldVector<double,1> > out;
+  std::vector<FieldVector<double,1> > out;
   shapeFunctionSet.localBasis().evaluateFunction(pos, out);
 
   if(std::abs(out[comp][0]-expected) > epsilon) {
@@ -98,79 +55,55 @@ void testShapeFunctionValue(const GeometryType& gt,
     std::cerr << "Value of shape function number " << comp << " at position "
               << pos << " is " << out[comp][0] << " but " << expected
               << " was expected." << std::endl;
-    success = false;
+    return false;
   }
+  return true;
 }
 
-int main (int argc, char *argv[]) {
-  try {
-    GeometryType gt;
+int main (int argc, char *argv[])
+{
+  bool success = true;
 
-    {     // dim=1
-      Dune::FieldVector<double, 1> pos;
-      gt = Dune::GeometryTypes::line;
+  // Do the standard shape function tests
+  std::cout << "Monomials are only tested up to order 2 due to the instability of interpolate()." << std::endl;
+  Hybrid::forEach(std::make_index_sequence<3>{},[&success](auto i)
+  {
+    Dune::MonomialLocalFiniteElement<double,double,1,i> monom1d(GeometryTypes::line);
+    TEST_FE(monom1d);
 
-      pos[0] = 0;
-      testShapeFunctionValue<1,2>(gt, pos, 0, 1);
-      testShapeFunctionValue<1,2>(gt, pos, 1, 0);
-      testShapeFunctionValue<1,2>(gt, pos, 2, 0);
+    Dune::MonomialLocalFiniteElement<double,double,2,i> monom2d(GeometryTypes::triangle);
+    TEST_FE(monom2d);
 
-      pos[0] = .5;
-      testShapeFunctionValue<1,2>(gt, pos, 0, 1);
-      testShapeFunctionValue<1,2>(gt, pos, 1, .5);
-      testShapeFunctionValue<1,2>(gt, pos, 2, .25);
+    Dune::MonomialLocalFiniteElement<double,double,3,i> monom3d(GeometryTypes::tetrahedron);
+    TEST_FE(monom3d);
+  });
 
-      pos[0] = 1;
-      testShapeFunctionValue<1,2>(gt, pos, 0, 1);
-      testShapeFunctionValue<1,2>(gt, pos, 1, 1);
-      testShapeFunctionValue<1,2>(gt, pos, 2, 1);
-    }
+  // Test whether the shape function values are correct
+  // dim=1
+  success &= testShapeFunctionValue<1,2>(GeometryTypes::line, {0}, 0, 1);
+  success &= testShapeFunctionValue<1,2>(GeometryTypes::line, {0}, 1, 0);
+  success &= testShapeFunctionValue<1,2>(GeometryTypes::line, {0}, 2, 0);
 
-    {     // dim=2
-      Dune::FieldVector<double, 2> pos;
-      gt = Dune::GeometryTypes::quadrilateral;
+  success &= testShapeFunctionValue<1,2>(GeometryTypes::line, {0.5}, 0, 1);
+  success &= testShapeFunctionValue<1,2>(GeometryTypes::line, {0.5}, 1, .5);
+  success &= testShapeFunctionValue<1,2>(GeometryTypes::line, {0.5}, 2, .25);
 
-      pos[0] = 0; pos[1] = 0;
-      testShapeFunctionValue<2,1>(gt, pos, 0, 1);
-      testShapeFunctionValue<2,1>(gt, pos, 1, 0);
-      testShapeFunctionValue<2,1>(gt, pos, 2, 0);
+  success &= testShapeFunctionValue<1,2>(GeometryTypes::line, {1}, 0, 1);
+  success &= testShapeFunctionValue<1,2>(GeometryTypes::line, {1}, 1, 1);
+  success &= testShapeFunctionValue<1,2>(GeometryTypes::line, {1}, 2, 1);
 
-      pos[0] = .5; pos[1] = .5;
-      testShapeFunctionValue<2,1>(gt, pos, 0, 1);
-      testShapeFunctionValue<2,1>(gt, pos, 1, .5);
-      testShapeFunctionValue<2,1>(gt, pos, 2, .5);
+  // dim=2
+  success &= testShapeFunctionValue<2,1>(GeometryTypes::quadrilateral, {0,0}, 0, 1);
+  success &= testShapeFunctionValue<2,1>(GeometryTypes::quadrilateral, {0,0}, 1, 0);
+  success &= testShapeFunctionValue<2,1>(GeometryTypes::quadrilateral, {0,0}, 2, 0);
 
-      pos[0] = 1; pos[1] = 1;
-      testShapeFunctionValue<2,1>(gt, pos, 0, 1);
-      testShapeFunctionValue<2,1>(gt, pos, 1, 1);
-      testShapeFunctionValue<2,1>(gt, pos, 2, 1);
-    }
+  success &= testShapeFunctionValue<2,1>(GeometryTypes::quadrilateral, {0.5,0.5}, 0, 1);
+  success &= testShapeFunctionValue<2,1>(GeometryTypes::quadrilateral, {0.5,0.5}, 1, .5);
+  success &= testShapeFunctionValue<2,1>(GeometryTypes::quadrilateral, {0.5,0.5}, 2, .5);
 
-    // Test shape functions for the 1d segment
-    gt = Dune::GeometryTypes::line;
-    testShapeFunctionDerivative<1,1>(gt);
-    testShapeFunctionDerivative<1,2>(gt);
+  success &= testShapeFunctionValue<2,1>(GeometryTypes::quadrilateral, {1,1}, 0, 1);
+  success &= testShapeFunctionValue<2,1>(GeometryTypes::quadrilateral, {1,1}, 1, 1);
+  success &= testShapeFunctionValue<2,1>(GeometryTypes::quadrilateral, {1,1}, 2, 1);
 
-    gt = Dune::GeometryTypes::triangle;
-    testShapeFunctionDerivative<2,1>(gt);
-    gt = Dune::GeometryTypes::quadrilateral;
-    testShapeFunctionDerivative<2,1>(gt);
-
-    gt = Dune::GeometryTypes::tetrahedron;
-    testShapeFunctionDerivative<3,1>(gt);
-    gt = Dune::GeometryTypes::hexahedron;
-    testShapeFunctionDerivative<3,1>(gt);
-    gt = Dune::GeometryTypes::pyramid;
-    testShapeFunctionDerivative<3,1>(gt);
-    gt = Dune::GeometryTypes::prism;
-    testShapeFunctionDerivative<3,1>(gt);
-
-    // gt = Dune::GeometryTypes::cube(4);
-    // testShapeFunctionDerivative<4,1>(gt);
-
-    return success ? 0 : 1;
-  } catch (const Exception &e) {
-    std::cout << e << std::endl;
-    throw;
-  }
+  return success ? 0 : 1;
 }

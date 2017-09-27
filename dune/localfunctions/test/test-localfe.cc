@@ -38,7 +38,6 @@
 #include "../rannacherturek/rannacherturek.hh"
 #include "../raviartthomas/raviartthomassimplex.hh"
 #include "../raviartthomas/raviartthomascube.hh"
-#include "../monomial.hh"
 
 #include "../common/virtualinterface.hh"
 #include "../common/virtualwrappers.hh"
@@ -68,33 +67,6 @@ struct PkLocalFiniteElementTest<d, -1>
     return true;
   }
 };
-
-template<int k>
-bool testMonomials()
-{
-  bool success = true;
-  Dune::GeometryType gt;
-
-  gt = Dune::GeometryTypes::line;
-  Dune::MonomialLocalFiniteElement<double,double,1,k> monom1d(gt);
-  TEST_FE(monom1d);
-
-  gt = Dune::GeometryTypes::triangle;
-  Dune::MonomialLocalFiniteElement<double,double,2,k> monom2d(gt);
-  TEST_FE(monom2d);
-
-  gt = Dune::GeometryTypes::tetrahedron;
-  Dune::MonomialLocalFiniteElement<double,double,3,k> monom3d(gt);
-  TEST_FE(monom3d);
-
-  return testMonomials<k-1>() and success;
-}
-
-template<>
-bool testMonomials<-1>()
-{
-  return true;
-}
 
 int main(int argc, char** argv) try
 {
@@ -291,9 +263,6 @@ int main(int argc, char** argv) try
 
   Dune::RannacherTurekLocalFiniteElement<double,double,3> rannacher_turek3dfem;
   TEST_FE(rannacher_turek3dfem);
-
-  std::cout << "Monomials are only tested up to order 2 due to the instability of interpolate()." << std::endl;
-  success = testMonomials<2>() and success;
 
   // test virtualized FEs
   // notice that testFE add another level of virtualization

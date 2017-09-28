@@ -241,28 +241,35 @@ bool testJacobian(const FE& fe, unsigned order = 2)
   return success;
 }
 
-/** \brief Helper class to test the 'evaluate' method
+/** \brief Helper class to test the 'partial' method
  *
  * It implements a static loop over the available diff orders
  */
-template<int diffOrder>
-struct TestEvaluate
+struct TestPartial
 {
   template <class FE>
   static bool test(const FE& fe,
-                   double eps, double delta, std::size_t order = 2)
+                   double eps, double delta, unsigned int diffOrder, std::size_t order = 2)
   {
-    std::cout << "No test for differentiability order " << diffOrder << std::endl;
-    return TestEvaluate<diffOrder-1>::test(fe, eps, delta, order);
-  }
-};
+    bool success = true;
 
-/** \brief Specialization to test the 'evaluate' method for zero-order partial derivatives, i.e., values */
-template<>
-struct TestEvaluate<0>
-{
+    if (diffOrder > 2)
+      std::cout << "No test for differentiability orders larger than 2!" << std::endl;
+
+    if (diffOrder >= 2)
+      success = success and testOrder2(fe, eps, delta, order);
+
+    if (diffOrder >= 1)
+      success = success and testOrder1(fe, eps, delta, order);
+
+    success = success and testOrder0(fe, eps, delta, order);
+
+    return success;
+  }
+
+  /** \brief Test the 'partial' method for zero-order partial derivatives, i.e., values */
   template <class FE>
-  static bool test(const FE& fe,
+  static bool testOrder0(const FE& fe,
                    double eps,
                    double delta,
                    std::size_t order = 2)
@@ -339,14 +346,10 @@ struct TestEvaluate<0>
 
     return success;
   }
-};
 
-/** \brief Specialization to test the 'evaluate' method for first-order partial derivatives */
-template<>
-struct TestEvaluate<1>
-{
+  /** \brief Test the 'partial' method for first-order partial derivatives */
   template <class FE>
-  static bool test(const FE& fe,
+  static bool testOrder1(const FE& fe,
                    double eps,
                    double delta,
                    std::size_t order = 2)
@@ -438,17 +441,12 @@ struct TestEvaluate<1>
       } //Loop over all components
     } // Loop over all quadrature points
 
-    // Recursively call the zero-order test
-    return success and TestEvaluate<0>::test(fe, eps, delta, order);
+    return success;
   }
-};
 
-/** \brief Specialization to test second-order partial derivatives */
-template<>
-struct TestEvaluate<2>
-{
+  /** \brief Test second-order partial derivatives */
   template <class FE>
-  static bool test(const FE& fe,
+  static bool testOrder2(const FE& fe,
                    double eps,
                    double delta,
                    std::size_t order = 2)
@@ -577,24 +575,9 @@ struct TestEvaluate<2>
       } // Loop over all shape functions in this set
     } // Loop over all quadrature points
 
-    // Recursively call the first-order test
-    return success and TestEvaluate<1>::test(fe, eps, delta, order);
+    return success;
   }
 
-};
-
-
-template<>
-struct TestEvaluate<-1>
-{
-  template <class FE>
-  static bool test(const FE& fe,
-                   double eps,
-                   double delta,
-                   std::size_t order = 2)
-  {
-    return true;
-  }
 };
 
 // Flags for disabling parts of testFE
@@ -608,10 +591,12 @@ enum {
 
 // call tests for given finite element
 template<class FE>
-bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned order = 2)
+bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned int diffOrder = 0)
 {
   std::vector<double> c;
 
+  // Order of the quadrature rule used to generate test points
+  unsigned int quadOrder = 2;
 
   bool success = true;
 
@@ -662,17 +647,17 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned order = 2)
   }
   if (not (disabledTests & DisableJacobian))
   {
-    success = testJacobian<FE>(fe, order) and success;
+    success = testJacobian<FE>(fe, quadOrder) and success;
   }
   else
   {
     // make sure diffOrder is 0
-    success = (FE::Traits::LocalBasisType::Traits::diffOrder == 0) and success;
+    success = (diffOrder == 0) and success;
   }
 
   if (not (disabledTests & DisableEvaluate))
   {
-    success = TestEvaluate<FE::Traits::LocalBasisType::Traits::diffOrder>::test(fe, TOL, jacobianTOL, order) and success;
+    success = TestPartial::test(fe, TOL, jacobianTOL, diffOrder, quadOrder) and success;
   }
 
   if (not (disabledTests & DisableVirtualInterface))
@@ -692,7 +677,7 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned order = 2)
     else
     {
       // make sure diffOrder is 0
-      success = (VirtualFEInterface::Traits::LocalBasisType::Traits::diffOrder == 0) and success;
+      success = (diffOrder == 0) and success;
     }
   }
 
@@ -700,6 +685,7 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned order = 2)
 }
 
 #define TEST_FE(A) { bool b = testFE(A); std::cout << "testFE(" #A ") " << (b?"succeeded\n":"failed\n"); success &= b; }
-#define TEST_FE2(A,B) { bool b = testFE(A, B); if (!b) std::cerr << "testFE(" #A ", " #B ") " << (b?"succeeded\n":"failed\n"); success &= b; }
+#define TEST_FE2(A,B) { bool b = testFE(A, B); std::cout << "testFE(" #A ", " #B ") " << (b?"succeeded\n":"failed\n"); success &= b; }
+#define TEST_FE3(A,B,C) { bool b = testFE(A, B, C); std::cout << "testFE(" #A ", " #B ", " #C ") " << (b?"succeeded\n":"failed\n"); success &= b; }
 
 #endif // DUNE_LOCALFUNCTIONS_TEST_TEST_LOCALFE_HH

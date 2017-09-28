@@ -102,8 +102,8 @@ void testShapeFunctionValue(const GeometryType& gt,
   }
 }
 
-int main (int argc, char *argv[]) {
-  try {
+int main (int argc, char *argv[])
+{
     GeometryType gt;
 
     {     // dim=1
@@ -168,9 +168,5 @@ int main (int argc, char *argv[]) {
     // gt = Dune::GeometryTypes::cube(4);
     // testShapeFunctionDerivative<4,1>(gt);
 
-    return success ? 0 : 1;
-  } catch (const Exception &e) {
-    std::cout << e << std::endl;
-    throw;
-  }
+  return success ? 0 : 1;
 }

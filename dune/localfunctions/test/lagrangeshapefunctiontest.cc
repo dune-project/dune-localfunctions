@@ -6,16 +6,27 @@
 #include <typeinfo>
 #include <fenv.h>
 
+#include <dune/localfunctions/lagrange/p0.hh>
 #include <dune/localfunctions/lagrange/p1.hh>
 #include <dune/localfunctions/lagrange/p23d.hh>
 #include <dune/localfunctions/lagrange/pk2d.hh>
 #include <dune/localfunctions/lagrange/pk3d.hh>
+#include <dune/localfunctions/lagrange/pk.hh>
+#include <dune/localfunctions/lagrange/q1.hh>
+#include <dune/localfunctions/lagrange/prismp1.hh>
+#include <dune/localfunctions/lagrange/prismp2.hh>
+#include <dune/localfunctions/lagrange/pyramidp1.hh>
+#include <dune/localfunctions/lagrange/pyramidp2.hh>
+#include <dune/localfunctions/lagrange/pq22d.hh>
+
+
+
+#include <dune/localfunctions/test/test-localfe.hh>
 
 /** \file
-    \brief Performs some tests for the Pk shape functions
+    \brief Performs some tests for the Lagrange shape functions
  */
 
-bool success = true;
 double epsilon = 1e-14;
 double sqrt_epsilon = std::sqrt(epsilon);
 
@@ -50,9 +61,8 @@ void getPkTestPoints(unsigned order, unsigned level, std::vector<FieldVector<dou
 }
 
 template <class FE>
-void testPk(const FE& local_fe)
+bool testPk(const FE& local_fe)
 {
-  typedef typename FE::Traits::LocalBasisType::Traits LBTraits;
   const int dim = FE::Traits::LocalBasisType::Traits::dimDomain;
   const unsigned order = local_fe.localBasis().order();
 
@@ -80,61 +90,15 @@ void testPk(const FE& local_fe)
         std::cerr << "Shape function " << n << " has value " << values[i]
                   << " at position " << pos << " while " << double(i==n)
                   << " was expected" << std::endl;
-        success = false;
+        return false;
       }
 
-    //////////////////////////////////////////////////////////////////
-    //  Check the partial derivatives by comparing them
-    //  to finite difference approximations
-    //////////////////////////////////////////////////////////////////
-
-    // Get the shape function derivatives at pos
-    std::vector<typename LBTraits::JacobianType> jacobians;
-    local_fe.localBasis().evaluateJacobian(pos, jacobians);
-
-    // Loop over all axes
-    for (int k=0; k<dim; k++)
-    {
-      // Compute an approximation to the derivative by finite differences
-      FieldVector<double,dim> upPos   = pos;
-      FieldVector<double,dim> downPos = pos;
-
-      upPos[k]   += sqrt_epsilon;
-      downPos[k] -= sqrt_epsilon;
-
-      std::vector<FieldVector<double,1> > upValues, downValues;
-
-      local_fe.localBasis().evaluateFunction(upPos,   upValues);
-      local_fe.localBasis().evaluateFunction(downPos, downValues);
-
-      // Loop over all shape functions in this set
-      for (unsigned j=0; j<local_fe.localBasis().size(); ++j)
-      {
-        // The current partial derivative, just for ease of notation
-        double derivative = jacobians[j][0][k];
-
-        // Compute finite difference approximation
-        double finiteDiff = (upValues[j] - downValues[j]) / (2*sqrt_epsilon);
-
-        // Check
-        if (std::abs(derivative - finiteDiff) > sqrt_epsilon) {
-          std::cerr << "Bug in shape function in local finite element type "
-                    << typeid(FE).name() << std::endl;
-          std::cerr << "    of order " << order << "." << std::endl;
-          std::cerr << "    Shape function derivative differs "
-                    << "significantly from FD approximation" << std::endl;
-          std::cerr << "    Shape function " << j << " at position " << pos
-                    << ":  derivative in direction " << k
-                    << " is " << derivative << ", but " << finiteDiff
-                    << " is expected." << std::endl;
-          success = false;
-        }
-      }
-    }
   }
+
+  return true;
 }
 
-int main (int argc, char *argv[]) try
+int main (int argc, char *argv[])
 {
 #if __linux__
 #if (!defined __INTEL_COMPILER || __INTEL_COMPILER >= 1010)
@@ -142,14 +106,19 @@ int main (int argc, char *argv[]) try
 #endif
 #endif
 
+  bool success = true;
+
+  //////////////////////////////////////////////////////////
+  //   Test for the Lagrange property
+  //////////////////////////////////////////////////////////
   P1LocalFiniteElement<double,double,1> p11d;
-  testPk(p11d);
+  success &= testPk(p11d);
 
   P1LocalFiniteElement<double,double,2> p12d;
-  testPk(p12d);
+  success &= testPk(p12d);
 
   P1LocalFiniteElement<double,double,3> p13d;
-  testPk(p13d);
+  success &= testPk(p13d);
 
   //     P23DLocalFiniteElement does not fulfill above assumption on the
   //     ordering of the shape functions
@@ -157,27 +126,139 @@ int main (int argc, char *argv[]) try
   //     testPk(p23d);
 
   Pk2DLocalFiniteElement<double,double,1> pk12d;
-  testPk(pk12d);
+  success &= testPk(pk12d);
   Pk2DLocalFiniteElement<double,double,2> pk22d;
-  testPk(pk22d);
+  success &= testPk(pk22d);
   Pk2DLocalFiniteElement<double,double,3> pk32d;
-  testPk(pk32d);
+  success &= testPk(pk32d);
   Pk2DLocalFiniteElement<double,double,4> pk42d;
-  testPk(pk42d);
+  success &= testPk(pk42d);
 
   Pk3DLocalFiniteElement<double,double,1> pk13d;
-  testPk(pk13d);
+  success &= testPk(pk13d);
   Pk3DLocalFiniteElement<double,double,2> pk23d;
-  testPk(pk23d);
+  success &= testPk(pk23d);
   Pk3DLocalFiniteElement<double,double,3> pk33d;
-  testPk(pk33d);
+  success &= testPk(pk33d);
   Pk3DLocalFiniteElement<double,double,4> pk43d;
-  testPk(pk43d);
+  success &= testPk(pk43d);
+
+  //////////////////////////////////////////////////////////
+  //   Run the standard tests
+  //////////////////////////////////////////////////////////
+  P0LocalFiniteElement<double,double,2> p0lfem(
+  GeometryTypes::simplex(2));
+  TEST_FE(p0lfem);
+
+  P1LocalFiniteElement<double,double,1> p11dlfem;
+  TEST_FE3(p11dlfem,DisableNone,2);
+
+  P1LocalFiniteElement<double,double,2> p12dlfem;
+  TEST_FE3(p12dlfem,DisableNone,2);
+
+  P1LocalFiniteElement<double,double,3> p13dlfem;
+  TEST_FE3(p13dlfem,DisableNone,2);
+
+  Q1LocalFiniteElement<double,double,1> q11dlfem;
+  TEST_FE(q11dlfem);
+
+  Q1LocalFiniteElement<double,double,2> q12dlfem;
+  TEST_FE(q12dlfem);
+
+  Q1LocalFiniteElement<double,double,3> q13dlfem;
+  TEST_FE(q13dlfem);
+
+  PQ22DLocalFiniteElement<double,double> pq22dlfem(
+    GeometryTypes::simplex(2));
+  TEST_FE(pq22dlfem);
+
+  P23DLocalFiniteElement<double,double> p23dlfem;
+  TEST_FE(p23dlfem);
+
+  PrismP1LocalFiniteElement<double,double> prismp1fem;
+  TEST_FE(prismp1fem);
+
+  PrismP2LocalFiniteElement<double,double> prismp2fem;
+  TEST_FE(prismp2fem);
+
+  PyramidP1LocalFiniteElement<double,double> pyramidp1fem;
+  TEST_FE2(pyramidp1fem, DisableJacobian);
+
+  PyramidP2LocalFiniteElement<double,double> pyramidp2fem;
+  TEST_FE2(pyramidp2fem, DisableJacobian);
+
+  Hybrid::forEach(std::make_index_sequence<3>{},[&success](auto i)
+  {
+    PkLocalFiniteElement<double,double,1,i> pklfem;
+    TEST_FE(pklfem);
+  });
+
+  Hybrid::forEach(std::make_index_sequence<11>{},[&success](auto i)
+  {
+    PkLocalFiniteElement<double,double,2,i> pklfem;
+    TEST_FE3(pklfem,DisableNone,2);
+  });
+
+  Hybrid::forEach(std::make_index_sequence<11>{},[&success](auto i)
+  {
+    PkLocalFiniteElement<double,double,3,i> pklfem;
+    TEST_FE(pklfem);
+  });
+
+  // --------------------------------------------------------
+  //  Test some instantiations of QkLocalFiniteElement
+  // --------------------------------------------------------
+  QkLocalFiniteElement<double,double,1,1> qk11dlfem;
+  TEST_FE3(qk11dlfem,DisableNone,1);
+
+  QkLocalFiniteElement<double,double,2,0> qk02dlfem;
+  TEST_FE3(qk02dlfem,DisableNone,1);
+
+  QkLocalFiniteElement<double,double,2,1> qk12dlfem;
+  TEST_FE3(qk12dlfem,DisableNone,1);
+
+  QkLocalFiniteElement<double,double,2,2> qk22dlfem;
+  TEST_FE3(qk22dlfem,DisableNone,1);
+
+  QkLocalFiniteElement<double,double,2,3> qk32dlfem;
+  TEST_FE3(qk32dlfem,DisableNone,1);
+
+  QkLocalFiniteElement<double,double,3,0> qk03dlfem;
+  TEST_FE3(qk03dlfem,DisableNone,1);
+
+  QkLocalFiniteElement<double,double,3,1> qk13dlfem;
+  TEST_FE3(qk13dlfem,DisableNone,1);
+
+  QkLocalFiniteElement<double,double,3,2> qk23dlfem;
+  TEST_FE3(qk23dlfem,DisableNone,1);
+
+  QkLocalFiniteElement<double,double,3,3> qk33dlfem;
+  TEST_FE3(qk33dlfem,DisableNone,1);
+
+  // test virtualized FEs
+  // notice that testFE add another level of virtualization
+  LocalFiniteElementVirtualImp< P1LocalFiniteElement<double,double, 2> >
+  p12dlfemVirtual(p12dlfem);
+  TEST_FE(p12dlfemVirtual);
+
+  LocalFiniteElementVirtualImp< PQ22DLocalFiniteElement<double,double> >
+  pq22dlfemVirtual(pq22dlfem);
+  TEST_FE(pq22dlfemVirtual);
+
+  LocalFiniteElementVirtualImp<
+      LocalFiniteElementVirtualImp<
+          P1LocalFiniteElement<double,double, 2> > >
+  p12dlfemVirtualVirtual(p12dlfemVirtual);
+  TEST_FE(p12dlfemVirtualVirtual);
+
+  LocalFiniteElementVirtualImp<
+      LocalFiniteElementVirtualImp<
+          PQ22DLocalFiniteElement<double,double> > >
+  pq22dlfemVirtualVirtual(pq22dlfemVirtual);
+  TEST_FE(pq22dlfemVirtualVirtual);
+
+  typedef LocalFiniteElementVirtualInterface< P1LocalFiniteElement<double,double, 2>::Traits::LocalBasisType::Traits > Interface;
+  TEST_FE(static_cast<const Interface&>(p12dlfemVirtual));
 
   return success ? 0 : 1;
-}
-catch (Exception e) {
-
-  std::cerr << e << std::endl;
-  return 1;
 }

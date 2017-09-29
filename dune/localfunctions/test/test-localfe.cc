@@ -13,18 +13,6 @@
 #include <dune/common/function.hh>
 #include <dune/common/hybridutilities.hh>
 
-#include "../lagrange/p0.hh"
-#include "../lagrange/p1.hh"
-#include "../lagrange/prismp1.hh"
-#include "../lagrange/prismp2.hh"
-#include "../lagrange/pyramidp1.hh"
-#include "../lagrange/pyramidp2.hh"
-#include "../lagrange/q1.hh"
-#include "../lagrange/p23d.hh"
-#include "../lagrange/pq22d.hh"
-#include "../lagrange/pk.hh"
-#include "../lagrange/qk.hh"
-
 #include "../brezzidouglasmarini/brezzidouglasmarini1cube2d.hh"
 #include "../brezzidouglasmarini/brezzidouglasmarini1cube3d.hh"
 #include "../brezzidouglasmarini/brezzidouglasmarini2cube2d.hh"
@@ -40,40 +28,11 @@
 #include "../raviartthomas/raviartthomassimplex.hh"
 #include "../raviartthomas/raviartthomascube.hh"
 
-#include "../common/virtualinterface.hh"
-#include "../common/virtualwrappers.hh"
-
 #include "test-localfe.hh"
 
 int main(int argc, char** argv) try
 {
   bool success = true;
-
-  Dune::P0LocalFiniteElement<double,double,2> p0lfem(
-    Dune::GeometryTypes::simplex(2));
-  TEST_FE(p0lfem);
-
-  Dune::P1LocalFiniteElement<double,double,1> p11dlfem;
-  TEST_FE3(p11dlfem,DisableNone,2);
-
-  Dune::P1LocalFiniteElement<double,double,2> p12dlfem;
-  TEST_FE3(p12dlfem,DisableNone,2);
-
-  Dune::P1LocalFiniteElement<double,double,3> p13dlfem;
-  TEST_FE3(p13dlfem,DisableNone,2);
-
-  Dune::Q1LocalFiniteElement<double,double,1> q11dlfem;
-  TEST_FE(q11dlfem);
-
-  Dune::Q1LocalFiniteElement<double,double,2> q12dlfem;
-  TEST_FE(q12dlfem);
-
-  Dune::Q1LocalFiniteElement<double,double,3> q13dlfem;
-  TEST_FE(q13dlfem);
-
-  Dune::PQ22DLocalFiniteElement<double,double> pq22dlfem(
-    Dune::GeometryTypes::simplex(2));
-  TEST_FE(pq22dlfem);
 
   Dune::RefinedP1LocalFiniteElement<double,double,1> refp11dlfem;
   TEST_FE(refp11dlfem);
@@ -89,9 +48,6 @@ int main(int argc, char** argv) try
 
   Dune::RefinedP0LocalFiniteElement<double,double,2> refp02dlfem;
   TEST_FE(refp02dlfem);
-
-  Dune::P23DLocalFiniteElement<double,double> p23dlfem;
-  TEST_FE(p23dlfem);
 
   // --------------------------------------------------------
   //  Test Brezzi-Douglas-Marini finite elements
@@ -128,66 +84,6 @@ int main(int argc, char** argv) try
 
   Dune::HierarchicalP2WithElementBubbleLocalFiniteElement<double,double,2> hierarchicalp2bubble2dlfem;
   TEST_FE(hierarchicalp2bubble2dlfem);
-
-  Dune::PrismP1LocalFiniteElement<double,double> prismp1fem;
-  TEST_FE(prismp1fem);
-
-  Dune::PrismP2LocalFiniteElement<double,double> prismp2fem;
-  TEST_FE(prismp2fem);
-
-  Dune::PyramidP1LocalFiniteElement<double,double> pyramidp1fem;
-  TEST_FE2(pyramidp1fem, DisableJacobian);
-
-  Dune::PyramidP2LocalFiniteElement<double,double> pyramidp2fem;
-  TEST_FE2(pyramidp2fem, DisableJacobian);
-
-  Dune::Hybrid::forEach(std::make_index_sequence<3>{},[&success](auto i)
-  {
-    Dune::PkLocalFiniteElement<double,double,1,i> pklfem;
-    TEST_FE(pklfem);
-  });
-
-  Dune::Hybrid::forEach(std::make_index_sequence<11>{},[&success](auto i)
-  {
-    Dune::PkLocalFiniteElement<double,double,2,i> pklfem;
-    TEST_FE3(pklfem,DisableNone,2);
-  });
-
-  Dune::Hybrid::forEach(std::make_index_sequence<11>{},[&success](auto i)
-  {
-    Dune::PkLocalFiniteElement<double,double,3,i> pklfem;
-    TEST_FE(pklfem);
-  });
-
-  // --------------------------------------------------------
-  //  Test some instantiations of QkLocalFiniteElement
-  // --------------------------------------------------------
-  Dune::QkLocalFiniteElement<double,double,1,1> qk11dlfem;
-  TEST_FE3(qk11dlfem,DisableNone,1);
-
-  Dune::QkLocalFiniteElement<double,double,2,0> qk02dlfem;
-  TEST_FE3(qk02dlfem,DisableNone,1);
-
-  Dune::QkLocalFiniteElement<double,double,2,1> qk12dlfem;
-  TEST_FE3(qk12dlfem,DisableNone,1);
-
-  Dune::QkLocalFiniteElement<double,double,2,2> qk22dlfem;
-  TEST_FE3(qk22dlfem,DisableNone,1);
-
-  Dune::QkLocalFiniteElement<double,double,2,3> qk32dlfem;
-  TEST_FE3(qk32dlfem,DisableNone,1);
-
-  Dune::QkLocalFiniteElement<double,double,3,0> qk03dlfem;
-  TEST_FE3(qk03dlfem,DisableNone,1);
-
-  Dune::QkLocalFiniteElement<double,double,3,1> qk13dlfem;
-  TEST_FE3(qk13dlfem,DisableNone,1);
-
-  Dune::QkLocalFiniteElement<double,double,3,2> qk23dlfem;
-  TEST_FE3(qk23dlfem,DisableNone,1);
-
-  Dune::QkLocalFiniteElement<double,double,3,3> qk33dlfem;
-  TEST_FE3(qk33dlfem,DisableNone,1);
 
 
   // --------------------------------------------------------
@@ -250,31 +146,6 @@ int main(int argc, char** argv) try
 
   Dune::RannacherTurekLocalFiniteElement<double,double,3> rannacher_turek3dfem;
   TEST_FE(rannacher_turek3dfem);
-
-  // test virtualized FEs
-  // notice that testFE add another level of virtualization
-  Dune::LocalFiniteElementVirtualImp< Dune::P1LocalFiniteElement<double,double, 2> >
-  p12dlfemVirtual(p12dlfem);
-  TEST_FE(p12dlfemVirtual);
-
-  Dune::LocalFiniteElementVirtualImp< Dune::PQ22DLocalFiniteElement<double,double> >
-  pq22dlfemVirtual(pq22dlfem);
-  TEST_FE(pq22dlfemVirtual);
-
-  Dune::LocalFiniteElementVirtualImp<
-      Dune::LocalFiniteElementVirtualImp<
-          Dune::P1LocalFiniteElement<double,double, 2> > >
-  p12dlfemVirtualVirtual(p12dlfemVirtual);
-  TEST_FE(p12dlfemVirtualVirtual);
-
-  Dune::LocalFiniteElementVirtualImp<
-      Dune::LocalFiniteElementVirtualImp<
-          Dune::PQ22DLocalFiniteElement<double,double> > >
-  pq22dlfemVirtualVirtual(pq22dlfemVirtual);
-  TEST_FE(pq22dlfemVirtualVirtual);
-
-  typedef Dune::LocalFiniteElementVirtualInterface< Dune::P1LocalFiniteElement<double,double, 2>::Traits::LocalBasisType::Traits > Interface;
-  TEST_FE(static_cast<const Interface&>(p12dlfemVirtual));
 
   return success ? 0 : 1;
 }

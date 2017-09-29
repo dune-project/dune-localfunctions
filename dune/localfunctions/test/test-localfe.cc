@@ -18,7 +18,6 @@
 #include "../brezzidouglasmarini/brezzidouglasmarini2cube2d.hh"
 #include "../brezzidouglasmarini/brezzidouglasmarini1simplex2d.hh"
 #include "../brezzidouglasmarini/brezzidouglasmarini2simplex2d.hh"
-#include <dune/localfunctions/dualmortarbasis.hh>
 #include "../refined/refinedp1.hh"
 #include "../refined/refinedp0.hh"
 #include "../hierarchical/hierarchicalp2.hh"
@@ -84,28 +83,6 @@ int main(int argc, char** argv) try
 
   Dune::HierarchicalP2WithElementBubbleLocalFiniteElement<double,double,2> hierarchicalp2bubble2dlfem;
   TEST_FE(hierarchicalp2bubble2dlfem);
-
-
-  // --------------------------------------------------------
-  //  Test dual mortar elements
-  // --------------------------------------------------------
-  Dune::DualP1LocalFiniteElement<double,double,1> dualp11dlfem;
-  TEST_FE(dualp11dlfem);
-
-  Dune::DualP1LocalFiniteElement<double,double,2> dualp12dlfem;
-  TEST_FE(dualp12dlfem);
-
-  Dune::DualP1LocalFiniteElement<double,double,3> dualp13dlfem;
-  TEST_FE(dualp13dlfem);
-
-  Dune::DualQ1LocalFiniteElement<double,double,1> dualq11dlfem;
-  TEST_FE(dualq11dlfem);
-
-  Dune::DualQ1LocalFiniteElement<double,double,2> dualq12dlfem;
-  TEST_FE(dualq12dlfem);
-
-  Dune::DualQ1LocalFiniteElement<double,double,3> dualq13dlfem;
-  TEST_FE(dualq13dlfem);
 
 
   // --------------------------------------------------------

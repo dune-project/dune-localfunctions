@@ -191,7 +191,7 @@ namespace Dune
 
     virtual ~LocalInterpolationVirtualInterface() {}
 
-    // This method is only notet again for to make the documentation complete.
+    // This method is only noted again for to make the documentation complete.
 
     /** \brief determine coefficients interpolating a given function
      *

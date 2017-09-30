@@ -17,8 +17,6 @@
 #include "../hierarchical/hierarchicalp2.hh"
 #include "../hierarchical/hierarchicalp2withelementbubble.hh"
 #include "../hierarchical/hierarchicalprismp2.hh"
-#include "../raviartthomas/raviartthomassimplex.hh"
-#include "../raviartthomas/raviartthomascube.hh"
 
 #include "test-localfe.hh"
 
@@ -76,37 +74,6 @@ int main(int argc, char** argv) try
 
   Dune::HierarchicalP2WithElementBubbleLocalFiniteElement<double,double,2> hierarchicalp2bubble2dlfem;
   TEST_FE(hierarchicalp2bubble2dlfem);
-
-
-  // --------------------------------------------------------
-  //  Test Raviart-Thomas Finite elements
-  // --------------------------------------------------------
-  Dune::RaviartThomasSimplexLocalFiniteElement<2,double,double> rt0simplex2dlfem(Dune::GeometryTypes::simplex(2),0);
-  TEST_FE(rt0simplex2dlfem);
-
-  Dune::RaviartThomasSimplexLocalFiniteElement<2,double,double> rt1simplex2dlfem(Dune::GeometryTypes::simplex(2),1);
-  TEST_FE(rt1simplex2dlfem);
-
-  Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,0> rt0cube2dlfem(1);
-  TEST_FE(rt0cube2dlfem);
-
-  Dune::RaviartThomasCubeLocalFiniteElement<double,double,3,0> rt0cube3dlfem(1);
-  TEST_FE(rt0cube3dlfem);
-
-  Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,1> rt1cube2dlfem(1);
-  TEST_FE(rt1cube2dlfem);
-
-  Dune::RaviartThomasCubeLocalFiniteElement<double,double,3,1> rt1cube3dlfem(1);
-  TEST_FE(rt1cube3dlfem);
-
-  Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,2> rt2cube2dlfem(1);
-  TEST_FE(rt2cube2dlfem);
-
-  Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,3> rt3cube2dlfem(1);
-  TEST_FE(rt3cube2dlfem);
-
-  Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,4> rt4cube2dlfem(1);
-  TEST_FE(rt4cube2dlfem);
 
   return success ? 0 : 1;
 }

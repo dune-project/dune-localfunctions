@@ -12,6 +12,8 @@ dune_add_test(SOURCES rannacherturekelementtest.cc)
 
 dune_add_test(SOURCES raviartthomaselementtest.cc)
 
+dune_add_test(SOURCES refinedelementtest.cc)
+
 dune_add_test(SOURCES virtualshapefunctiontest.cc)
 
 dune_add_test(SOURCES test-edges0.5.cc)

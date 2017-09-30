@@ -14,9 +14,6 @@
 #include "../brezzidouglasmarini/brezzidouglasmarini2simplex2d.hh"
 #include "../refined/refinedp1.hh"
 #include "../refined/refinedp0.hh"
-#include "../hierarchical/hierarchicalp2.hh"
-#include "../hierarchical/hierarchicalp2withelementbubble.hh"
-#include "../hierarchical/hierarchicalprismp2.hh"
 
 #include "test-localfe.hh"
 
@@ -56,24 +53,6 @@ int main(int argc, char** argv) try
 
   Dune::BDM2Simplex2DLocalFiniteElement<double,double> bdm2simplex2dlfem(1);
   TEST_FE(bdm2simplex2dlfem);
-
-  // --------------------------------------------------------
-  //  Test hierarchical P2 finite elements
-  // --------------------------------------------------------
-  Dune::HierarchicalP2LocalFiniteElement<double,double,1> hierarchicalp21dlfem;
-  TEST_FE(hierarchicalp21dlfem);
-
-  Dune::HierarchicalP2LocalFiniteElement<double,double,2> hierarchicalp22dlfem;
-  TEST_FE(hierarchicalp22dlfem);
-
-  Dune::HierarchicalP2LocalFiniteElement<double,double,3> hierarchicalp23dlfem;
-  TEST_FE(hierarchicalp23dlfem);
-
-  Dune::HierarchicalPrismP2LocalFiniteElement<double,double> hierarchicalprismp2lfem;
-  TEST_FE(hierarchicalprismp2lfem);
-
-  Dune::HierarchicalP2WithElementBubbleLocalFiniteElement<double,double,2> hierarchicalp2bubble2dlfem;
-  TEST_FE(hierarchicalp2bubble2dlfem);
 
   return success ? 0 : 1;
 }

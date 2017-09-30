@@ -1,5 +1,7 @@
 dune_add_test(SOURCES dualmortarelementtest.cc)
 
+dune_add_test(SOURCES hierarchicalelementtest.cc)
+
 dune_add_test(SOURCES testgenericfem.cc)
 
 dune_add_test(SOURCES lagrangeshapefunctiontest.cc)

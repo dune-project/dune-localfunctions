@@ -6,6 +6,8 @@ dune_add_test(SOURCES lagrangeshapefunctiontest.cc)
 
 dune_add_test(SOURCES monomialshapefunctiontest.cc)
 
+dune_add_test(SOURCES rannacherturekelementtest.cc)
+
 dune_add_test(SOURCES virtualshapefunctiontest.cc)
 
 dune_add_test(SOURCES test-edges0.5.cc)

@@ -5,13 +5,7 @@
 #include "config.h"
 #endif
 
-#include <cstddef>
 #include <iostream>
-#include <cstdlib>
-#include <vector>
-
-#include <dune/common/function.hh>
-#include <dune/common/hybridutilities.hh>
 
 #include "../brezzidouglasmarini/brezzidouglasmarini1cube2d.hh"
 #include "../brezzidouglasmarini/brezzidouglasmarini1cube3d.hh"
@@ -23,7 +17,6 @@
 #include "../hierarchical/hierarchicalp2.hh"
 #include "../hierarchical/hierarchicalp2withelementbubble.hh"
 #include "../hierarchical/hierarchicalprismp2.hh"
-#include "../rannacherturek/rannacherturek.hh"
 #include "../raviartthomas/raviartthomassimplex.hh"
 #include "../raviartthomas/raviartthomascube.hh"
 
@@ -115,19 +108,10 @@ int main(int argc, char** argv) try
   Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,4> rt4cube2dlfem(1);
   TEST_FE(rt4cube2dlfem);
 
-  // --------------------------------------------------------
-  //  Test Rannacher-Turek Finite elements
-  // --------------------------------------------------------
-  Dune::RannacherTurekLocalFiniteElement<double,double,2> rannacher_turek2dfem;
-  TEST_FE(rannacher_turek2dfem);
-
-  Dune::RannacherTurekLocalFiniteElement<double,double,3> rannacher_turek3dfem;
-  TEST_FE(rannacher_turek3dfem);
-
   return success ? 0 : 1;
 }
 catch (Dune::Exception e)
 {
-  std::cout << e << std::endl;
+  std::cout << e.what() << std::endl;
   return 1;
 }

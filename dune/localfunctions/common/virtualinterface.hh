@@ -4,6 +4,7 @@
 #define DUNE_LOCALFUNCTIONS_COMMON_VIRTUALINTERFACE_HH
 
 #include <array>
+#include <vector>
 
 #include <dune/common/function.hh>
 

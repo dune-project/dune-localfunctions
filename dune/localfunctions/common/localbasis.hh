@@ -3,11 +3,6 @@
 #ifndef DUNE_LOCALFUNCTIONS_COMMON_LOCALBASIS_HH
 #define DUNE_LOCALFUNCTIONS_COMMON_LOCALBASIS_HH
 
-#include <iostream>
-#include <vector>
-
-#include <dune/common/fvector.hh>
-
 namespace Dune
 {
 

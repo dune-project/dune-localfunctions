@@ -1,19 +1,17 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include <iostream>
 
-#include "../brezzidouglasmarini/brezzidouglasmarini1cube2d.hh"
-#include "../brezzidouglasmarini/brezzidouglasmarini1cube3d.hh"
-#include "../brezzidouglasmarini/brezzidouglasmarini2cube2d.hh"
-#include "../brezzidouglasmarini/brezzidouglasmarini1simplex2d.hh"
-#include "../brezzidouglasmarini/brezzidouglasmarini2simplex2d.hh"
+#include <dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini1cube2d.hh>
+#include <dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini1cube3d.hh>
+#include <dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini2cube2d.hh>
+#include <dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini1simplex2d.hh>
+#include <dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini2simplex2d.hh>
 
-#include "test-localfe.hh"
+#include <dune/localfunctions/test/test-localfe.hh>
 
 int main(int argc, char** argv) try
 {

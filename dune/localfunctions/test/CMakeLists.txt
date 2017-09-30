@@ -1,3 +1,5 @@
+dune_add_test(SOURCES brezzidouglasmarinielementtest.cc)
+
 dune_add_test(SOURCES dualmortarelementtest.cc)
 
 dune_add_test(SOURCES hierarchicalelementtest.cc)
@@ -17,8 +19,6 @@ dune_add_test(SOURCES refinedelementtest.cc)
 dune_add_test(SOURCES virtualshapefunctiontest.cc)
 
 dune_add_test(SOURCES test-edges0.5.cc)
-
-dune_add_test(SOURCES test-localfe.cc)
 
 dune_add_test(SOURCES globalmonomialfunctionstest.cc)
 

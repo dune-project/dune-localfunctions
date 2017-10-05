@@ -18,7 +18,7 @@ namespace Dune
   /** \brief The local Q1 finite element on cubes
       \tparam D Domain data type
       \tparam R Range data type
-      \tparam dim Dimension of the simplex
+      \tparam dim Dimension of the cube
    */
   template<class D, class R, int dim>
   class Q1LocalFiniteElement
@@ -28,15 +28,6 @@ namespace Dune
      */
     typedef LocalFiniteElementTraits<Q1LocalBasis<D,R,dim>,Q1LocalCoefficients<dim>,
         Q1LocalInterpolation<dim,Q1LocalBasis<D,R,dim> > > Traits;
-
-    /** \todo Please doc me !
-     */
-    Q1LocalFiniteElement () :
-      gt(Dune::GeometryTypes::cube(dim))
-    {}
-
-    Q1LocalFiniteElement (const Q1LocalFiniteElement & o) : gt(o.gt)
-    {}
 
     /** \todo Please doc me !
      */
@@ -67,9 +58,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    GeometryType type () const
+    static constexpr GeometryType type ()
     {
-      return gt;
+      return GeometryTypes::cube(dim);
     }
 
     Q1LocalFiniteElement* clone () const
@@ -81,7 +72,6 @@ namespace Dune
     Q1LocalBasis<D,R,dim> basis;
     Q1LocalCoefficients<dim> coefficients;
     Q1LocalInterpolation<dim,Q1LocalBasis<D,R,dim> > interpolation;
-    GeometryType gt;
   };
 
   //! Factory for global-valued Q1 elements

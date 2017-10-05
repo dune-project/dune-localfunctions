@@ -53,7 +53,6 @@ namespace Dune {
     typename Traits::Basis basis_;
     typename Traits::Interpolation interpolation_;
     static const typename Traits::Coefficients& coefficients_;
-    static const GeometryType gt;
 
   public:
     //! Constructor
@@ -75,17 +74,13 @@ namespace Dune {
     const typename Traits::Coefficients& coefficients() const
     { return coefficients_; }
     //! return geometry type of this element
-    const GeometryType& type() const { return gt; }
+    static constexpr GeometryType type() { return GeometryTypes::simplex(Geometry::mydimension); }
   };
 
   template<class Geometry, class RF>
   const typename EdgeS0_5FiniteElement<Geometry, RF>::Traits::Coefficients&
   EdgeS0_5FiniteElement<Geometry, RF>::coefficients_ =
     typename Traits::Coefficients();
-
-  template<class Geometry, class RF>
-  const GeometryType
-  EdgeS0_5FiniteElement<Geometry, RF>::gt(GeometryTypes::simplex(Geometry::mydimension));
 
   ////////////////////////////////////////////////////////////////////////
   //

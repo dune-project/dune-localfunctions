@@ -39,8 +39,7 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    DualP1LocalFiniteElement () :
-      gt(Dune::GeometryTypes::simplex(dim))
+    DualP1LocalFiniteElement ()
     {}
 
     /** \todo Please doc me !
@@ -72,9 +71,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    GeometryType type () const
+    static constexpr GeometryType type ()
     {
-      return gt;
+      return GeometryTypes::simplex(dim);
     }
 
     DualP1LocalFiniteElement* clone () const
@@ -86,7 +85,6 @@ namespace Dune
     DualP1LocalBasis<D,R,dim,faceDual> basis;
     DualP1LocalCoefficients<dim> coefficients;
     DualP1LocalInterpolation<dim,DualP1LocalBasis<D,R,dim,faceDual> > interpolation;
-    GeometryType gt;
   };
 
 

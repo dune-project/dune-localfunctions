@@ -46,8 +46,7 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    RefinedP0LocalFiniteElement () :
-      gt(Dune::GeometryTypes::line)
+    RefinedP0LocalFiniteElement ()
     {}
 
     /** \todo Please doc me !
@@ -79,9 +78,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    GeometryType type () const
+    static constexpr GeometryType type ()
     {
-      return gt;
+      return GeometryTypes::line;
     }
 
     RefinedP0LocalFiniteElement * clone () const
@@ -93,7 +92,6 @@ namespace Dune
     RefinedP0LocalBasis<D,R,1> basis_;
     RefinedP0LocalCoefficients<1> coefficients_;
     RefinedP0LocalInterpolation<RefinedP0LocalBasis<D,R,1> > interpolation_;
-    GeometryType gt;
   };
 
   /** \brief Local finite element that is piecewise P0 on a once uniformly refined reference geometry
@@ -111,8 +109,7 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    RefinedP0LocalFiniteElement () :
-      gt(Dune::GeometryTypes::triangle)
+    RefinedP0LocalFiniteElement ()
     {}
 
     /** \todo Please doc me !
@@ -144,9 +141,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    GeometryType type () const
+    static constexpr GeometryType type ()
     {
-      return gt;
+      return GeometryTypes::triangle;
     }
 
     RefinedP0LocalFiniteElement * clone () const
@@ -158,7 +155,6 @@ namespace Dune
     RefinedP0LocalBasis<D,R,2> basis_;
     RefinedP0LocalCoefficients<2> coefficients_;
     RefinedP0LocalInterpolation<RefinedP0LocalBasis<D,R,2> > interpolation_;
-    GeometryType gt;
   };
 
   /** \brief Local finite element that is piecewise P0 on a once uniformly refined reference geometry
@@ -176,8 +172,7 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    RefinedP0LocalFiniteElement () :
-      gt(Dune::GeometryTypes::tetrahedron)
+    RefinedP0LocalFiniteElement ()
     {}
 
     /** \todo Please doc me !
@@ -209,9 +204,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    GeometryType type () const
+    static constexpr GeometryType type ()
     {
-      return gt;
+      return GeometryTypes::tetrahedron;
     }
 
     RefinedP0LocalFiniteElement * clone () const
@@ -223,7 +218,6 @@ namespace Dune
     RefinedP0LocalBasis<D,R,3> basis_;
     RefinedP0LocalCoefficients<3> coefficients_;
     RefinedP0LocalInterpolation<RefinedP0LocalBasis<D,R,3> > interpolation_;
-    GeometryType gt;
   };
 
 

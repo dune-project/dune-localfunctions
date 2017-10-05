@@ -59,7 +59,7 @@ namespace Dune
     //! \brief return geometry type
     GeometryType type () const
     {
-      return GeometryType( typename Impl::CubeTopology< d >::type() );
+      return GeometryTypes::cube(d);
     }
 
   private:

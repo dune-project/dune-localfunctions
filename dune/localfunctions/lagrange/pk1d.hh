@@ -30,15 +30,13 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    Pk1DLocalFiniteElement () :
-      gt(Dune::GeometryTypes::line)
+    Pk1DLocalFiniteElement ()
     {}
 
     /** \todo Please doc me !
      */
     Pk1DLocalFiniteElement (int variant) :
-      coefficients(variant),
-      gt(Dune::GeometryTypes::line)
+      coefficients(variant)
     {}
 
     /** Constructor for two variants with permuted vertices.
@@ -46,8 +44,7 @@ namespace Dune
         \param vertexmap The permutation of the vertices.
      */
     Pk1DLocalFiniteElement (const unsigned int vertexmap[3]) :
-      coefficients(vertexmap),
-      gt(Dune::GeometryTypes::line)
+      coefficients(vertexmap)
     {}
 
     /** \todo Please doc me !
@@ -79,9 +76,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    GeometryType type () const
+    static constexpr GeometryType type ()
     {
-      return gt;
+      return GeometryTypes::line;
     }
 
     Pk1DLocalFiniteElement* clone () const
@@ -93,7 +90,6 @@ namespace Dune
     Pk1DLocalBasis<D,R,k> basis;
     Pk1DLocalCoefficients<k> coefficients;
     Pk1DLocalInterpolation<Pk1DLocalBasis<D,R,k> > interpolation;
-    GeometryType gt;
   };
 
   //! Langrange finite element of arbitrary order on triangles

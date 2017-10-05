@@ -46,8 +46,7 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    DualQ1LocalFiniteElement () :
-      gt(Dune::GeometryTypes::cube(dim))
+    DualQ1LocalFiniteElement ()
     {
       if (faceDual)
           setupFaceDualCoefficients();
@@ -84,9 +83,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    GeometryType type () const
+    static constexpr GeometryType type ()
     {
-      return gt;
+      return GeometryTypes::cube(dim);
     }
 
     DualQ1LocalFiniteElement* clone () const
@@ -104,7 +103,6 @@ namespace Dune
     DualQ1LocalBasis<D,R,dim> basis;
     DualQ1LocalCoefficients<dim> coefficients;
     DualQ1LocalInterpolation<dim,DualQ1LocalBasis<D,R,dim> > interpolation;
-    GeometryType gt;
   };
 
   template<class D, class R, int dim, bool faceDual>
@@ -116,7 +114,7 @@ namespace Dune
 
     // dual basis functions are linear combinations of Lagrange elements
     // compute these coefficients here because the basis and the local interpolation needs them
-    const auto& quad = Dune::QuadratureRules<D,dim>::rule(gt, 2*dim);
+    const auto& quad = Dune::QuadratureRules<D,dim>::rule(type(), 2*dim);
 
     // assemble mass matrix on the reference element
     Dune::FieldMatrix<R, size, size> massMat;
@@ -175,7 +173,7 @@ namespace Dune
     // dual basis functions are linear combinations of Lagrange elements
     Dune::Q1LocalBasis<D,R,dim> q1Basis;
 
-    const auto& refElement = Dune::ReferenceElements<D,dim>::general(gt);
+    const auto& refElement = Dune::ReferenceElements<D,dim>::general(type());
 
     // loop over faces
     for (size_t i=0; i<refElement.size(1);i++) {

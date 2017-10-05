@@ -30,15 +30,13 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    Pk2DLocalFiniteElement () :
-      gt(Dune::GeometryTypes::triangle)
+    Pk2DLocalFiniteElement ()
     {}
 
     /** \todo Please doc me !
      */
     Pk2DLocalFiniteElement (int variant) :
-      coefficients(variant),
-      gt(Dune::GeometryTypes::triangle)
+      coefficients(variant)
     {}
 
     /** Constructor for six variants with permuted vertices.
@@ -48,8 +46,7 @@ namespace Dune
         the vertices by reducing those to the integers 0...2
      */
     Pk2DLocalFiniteElement (const unsigned int vertexmap[3]) :
-      coefficients(vertexmap),
-      gt(Dune::GeometryTypes::triangle)
+      coefficients(vertexmap)
     {}
 
     /** \todo Please doc me !
@@ -81,9 +78,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    GeometryType type () const
+    static constexpr GeometryType type ()
     {
-      return gt;
+      return GeometryTypes::triangle;
     }
 
     Pk2DLocalFiniteElement* clone () const
@@ -95,7 +92,6 @@ namespace Dune
     Pk2DLocalBasis<D,R,k> basis;
     Pk2DLocalCoefficients<k> coefficients;
     Pk2DLocalInterpolation<Pk2DLocalBasis<D,R,k> > interpolation;
-    GeometryType gt;
   };
 
   //! Langrange finite element of arbitrary order on triangles

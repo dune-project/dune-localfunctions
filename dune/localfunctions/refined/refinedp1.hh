@@ -36,8 +36,7 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    RefinedP1LocalFiniteElement () :
-      gt(Dune::GeometryTypes::line)
+    RefinedP1LocalFiniteElement ()
     {}
 
     /** \todo Please doc me !
@@ -69,9 +68,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    GeometryType type () const
+    static constexpr GeometryType type ()
     {
-      return gt;
+      return GeometryTypes::line;
     }
 
     RefinedP1LocalFiniteElement * clone () const
@@ -83,7 +82,6 @@ namespace Dune
     RefinedP1LocalBasis<D,R,1> basis;
     Pk1DLocalCoefficients<2> coefficients;
     Pk1DLocalInterpolation<Pk1DLocalBasis<D,R,2> > interpolation;
-    GeometryType gt;
   };
 
 
@@ -102,8 +100,7 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    RefinedP1LocalFiniteElement () :
-      gt(Dune::GeometryTypes::triangle)
+    RefinedP1LocalFiniteElement ()
     {}
 
     /** \todo Please doc me !
@@ -135,9 +132,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    GeometryType type () const
+    static constexpr GeometryType type ()
     {
-      return gt;
+      return GeometryTypes::triangle;
     }
 
     RefinedP1LocalFiniteElement * clone () const
@@ -149,7 +146,6 @@ namespace Dune
     RefinedP1LocalBasis<D,R,2> basis;
     Pk2DLocalCoefficients<2> coefficients;
     Pk2DLocalInterpolation<Pk2DLocalBasis<D,R,2> > interpolation;
-    GeometryType gt;
   };
 
   /** \todo Please doc me !
@@ -166,8 +162,7 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    RefinedP1LocalFiniteElement () :
-      gt(Dune::GeometryTypes::tetrahedron)
+    RefinedP1LocalFiniteElement ()
     {}
 
     /** \todo Please doc me !
@@ -199,9 +194,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    GeometryType type () const
+    static constexpr GeometryType type ()
     {
-      return gt;
+      return GeometryTypes::tetrahedron;
     }
 
     RefinedP1LocalFiniteElement* clone () const
@@ -213,7 +208,6 @@ namespace Dune
     RefinedP1LocalBasis<D,R,3> basis;
     Pk3DLocalCoefficients<2> coefficients;
     Pk3DLocalInterpolation<Pk3DLocalBasis<D,R,2> > interpolation;
-    GeometryType gt;
   };
 
 }

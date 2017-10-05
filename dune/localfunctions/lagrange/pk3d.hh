@@ -27,8 +27,7 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    Pk3DLocalFiniteElement () :
-      gt(Dune::GeometryTypes::tetrahedron)
+    Pk3DLocalFiniteElement ()
     {}
 
     /** Constructor for variants with permuted vertices.
@@ -38,8 +37,7 @@ namespace Dune
         the vertices by reducing those to the integers 0...3
      */
     Pk3DLocalFiniteElement (const unsigned int vertexmap[4]) :
-      coefficients(vertexmap),
-      gt(Dune::GeometryTypes::tetrahedron)
+      coefficients(vertexmap)
     {}
 
     /** \todo Please doc me !
@@ -71,9 +69,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    GeometryType type () const
+    static constexpr GeometryType type ()
     {
-      return gt;
+      return GeometryTypes::tetrahedron;
     }
 
     Pk3DLocalFiniteElement* clone () const
@@ -85,7 +83,6 @@ namespace Dune
     Pk3DLocalBasis<D,R,k> basis;
     Pk3DLocalCoefficients<k> coefficients;
     Pk3DLocalInterpolation<Pk3DLocalBasis<D,R,k> > interpolation;
-    GeometryType gt;
   };
 
 }

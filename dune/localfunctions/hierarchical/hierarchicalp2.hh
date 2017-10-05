@@ -33,8 +33,7 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    HierarchicalP2LocalFiniteElement () :
-      gt(Dune::GeometryTypes::simplex(dim))
+    HierarchicalP2LocalFiniteElement ()
     {}
 
     /** \todo Please doc me !
@@ -66,9 +65,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    GeometryType type () const
+    static constexpr GeometryType type ()
     {
-      return gt;
+      return GeometryTypes::simplex(dim);
     }
 
     HierarchicalP2LocalFiniteElement* clone () const
@@ -82,7 +81,6 @@ namespace Dune
     typename Traits::LocalCoefficientsType coefficients;
 
     HierarchicalSimplexP2LocalInterpolation<HierarchicalSimplexP2LocalBasis<D,R,dim> > interpolation;
-    GeometryType gt;
   };
 
 }

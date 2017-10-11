@@ -1,9 +1,10 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_VIRTUALINTERFACE_HH
-#define DUNE_VIRTUALINTERFACE_HH
+#ifndef DUNE_LOCALFUNCTIONS_COMMON_VIRTUALINTERFACE_HH
+#define DUNE_LOCALFUNCTIONS_COMMON_VIRTUALINTERFACE_HH
 
 #include <array>
+#include <vector>
 
 #include <dune/common/function.hh>
 
@@ -191,7 +192,7 @@ namespace Dune
 
     virtual ~LocalInterpolationVirtualInterface() {}
 
-    // This method is only notet again for to make the documentation complete.
+    // This method is only noted again for to make the documentation complete.
 
     /** \brief determine coefficients interpolating a given function
      *

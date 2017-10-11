@@ -1,7 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_VIRTUALWRAPPERS_HH
-#define DUNE_VIRTUALWRAPPERS_HH
+#ifndef DUNE_LOCALFUNCTIONS_COMMON_VIRTUALWRAPPERS_HH
+#define DUNE_LOCALFUNCTIONS_COMMON_VIRTUALWRAPPERS_HH
 
 #include <array>
 

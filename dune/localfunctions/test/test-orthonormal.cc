@@ -99,6 +99,25 @@ bool test(unsigned int order)
   return ret;
 }
 
+#ifdef CHECKDIM
+  #if CHECKDIM==1
+      #define CHECKDIM1
+  #elif CHECKDIM==2
+      #define CHECKDIM2
+  #elif CHECKDIM==3
+      #define CHECKDIM3
+  #elif CHECKDIM==4
+      #define CHECKDIM4
+  #endif
+#else
+  #define CHECKDIM1
+  #define CHECKDIM2
+  #define CHECKDIM3
+  #define CHECKDIM4
+#endif
+
+
+
 int main ( int argc, char **argv )
 {
   using namespace Dune;
@@ -115,19 +134,28 @@ int main ( int argc, char **argv )
   return (test<TOPOLOGY>(order) ? 0 : 1 );
 #else
   bool tests = true;
+
+#ifdef CHECKDIM1
   tests &= test<Prism<Point> > (order);
   tests &= test<Pyramid<Point> > (order);
+#endif
 
+#ifdef CHECKDIM2
   tests &= test<Prism<Prism<Point> > > (order);
   tests &= test<Pyramid<Pyramid<Point> > >(order);
+#endif
 
+#ifdef CHECKDIM3
   tests &= test<Prism<Prism<Prism<Point> > > >(order);
   tests &= test<Prism<Pyramid<Pyramid<Point> > > >(order);
   tests &= test<Pyramid<Prism<Prism<Point> > > >(order);
   tests &= test<Pyramid<Pyramid<Pyramid<Point> > > >(order);
+#endif
 
+#ifdef CHECKDIM4
   tests &= test<Prism<Prism<Prism<Prism<Point> > > > >(order);
   tests &= test<Pyramid<Pyramid<Pyramid<Pyramid<Point> > > > >(order);
+#endif
 
   return (tests ? 0 : 1);
 #endif // TOPOLOGY

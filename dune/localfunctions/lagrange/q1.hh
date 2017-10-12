@@ -24,6 +24,11 @@ namespace Dune
   class Q1LocalFiniteElement
   {
   public:
+    // user-defined default constructor is required for clang 3.8,
+    // see https://gitlab.dune-project.org/core/dune-localfunctions/merge_requests/60
+    /** default constructor */
+    Q1LocalFiniteElement() {}
+
     /** \todo Please doc me !
      */
     typedef LocalFiniteElementTraits<Q1LocalBasis<D,R,dim>,Q1LocalCoefficients<dim>,

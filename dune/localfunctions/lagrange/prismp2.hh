@@ -27,8 +27,7 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    PrismP2LocalFiniteElement () :
-      gt(Dune::GeometryTypes::prism)
+    PrismP2LocalFiniteElement ()
     {}
 
     /** \todo Please doc me !
@@ -60,9 +59,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    GeometryType type () const
+    static constexpr GeometryType type ()
     {
-      return gt;
+      return GeometryTypes::prism;
     }
 
     PrismP2LocalFiniteElement* clone () const
@@ -74,7 +73,6 @@ namespace Dune
     PrismP2LocalBasis<D,R> basis;
     PrismP2LocalCoefficients coefficients;
     PrismP2LocalInterpolation<PrismP2LocalBasis<D,R> > interpolation;
-    GeometryType gt;
   };
 
 }

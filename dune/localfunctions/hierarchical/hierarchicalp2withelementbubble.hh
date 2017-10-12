@@ -29,8 +29,7 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    HierarchicalP2WithElementBubbleLocalFiniteElement () :
-      gt_(Dune::GeometryTypes::triangle)
+    HierarchicalP2WithElementBubbleLocalFiniteElement ()
     {}
 
     /** \todo Please doc me !
@@ -62,9 +61,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    GeometryType type () const
+    static constexpr GeometryType type ()
     {
-      return gt_;
+      return GeometryTypes::triangle;
     }
 
     HierarchicalP2WithElementBubbleLocalFiniteElement* clone () const
@@ -78,8 +77,6 @@ namespace Dune
     HierarchicalSimplexP2WithElementBubbleLocalCoefficients<dim> coefficients_;
 
     HierarchicalSimplexP2WithElementBubbleLocalInterpolation<HierarchicalSimplexP2WithElementBubbleLocalBasis<D,R,dim> > interpolation_;
-
-    GeometryType gt_;
   };
 
 }

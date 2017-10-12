@@ -27,8 +27,7 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    PyramidP2LocalFiniteElement () :
-      gt(Dune::GeometryTypes::pyramid)
+    PyramidP2LocalFiniteElement ()
     {}
 
     /** \todo Please doc me !
@@ -60,9 +59,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    GeometryType type () const
+    static constexpr GeometryType type ()
     {
-      return gt;
+      return GeometryTypes::pyramid;
     }
 
     PyramidP2LocalFiniteElement* clone () const
@@ -74,7 +73,6 @@ namespace Dune
     PyramidP2LocalBasis<D,R> basis;
     PyramidP2LocalCoefficients coefficients;
     PyramidP2LocalInterpolation<PyramidP2LocalBasis<D,R> > interpolation;
-    GeometryType gt;
   };
 
 }

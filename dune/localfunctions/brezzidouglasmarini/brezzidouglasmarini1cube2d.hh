@@ -31,8 +31,7 @@ namespace Dune
         BDM1Cube2DLocalInterpolation<BDM1Cube2DLocalBasis<D,R> > > Traits;
 
     //! \brief Standard constructor
-    BDM1Cube2DLocalFiniteElement () :
-      gt(Dune::GeometryTypes::quadrilateral)
+    BDM1Cube2DLocalFiniteElement ()
     {}
 
     /**
@@ -42,8 +41,7 @@ namespace Dune
      */
     BDM1Cube2DLocalFiniteElement (int s) :
       basis(s),
-      interpolation(s),
-      gt(Dune::GeometryTypes::quadrilateral)
+      interpolation(s)
     {}
 
     const typename Traits::LocalBasisType& localBasis () const
@@ -67,16 +65,15 @@ namespace Dune
       return basis.size();
     }
 
-    GeometryType type () const
+    static constexpr GeometryType type ()
     {
-      return gt;
+      return GeometryTypes::quadrilateral;
     }
 
   private:
     BDM1Cube2DLocalBasis<D,R> basis;
     BDM1Cube2DLocalCoefficients coefficients;
     BDM1Cube2DLocalInterpolation<BDM1Cube2DLocalBasis<D,R> > interpolation;
-    GeometryType gt;
   };
 }
 #endif // DUNE_LOCALFUNCTIONS_BREZZIDOUGLASMARINI1_QUBE2D_LOCALFINITEELEMENT_HH

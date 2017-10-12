@@ -31,8 +31,7 @@ namespace Dune
         RT12DLocalInterpolation<RT12DLocalBasis<D,R> > > Traits;
 
     //! \brief Standard constructor
-    RT12DLocalFiniteElement () :
-      gt(Dune::GeometryTypes::triangle)
+    RT12DLocalFiniteElement ()
     {}
 
     /**
@@ -42,8 +41,7 @@ namespace Dune
      */
     RT12DLocalFiniteElement (int s) :
       basis(s),
-      interpolation(s),
-      gt(Dune::GeometryTypes::triangle)
+      interpolation(s)
     {}
 
     const typename Traits::LocalBasisType& localBasis () const
@@ -67,16 +65,15 @@ namespace Dune
       return basis.size();
     }
 
-    GeometryType type () const
+    static constexpr GeometryType type ()
     {
-      return gt;
+      return GeometryTypes::triangle;
     }
 
   private:
     RT12DLocalBasis<D,R> basis;
     RT12DLocalCoefficients coefficients;
     RT12DLocalInterpolation<RT12DLocalBasis<D,R> > interpolation;
-    GeometryType gt;
   };
 }
 

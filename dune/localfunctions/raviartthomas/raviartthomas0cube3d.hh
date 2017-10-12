@@ -27,14 +27,12 @@ namespace Dune
         RT0Cube3DLocalCoefficients,
         RT0Cube3DLocalInterpolation<RT0Cube3DLocalBasis<D,R> > > Traits;
 
-    RT0Cube3DLocalFiniteElement () :
-      gt(Dune::GeometryTypes::hexahedron)
+    RT0Cube3DLocalFiniteElement ()
     {}
 
     RT0Cube3DLocalFiniteElement (int s) :
       basis(s),
-      interpolation(s),
-      gt(Dune::GeometryTypes::hexahedron)
+      interpolation(s)
     {}
 
     const typename Traits::LocalBasisType& localBasis () const
@@ -58,16 +56,15 @@ namespace Dune
       return basis.size();
     }
 
-    GeometryType type () const
+    static constexpr GeometryType type ()
     {
-      return gt;
+      return GeometryTypes::hexahedron;
     }
 
   private:
     RT0Cube3DLocalBasis<D,R> basis;
     RT0Cube3DLocalCoefficients coefficients;
     RT0Cube3DLocalInterpolation<RT0Cube3DLocalBasis<D,R> > interpolation;
-    GeometryType gt;
   };
 }
 #endif // DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS0_CUBE3D_LOCALFINITEELEMENT_HH

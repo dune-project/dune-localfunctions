@@ -33,8 +33,7 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    QkLocalFiniteElement () :
-      gt(Dune::GeometryTypes::cube(d))
+    QkLocalFiniteElement ()
     {}
 
     /** \todo Please doc me !
@@ -66,9 +65,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    GeometryType type () const
+    static constexpr GeometryType type ()
     {
-      return gt;
+      return GeometryTypes::cube(d);
     }
 
     QkLocalFiniteElement* clone () const
@@ -80,7 +79,6 @@ namespace Dune
     LocalBasis basis;
     LocalCoefficients coefficients;
     LocalInterpolation interpolation;
-    GeometryType gt;
   };
 
 }

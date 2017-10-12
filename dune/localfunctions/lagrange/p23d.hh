@@ -27,8 +27,7 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    P23DLocalFiniteElement () :
-      gt(Dune::GeometryTypes::tetrahedron)
+    P23DLocalFiniteElement ()
     {}
 
     /** \todo Please doc me !
@@ -60,9 +59,9 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    GeometryType type () const
+    static constexpr GeometryType type ()
     {
-      return gt;
+      return GeometryTypes::tetrahedron;
     }
 
     P23DLocalFiniteElement* clone () const
@@ -74,7 +73,6 @@ namespace Dune
     P23DLocalBasis<D,R> basis;
     P23DLocalCoefficients coefficients;
     P23DLocalInterpolation<P23DLocalBasis<D,R> > interpolation;
-    GeometryType gt;
   };
 
 }

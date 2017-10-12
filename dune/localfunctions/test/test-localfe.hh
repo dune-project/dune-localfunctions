@@ -27,27 +27,6 @@ double TOL = 1e-9;
 // precision -- so we have to be a little bit more tolerant here.
 double jacobianTOL = 1e-5;  // sqrt(TOL)
 
-template<class FE>
-class Func :
-  //  public Dune::LocalFiniteElementFunctionBase<FE>::type
-  public Dune::LocalFiniteElementFunctionBase<FE>::FunctionBase
-  //  public Dune::LocalFiniteElementFunctionBase<FE>::VirtualFunctionBase
-{
-public:
-  typedef typename FE::Traits::LocalBasisType::Traits::DomainType DomainType;
-  typedef typename FE::Traits::LocalBasisType::Traits::RangeType RangeType;
-  typedef typename Dune::Function<const DomainType&, RangeType&> Base;
-
-  void evaluate (const DomainType& x, RangeType& y) const
-  {
-    y = 0;
-    DomainType c(0.5);
-
-    c -= x;
-    y[0] = exp(-3.0*c.two_norm2());
-  }
-};
-
 // This class defines a local finite element function.
 // It is determined by a local finite element and
 // representing the local basis and a coefficient vector.
@@ -593,8 +572,6 @@ enum {
 template<class FE>
 bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned int diffOrder = 0)
 {
-  std::vector<double> c;
-
   // Order of the quadrature rule used to generate test points
   unsigned int quadOrder = 2;
 
@@ -656,7 +633,6 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned int diffOrd
 
   if (not (disabledTests & DisableLocalInterpolation))
   {
-    fe.localInterpolation().interpolate(Func<FE>(),c);
     success = testLocalInterpolation<FE>(fe) and success;
   }
   if (not (disabledTests & DisableJacobian))

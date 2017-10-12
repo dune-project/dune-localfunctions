@@ -27,13 +27,10 @@ double TOL = 1e-9;
 // precision -- so we have to be a little bit more tolerant here.
 double jacobianTOL = 1e-5;  // sqrt(TOL)
 
-// This class defines a local finite element function.
-// It is determined by a local finite element and
-// representing the local basis and a coefficient vector.
-// This provides the evaluate method needed by the interpolate()
-// method.
+// This class wraps one shape function of a local finite element as a function
+// that can be feed to the LocalInterpolation::interpolate method.
 template<class FE>
-class LocalFEFunction :
+class ShapeFunctionAsFunction :
   //  public Dune::LocalFiniteElementFunctionBase<FE>::type
   public Dune::LocalFiniteElementFunctionBase<FE>::FunctionBase
   //  public Dune::LocalFiniteElementFunctionBase<FE>::VirtualFunctionBase
@@ -45,59 +42,38 @@ public:
 
   typedef typename FE::Traits::LocalBasisType::Traits::RangeFieldType CT;
 
-  LocalFEFunction(const FE& fe) :
-    fe_(fe)
-  {
-    resetCoefficients();
-  }
-
-  void resetCoefficients()
-  {
-    coeff_.resize(fe_.localBasis().size());
-    for(std::size_t i=0; i<coeff_.size(); ++i)
-      coeff_[i] = 0;
-  }
-
-  void setRandom(double max)
-  {
-    coeff_.resize(fe_.localBasis().size());
-    for(std::size_t i=0; i<coeff_.size(); ++i)
-      coeff_[i] = ((1.0*std::rand()) / RAND_MAX - 0.5)*2.0*max;
-  }
-
+  ShapeFunctionAsFunction(const FE& fe, int shapeFunction) :
+    fe_(fe),
+    shapeFunction_(shapeFunction)
+  {}
 
   void evaluate (const DomainType& x, RangeType& y) const
   {
     std::vector<RangeType> yy;
     fe_.localBasis().evaluateFunction(x, yy);
-
-    y = 0.0;
-    for (std::size_t i=0; i<yy.size(); ++i)
-      y.axpy(coeff_[i], yy[i]);
+    y = yy[shapeFunction_];
   }
-
-  std::vector<CT> coeff_;
 
 private:
   const FE& fe_;
+  int shapeFunction_;
 };
 
 
-// Check if localInterpolation is consistens with
-// localBasis evaluation.
+// Check whether the degrees of freedom computed by LocalInterpolation
+// are dual to the shape functions.  See Ciarlet, "The Finite Element Method
+// for Elliptic Problems", 1978, for details.
 template<class FE>
-bool testLocalInterpolation(const FE& fe, int n=5)
+bool testLocalInterpolation(const FE& fe)
 {
-  bool success = true;
-  LocalFEFunction<FE> f(fe);
-
-  std::vector<typename LocalFEFunction<FE>::CT> coeff;
-  for(int i=0; i<n && success; ++i)
+  std::vector<typename ShapeFunctionAsFunction<FE>::CT> coeff;
+  for(size_t i=0; i<fe.size(); ++i)
   {
-    // Set random coefficient vector
-    f.setRandom(100);
+    // The i-th shape function as a function that 'interpolate' can deal with
+    ShapeFunctionAsFunction<FE> f(fe, i);
 
-    // Compute interpolation weights
+    // Compute degrees of freedom for that shape function
+    // We expect the result to be the i-th unit vector
     fe.localInterpolation().interpolate(f, coeff);
 
     // Check size of weight vector
@@ -105,30 +81,28 @@ bool testLocalInterpolation(const FE& fe, int n=5)
     {
       std::cout << "Bug in LocalInterpolation for finite element type "
                 << Dune::className(fe) << std::endl;
-      std::cout << "    Interpolation vector has size " << coeff.size() << std::endl;
+      std::cout << "    Interpolation produces " << coeff.size() << " degrees of freedom" << std::endl;
       std::cout << "    Basis has size " << fe.localBasis().size() << std::endl;
       std::cout << std::endl;
-      success = false;
+      return false;
     }
 
     // Check if interpolation weights are equal to coefficients
-    for(std::size_t j=0; j<coeff.size() && success; ++j)
+    for(std::size_t j=0; j<coeff.size(); ++j)
     {
-      if ( std::abs(coeff[j]-f.coeff_[j]) >
-           TOL*((std::abs(f.coeff_[j])>1) ? std::abs(f.coeff_[j]) : 1.) )
+      if ( std::abs(coeff[j] - (i==j)) > TOL)
       {
         std::cout << std::setprecision(16);
         std::cout << "Bug in LocalInterpolation for finite element type "
                   << Dune::className(fe) << std::endl;
-        std::cout << "    Interpolation weight " << j
-                  << " differs by " << std::abs(coeff[j]-f.coeff_[j])
-                  << " from coefficient of linear combination." << std::endl;
+        std::cout << "    Degree of freedom " << j << " applied to shape function " << i
+                  << " yields value " << coeff[j] << ", not the expected value " << (i==j) << std::endl;
         std::cout << std::endl;
-        success = false;
+        return false;
       }
     }
   }
-  return success;
+  return true;
 }
 
 

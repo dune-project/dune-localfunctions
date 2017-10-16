@@ -26,27 +26,6 @@ namespace Dune
   // -----------------------------------------------------------------
 
   /**
-   * @brief Construct LocalBasisTraits with fixed diff order
-   *
-   * @tparam T A LocalBasisTraits class
-   * @tparam order The differentiation order
-   */
-  template<class T, int order>
-  struct FixedOrderLocalBasisTraits
-  {
-    //! The LocalBasisTraits specified order
-    typedef LocalBasisTraits<
-        typename T::DomainFieldType,
-        T::dimDomain,
-        typename T::DomainType,
-        typename T::RangeFieldType,
-        T::dimRange,
-        typename T::RangeType,
-        typename T::JacobianType,
-        order> Traits;
-  };
-
-  /**
    * @brief Return a proper base class for functions to use with LocalInterpolation.
    *
    * @tparam FE A FiniteElement type
@@ -277,15 +256,13 @@ namespace Dune
   // -----------------------------------------------------------------
 
 
-  /*
-   * This class is necessary to canonicalize the diffOrder
-   * in the LocalDerivativeTraits to the value zero. Doing
-   * this via the template alias LocalFiniteElementVirtualInterface
-   * has the consequence that you get exactly the same interface
-   * class regardless of the diffOrder in the passed LocalBasisTraits.
+  /**
+   * @brief virtual base class for local finite elements with functions
+   *
+   * This class defines the same interface using pure virtual methods.
    */
   template<class T>
-  class LocalFiniteElementVirtualInterfaceImp
+  class LocalFiniteElementVirtualInterface
   {
     using LocalBasisTraits = T;
   public:
@@ -296,7 +273,7 @@ namespace Dune
             typename LocalBasisTraits::DomainType,
             typename LocalBasisTraits::RangeType> > Traits;
 
-    virtual ~LocalFiniteElementVirtualInterfaceImp() {}
+    virtual ~LocalFiniteElementVirtualInterface() {}
 
     //! \copydoc LocalFiniteElementVirtualInterface::localBasis
     virtual const typename Traits::LocalBasisType& localBasis () const = 0;
@@ -313,15 +290,7 @@ namespace Dune
     //! \copydoc LocalFiniteElementVirtualInterface::type
     virtual const GeometryType type () const = 0;
 
-    virtual LocalFiniteElementVirtualInterfaceImp<T>* clone() const = 0;
+    virtual LocalFiniteElementVirtualInterface<T>* clone() const = 0;
   };
-
-  /**
-   * @brief virtual base class for local finite elements with functions
-   *
-   * This class defines the same interface using pure virtual methods.
-   */
-  template<class T>
-  using LocalFiniteElementVirtualInterface = LocalFiniteElementVirtualInterfaceImp<typename FixedOrderLocalBasisTraits<T,0>::Traits>;
 }
 #endif

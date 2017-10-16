@@ -236,9 +236,9 @@ namespace Dune
    */
   template<class Imp>
   class LocalFiniteElementVirtualImp
-    : public LocalFiniteElementVirtualInterface<typename FixedOrderLocalBasisTraits<typename Imp::Traits::LocalBasisType::Traits,0>::Traits>
+    : public LocalFiniteElementVirtualInterface<typename Imp::Traits::LocalBasisType::Traits>
   {
-    using LocalBasisTraits = typename FixedOrderLocalBasisTraits<typename Imp::Traits::LocalBasisType::Traits,0>::Traits;
+    using LocalBasisTraits = typename Imp::Traits::LocalBasisType::Traits;
     using Interface = LocalFiniteElementVirtualInterface<LocalBasisTraits>;
 
   public:

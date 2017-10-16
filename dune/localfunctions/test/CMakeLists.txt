@@ -1,14 +1,24 @@
+dune_add_test(SOURCES brezzidouglasmarinielementtest.cc)
+
+dune_add_test(SOURCES dualmortarelementtest.cc)
+
+dune_add_test(SOURCES hierarchicalelementtest.cc)
+
 dune_add_test(SOURCES testgenericfem.cc)
 
 dune_add_test(SOURCES lagrangeshapefunctiontest.cc)
 
 dune_add_test(SOURCES monomialshapefunctiontest.cc)
 
+dune_add_test(SOURCES rannacherturekelementtest.cc)
+
+dune_add_test(SOURCES raviartthomaselementtest.cc)
+
+dune_add_test(SOURCES refinedelementtest.cc)
+
 dune_add_test(SOURCES virtualshapefunctiontest.cc)
 
 dune_add_test(SOURCES test-edges0.5.cc)
-
-dune_add_test(SOURCES test-localfe.cc)
 
 dune_add_test(SOURCES globalmonomialfunctionstest.cc)
 

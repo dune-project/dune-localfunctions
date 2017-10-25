@@ -695,6 +695,10 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned int diffOrd
     }
   }
 
+  // Test whether local finite element has the 'clone' method
+  const FE* feClone = fe.clone();
+  delete feClone;
+
   return success;
 }
 

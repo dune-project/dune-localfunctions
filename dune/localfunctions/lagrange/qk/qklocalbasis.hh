@@ -139,34 +139,32 @@ namespace Dune
                         const typename Traits::DomainType& in,
                         std::vector<typename Traits::RangeType>& out) const
     {
-      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      out.resize(size());
 
-      switch (totalOrder)
+      // Loop over all shape functions
+      for (size_t i=0; i<size(); i++)
       {
-        case 0:
-          evaluateFunction(in,out);
-          break;
-        case 1:
+        // convert index i to multiindex
+        Dune::FieldVector<int,d> alpha(multiindex(i));
+
+        // Initialize: the overall expression is a product
+        out[i][0] = 1.0;
+
+        // rest of the product
+        for (std::size_t l=0; l<d; l++)
         {
-          out.resize(size());
-
-          // Loop over all shape functions
-          for (size_t i=0; i<size(); i++)
+          switch (order[l])
           {
-            // convert index i to multiindex
-            Dune::FieldVector<int,d> alpha(multiindex(i));
-
-            // Initialize: the overall expression is a product
-            out[i][0] = 1.0;
-
-            // rest of the product
-            for (std::size_t l=0; l<d; l++)
-              out[i][0] *= (order[l]) ? dp(alpha[l],in[l]) : p(alpha[l],in[l]);
+            case 0:
+              out[i][0] *= p(alpha[l],in[l]);
+              break;
+            case 1:
+              out[i][0] *= dp(alpha[l],in[l]);
+              break;
+            default:
+              DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
           }
-          break;
         }
-        default:
-          DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
       }
     }
 

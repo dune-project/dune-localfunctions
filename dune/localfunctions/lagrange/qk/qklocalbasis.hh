@@ -33,8 +33,6 @@ namespace Dune
   template<class D, class R, int k, int d>
   class QkLocalBasis
   {
-    enum { n = StaticPower<k+1,d>::power };
-
     // ith Lagrange polynomial of degree k in one dimension
     static R p (int i, D x)
     {

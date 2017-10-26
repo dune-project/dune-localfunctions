@@ -70,11 +70,6 @@ namespace Dune
       return GeometryTypes::cube(d);
     }
 
-    QkLocalFiniteElement* clone () const
-    {
-      return new QkLocalFiniteElement(*this);
-    }
-
   private:
     LocalBasis basis;
     LocalCoefficients coefficients;

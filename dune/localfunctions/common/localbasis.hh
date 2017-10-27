@@ -24,11 +24,10 @@ namespace Dune
          \tparam m  Dimension of the range.
          \tparam R  Type to represent the range, allows random access.
          \tparam J  Type to represent the Jacobian, allows random access.
-         \tparam dorder Maximal order of implemented partial derivatives
 
          \nosubgrouping
    */
-  template<class DF, int n, class D, class RF, int m, class R, class J, int dorder=0>
+  template<class DF, int n, class D, class RF, int m, class R, class J>
   struct LocalBasisTraits
   {
     //! \brief Export type for domain field
@@ -62,12 +61,6 @@ namespace Dune
             the derivative  \f$\partial_j \hat\phi_i \f$.
      */
     typedef J JacobianType;
-
-    //! \brief Enum for differentiability order
-    enum {
-      //! \brief number of partial derivatives supported
-      diffOrder=dorder
-    };
   };
 
 }

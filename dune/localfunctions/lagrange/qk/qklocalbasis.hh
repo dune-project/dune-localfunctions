@@ -59,6 +59,37 @@ namespace Dune
       return result;
     }
 
+    // Second derivative of j-th Lagrange polynomial of degree k in one dimension
+    // Formula and notation taken from https://en.wikipedia.org/wiki/Lagrange_polynomial#Derivatives
+    static R ddp (int j, D x)
+    {
+      R result(0.0);
+
+      for (int i=0; i<=k; i++)
+      {
+        if (i==j)
+          continue;
+
+        R sum(0);
+
+        for (int m=0; m<=k; m++)
+        {
+          if (m==i || m==j)
+            continue;
+
+          R prod( (k*1.0)/(j-m) );
+          for (int l=0; l<=k; l++)
+            if (l!=i && l!=j && l!=m)
+              prod *= (k*x-l)/(j-l);
+          sum += prod;
+        }
+
+        result += sum * ( (k*1.0)/(j-i) );
+      }
+
+      return result;
+    }
+
     // Return i as a d-digit number in the (k+1)-nary system
     static Dune::FieldVector<int,d> multiindex (int i)
     {
@@ -160,6 +191,9 @@ namespace Dune
               break;
             case 1:
               out[i][0] *= dp(alpha[l],in[l]);
+              break;
+            case 2:
+              out[i][0] *= ddp(alpha[l],in[l]);
               break;
             default:
               DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");

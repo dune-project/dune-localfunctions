@@ -44,10 +44,6 @@ namespace Dune {
        */
       typedef FieldMatrix<typename Traits::RangeField, dimR,
           Traits::dimDomainGlobal> Jacobian;
-
-      //! maximum number of partial derivatives supported
-      static const std::size_t diffOrder =
-        Backend::Traits::diffOrder > 0 ? 1 : 0;
     };
 
     //! Construct a PowerBasis

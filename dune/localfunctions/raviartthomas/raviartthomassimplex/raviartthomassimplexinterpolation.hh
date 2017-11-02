@@ -287,11 +287,7 @@ namespace Dune
       typedef Dune::QuadratureRule<Field, dimension-1> FaceQuadrature;
       typedef Dune::QuadratureRules<Field, dimension-1> FaceQuadratureRules;
 
-      typedef Dune::ReferenceElements< Field, dimension > RefElements;
-      typedef Dune::ReferenceElement< Field, dimension > RefElement;
-      typedef typename RefElement::template Codim< 1 >::Geometry Geometry;
-
-      const RefElement &refElement = RefElements::general( geoType );
+      const auto &refElement = Dune::ReferenceElements< Field, dimension >::general( geoType );
 
       for (unsigned int f=0; f<builder_.faceSize(); ++f)
       {
@@ -299,7 +295,7 @@ namespace Dune
           continue;
         testBasisVal.resize(builder_.testFaceBasis(f)->size());
 
-        const Geometry &geometry = refElement.template geometry< 1 >( f );
+        const auto &geometry = refElement.template geometry< 1 >( f );
         const Dune::GeometryType subGeoType( geometry.type().id(), dimension-1 );
         const FaceQuadrature &faceQuad = FaceQuadratureRules::rule( subGeoType, 2*order_+2 );
 

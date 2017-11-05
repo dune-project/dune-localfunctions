@@ -4,6 +4,7 @@
 #define DUNE_DUAL_P1_LOCALINTERPOLATION_HH
 
 #include <vector>
+#include <dune/localfunctions/common/localinterpolation.hh>
 
 namespace Dune
 {
@@ -13,13 +14,14 @@ namespace Dune
   public:
     //! \brief Local interpolation of a function
     template<typename F, typename C>
-    void interpolate (const F& f, std::vector<C>& out) const
+    void interpolate (const F& ff, std::vector<C>& out) const
     {
-      typename LB::Traits::RangeType y;
       typename LB::Traits::DomainType x;
       // If the dual functions are dual on the faces,
       // then adjust the interpolation weights
       const int faceDual(LB::faceDual);
+
+      auto&& f = Impl::makeFunctionWithCallOperator<decltype(x)>(ff);
 
       // compute P1 interpolation coefficients
       std::vector<C> p1Interpolation(dim+1);
@@ -27,14 +29,14 @@ namespace Dune
       // vertex 0
       for (int i=0; i<dim; i++)
         x[i] = 0;
-      f.evaluate(x,y); p1Interpolation[0] = y;
+      p1Interpolation[0] = f(x);
 
       // remaining vertices
       for (int i=0; i<dim; i++) {
         for (int j=0; j<dim; j++)
           x[j] = (i==j);
 
-        f.evaluate(x,y); p1Interpolation[i+1] = y;
+        p1Interpolation[i+1] = f(x);
 
       }
 

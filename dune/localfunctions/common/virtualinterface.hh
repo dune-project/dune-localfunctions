@@ -188,7 +188,7 @@ namespace Dune
     template<class F>
     void interpolate (const F& ff, std::vector<CoefficientType>& out) const
     {
-      const auto& f = Impl::makeFunctionWithCallOperator<DomainType, RangeType>(ff);
+      const auto& f = Impl::makeFunctionWithCallOperator<DomainType>(ff);
 
       const LocalInterpolationVirtualInterfaceBase<DomainType, RangeType>& asBase = *this;
       asBase.interpolate(makeVirtualFunctionWrapper(f),out);
@@ -197,7 +197,7 @@ namespace Dune
     template<class F, class C>
     void interpolate (const F& ff, std::vector<C>& out) const
     {
-      const auto& f = Impl::makeFunctionWithCallOperator<DomainType, RangeType>(ff);
+      const auto& f = Impl::makeFunctionWithCallOperator<DomainType>(ff);
 
       std::vector<CoefficientType> outDummy;
       const LocalInterpolationVirtualInterfaceBase<DomainType, RangeType>& asBase = *this;

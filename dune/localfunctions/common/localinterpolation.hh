@@ -54,7 +54,7 @@ namespace Dune {
 
     // Create function supporting Range = f(Domain)
     // If the argument already does this, just forward it.
-    template<class Domain, class Range, class F,
+    template<class Domain, class F,
       std::enable_if_t<models<FunctionWithCallOperator<Domain>, F>(), int> = 0>
     decltype(auto) makeFunctionWithCallOperator(const F& f)
     {
@@ -63,12 +63,12 @@ namespace Dune {
 
     // Create function supporting Range = f(Domain)
     // If the argument does not support this, wrap it in a lambda
-    template<class Domain, class Range, class F,
+    template<class Domain, class F,
       std::enable_if_t<not models<FunctionWithCallOperator<Domain>, F>(), int> = 0>
     decltype(auto) makeFunctionWithCallOperator(const F& f)
     {
       return [&](auto&& x) {
-        Range y;
+        typename std::decay_t<F>::Traits::RangeType y;
         f.evaluate(x,y);
         return y;
       };

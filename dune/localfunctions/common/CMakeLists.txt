@@ -2,6 +2,7 @@ install(FILES
   interface.hh
   interfaceswitch.hh
   localbasis.hh
+  localinterpolation.hh
   localkey.hh
   localfiniteelementtraits.hh
   localtoglobaladaptors.hh

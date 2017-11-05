@@ -65,7 +65,7 @@ namespace Dune {
   public:
     //! Determine coefficients interpolating a given function
     /**
-     * \param f   An object supporting the expression \c f.evaluate(x,y),
+     * \param ff  An object supporting the expression \c ff.evaluate(x,y),
      *            where \c x is of type \c Traits::DomainLocal and \c y of the
      *            type \c Traits::Range.  When \c f.evaluate(x,y) is
      *            evaluated, \c x will be a local coordinate, and the

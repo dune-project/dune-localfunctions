@@ -4,6 +4,7 @@
 #define DUNE_P2_3DLOCALINTERPOLATION_HH
 
 #include <vector>
+#include <dune/localfunctions/common/localinterpolation.hh>
 
 namespace Dune
 {
@@ -14,42 +15,42 @@ namespace Dune
 
     //! \brief Local interpolation of a function
     template<typename F, typename C>
-    void interpolate (const F& f, std::vector<C>& out) const
+    void interpolate (const F& ff, std::vector<C>& out) const
     {
-      typename LB::Traits::RangeType y;
-
       out.resize(10);
       typename LB::Traits::DomainType x;
 
+      auto&& f = Impl::makeFunctionWithCallOperator<typename LB::Traits::DomainType>(ff);
+
       x[0] = 0.0;   x[1] = 0.0;   x[2] = 0.0;
-      f.evaluate(x,y); out[0] = y;
+      out[0] = f(x);
 
       x[0] = 1.0;   x[1] = 0.0;   x[2] = 0.0;
-      f.evaluate(x,y); out[1] = y;
+      out[1] = f(x);
 
       x[0] = 0.0;   x[1] = 1.0;   x[2] = 0.0;
-      f.evaluate(x,y); out[2] = y;
+      out[2] = f(x);
 
       x[0] = 0.0;   x[1] = 0.0;   x[2] = 1.0;
-      f.evaluate(x,y); out[3] = y;
+      out[3] = f(x);
 
       x[0] = 0.5;   x[1] = 0.0;   x[2] = 0.0;
-      f.evaluate(x,y); out[4] = y;
+      out[4] = f(x);
 
       x[0] = 0.5;   x[1] = 0.5;   x[2] = 0.0;
-      f.evaluate(x,y); out[5] = y;
+      out[5] = f(x);
 
       x[0] = 0.0;   x[1] = 0.5;   x[2] = 0.0;
-      f.evaluate(x,y); out[6] = y;
+      out[6] = f(x);
 
       x[0] = 0.0;   x[1] = 0.0;   x[2] = 0.5;
-      f.evaluate(x,y); out[7] = y;
+      out[7] = f(x);
 
       x[0] = 0.5;   x[1] = 0.0;   x[2] = 0.5;
-      f.evaluate(x,y); out[8] = y;
+      out[8] = f(x);
 
       x[0] = 0.0;   x[1] = 0.5;   x[2] = 0.5;
-      f.evaluate(x,y); out[9] = y;
+      out[9] = f(x);
     }
   };
 }

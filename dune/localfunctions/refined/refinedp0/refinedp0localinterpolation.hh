@@ -4,6 +4,7 @@
 #define DUNE_REFINED_P0_LOCALINTERPOLATION_HH
 
 #include <dune/localfunctions/refined/refinedp0/refinedp0localbasis.hh>
+#include <dune/localfunctions/common/localinterpolation.hh>
 
 namespace Dune
 {
@@ -29,14 +30,14 @@ namespace Dune
 
 
     template<typename F, typename C>
-    void interpolate (const F& f, std::vector<C>& out) const
+    void interpolate (const F& ff, std::vector<C>& out) const
     {
-      typename LB::Traits::RangeType y;
+      auto&& f = Impl::makeFunctionWithCallOperator<DT>(ff);
+
       out.resize(interpolationPoints_.size());
       for (size_t i = 0; i < out.size(); ++i)
       {
-        f.evaluate(interpolationPoints_[i], y);
-        out[i] = y;
+        out[i] = f(interpolationPoints_[i]);
       }
     }
 
@@ -70,14 +71,14 @@ namespace Dune
 
 
     template<typename F, typename C>
-    void interpolate (const F& f, std::vector<C>& out) const
+    void interpolate (const F& ff, std::vector<C>& out) const
     {
-      typename LB::Traits::RangeType y;
+      auto&& f = Impl::makeFunctionWithCallOperator<DT>(ff);
+
       out.resize(interpolationPoints_.size());
       for (size_t i = 0; i < out.size(); ++i)
       {
-        f.evaluate(interpolationPoints_[i], y);
-        out[i] = y;
+        out[i] = f(interpolationPoints_[i]);
       }
     }
 
@@ -131,14 +132,14 @@ namespace Dune
 
 
     template<typename F, typename C>
-    void interpolate (const F& f, std::vector<C>& out) const
+    void interpolate (const F& ff, std::vector<C>& out) const
     {
-      typename LB::Traits::RangeType y;
+      auto&& f = Impl::makeFunctionWithCallOperator<DT>(ff);
+
       out.resize(interpolationPoints_.size());
       for (size_t i = 0; i < out.size(); ++i)
       {
-        f.evaluate(interpolationPoints_[i], y);
-        out[i] = y;
+        out[i] = f(interpolationPoints_[i]);
       }
     }
 

@@ -11,6 +11,7 @@
 #include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
+#include <dune/localfunctions/common/localinterpolation.hh>
 #include <dune/localfunctions/common/localkey.hh>
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 
@@ -185,18 +186,22 @@ namespace Dune
     //! \copydoc LocalInterpolationVirtualInterfaceBase::interpolate
     //! This uses the pure virtual method by wrapping the template argument into a VirtualFunction
     template<class F>
-    void interpolate (const F& f, std::vector<CoefficientType>& out) const
+    void interpolate (const F& ff, std::vector<CoefficientType>& out) const
     {
+      const auto& f = Impl::makeFunctionWithCallOperator<DomainType, RangeType>(ff);
+
       const LocalInterpolationVirtualInterfaceBase<DomainType, RangeType>& asBase = *this;
-      asBase.interpolate(VirtualFunctionWrapper<F>(f),out);
+      asBase.interpolate(makeVirtualFunctionWrapper(f),out);
     }
 
     template<class F, class C>
-    void interpolate (const F& f, std::vector<C>& out) const
+    void interpolate (const F& ff, std::vector<C>& out) const
     {
+      const auto& f = Impl::makeFunctionWithCallOperator<DomainType, RangeType>(ff);
+
       std::vector<CoefficientType> outDummy;
       const LocalInterpolationVirtualInterfaceBase<DomainType, RangeType>& asBase = *this;
-      asBase.interpolate(VirtualFunctionWrapper<F>(f),outDummy);
+      asBase.interpolate(makeVirtualFunctionWrapper(f),outDummy);
       out.resize(outDummy.size());
       for(typename std::vector<CoefficientType>::size_type i=0; i<outDummy.size(); ++i)
         out[i] = outDummy[i];
@@ -217,11 +222,17 @@ namespace Dune
 
       virtual void evaluate(const DomainType& x, RangeType& y) const
       {
-        f_.evaluate(x,y);
+        y = f_(x);
       }
 
       const F &f_;
     };
+
+    template<class F>
+    static auto makeVirtualFunctionWrapper(const F& f)
+    {
+      return VirtualFunctionWrapper<F>(f);
+    }
   };
 
 

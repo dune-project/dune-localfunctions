@@ -4,6 +4,7 @@
 #define DUNE_P1_LOCALINTERPOLATION_HH
 
 #include <vector>
+#include <dune/localfunctions/common/localinterpolation.hh>
 
 namespace Dune
 {
@@ -13,24 +14,25 @@ namespace Dune
   public:
     //! \brief Local interpolation of a function
     template<typename F, typename C>
-    void interpolate (const F& f, std::vector<C>& out) const
+    void interpolate (const F& ff, std::vector<C>& out) const
     {
-      typename LB::Traits::RangeType y;
       typename LB::Traits::DomainType x;
+
+      auto&& f = Impl::makeFunctionWithCallOperator<typename LB::Traits::DomainType>(ff);
 
       out.resize(dim+1);
 
       // vertex 0
       for (int i=0; i<dim; i++)
         x[i] = 0;
-      f.evaluate(x,y); out[0] = y;
+      out[0] = f(x);
 
       // remaining vertices
       for (int i=0; i<dim; i++) {
         for (int j=0; j<dim; j++)
           x[j] = (i==j);
 
-        f.evaluate(x,y); out[i+1] = y;
+        out[i+1] = f(x);
 
       }
 

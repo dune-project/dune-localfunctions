@@ -6,6 +6,7 @@
 #include <vector>
 
 #include <dune/geometry/quadraturerules.hh>
+#include <dune/localfunctions/common/localinterpolation.hh>
 
 namespace Dune
 {
@@ -69,16 +70,18 @@ namespace Dune
      *
      * \tparam F Function type for function which should be interpolated
      * \tparam C Coefficient type
-     * \param f function which should be interpolated
+     * \param ff function which should be interpolated
      * \param out return value, vector of coefficients
      */
     template<typename F, typename C>
-    void interpolate (const F& f, std::vector<C>& out) const
+    void interpolate (const F& ff, std::vector<C>& out) const
     {
       // f gives v*outer normal at a point on the edge!
       typedef typename LB::Traits::RangeFieldType Scalar;
       typedef typename LB::Traits::DomainFieldType Vector;
       typename F::Traits::RangeType y;
+
+      auto&& f = Impl::makeFunctionWithCallOperator<typename LB::Traits::DomainType>(ff);
 
       out.resize(24);
       fill(out.begin(), out.end(), 0.0);
@@ -93,28 +96,28 @@ namespace Dune
 
         localPos[0] = 0.0;
         localPos[1] = qPos;
-        f.evaluate(localPos, y);
+        y = f(localPos);
         out[0] += (y[0]*n0[0] + y[1]*n0[1])*it->weight()*sign0;
         out[1] += (y[0]*n0[0] + y[1]*n0[1])*(2.0*qPos - 1.0)*it->weight();
         out[2] += (y[0]*n0[0] + y[1]*n0[1])*(6.0*qPos*qPos - 6.0*qPos + 1.0)*it->weight()*sign0;
 
         localPos[0] = 1.0;
         localPos[1] = qPos;
-        f.evaluate(localPos, y);
+        y = f(localPos);
         out[3] += (y[0]*n1[0] + y[1]*n1[1])*it->weight()*sign1;
         out[4] += (y[0]*n1[0] + y[1]*n1[1])*(1.0 - 2.0*qPos)*it->weight();
         out[5] += (y[0]*n1[0] + y[1]*n1[1])*(6.0*qPos*qPos - 6.0*qPos + 1.0)*it->weight()*sign1;
 
         localPos[0] = qPos;
         localPos[1] = 0.0;
-        f.evaluate(localPos, y);
+        y = f(localPos);
         out[6] += (y[0]*n2[0] + y[1]*n2[1])*it->weight()*sign2;
         out[7] += (y[0]*n2[0] + y[1]*n2[1])*(1.0 - 2.0*qPos)*it->weight();
         out[8] += (y[0]*n2[0] + y[1]*n2[1])*(6.0*qPos*qPos - 6.0*qPos + 1.0)*it->weight()*sign2;
 
         localPos[0] = qPos;
         localPos[1] = 1.0;
-        f.evaluate(localPos, y);
+        y = f(localPos);
         out[9]  += (y[0]*n3[0] + y[1]*n3[1])*it->weight()*sign3;
         out[10] += (y[0]*n3[0] + y[1]*n3[1])*(2.0*qPos - 1.0)*it->weight();
         out[11] += (y[0]*n3[0] + y[1]*n3[1])*(6.0*qPos*qPos - 6.0*qPos + 1.0)*it->weight()*sign3;
@@ -127,7 +130,7 @@ namespace Dune
       {
         FieldVector<double,2> qPos = it->position();
 
-        f.evaluate(qPos, y);
+        y = f(qPos);
         out[12] += y[0]*it->weight();
         out[13] += y[1]*it->weight();
         out[14] += y[0]*qPos[0]*it->weight();

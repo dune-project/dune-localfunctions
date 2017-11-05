@@ -7,6 +7,7 @@
 #include <array>
 #include <bitset>
 #include <vector>
+#include <dune/localfunctions/common/localinterpolation.hh>
 
 namespace Dune
 {
@@ -39,16 +40,18 @@ namespace Dune
     }
 
     template<typename F, typename C>
-    void interpolate (const F& f, std::vector<C>& out) const
+    void interpolate (const F& ff, std::vector<C>& out) const
     {
       // f gives v*outer normal at a point on the edge!
       typename F::Traits::RangeType y;
+
+      auto&& f = Impl::makeFunctionWithCallOperator<typename LB::Traits::DomainType>(ff);
 
       out.resize(3);
 
       for (int i=0; i<3; i++)
       {
-        f.evaluate(m_[i],y);
+        y = f(m_[i]);
         out[i] = (y[0]*n_[i][0]+y[1]*n_[i][1])*sign_[i]/c_[i];
       }
     }

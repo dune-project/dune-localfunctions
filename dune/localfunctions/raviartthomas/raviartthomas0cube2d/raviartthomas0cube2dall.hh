@@ -11,6 +11,7 @@
 
 #include <dune/localfunctions/common/localbasis.hh>
 #include <dune/localfunctions/common/localkey.hh>
+#include <dune/localfunctions/common/localinterpolation.hh>
 
 namespace Dune
 {
@@ -167,17 +168,19 @@ namespace Dune
     }
 
     template<typename F, typename C>
-    void interpolate (const F& f, std::vector<C>& out) const
+    void interpolate (const F& ff, std::vector<C>& out) const
     {
       // f gives v*outer normal at a point on the edge!
       typename F::Traits::RangeType y;
 
+      auto&& f = Impl::makeFunctionWithCallOperator<typename LB::Traits::DomainType>(ff);
+
       out.resize(4);
 
-      f.evaluate(m0,y); out[0] = (y[0]*n0[0]+y[1]*n0[1])*sign0;
-      f.evaluate(m1,y); out[1] = (y[0]*n1[0]+y[1]*n1[1])*sign1;
-      f.evaluate(m2,y); out[2] = (y[0]*n2[0]+y[1]*n2[1])*sign2;
-      f.evaluate(m3,y); out[3] = (y[0]*n3[0]+y[1]*n3[1])*sign3;
+      y = f(m0); out[0] = (y[0]*n0[0]+y[1]*n0[1])*sign0;
+      y = f(m1); out[1] = (y[0]*n1[0]+y[1]*n1[1])*sign1;
+      y = f(m2); out[2] = (y[0]*n2[0]+y[1]*n2[1])*sign2;
+      y = f(m3); out[3] = (y[0]*n3[0]+y[1]*n3[1])*sign3;
     }
 
   private:

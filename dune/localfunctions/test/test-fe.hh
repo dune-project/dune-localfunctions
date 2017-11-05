@@ -20,6 +20,7 @@
 
 #include <dune/common/classname.hh>
 #include <dune/common/fmatrix.hh>
+#include <dune/common/function.hh>
 
 #include <dune/geometry/quadraturerules.hh>
 
@@ -29,7 +30,9 @@
 // This provides the evaluate method needed by the interpolate()
 // method.
 template<class FE>
-class FEFunction {
+class FEFunction :
+  public Dune::Function<const typename FE::Traits::Basis::Traits::DomainLocal&, typename FE::Traits::Basis::Traits::Range>
+{
   typedef typename FE::Traits::Basis::Traits::DomainLocal DomainLocal;
   typedef typename FE::Traits::Basis::Traits::Range Range;
 

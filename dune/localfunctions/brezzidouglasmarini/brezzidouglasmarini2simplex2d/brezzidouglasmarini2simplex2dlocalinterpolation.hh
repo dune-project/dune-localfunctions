@@ -73,7 +73,7 @@ namespace Dune
      *
      * \tparam F Function type for function which should be interpolated
      * \tparam C Coefficient type
-     * \param f function which should be interpolated
+     * \param ff function which should be interpolated
      * \param out return value, vector of coefficients
      */
     template<typename F, typename C>

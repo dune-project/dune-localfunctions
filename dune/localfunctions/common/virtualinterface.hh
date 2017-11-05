@@ -183,8 +183,11 @@ namespace Dune
      */
     virtual void interpolate (const FunctionType& f, std::vector<CoefficientType>& out) const = 0;
 
-    //! \copydoc LocalInterpolationVirtualInterfaceBase::interpolate
-    //! This uses the pure virtual method by wrapping the template argument into a VirtualFunction
+    /** \brief determine coefficients interpolating a given function
+     *
+     * \param[in]  ff   Function instance used to interpolate.
+     * \param[out] out Resulting coefficients vector.
+     */
     template<class F>
     void interpolate (const F& ff, std::vector<CoefficientType>& out) const
     {
@@ -194,6 +197,11 @@ namespace Dune
       asBase.interpolate(makeVirtualFunctionWrapper(f),out);
     }
 
+    /** \brief determine coefficients interpolating a given function
+     *
+     * \param[in]  ff   Function instance used to interpolate.
+     * \param[out] out Resulting coefficients vector.
+     */
     template<class F, class C>
     void interpolate (const F& ff, std::vector<C>& out) const
     {

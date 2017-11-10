@@ -21,23 +21,16 @@ namespace Dune {
                                 Dim<dim>{}));
 
     //! The reference element for this edge element
-    static const RefElem refelem;
+    RefElem refelem = referenceElement(DF{}, GeometryTypes::simplex(dim),
+                                       Dim<dim>{});
 
     //! The number of base functions
     /**
      * \note This is not a compile time constant, since the number of edges is
      *       extracted from the reference element.
      */
-    static const std::size_t s;
+    std::size_t s = refelem.size(dim-1);
   };
-
-  template<std::size_t dim, class DF>
-  const typename EdgeS0_5Common<dim,DF>::RefElem
-  EdgeS0_5Common<dim,DF>::refelem =
-    referenceElement(DF{}, GeometryTypes::simplex(dim), Dim<dim>{});
-
-  template<std::size_t dim, typename DF>
-  const std::size_t EdgeS0_5Common<dim,DF>::s(refelem.size(dim-1));
 
 } // namespace Dune
 

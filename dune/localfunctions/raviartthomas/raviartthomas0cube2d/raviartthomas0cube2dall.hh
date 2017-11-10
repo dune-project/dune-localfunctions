@@ -32,17 +32,14 @@ namespace Dune
     //! \brief Standard constructor
     RT0Cube2DLocalBasis ()
     {
-      sign0 = sign1 = sign2 = sign3 = 1.0;
+      std::fill(sign_.begin(), sign_.end(), 1.0);
     }
 
-    //! \brief Make set numer s, where 0<=s<16
-    RT0Cube2DLocalBasis (unsigned int s)
+    //! \brief Constructor with a set of edge orientations
+    RT0Cube2DLocalBasis (std::bitset<4> s)
     {
-      sign0 = sign1 = sign2 = sign3 = 1.0;
-      if (s&1) sign0 = -1.0;
-      if (s&2) sign1 = -1.0;
-      if (s&4) sign2 = -1.0;
-      if (s&8) sign3 = -1.0;
+      for (int i=0; i<4; i++)
+        sign_[i] = s[i] ? -1.0 : 1.0;
     }
 
     //! \brief number of shape functions
@@ -56,10 +53,10 @@ namespace Dune
                                   std::vector<typename Traits::RangeType>& out) const
     {
       out.resize(4);
-      out[0][0] = sign0*(in[0]-1.0); out[0][1]=0.0;
-      out[1][0] = sign1*(in[0]);     out[1][1]=0.0;
-      out[2][0] = 0.0;               out[2][1]=sign2*(in[1]-1.0);
-      out[3][0] = 0.0;               out[3][1]=sign3*(in[1]);
+      out[0] = {sign_[0]*(in[0]-1.0), 0.0};
+      out[1] = {sign_[1]*(in[0]),     0.0};
+      out[2] = {0.0,                  sign_[2]*(in[1]-1.0)};
+      out[3] = {0.0,                  sign_[3]*(in[1])};
     }
 
     //! \brief Evaluate Jacobian of all shape functions
@@ -68,17 +65,17 @@ namespace Dune
                       std::vector<typename Traits::JacobianType>& out) const                          // return value
     {
       out.resize(4);
-      out[0][0][0] = sign0;       out[0][0][1] = 0;
-      out[0][1][0] = 0;           out[0][1][1] = 0;
+      out[0][0] = {sign_[0], 0};
+      out[0][1] = {0,        0};
 
-      out[1][0][0] = sign1;       out[1][0][1] = 0;
-      out[1][1][0] = 0;           out[1][1][1] = 0;
+      out[1][0] = {sign_[1], 0};
+      out[1][1] = {0,        0};
 
-      out[2][0][0] = 0;           out[2][0][1] = 0;
-      out[2][1][0] = 0;           out[2][1][1] = sign2;
+      out[2][0] = {0,        0};
+      out[2][1] = {0, sign_[2]};
 
-      out[3][0][0] = 0;           out[3][0][1] = 0;
-      out[3][1][0] = 0;           out[3][1][1] = sign3;
+      out[3][0] = {0,        0};
+      out[3][1] = {0, sign_[3]};
     }
 
     //! \brief Evaluate partial derivatives of all shape functions
@@ -94,16 +91,16 @@ namespace Dune
         out.resize(size());
 
         for (std::size_t i = 0; i < size(); ++i)
-          out[i][0] = out[i][1] = 0;
+          out[i] = {0, 0};
 
         switch (direction) {
         case 0:
-          out[0][0] = sign0;
-          out[1][0] = sign1;
+          out[0][0] = sign_[0];
+          out[1][0] = sign_[1];
           break;
         case 1:
-          out[2][1] = sign2;
-          out[3][1] = sign3;
+          out[2][1] = sign_[2];
+          out[3][1] = sign_[3];
           break;
         default:
           DUNE_THROW(RangeError, "Component out of range.");
@@ -124,7 +121,7 @@ namespace Dune
     }
 
   private:
-    R sign0, sign1, sign2, sign3;
+    std::array<R,4> sign_;
   };
 
 
@@ -140,30 +137,21 @@ namespace Dune
   {
   public:
 
-    //! \brief Standard constructor
-    RT0Cube2DLocalInterpolation ()
+    //! \brief Constructor with explicitly given edge orientations
+    RT0Cube2DLocalInterpolation (std::bitset<4> s = 0)
     {
-      sign0 = sign1 = sign2 = sign3 = 1.0;
-    }
+      for (int i=0; i<4; i++)
+        sign_[i] = s[i] ? -1.0 : 1.0;
 
-    //! \brief Make set numer s, where 0<=s<8
-    RT0Cube2DLocalInterpolation (unsigned int s)
-    {
-      sign0 = sign1 = sign2 = sign3 = 1.0;
-      if (s&1) sign0 *= -1.0;
-      if (s&2) sign1 *= -1.0;
-      if (s&4) sign2 *= -1.0;
-      if (s&8) sign3 *= -1.0;
+      m0 = {0.0, 0.5};
+      m1 = {1.0, 0.5};
+      m2 = {0.5, 0.0};
+      m3 = {0.5, 1.0};
 
-      m0[0] = 0.0; m0[1] = 0.5;
-      m1[0] = 1.0; m1[1] = 0.5;
-      m2[0] = 0.5; m2[1] = 0.0;
-      m3[0] = 0.5; m3[1] = 1.0;
-
-      n0[0] = -1.0; n0[1] =  0.0;
-      n1[0] =  1.0; n1[1] =  0.0;
-      n2[0] =  0.0; n2[1] = -1.0;
-      n3[0] =  0.0; n3[1] =  1.0;
+      n0 = {-1.0,  0.0};
+      n1 = { 1.0,  0.0};
+      n2 = { 0.0, -1.0};
+      n3 = { 0.0,  1.0};
     }
 
     template<typename F, typename C>
@@ -174,15 +162,20 @@ namespace Dune
 
       out.resize(4);
 
-      f.evaluate(m0,y); out[0] = (y[0]*n0[0]+y[1]*n0[1])*sign0;
-      f.evaluate(m1,y); out[1] = (y[0]*n1[0]+y[1]*n1[1])*sign1;
-      f.evaluate(m2,y); out[2] = (y[0]*n2[0]+y[1]*n2[1])*sign2;
-      f.evaluate(m3,y); out[3] = (y[0]*n3[0]+y[1]*n3[1])*sign3;
+      // Evaluate the normal components at the edge midpoints
+      f.evaluate(m0,y); out[0] = (y[0]*n0[0]+y[1]*n0[1])*sign_[0];
+      f.evaluate(m1,y); out[1] = (y[0]*n1[0]+y[1]*n1[1])*sign_[1];
+      f.evaluate(m2,y); out[2] = (y[0]*n2[0]+y[1]*n2[1])*sign_[2];
+      f.evaluate(m3,y); out[3] = (y[0]*n3[0]+y[1]*n3[1])*sign_[3];
     }
 
   private:
-    typename LB::Traits::RangeFieldType sign0,sign1,sign2,sign3;
+    std::array<typename LB::Traits::RangeFieldType,4> sign_;
+
+    // The four edge midpoints of the reference quadrilateral
     typename LB::Traits::DomainType m0,m1,m2,m3;
+
+    // The four edge normals of the reference quadrilateral
     typename LB::Traits::DomainType n0,n1,n2,n3;
   };
 

@@ -109,13 +109,26 @@ void testLocalFiniteElement(const LocalFiniteElementVirtualInterface<T>* localFi
   // Test the interpolation
   const typename FEType::Traits::LocalInterpolationType& interp = localFiniteElement->localInterpolation();
   testLocalInterpolation(&interp);
+
+  // Test cloning
+  const LocalFiniteElementVirtualInterface<T>* other = localFiniteElement->clone();
+
+  // Make sure new object has the same type
+  if (typeid(other).hash_code() != typeid(localFiniteElement).hash_code())
+    DUNE_THROW(Dune::Exception, "'clone' method returns object of wrong type");
+
+  // But it shouldn't be the same object
+  if (other==localFiniteElement)
+    DUNE_THROW(Dune::Exception, "'clone' method returned the object it was called for!");
+
+  delete other;
+
 }
 
 int main (int argc, char *argv[]) try
 {
 
-  typedef Dune::P1LocalFiniteElement<double, double, 2>::Traits::LocalBasisType::Traits ImplementationLBTraits;
-  typedef Dune::FixedOrderLocalBasisTraits<ImplementationLBTraits,0>::Traits LBTraits;
+  typedef Dune::P1LocalFiniteElement<double, double, 2>::Traits::LocalBasisType::Traits LBTraits;
 
   const Dune::P0LocalFiniteElement<double, double, 2> p0FE(Dune::GeometryTypes::cube(2));
   const Dune::LocalFiniteElementVirtualImp<Dune::P0LocalFiniteElement<double, double, 2> > p0VFE(p0FE);

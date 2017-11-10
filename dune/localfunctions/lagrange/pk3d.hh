@@ -74,11 +74,6 @@ namespace Dune
       return GeometryTypes::tetrahedron;
     }
 
-    Pk3DLocalFiniteElement* clone () const
-    {
-      return new Pk3DLocalFiniteElement(*this);
-    }
-
   private:
     Pk3DLocalBasis<D,R,k> basis;
     Pk3DLocalCoefficients<k> coefficients;

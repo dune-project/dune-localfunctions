@@ -33,8 +33,6 @@ namespace Dune
   template<class D, class R, int k, int d>
   class QkLocalBasis
   {
-    enum { n = StaticPower<k+1,d>::power };
-
     // ith Lagrange polynomial of degree k in one dimension
     static R p (int i, D x)
     {
@@ -61,6 +59,37 @@ namespace Dune
       return result;
     }
 
+    // Second derivative of j-th Lagrange polynomial of degree k in one dimension
+    // Formula and notation taken from https://en.wikipedia.org/wiki/Lagrange_polynomial#Derivatives
+    static R ddp (int j, D x)
+    {
+      R result(0.0);
+
+      for (int i=0; i<=k; i++)
+      {
+        if (i==j)
+          continue;
+
+        R sum(0);
+
+        for (int m=0; m<=k; m++)
+        {
+          if (m==i || m==j)
+            continue;
+
+          R prod( (k*1.0)/(j-m) );
+          for (int l=0; l<=k; l++)
+            if (l!=i && l!=j && l!=m)
+              prod *= (k*x-l)/(j-l);
+          sum += prod;
+        }
+
+        result += sum * ( (k*1.0)/(j-i) );
+      }
+
+      return result;
+    }
+
     // Return i as a d-digit number in the (k+1)-nary system
     static Dune::FieldVector<int,d> multiindex (int i)
     {
@@ -74,7 +103,7 @@ namespace Dune
     }
 
   public:
-    typedef LocalBasisTraits<D,d,Dune::FieldVector<D,d>,R,1,Dune::FieldVector<R,1>,Dune::FieldMatrix<R,1,d>, 1> Traits;
+    typedef LocalBasisTraits<D,d,Dune::FieldVector<D,d>,R,1,Dune::FieldVector<R,1>,Dune::FieldMatrix<R,1,d> > Traits;
 
     //! \brief number of shape functions
     unsigned int size () const
@@ -141,34 +170,35 @@ namespace Dune
                         const typename Traits::DomainType& in,
                         std::vector<typename Traits::RangeType>& out) const
     {
-      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      out.resize(size());
 
-      switch (totalOrder)
+      // Loop over all shape functions
+      for (size_t i=0; i<size(); i++)
       {
-        case 0:
-          evaluateFunction(in,out);
-          break;
-        case 1:
+        // convert index i to multiindex
+        Dune::FieldVector<int,d> alpha(multiindex(i));
+
+        // Initialize: the overall expression is a product
+        out[i][0] = 1.0;
+
+        // rest of the product
+        for (std::size_t l=0; l<d; l++)
         {
-          out.resize(size());
-
-          // Loop over all shape functions
-          for (size_t i=0; i<size(); i++)
+          switch (order[l])
           {
-            // convert index i to multiindex
-            Dune::FieldVector<int,d> alpha(multiindex(i));
-
-            // Initialize: the overall expression is a product
-            out[i][0] = 1.0;
-
-            // rest of the product
-            for (std::size_t l=0; l<d; l++)
-              out[i][0] *= (order[l]) ? dp(alpha[l],in[l]) : p(alpha[l],in[l]);
+            case 0:
+              out[i][0] *= p(alpha[l],in[l]);
+              break;
+            case 1:
+              out[i][0] *= dp(alpha[l],in[l]);
+              break;
+            case 2:
+              out[i][0] *= ddp(alpha[l],in[l]);
+              break;
+            default:
+              DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
           }
-          break;
         }
-        default:
-          DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
       }
     }
 

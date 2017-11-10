@@ -68,11 +68,6 @@ namespace Dune
       return GeometryTypes::prism;
     }
 
-    HierarchicalPrismP2LocalFiniteElement* clone () const
-    {
-      return new HierarchicalPrismP2LocalFiniteElement(*this);
-    }
-
   private:
     HierarchicalPrismP2LocalBasis<D,R> basis;
 

@@ -41,6 +41,9 @@ int main(int argc, char** argv) try
   Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,4> rt4cube2dlfem(1);
   TEST_FE(rt4cube2dlfem);
 
+  Dune::RT0Cube2DLocalFiniteElement<double,double> rt0cube2dlfemDedicated;
+  TEST_FE(rt0cube2dlfemDedicated);
+
   return success ? 0 : 1;
 }
 catch (Dune::Exception e)

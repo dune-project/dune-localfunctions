@@ -6,29 +6,31 @@
 
 #include <cstddef>
 
+#include <dune/geometry/dimension.hh>
 #include <dune/geometry/referenceelements.hh>
+#include <dune/geometry/type.hh>
 
 namespace Dune {
 
   //! Common base class for edge elements
   template<std::size_t dim, class DF = double>
   struct EdgeS0_5Common {
+    //! The type of the referenceElement
+    using RefElem =
+      decltype(referenceElement(DF{}, GeometryTypes::simplex(dim),
+                                Dim<dim>{}));
+
     //! The reference element for this edge element
-    static const ReferenceElement<DF, dim>& refelem;
+    RefElem refelem = referenceElement(DF{}, GeometryTypes::simplex(dim),
+                                       Dim<dim>{});
+
     //! The number of base functions
     /**
      * \note This is not a compile time constant, since the number of edges is
      *       extracted from the reference element.
      */
-    static const std::size_t s;
+    std::size_t s = refelem.size(dim-1);
   };
-
-  template<std::size_t dim, class DF>
-  const ReferenceElement<DF, dim>& EdgeS0_5Common<dim,DF>::
-  refelem(ReferenceElements<DF, dim>::simplex());
-
-  template<std::size_t dim, typename DF>
-  const std::size_t EdgeS0_5Common<dim,DF>::s(refelem.size(dim-1));
 
 } // namespace Dune
 

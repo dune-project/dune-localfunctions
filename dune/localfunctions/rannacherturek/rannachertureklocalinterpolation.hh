@@ -37,7 +37,7 @@ namespace Dune
       typedef typename Traits::RangeType RangeType;
 
       // get cubic reference element
-      const ReferenceElement< D, d > &referenceElement = ReferenceElements< D, d >::cube();
+      auto referenceElement = ReferenceElements< D, d >::cube();
 
       const int size = 2*d;
       assert( size == referenceElement.size( 1 ) );

@@ -60,7 +60,7 @@ namespace Dune
     std::array<typename LB::Traits::DomainType,3> m_;
     // Unit outer normals of the reference triangle
     std::array<typename LB::Traits::DomainType,3> n_;
-    // Triangle edge length(?)
+    // Inverse triangle edge length
     std::array<typename LB::Traits::RangeFieldType,3> c_;
   };
 }

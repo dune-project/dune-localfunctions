@@ -34,11 +34,11 @@ namespace Dune
     {}
 
     /**
-     * \brief Make set number s, where 0 <= s < 8
+     * \brief Constructor with explicitly given edge orientations
      *
      * \param s Edge orientation indicator
      */
-    RT02DLocalFiniteElement (int s) :
+    RT02DLocalFiniteElement (std::bitset<3> s) :
       basis(s),
       interpolation(s)
     {}
@@ -56,6 +56,11 @@ namespace Dune
     const typename Traits::LocalInterpolationType& localInterpolation () const
     {
       return interpolation;
+    }
+
+    unsigned int size () const
+    {
+      return 3;
     }
 
     static constexpr GeometryType type ()

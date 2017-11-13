@@ -29,16 +29,14 @@ namespace Dune
     //! \brief Standard constructor
     RT02DLocalBasis ()
     {
-      sign0 = sign1 = sign2 = 1.0;
+      std::fill(sign_.begin(), sign_.end(), 1.0);
     }
 
-    //! \brief Make set numer s, where 0<=s<8
-    RT02DLocalBasis (unsigned int s)
+    //! \brief Make set numer s, where 0<=s<4
+    RT02DLocalBasis (std::bitset<3> s)
     {
-      sign0 = sign1 = sign2 = 1.0;
-      if (s&1) sign0 = -1.0;
-      if (s&2) sign1 = -1.0;
-      if (s&4) sign2 = -1.0;
+      for (int i=0; i<3; i++)
+        sign_[i] = s[i] ? -1.0 : 1.0;
     }
 
     //! \brief number of shape functions
@@ -52,9 +50,9 @@ namespace Dune
                                   std::vector<typename Traits::RangeType>& out) const
     {
       out.resize(3);
-      out[0][0] = sign0*in[0];       out[0][1]=sign0*(in[1]-D(1));
-      out[1][0] = sign1*(in[0]-D(1)); out[1][1]=sign1*in[1];
-      out[2][0] = sign2*in[0];       out[2][1]=sign2*in[1];
+      out[0] = {sign_[0]*in[0],        sign_[0]*(in[1]-D(1))};
+      out[1] = {sign_[1]*(in[0]-D(1)), sign_[1]*in[1]};
+      out[2] = {sign_[2]*in[0],        sign_[2]*in[1]};
     }
 
     //! \brief Evaluate Jacobian of all shape functions
@@ -63,12 +61,11 @@ namespace Dune
                       std::vector<typename Traits::JacobianType>& out) const                          // return value
     {
       out.resize(3);
-      out[0][0][0] = sign0;       out[0][0][1] = 0;
-      out[0][1][0] = 0;           out[0][1][1] = sign0;
-      out[1][0][0] = sign1;       out[1][0][1] = 0;
-      out[1][1][0] = 0;           out[1][1][1] = sign1;
-      out[2][0][0] = sign2;       out[2][0][1] = 0;
-      out[2][1][0] = 0;           out[2][1][1] = sign2;
+      for (int i=0; i<3; i++)
+      {
+        out[i][0] = {sign_[i],        0};
+        out[i][1] = {       0, sign_[i]};
+      }
     }
 
     //! \brief Evaluate partial derivatives of all shape functions
@@ -83,12 +80,11 @@ namespace Dune
         auto const direction = std::distance(order.begin(), std::find(order.begin(), order.end(), 1));
         out.resize(size());
 
-        out[0][direction] = sign0;
-        out[0][1-direction] = 0;
-        out[1][direction] = sign1;
-        out[1][1-direction] = 0;
-        out[2][direction] = sign2;
-        out[2][1-direction] = 0;
+        for (int i=0; i<3; i++)
+        {
+          out[i][direction] = sign_[i];
+          out[i][1-direction] = 0;
+        }
       } else {
         out.resize(size());
         for (std::size_t i = 0; i < size(); ++i)
@@ -105,7 +101,9 @@ namespace Dune
     }
 
   private:
-    R sign0, sign1, sign2;
+
+    // Signs of the edge normals
+    std::array<R,3> sign_;
   };
 }
 #endif

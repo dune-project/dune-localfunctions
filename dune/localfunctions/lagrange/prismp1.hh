@@ -65,6 +65,11 @@ namespace Dune
       return GeometryTypes::prism;
     }
 
+    PrismP1LocalFiniteElement* clone () const
+    {
+      return new PrismP1LocalFiniteElement(*this);
+    }
+
   private:
     PrismP1LocalBasis<D,R> basis;
     PrismP1LocalCoefficients coefficients;

@@ -27,10 +27,34 @@ double TOL = 1e-9;
 // precision -- so we have to be a little bit more tolerant here.
 double jacobianTOL = 1e-5;  // sqrt(TOL)
 
-// This class wraps one shape function of a local finite element as a function
-// that can be feed to the LocalInterpolation::interpolate method.
 template<class FE>
-class ShapeFunctionAsFunction :
+class Func :
+  //  public Dune::LocalFiniteElementFunctionBase<FE>::type
+  public Dune::LocalFiniteElementFunctionBase<FE>::FunctionBase
+  //  public Dune::LocalFiniteElementFunctionBase<FE>::VirtualFunctionBase
+{
+public:
+  typedef typename FE::Traits::LocalBasisType::Traits::DomainType DomainType;
+  typedef typename FE::Traits::LocalBasisType::Traits::RangeType RangeType;
+  typedef typename Dune::Function<const DomainType&, RangeType&> Base;
+
+  void evaluate (const DomainType& x, RangeType& y) const
+  {
+    y = 0;
+    DomainType c(0.5);
+
+    c -= x;
+    y[0] = exp(-3.0*c.two_norm2());
+  }
+};
+
+// This class defines a local finite element function.
+// It is determined by a local finite element and
+// representing the local basis and a coefficient vector.
+// This provides the evaluate method needed by the interpolate()
+// method.
+template<class FE>
+class LocalFEFunction :
   //  public Dune::LocalFiniteElementFunctionBase<FE>::type
   public Dune::LocalFiniteElementFunctionBase<FE>::FunctionBase
   //  public Dune::LocalFiniteElementFunctionBase<FE>::VirtualFunctionBase
@@ -42,38 +66,59 @@ public:
 
   typedef typename FE::Traits::LocalBasisType::Traits::RangeFieldType CT;
 
-  ShapeFunctionAsFunction(const FE& fe, int shapeFunction) :
-    fe_(fe),
-    shapeFunction_(shapeFunction)
-  {}
+  LocalFEFunction(const FE& fe) :
+    fe_(fe)
+  {
+    resetCoefficients();
+  }
+
+  void resetCoefficients()
+  {
+    coeff_.resize(fe_.localBasis().size());
+    for(std::size_t i=0; i<coeff_.size(); ++i)
+      coeff_[i] = 0;
+  }
+
+  void setRandom(double max)
+  {
+    coeff_.resize(fe_.localBasis().size());
+    for(std::size_t i=0; i<coeff_.size(); ++i)
+      coeff_[i] = ((1.0*std::rand()) / RAND_MAX - 0.5)*2.0*max;
+  }
+
 
   void evaluate (const DomainType& x, RangeType& y) const
   {
     std::vector<RangeType> yy;
     fe_.localBasis().evaluateFunction(x, yy);
-    y = yy[shapeFunction_];
+
+    y = 0.0;
+    for (std::size_t i=0; i<yy.size(); ++i)
+      y.axpy(coeff_[i], yy[i]);
   }
+
+  std::vector<CT> coeff_;
 
 private:
   const FE& fe_;
-  int shapeFunction_;
 };
 
 
-// Check whether the degrees of freedom computed by LocalInterpolation
-// are dual to the shape functions.  See Ciarlet, "The Finite Element Method
-// for Elliptic Problems", 1978, for details.
+// Check if localInterpolation is consistens with
+// localBasis evaluation.
 template<class FE>
-bool testLocalInterpolation(const FE& fe)
+bool testLocalInterpolation(const FE& fe, int n=5)
 {
-  std::vector<typename ShapeFunctionAsFunction<FE>::CT> coeff;
-  for(size_t i=0; i<fe.size(); ++i)
-  {
-    // The i-th shape function as a function that 'interpolate' can deal with
-    ShapeFunctionAsFunction<FE> f(fe, i);
+  bool success = true;
+  LocalFEFunction<FE> f(fe);
 
-    // Compute degrees of freedom for that shape function
-    // We expect the result to be the i-th unit vector
+  std::vector<typename LocalFEFunction<FE>::CT> coeff;
+  for(int i=0; i<n && success; ++i)
+  {
+    // Set random coefficient vector
+    f.setRandom(100);
+
+    // Compute interpolation weights
     fe.localInterpolation().interpolate(f, coeff);
 
     // Check size of weight vector
@@ -81,28 +126,30 @@ bool testLocalInterpolation(const FE& fe)
     {
       std::cout << "Bug in LocalInterpolation for finite element type "
                 << Dune::className(fe) << std::endl;
-      std::cout << "    Interpolation produces " << coeff.size() << " degrees of freedom" << std::endl;
+      std::cout << "    Interpolation vector has size " << coeff.size() << std::endl;
       std::cout << "    Basis has size " << fe.localBasis().size() << std::endl;
       std::cout << std::endl;
-      return false;
+      success = false;
     }
 
     // Check if interpolation weights are equal to coefficients
-    for(std::size_t j=0; j<coeff.size(); ++j)
+    for(std::size_t j=0; j<coeff.size() && success; ++j)
     {
-      if ( std::abs(coeff[j] - (i==j)) > TOL)
+      if ( std::abs(coeff[j]-f.coeff_[j]) >
+           TOL*((std::abs(f.coeff_[j])>1) ? std::abs(f.coeff_[j]) : 1.) )
       {
         std::cout << std::setprecision(16);
         std::cout << "Bug in LocalInterpolation for finite element type "
                   << Dune::className(fe) << std::endl;
-        std::cout << "    Degree of freedom " << j << " applied to shape function " << i
-                  << " yields value " << coeff[j] << ", not the expected value " << (i==j) << std::endl;
+        std::cout << "    Interpolation weight " << j
+                  << " differs by " << std::abs(coeff[j]-f.coeff_[j])
+                  << " from coefficient of linear combination." << std::endl;
         std::cout << std::endl;
-        return false;
+        success = false;
       }
     }
   }
-  return true;
+  return success;
 }
 
 
@@ -546,6 +593,8 @@ enum {
 template<class FE>
 bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned int diffOrder = 0)
 {
+  std::vector<double> c;
+
   // Order of the quadrature rule used to generate test points
   unsigned int quadOrder = 2;
 
@@ -607,6 +656,7 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned int diffOrd
 
   if (not (disabledTests & DisableLocalInterpolation))
   {
+    fe.localInterpolation().interpolate(Func<FE>(),c);
     success = testLocalInterpolation<FE>(fe) and success;
   }
   if (not (disabledTests & DisableJacobian))
@@ -627,7 +677,8 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned int diffOrd
   if (not (disabledTests & DisableVirtualInterface))
   {
     typedef typename FE::Traits::LocalBasisType::Traits ImplementationLBTraits;
-    typedef typename Dune::LocalFiniteElementVirtualInterface<ImplementationLBTraits> VirtualFEInterface;
+    typedef typename Dune::FixedOrderLocalBasisTraits<ImplementationLBTraits,0>::Traits LBTraits;
+    typedef typename Dune::LocalFiniteElementVirtualInterface<LBTraits> VirtualFEInterface;
     typedef typename Dune::LocalFiniteElementVirtualImp<FE> VirtualFEImp;
 
     const VirtualFEImp virtualFE(fe);

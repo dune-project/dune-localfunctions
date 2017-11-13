@@ -66,6 +66,11 @@ namespace Dune
       return GeometryTypes::simplex(dim);
     }
 
+    P1LocalFiniteElement* clone () const
+    {
+      return new P1LocalFiniteElement(*this);
+    }
+
   private:
     P1LocalBasis<D,R,dim> basis;
     P1LocalCoefficients<dim> coefficients;

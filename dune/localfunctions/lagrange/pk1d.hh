@@ -81,6 +81,11 @@ namespace Dune
       return GeometryTypes::line;
     }
 
+    Pk1DLocalFiniteElement* clone () const
+    {
+      return new Pk1DLocalFiniteElement(*this);
+    }
+
   private:
     Pk1DLocalBasis<D,R,k> basis;
     Pk1DLocalCoefficients<k> coefficients;

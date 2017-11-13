@@ -88,6 +88,11 @@ namespace Dune
       return GeometryTypes::cube(dim);
     }
 
+    DualQ1LocalFiniteElement* clone () const
+    {
+      return new DualQ1LocalFiniteElement(*this);
+    }
+
   private:
     /** \brief Setup the coefficients for the face dual basis functions. */
     void setupFaceDualCoefficients();

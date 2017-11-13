@@ -224,16 +224,17 @@ namespace Dune
          \tparam R Type to represent the field in the range.
          \tparam d Domain dimension
      \tparam p polynomial order of the shapefunctions
+     \tparam diffOrder Maximum differentiation order to report in the traits.
 
          \nosubgrouping
    */
-  template<class D, class R, unsigned int d, unsigned int p>
+  template<class D, class R, unsigned int d, unsigned int p, unsigned diffOrder = p>
   class MonomialLocalBasis
   {
   public:
     //! \brief export type traits for function signature
     typedef LocalBasisTraits<D,d,Dune::FieldVector<D,d>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldMatrix<R,1,d> > Traits;
+        Dune::FieldMatrix<R,1,d>,diffOrder> Traits;
 
     //! \brief number of shape functions
     unsigned int size () const

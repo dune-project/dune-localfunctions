@@ -64,6 +64,11 @@ namespace Dune
       return GeometryTypes::pyramid;
     }
 
+    PyramidP2LocalFiniteElement* clone () const
+    {
+      return new PyramidP2LocalFiniteElement(*this);
+    }
+
   private:
     PyramidP2LocalBasis<D,R> basis;
     PyramidP2LocalCoefficients coefficients;

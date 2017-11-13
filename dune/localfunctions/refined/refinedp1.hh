@@ -73,6 +73,11 @@ namespace Dune
       return GeometryTypes::line;
     }
 
+    RefinedP1LocalFiniteElement * clone () const
+    {
+      return new RefinedP1LocalFiniteElement(*this);
+    }
+
   private:
     RefinedP1LocalBasis<D,R,1> basis;
     Pk1DLocalCoefficients<2> coefficients;
@@ -132,6 +137,11 @@ namespace Dune
       return GeometryTypes::triangle;
     }
 
+    RefinedP1LocalFiniteElement * clone () const
+    {
+      return new RefinedP1LocalFiniteElement(*this);
+    }
+
   private:
     RefinedP1LocalBasis<D,R,2> basis;
     Pk2DLocalCoefficients<2> coefficients;
@@ -187,6 +197,11 @@ namespace Dune
     static constexpr GeometryType type ()
     {
       return GeometryTypes::tetrahedron;
+    }
+
+    RefinedP1LocalFiniteElement* clone () const
+    {
+      return new RefinedP1LocalFiniteElement(*this);
     }
 
   private:

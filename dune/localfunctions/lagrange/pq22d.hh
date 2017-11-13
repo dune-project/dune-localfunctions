@@ -17,7 +17,7 @@ namespace Dune
   {
     typedef Dune::FieldVector<D,2> Domain;
     typedef Dune::FieldVector<R,1> Range;
-    typedef LocalBasisTraits<D,2,Domain, R,1,Range, Dune::FieldMatrix<R,1,2> > BasisTraits;
+    typedef LocalBasisTraits<D,2,Domain, R,1,Range, Dune::FieldMatrix<R,1,2>, 0 > BasisTraits;
 
     typedef typename Dune::LocalFiniteElementVirtualInterface<BasisTraits> LocalFiniteElementBase;
   public:

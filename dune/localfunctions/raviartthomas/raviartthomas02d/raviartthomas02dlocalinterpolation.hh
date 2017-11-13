@@ -15,14 +15,8 @@ namespace Dune
   {
   public:
 
-    //! \brief Default constructor
-    RT02DLocalInterpolation ()
-    {
-      std::fill(sign_.begin(),sign_.end(), 1.0);
-    }
-
     //! \brief Constructor with given set of edge orientations
-    RT02DLocalInterpolation (std::bitset<3> s)
+    RT02DLocalInterpolation (std::bitset<3> s = 0)
     {
       for (std::size_t i=0; i<sign_.size(); i++)
         sign_[i] = (s[i]) ? -1.0 : 1.0;

@@ -50,9 +50,9 @@ namespace Dune
                                   std::vector<typename Traits::RangeType>& out) const
     {
       out.resize(3);
-      out[0][0] = sign0*in[0];       out[0][1]=sign0*(in[1]-D(1));
-      out[1][0] = sign1*(in[0]-D(1)); out[1][1]=sign1*in[1];
-      out[2][0] = sign2*in[0];       out[2][1]=sign2*in[1];
+      out[0] = {sign_[0]*in[0],        sign_[0]*(in[1]-D(1))};
+      out[1] = {sign_[1]*(in[0]-D(1)), sign_[1]*in[1]};
+      out[2] = {sign_[2]*in[0],        sign_[2]*in[1]};
     }
 
     //! \brief Evaluate Jacobian of all shape functions
@@ -80,7 +80,7 @@ namespace Dune
         auto const direction = std::distance(order.begin(), std::find(order.begin(), order.end(), 1));
         out.resize(size());
 
-        for (int i=0; i<3; i++}
+        for (int i=0; i<3; i++)
         {
           out[i][direction] = sign_[i];
           out[i][1-direction] = 0;

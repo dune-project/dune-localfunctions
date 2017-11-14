@@ -68,6 +68,11 @@ namespace Dune
       return GeometryTypes::cube(dim);
     }
 
+    Q1LocalFiniteElement* clone () const
+    {
+      return new Q1LocalFiniteElement(*this);
+    }
+
   private:
     Q1LocalBasis<D,R,dim> basis;
     Q1LocalCoefficients<dim> coefficients;

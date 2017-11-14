@@ -68,6 +68,11 @@ namespace Dune
       return GeometryTypes::pyramid;
     }
 
+    PyramidP1LocalFiniteElement* clone () const
+    {
+      return new PyramidP1LocalFiniteElement(*this);
+    }
+
   private:
     PyramidP1LocalBasis<D,R> basis;
     PyramidP1LocalCoefficients coefficients;

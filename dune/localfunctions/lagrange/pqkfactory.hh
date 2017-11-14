@@ -29,7 +29,7 @@ namespace Dune
   template<class D, class R, int d, int k>
   struct DimSpecificPQkLocalFiniteElementFactory
   {
-    typedef typename P0LocalFiniteElement<D,R,d>::Traits::LocalBasisType::Traits T;
+    typedef typename FixedOrderLocalBasisTraits<typename P0LocalFiniteElement<D,R,d>::Traits::LocalBasisType::Traits,0>::Traits T;
 
     //! create finite element for given GeometryType
     static LocalFiniteElementVirtualInterface<T>* create(const GeometryType& gt)
@@ -45,7 +45,7 @@ namespace Dune
   template<class D, class R, int k>
   struct DimSpecificPQkLocalFiniteElementFactory<D,R,3,k>
   {
-    typedef typename P0LocalFiniteElement<D,R,3>::Traits::LocalBasisType::Traits T;
+    typedef typename FixedOrderLocalBasisTraits<typename P0LocalFiniteElement<D,R,3>::Traits::LocalBasisType::Traits,0>::Traits T;
     typedef PrismP1LocalFiniteElement<D,R> PrismP1;
     typedef PrismP2LocalFiniteElement<D,R> PrismP2;
     typedef PyramidP1LocalFiniteElement<D,R> PyramidP1;
@@ -73,7 +73,7 @@ namespace Dune
   template<class D, class R, int dim, int k>
   struct PQkLocalFiniteElementFactory
   {
-    typedef typename P0LocalFiniteElement<D,R,dim>::Traits::LocalBasisType::Traits T;
+    typedef typename FixedOrderLocalBasisTraits<typename P0LocalFiniteElement<D,R,dim>::Traits::LocalBasisType::Traits,0>::Traits T;
     typedef LocalFiniteElementVirtualInterface<T> FiniteElementType;
     typedef P0LocalFiniteElement<D,R,dim> P0;
     typedef PkLocalFiniteElement<D,R,dim,k> Pk;
@@ -112,7 +112,7 @@ namespace Dune
   class PQkLocalFiniteElementCache
   {
   protected:
-    typedef typename P0LocalFiniteElement<D,R,dim>::Traits::LocalBasisType::Traits T;
+    typedef typename FixedOrderLocalBasisTraits<typename P0LocalFiniteElement<D,R,dim>::Traits::LocalBasisType::Traits,0>::Traits T;
     typedef LocalFiniteElementVirtualInterface<T> FE;
     typedef typename std::map<GeometryType,FE*> FEMap;
 

@@ -209,31 +209,31 @@ int main (int argc, char *argv[])
   //  Test some instantiations of QkLocalFiniteElement
   // --------------------------------------------------------
   QkLocalFiniteElement<double,double,1,1> qk11dlfem;
-  TEST_FE3(qk11dlfem,DisableNone,2);
+  TEST_FE3(qk11dlfem,DisableNone,1);
 
   QkLocalFiniteElement<double,double,2,0> qk02dlfem;
-  TEST_FE3(qk02dlfem,DisableNone,2);
+  TEST_FE3(qk02dlfem,DisableNone,1);
 
   QkLocalFiniteElement<double,double,2,1> qk12dlfem;
-  TEST_FE3(qk12dlfem,DisableNone,2);
+  TEST_FE3(qk12dlfem,DisableNone,1);
 
   QkLocalFiniteElement<double,double,2,2> qk22dlfem;
-  TEST_FE3(qk22dlfem,DisableNone,2);
+  TEST_FE3(qk22dlfem,DisableNone,1);
 
   QkLocalFiniteElement<double,double,2,3> qk32dlfem;
-  TEST_FE3(qk32dlfem,DisableNone,2);
+  TEST_FE3(qk32dlfem,DisableNone,1);
 
   QkLocalFiniteElement<double,double,3,0> qk03dlfem;
-  TEST_FE3(qk03dlfem,DisableNone,2);
+  TEST_FE3(qk03dlfem,DisableNone,1);
 
   QkLocalFiniteElement<double,double,3,1> qk13dlfem;
-  TEST_FE3(qk13dlfem,DisableNone,2);
+  TEST_FE3(qk13dlfem,DisableNone,1);
 
   QkLocalFiniteElement<double,double,3,2> qk23dlfem;
-  TEST_FE3(qk23dlfem,DisableNone,2);
+  TEST_FE3(qk23dlfem,DisableNone,1);
 
   QkLocalFiniteElement<double,double,3,3> qk33dlfem;
-  TEST_FE3(qk33dlfem,DisableNone,2);
+  TEST_FE3(qk33dlfem,DisableNone,1);
 
   // test virtualized FEs
   // notice that testFE add another level of virtualization

@@ -218,9 +218,6 @@ namespace Dune {
        *       \c dimDomainGlobal components of type \c RangeField.
        */
       typedef ImplementationDefined Jacobian;
-
-      //! maximum number of partial derivatives supported
-      static const std::size_t diffOrder = implementationDefined;
     };
 
     //! Number of shape functions
@@ -236,14 +233,14 @@ namespace Dune {
     void evaluateJacobian(const Traits::DomainLocal& in,
                           std::vector<Traits::Jacobian>& out) const;
 
-    //! Evaluate derivatives of all shape functions at given position
-    /**
-     * \note Only required for Traits::diffOrder >= 2
+    /** \brief Evaluate partial derivatives of any order of all shape functions
+     * \param order Order of the partial derivatives, in the classic multi-index notation
+     * \param in Position where to evaluate the derivatives
+     * \param[out] out Return value: the desired partial derivatives
      */
-    void evaluate
-      ( const std::array<std::size_t, Traits::dimDomainGlobal>& directions,
-      const Traits::DomainLocal& in,
-      std::vector<Traits::Range>& out) const;
+    void partial(const std::array<unsigned int,Traits::dimDomain>& order,
+                 const typename Traits::DomainType& in,
+      std::vector<typename Traits::RangeType>& out) const;
   };
 
   //! Interface for global-valued interpolation

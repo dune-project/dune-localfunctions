@@ -233,9 +233,6 @@ namespace Dune {
                           std::vector<Traits::Range>& out) const;
 
     //! Evaluate Jacobian of all shape functions at given position
-    /**
-     * Note: Only required for Traits::diffOrder >= 1
-     */
     void evaluateJacobian(const Traits::DomainLocal& in,
                           std::vector<Traits::Jacobian>& out) const;
 

@@ -18,3 +18,6 @@
    If you do use `diffOrder` and you absolutely need it or something similar,
    then we'd like to hear from you.  One of the reasons why there is no
    replacement is that we couldn't really think of a good use case to begin with.
+
+*  The `QkLocalFiniteElement` class implements second partial derivatives
+   of shape functions now.

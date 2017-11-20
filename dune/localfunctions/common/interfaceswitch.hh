@@ -194,9 +194,6 @@ namespace Dune {
     //! export vector type of the values
     typedef typename Basis::Traits::RangeType Range;
 
-    //! export number of supported differentiations
-    static const std::size_t diffOrder = Basis::Traits::diffOrder;
-
     //! Compute global gradient for scalar valued bases
     template<typename Geometry>
     static void gradient(const Basis& basis, const Geometry& geometry,

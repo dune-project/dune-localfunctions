@@ -48,8 +48,6 @@ namespace Dune {
       typedef FieldVector<RangeField, dimRange> Range;
 
       typedef FieldMatrix<RangeField, dimRange, dimDomainGlobal> Jacobian;
-
-      static const std::size_t diffOrder = 1;
     };
 
   private:

@@ -37,8 +37,6 @@ namespace Dune {
     typedef typename LocalBasisTraits::RangeType Range;
 
     typedef FieldMatrix<RangeField, dimRange, dimDomainGlobal> Jacobian;
-
-    static const std::size_t diffOrder = LocalBasisTraits::diffOrder;
   };
 
   //! Convert a simple scalar local basis into a global basis

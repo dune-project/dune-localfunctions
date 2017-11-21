@@ -67,11 +67,6 @@ namespace Dune
       return gt;
     }
 
-    P0LocalFiniteElement* clone () const
-    {
-      return new P0LocalFiniteElement(*this);
-    }
-
   private:
     P0LocalBasis<D,R,d> basis;
     P0LocalCoefficients coefficients;

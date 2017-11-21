@@ -70,11 +70,6 @@ namespace Dune
       return GeometryTypes::simplex(dim);
     }
 
-    HierarchicalP2LocalFiniteElement* clone () const
-    {
-      return new HierarchicalP2LocalFiniteElement(*this);
-    }
-
   private:
     HierarchicalSimplexP2LocalBasis<D,R,dim> basis;
 

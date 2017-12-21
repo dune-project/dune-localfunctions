@@ -3,8 +3,15 @@
 #ifndef DUNE_LAGRANGEBASIS_INTERPOLATION_HH
 #define DUNE_LAGRANGEBASIS_INTERPOLATION_HH
 
+#include <type_traits>
+#include <utility>
 #include <vector>
+
+#include <dune/common/std/type_traits.hh>
+#include <dune/common/typeutilities.hh>
+
 #include <dune/geometry/topologyfactory.hh>
+
 #include <dune/localfunctions/lagrange/lagrangecoefficients.hh>
 
 namespace Dune
@@ -17,8 +24,7 @@ namespace Dune
   // LocalLagrangeInterpolation
   // --------------------------
 
-  template< template <class,unsigned int> class LP,
-      unsigned int dim, class F >
+  template< template <class,unsigned int> class LP, unsigned int dim, class F >
   class LocalLagrangeInterpolation
   {
     typedef LocalLagrangeInterpolation< LP,dim,F > This;
@@ -36,46 +42,50 @@ namespace Dune
     explicit LocalLagrangeInterpolation ( const LagrangePointSet &lagrangePoints )
       : lagrangePoints_( lagrangePoints )
     {}
-    const LagrangePointSet *points () const
+
+    const LagrangePointSet *points () const { return &lagrangePoints_; }
+
+    template< class Fn, class Fy >
+    auto interpolate ( const Fn &fn, std::vector< Fy > &coefficients, PriorityTag< 1 > ) const
+      -> std::enable_if_t< Std::is_invocable< const Fn &, decltype( this->lagrangePoints_.begin()->point() ) >::value >
     {
-      return &lagrangePoints_;
+      unsigned int index = 0;
+      for( const auto &lp : lagrangePoints_ )
+        field_cast( fn( lp.points() ), coefficients[ index++ ] );
+    }
+
+    template< class Fn, class Fy >
+    auto interpolate ( const Fn &fn, std::vector< Fy > &coefficients, PriorityTag< 0 > ) const
+      -> std::enable_if_t< std::is_same< decltype( fn.evaluate( field_cast< typename Fn::DomainType::field_type >( this->lagrangePoints_.begin()->point() ), std::declval< typename Fn::RangeType & >() ) ), void >::value >
+    {
+      unsigned int index = 0;
+      for( const auto &lp : lagrangePoints_ )
+      {
+        typename Fn::RangeType val;
+        fn.evaluate( field_cast< typename Fn::DomainType::field_type >( lp.point() ), val );
+        field_cast( val, coefficients[ index++ ] );
+      }
     }
 
   public:
-    template< class Function, class Fy >
-    void interpolate ( const Function &function, std::vector< Fy > &coefficients ) const
+    template< class Fn, class Fy >
+    void interpolate ( const Fn &fn, std::vector< Fy > &coefficients ) const
     {
-      typedef typename LagrangePointSet::iterator Iterator;
-
       coefficients.resize( lagrangePoints_.size() );
-
-      unsigned int index = 0;
-      const Iterator end = lagrangePoints_.end();
-      for( Iterator it = lagrangePoints_.begin(); it != end; ++it )
-      {
-        typename Function::RangeType val;
-        function.evaluate( field_cast<typename Function::DomainType::field_type>(it->point()), val );
-        field_cast( val, coefficients[ index++ ] );
-      }
+      interpolate( fn, coefficients, PriorityTag< 42 >() );
     }
 
     template< class Matrix, class Basis >
     void interpolate ( const Basis &basis, Matrix &coefficients ) const
     {
-      typedef typename LagrangePointSet::iterator Iterator;
-
       coefficients.resize( lagrangePoints_.size(), basis.size( ) );
 
       unsigned int index = 0;
-      const Iterator end = lagrangePoints_.end();
-      for( Iterator it = lagrangePoints_.begin(); it != end; ++it )
-        basis.template evaluate<0>( it->point(), coefficients.rowPtr( index++ ) );
+      for( const auto &lp : lagrangePoints_ )
+        basis.template evaluate< 0 >( lp.point(), coefficients.rowPtr( index++ ) );
     }
 
-    const LagrangePointSet &lagrangePoints () const
-    {
-      return lagrangePoints_;
-    }
+    const LagrangePointSet &lagrangePoints () const { return lagrangePoints_; }
   };
 
 

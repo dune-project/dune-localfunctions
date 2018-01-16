@@ -197,13 +197,11 @@ namespace Dune
     void interpolate (const F& ff, std::vector<C>& out) const
     {
       // f gives v*outer normal at a point on the edge!
-      typename F::Traits::RangeType y;
-
       auto&& f = Impl::makeFunctionWithCallOperator<typename LB::Traits::DomainType>(ff);
 
       out.resize(6);
 
-      y = f(m0); out[0] = (y[0]*n0[0]+y[1]*n0[1]+y[2]*n0[2])*sign0;
+      auto y = f(m0); out[0] = (y[0]*n0[0]+y[1]*n0[1]+y[2]*n0[2])*sign0;
       y = f(m1); out[1] = (y[0]*n1[0]+y[1]*n1[1]+y[2]*n1[2])*sign1;
       y = f(m2); out[2] = (y[0]*n2[0]+y[1]*n2[1]+y[2]*n2[2])*sign2;
       y = f(m3); out[3] = (y[0]*n3[0]+y[1]*n3[1]+y[2]*n3[2])*sign3;

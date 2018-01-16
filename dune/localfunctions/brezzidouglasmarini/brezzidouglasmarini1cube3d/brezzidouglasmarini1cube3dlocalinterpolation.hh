@@ -97,7 +97,6 @@ namespace Dune
       // f gives v*outer normal at a point on the edge!
       typedef typename LB::Traits::RangeFieldType Scalar;
       //typedef typename LB::Traits::DomainFieldType Vector;
-      typename F::Traits::RangeType y;
 
       DUNE_THROW( NotImplemented, "Interpolation for BDM1Cube3D finite elements is not implemented." );
 

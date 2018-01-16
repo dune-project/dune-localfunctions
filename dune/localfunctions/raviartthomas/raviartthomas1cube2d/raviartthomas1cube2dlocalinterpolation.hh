@@ -80,7 +80,6 @@ namespace Dune
       // f gives v*outer normal at a point on the edge!
       typedef typename LB::Traits::RangeFieldType Scalar;
       typedef typename LB::Traits::DomainFieldType Vector;
-      typename F::Traits::RangeType y;
 
       auto&& f = Impl::makeFunctionWithCallOperator<typename LB::Traits::DomainType>(ff);
 
@@ -98,7 +97,7 @@ namespace Dune
 
         localPos[0] = 0.0;
         localPos[1] = qPos;
-        y = f(localPos);
+        auto y = f(localPos);
         out[0] += (y[0]*n0[0] + y[1]*n0[1])*it->weight()*sign0;
         out[1] += (y[0]*n0[0] + y[1]*n0[1])*(2.0*qPos - 1.0)*it->weight();
 
@@ -127,7 +126,7 @@ namespace Dune
       {
         FieldVector<double,2> qPos = it->position();
 
-        y = f(qPos);
+        auto y = f(qPos);
         out[8] += y[0]*it->weight();
         out[9] += y[1]*it->weight();
         out[10] += y[0]*qPos[1]*it->weight();

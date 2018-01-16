@@ -23,7 +23,6 @@ namespace Dune
     void interpolate (const F& ff, std::vector<C>& out) const
     {
       typedef typename LB::Traits::DomainType DomainType;
-      typedef typename LB::Traits::RangeType RangeType;
       typedef typename LB::Traits::DomainFieldType DF;
       const int dim=LB::Traits::dimDomain;
 

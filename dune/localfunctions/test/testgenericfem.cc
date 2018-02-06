@@ -33,7 +33,7 @@ int main(int argc, char** argv) try
 
   std::cout << "Testing LagrangeLocalFiniteElement<EquidistantPointSet> on 3d"
             << " simplex elements with double precision" << std::endl;
-  for (unsigned int order=1; order<=6; ++order)
+  for (unsigned int order : {1, 2, 4, 6})
   {
     std::cout << "order : " << order << std::endl;
     Dune::LagrangeLocalFiniteElement<Dune::EquidistantPointSet,3,double,double>
@@ -42,7 +42,7 @@ int main(int argc, char** argv) try
   }
   std::cout << "Testing LagrangeLocalFiniteElement<EquidistantPointSet> on 2d"
             << " cube elements with double precision" << std::endl;
-  for (unsigned int order=1; order<=4; ++order)
+  for (unsigned int order : {1, 2, 4})
   {
     std::cout << "order : " << order << std::endl;
     Dune::LagrangeLocalFiniteElement<Dune::EquidistantPointSet,2,double,double>
@@ -52,7 +52,7 @@ int main(int argc, char** argv) try
 #if HAVE_GMP
   std::cout << "Testing LagrangeLocalFiniteElement<EquidistantPointSet> on 2d"
             << " simplex elements with higher precision" << std::endl;
-  for (unsigned int order=5; order<=8; ++order)
+  for (unsigned int order : {5, 8})
   {
     std::cout << "order : " << order << std::endl;
     Dune::LagrangeLocalFiniteElement<Dune::EquidistantPointSet,2,double,double,
@@ -63,7 +63,7 @@ int main(int argc, char** argv) try
 #endif
   std::cout << "Testing DGLagrangeLocalFiniteElement<EquidistantPointSet> on 3d"
             << " cube elements with double precision" << std::endl;
-  for (unsigned int order=1; order<=2; ++order)
+  for (unsigned int order : {1, 2})
   {
     std::cout << "order : " << order << std::endl;
     typedef Dune::LagrangeLocalFiniteElement<Dune::EquidistantPointSet,3,double,double> FE;
@@ -72,7 +72,7 @@ int main(int argc, char** argv) try
   }
   std::cout << "Testing L2LagrangeLocalFiniteElement<EquidistantPointSet> on 3d"
             << " cube elements with double precision" << std::endl;
-  for (unsigned int order=1; order<=3; ++order)
+  for (unsigned int order : {2, 3})
   {
     std::cout << "order : " << order << std::endl;
     typedef Dune::LagrangeLocalFiniteElement<Dune::EquidistantPointSet,3,double,double> FE;
@@ -82,7 +82,7 @@ int main(int argc, char** argv) try
 #if HAVE_GMP
   std::cout << "Testing OrthonormalFiniteElement on 3d"
             << " prism elements with higher precision" << std::endl;
-  for (unsigned int order=7; order>=4; --order)
+  for (unsigned int order : {6})
   {
     std::cout << "order : " << order << std::endl;
     Dune::OrthonormalLocalFiniteElement<3,double,double,
@@ -93,7 +93,7 @@ int main(int argc, char** argv) try
 #endif
   std::cout << "Testing OrthonormalFiniteElement on 3d"
             << " prism elements with double precision" << std::endl;
-  for (unsigned int order=4; order>=1; --order)
+  for (unsigned int order : {4, 2})
   {
     std::cout << "order : " << order << std::endl;
     Dune::OrthonormalLocalFiniteElement<3,double,double>
@@ -102,7 +102,7 @@ int main(int argc, char** argv) try
   }
   std::cout << "Testing RaviartThomasSimplexFiniteElement on 3d"
             << " simplex elements with double precision" << std::endl;
-  for (unsigned int order=0; order<=4; ++order)
+  for (unsigned int order : {0, 1, 4})
   {
     std::cout << "order : " << order << std::endl;
     Dune::RaviartThomasSimplexLocalFiniteElement<3,double,double>

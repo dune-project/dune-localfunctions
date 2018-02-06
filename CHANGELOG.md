@@ -19,3 +19,9 @@
 
 *  The `QkLocalFiniteElement` class implements second partial derivatives
    of shape functions now.
+
+* The `clone()` method was removed from the raw (non-virtual) `LocalFiniteElement`
+  implementations. If you want to copy a `LocalFiniteElement` in a portable
+  way which works for raw implementations as well as for the virtual interface
+  class, you have to replace `lfe.clone()` by
+  `Dune::LocalFiniteElementCloneFactory<LFEType>::clone(lfe)`.

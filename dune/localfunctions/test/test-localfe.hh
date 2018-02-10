@@ -59,6 +59,33 @@ private:
   int shapeFunction_;
 };
 
+// This class wraps one shape function of a local finite element as a callable
+// that can be fed to the LocalInterpolation::interpolate method.
+template<class FE>
+class ShapeFunctionAsCallable
+{
+  // These types are deliberately private: They are not part of a Callable API
+  typedef typename FE::Traits::LocalBasisType::Traits::DomainType DomainType;
+  typedef typename FE::Traits::LocalBasisType::Traits::RangeType RangeType;
+public:
+
+  ShapeFunctionAsCallable(const FE& fe, int shapeFunction) :
+    fe_(fe),
+    shapeFunction_(shapeFunction)
+  {}
+
+  RangeType operator() (DomainType x) const
+  {
+    std::vector<RangeType> yy;
+    fe_.localBasis().evaluateFunction(x, yy);
+    return yy[shapeFunction_];
+  }
+
+private:
+  const FE& fe_;
+  int shapeFunction_;
+};
+
 
 // Check whether the degrees of freedom computed by LocalInterpolation
 // are dual to the shape functions.  See Ciarlet, "The Finite Element Method
@@ -69,12 +96,57 @@ bool testLocalInterpolation(const FE& fe)
   std::vector<typename ShapeFunctionAsFunction<FE>::CT> coeff;
   for(size_t i=0; i<fe.size(); ++i)
   {
+    //////////////////////////////////////////////////////////////////////////////
+    //  Part A: Feed the shape functions to the 'interpolate' method in form of
+    //    a class derived from FunctionBase.
+    //    This way is deprecated since dune-localfunctions 2.7.
+    //////////////////////////////////////////////////////////////////////////////
+
     // The i-th shape function as a function that 'interpolate' can deal with
     ShapeFunctionAsFunction<FE> f(fe, i);
 
     // Compute degrees of freedom for that shape function
     // We expect the result to be the i-th unit vector
     fe.localInterpolation().interpolate(f, coeff);
+
+    // Check size of weight vector
+    if (coeff.size() != fe.localBasis().size())
+    {
+      std::cout << "Bug in LocalInterpolation for finite element type "
+                << Dune::className(fe) << std::endl;
+      std::cout << "    Interpolation produces " << coeff.size() << " degrees of freedom" << std::endl;
+      std::cout << "    Basis has size " << fe.localBasis().size() << std::endl;
+      std::cout << std::endl;
+      return false;
+    }
+
+    // Check if interpolation weights are equal to coefficients
+    for(std::size_t j=0; j<coeff.size(); ++j)
+    {
+      if ( std::abs(coeff[j] - (i==j)) > TOL)
+      {
+        std::cout << std::setprecision(16);
+        std::cout << "Bug in LocalInterpolation for finite element type "
+                  << Dune::className(fe) << std::endl;
+        std::cout << "    Degree of freedom " << j << " applied to shape function " << i
+                  << " yields value " << coeff[j] << ", not the expected value " << (i==j) << std::endl;
+        std::cout << std::endl;
+        return false;
+      }
+    }
+
+
+    //////////////////////////////////////////////////////////////////////////////
+    //  Part B: Redo the same test, but feed the shape functions to the
+    //    'interpolate' method in form of a callable.
+    //////////////////////////////////////////////////////////////////////////////
+
+    // The i-th shape function as a function that 'interpolate' can deal with
+    ShapeFunctionAsCallable<FE> sfAsCallable(fe, i);
+
+    // Compute degrees of freedom for that shape function
+    // We expect the result to be the i-th unit vector
+    fe.localInterpolation().interpolate(sfAsCallable, coeff);
 
     // Check size of weight vector
     if (coeff.size() != fe.localBasis().size())

@@ -15,8 +15,8 @@ Copyright holders:
 2015          Elisa Friebel
 2012          Christoph Gersbacher
 2015--2017    Felix Gruber
-2009--2017    Carsten Gräser
-2011--2017    Christoph Grüninger
+2009--2018    Carsten Gräser
+2011--2018    Christoph Grüninger
 2017          Patrick Jaap
 2013          Guillaume Jouvet
 2015--2016    Dominic Kempf
@@ -28,7 +28,7 @@ Copyright holders:
 2009          Sven Marnach
 2013--2017    Steffen Müthing
 2012          Rebecca Neumann
-2008--2017    Martin Nolte
+2008--2018    Martin Nolte
 2011--2016    Elias Pipping
 2016          Simon Praetorius
 2012--2013    Human Rezaijafari

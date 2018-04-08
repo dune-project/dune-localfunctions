@@ -11,6 +11,7 @@
 
 #include <dune/localfunctions/common/localbasis.hh>
 #include <dune/localfunctions/common/localkey.hh>
+#include <dune/localfunctions/common/localinterpolation.hh>
 
 namespace Dune
 {
@@ -193,19 +194,19 @@ namespace Dune
     }
 
     template<typename F, typename C>
-    void interpolate (const F& f, std::vector<C>& out) const
+    void interpolate (const F& ff, std::vector<C>& out) const
     {
       // f gives v*outer normal at a point on the edge!
-      typename F::Traits::RangeType y;
+      auto&& f = Impl::makeFunctionWithCallOperator<typename LB::Traits::DomainType>(ff);
 
       out.resize(6);
 
-      f.evaluate(m0,y); out[0] = (y[0]*n0[0]+y[1]*n0[1]+y[2]*n0[2])*sign0;
-      f.evaluate(m1,y); out[1] = (y[0]*n1[0]+y[1]*n1[1]+y[2]*n1[2])*sign1;
-      f.evaluate(m2,y); out[2] = (y[0]*n2[0]+y[1]*n2[1]+y[2]*n2[2])*sign2;
-      f.evaluate(m3,y); out[3] = (y[0]*n3[0]+y[1]*n3[1]+y[2]*n3[2])*sign3;
-      f.evaluate(m4,y); out[4] = (y[0]*n4[0]+y[1]*n4[1]+y[2]*n4[2])*sign4;
-      f.evaluate(m5,y); out[5] = (y[0]*n5[0]+y[1]*n5[1]+y[2]*n5[2])*sign5;
+      auto y = f(m0); out[0] = (y[0]*n0[0]+y[1]*n0[1]+y[2]*n0[2])*sign0;
+      y = f(m1); out[1] = (y[0]*n1[0]+y[1]*n1[1]+y[2]*n1[2])*sign1;
+      y = f(m2); out[2] = (y[0]*n2[0]+y[1]*n2[1]+y[2]*n2[2])*sign2;
+      y = f(m3); out[3] = (y[0]*n3[0]+y[1]*n3[1]+y[2]*n3[2])*sign3;
+      y = f(m4); out[4] = (y[0]*n4[0]+y[1]*n4[1]+y[2]*n4[2])*sign4;
+      y = f(m5); out[5] = (y[0]*n5[0]+y[1]*n5[1]+y[2]*n5[2])*sign5;
     }
 
   private:

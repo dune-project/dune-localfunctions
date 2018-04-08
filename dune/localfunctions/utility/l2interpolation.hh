@@ -3,9 +3,12 @@
 #ifndef DUNE_L2INTERPOLATION_HH
 #define DUNE_L2INTERPOLATION_HH
 
+#include <dune/common/concept.hh>
+
 #include <dune/geometry/topologyfactory.hh>
 #include <dune/geometry/quadraturerules.hh>
 
+#include <dune/localfunctions/common/localinterpolation.hh>
 #include <dune/localfunctions/utility/lfematrix.hh>
 
 namespace Dune
@@ -39,7 +42,8 @@ namespace Dune
 
     static const unsigned int dimension = Basis::dimension;
 
-    template< class Function, class DofField >
+    /** \brief Interpolate a function that implements void evaluate(Domain, Range&) */
+    template< class Function, class DofField, std::enable_if_t<models<Impl::FunctionWithEvaluate<typename Function::DomainType, typename Function::RangeType>, Function>(), int> = 0 >
     void interpolate ( const Function &function, std::vector< DofField > &coefficients ) const
     {
       typedef typename Quadrature::iterator Iterator;
@@ -61,6 +65,31 @@ namespace Dune
         function.evaluate( field_cast<typename Function::DomainType::field_type>(it->position()), val );
         RangeVector factor = field_cast< DofField >( val );
         factor *= field_cast< DofField >( it->weight() );
+        for( unsigned int i = 0; i < size; ++i )
+          coefficients[ i ] += factor * basisValues[ i ];
+      }
+    }
+
+    /** \brief Interpolate a function that implements Range operator()(Domain) */
+    template< class Function, class DofField, std::enable_if_t<models<Impl::FunctionWithCallOperator<typename Quadrature::value_type::Vector>, Function>(), int> = 0 >
+    void interpolate ( const Function &function, std::vector< DofField > &coefficients ) const
+    {
+      typedef FieldVector< DofField, Basis::dimRange > RangeVector;
+
+      const unsigned int size = basis().size();
+      static std::vector< RangeVector > basisValues( size );
+
+      coefficients.resize( size );
+      basisValues.resize( size );
+      for( unsigned int i = 0; i < size; ++i )
+        coefficients[ i ] = Zero< DofField >();
+
+      for (auto&& qp : quadrature())
+      {
+        basis().evaluate( qp.position(), basisValues );
+        auto val = function( qp.position() );
+        RangeVector factor = field_cast< DofField >( val );
+        factor *= field_cast< DofField >( qp.weight() );
         for( unsigned int i = 0; i < size; ++i )
           coefficients[ i ] += factor * basisValues[ i ];
       }

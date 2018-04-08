@@ -8,6 +8,7 @@
 
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
+#include <dune/localfunctions/common/localinterpolation.hh>
 
 namespace Dune
 {
@@ -26,10 +27,11 @@ namespace Dune
 
     //! \brief Local interpolation of a function
     template<typename F, typename C>
-    void interpolate (const F& f, std::vector<C>& out) const
+    void interpolate (const F& ff, std::vector<C>& out) const
     {
       typename LB::Traits::DomainType x;
-      typename LB::Traits::RangeType y;
+
+      auto&& f = Impl::makeFunctionWithCallOperator<decltype(x)>(ff);
 
       const int size = 1<<dim;
 
@@ -44,7 +46,7 @@ namespace Dune
         for (int j=0; j<dim; j++)
           x[j] = (i & (1<<j)) ? 1.0 : 0.0;
 
-        f.evaluate(x,y); q1Coefficients[i] = y;
+        q1Coefficients[i] = f(x);
 
       }
 

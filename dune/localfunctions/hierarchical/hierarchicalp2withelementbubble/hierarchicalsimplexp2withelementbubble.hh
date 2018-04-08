@@ -15,6 +15,7 @@
 
 #include <dune/localfunctions/common/localbasis.hh>
 #include <dune/localfunctions/common/localkey.hh>
+#include <dune/localfunctions/common/localinterpolation.hh>
 
 namespace Dune
 {
@@ -455,30 +456,32 @@ namespace Dune
 
     //! \brief Local interpolation of a function
     template<typename F, typename C>
-    void interpolate (const F& f, std::vector<C>& out) const
+    void interpolate (const F& ff, std::vector<C>& out) const
     {
       typename LB::Traits::DomainType x;
       typename LB::Traits::RangeType y;
 
       out.resize(7);
 
+      auto&& f = Impl::makeFunctionWithCallOperator<decltype(x)>(ff);
+
       // vertices
-      x[0] = 0.0; x[1] = 0.0; f.evaluate(x,y); out[0] = y;
-      x[0] = 1.0; x[1] = 0.0; f.evaluate(x,y); out[2] = y;
-      x[0] = 0.0; x[1] = 1.0; f.evaluate(x,y); out[5] = y;
+      x[0] = 0.0; x[1] = 0.0; out[0] = f(x);
+      x[0] = 1.0; x[1] = 0.0; out[2] = f(x);
+      x[0] = 0.0; x[1] = 1.0; out[5] = f(x);
 
       // edge bubbles
-      x[0] = 0.5; x[1] = 0.0; f.evaluate(x,y);
+      x[0] = 0.5; x[1] = 0.0; y = f(x);
       out[1] = y - out[0]*(1-x[0]) - out[2]*x[0];
 
-      x[0] = 0.0; x[1] = 0.5; f.evaluate(x,y);
+      x[0] = 0.0; x[1] = 0.5; y = f(x);
       out[3] = y - out[0]*(1-x[1]) - out[5]*x[1];
 
-      x[0] = 0.5; x[1] = 0.5; f.evaluate(x,y);
+      x[0] = 0.5; x[1] = 0.5; y = f(x);
       out[4] = y - out[2]*x[0] - out[5]*x[1];
 
       // element bubble
-      x[0] = 1.0/3; x[1] = 1.0/3; f.evaluate(x,y);
+      x[0] = 1.0/3; x[1] = 1.0/3; y = f(x);
 
       /** \todo Hack: extract the proper types */
       HierarchicalSimplexP2WithElementBubbleLocalBasis<double,double,2> shapeFunctions;

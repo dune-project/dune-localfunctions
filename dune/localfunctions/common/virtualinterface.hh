@@ -3,6 +3,7 @@
 #ifndef DUNE_LOCALFUNCTIONS_COMMON_VIRTUALINTERFACE_HH
 #define DUNE_LOCALFUNCTIONS_COMMON_VIRTUALINTERFACE_HH
 
+#include <type_traits>
 #include <array>
 #include <vector>
 
@@ -11,6 +12,7 @@
 #include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
+#include <dune/localfunctions/common/localinterpolation.hh>
 #include <dune/localfunctions/common/localkey.hh>
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 
@@ -182,46 +184,38 @@ namespace Dune
      */
     virtual void interpolate (const FunctionType& f, std::vector<CoefficientType>& out) const = 0;
 
-    //! \copydoc LocalInterpolationVirtualInterfaceBase::interpolate
-    //! This uses the pure virtual method by wrapping the template argument into a VirtualFunction
-    template<class F>
-    void interpolate (const F& f, std::vector<CoefficientType>& out) const
+    /** \brief determine coefficients interpolating a given function
+     *
+     * \param[in]  ff   Function instance used to interpolate.
+     * \param[out] out Resulting coefficients vector.
+     */
+    template<class F,
+      std::enable_if_t<not std::is_base_of<FunctionType, F>::value, int> = 0>
+    void interpolate (const F& ff, std::vector<CoefficientType>& out) const
     {
+      const auto& f = Impl::makeFunctionWithCallOperator<DomainType>(ff);
+
       const LocalInterpolationVirtualInterfaceBase<DomainType, RangeType>& asBase = *this;
-      asBase.interpolate(VirtualFunctionWrapper<F>(f),out);
+      asBase.interpolate(makeVirtualFunction<DomainType, RangeType>(std::cref(f)),out);
     }
 
+    /** \brief determine coefficients interpolating a given function
+     *
+     * \param[in]  ff   Function instance used to interpolate.
+     * \param[out] out Resulting coefficients vector.
+     */
     template<class F, class C>
-    void interpolate (const F& f, std::vector<C>& out) const
+    void interpolate (const F& ff, std::vector<C>& out) const
     {
+      const auto& f = Impl::makeFunctionWithCallOperator<DomainType>(ff);
+
       std::vector<CoefficientType> outDummy;
       const LocalInterpolationVirtualInterfaceBase<DomainType, RangeType>& asBase = *this;
-      asBase.interpolate(VirtualFunctionWrapper<F>(f),outDummy);
+      asBase.interpolate(makeVirtualFunction<DomainType, RangeType>(std::cref(f)),outDummy);
       out.resize(outDummy.size());
       for(typename std::vector<CoefficientType>::size_type i=0; i<outDummy.size(); ++i)
         out[i] = outDummy[i];
     }
-
-  private:
-
-    template <typename F>
-    struct VirtualFunctionWrapper
-      : public FunctionType
-    {
-    public:
-      VirtualFunctionWrapper(const F &f)
-        : f_(f)
-      {}
-
-      virtual ~VirtualFunctionWrapper() {}
-
-      virtual void evaluate(const DomainType& x, RangeType& y) const
-      {
-        f_.evaluate(x,y);
-      }
-
-      const F &f_;
-    };
   };
 
 

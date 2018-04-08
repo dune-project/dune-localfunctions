@@ -1,5 +1,9 @@
 # Master (will become release 2.7)
 
+* Add support for `operator()` syntax to `interpolate()`. All `interpolate()`
+  implementations now support functions `f` that either support `f.evaluate(x,y)`
+  or `y = f(x)`.
+
 # Release 2.6
 
 *  The `diffOrder` value has disappeared from the `LocalBasisTraits` class.

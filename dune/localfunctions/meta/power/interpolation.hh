@@ -8,6 +8,8 @@
 #include <cassert>
 #include <cstddef>
 #include <vector>
+#include <dune/common/function.hh>
+#include <dune/localfunctions/common/localinterpolation.hh>
 
 namespace Dune {
 
@@ -41,7 +43,9 @@ namespace Dune {
 
   private:
     template<class F>
-    class ComponentEvaluator {
+    class ComponentEvaluator :
+      public Function<typename Backend::Traits::DomainLocal, typename Backend::Traits::Range>
+    {
       const F &f;
       std::size_t comp;
 
@@ -53,8 +57,7 @@ namespace Dune {
       void evaluate(const typename Backend::Traits::DomainLocal &x,
                     typename Backend::Traits::Range &y) const
       {
-        typename Traits::Range fy;
-        f.evaluate(x, fy);
+        typename Traits::Range fy = f(x);
         y[0] = fy[comp];
       }
     };
@@ -62,7 +65,7 @@ namespace Dune {
   public:
     //! Determine coefficients interpolating a given function
     /**
-     * \param f   An object supporting the expression \c f.evaluate(x,y),
+     * \param ff  An object supporting the expression \c ff.evaluate(x,y),
      *            where \c x is of type \c Traits::DomainLocal and \c y of the
      *            type \c Traits::Range.  When \c f.evaluate(x,y) is
      *            evaluated, \c x will be a local coordinate, and the
@@ -71,11 +74,19 @@ namespace Dune {
      * \param out Vector where to store the interpolated coefficients.
      */
     template<typename F, typename C>
-    void interpolate(const F& f, std::vector<C>& out) const {
+    void interpolate(const F& ff, std::vector<C>& out) const {
+
+      auto&& f = Impl::makeFunctionWithCallOperator<typename Backend::Traits::DomainLocal>(ff);
+
+
       out.clear();
       std::vector<C> cout;
       for(std::size_t d = 0; d < Traits::dimRange; ++d) {
-        backend->interpolate(ComponentEvaluator<F>(f, d), cout);
+        // When dropping support for `evaluate()` we can simply use a lambda
+        // instead of ComponentEvaluator. But changing this now would break
+        // PowerInterpolation for FE-implementation outside of dune-localfunctions
+        // which may not have been adjusted so far.
+        backend->interpolate(ComponentEvaluator<std::decay_t<decltype(f)>>(f, d), cout);
         if(d == 0)
           out.resize(cout.size()*Traits::dimRange);
         // make sure the size of cout does not change surprisingly

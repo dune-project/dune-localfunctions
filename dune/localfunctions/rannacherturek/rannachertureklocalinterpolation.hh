@@ -11,6 +11,7 @@
 #include <dune/geometry/referenceelements.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
+#include <dune/localfunctions/common/localinterpolation.hh>
 
 namespace Dune
 {
@@ -31,10 +32,11 @@ namespace Dune
 
   public:
     template< class F, class C >
-    void interpolate ( const F &f, std::vector< C > &out ) const
+    void interpolate ( const F &ff, std::vector< C > &out ) const
     {
       typedef typename Traits::DomainType DomainType;
-      typedef typename Traits::RangeType RangeType;
+
+      auto&& f = Impl::makeFunctionWithCallOperator<DomainType>(ff);
 
       // get cubic reference element
       auto referenceElement = ReferenceElements< D, d >::cube();
@@ -49,9 +51,7 @@ namespace Dune
       for( int i = 0; i < size; ++i )
       {
         const DomainType &x = referenceElement.position( i, 1 );
-        RangeType y;
-        f.evaluate( x, y );
-        out[ i ] = y;
+        out[ i ] = f(x);
       }
     }
 

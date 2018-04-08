@@ -12,6 +12,7 @@
 
 #include <dune/geometry/topologyfactory.hh>
 
+#include <dune/localfunctions/common/localinterpolation.hh>
 #include <dune/localfunctions/lagrange/lagrangecoefficients.hh>
 
 namespace Dune
@@ -51,12 +52,12 @@ namespace Dune
     {
       unsigned int index = 0;
       for( const auto &lp : lagrangePoints_ )
-        field_cast( fn( lp.points() ), coefficients[ index++ ] );
+        field_cast( fn( lp.point() ), coefficients[ index++ ] );
     }
 
     template< class Fn, class Fy >
     auto interpolate ( const Fn &fn, std::vector< Fy > &coefficients, PriorityTag< 0 > ) const
-      -> std::enable_if_t< std::is_same< decltype( fn.evaluate( field_cast< typename Fn::DomainType::field_type >( this->lagrangePoints_.begin()->point() ), std::declval< typename Fn::RangeType & >() ) ), void >::value >
+      -> std::enable_if_t< models<Impl::FunctionWithEvaluate< typename Fn::DomainType, typename Fn::RangeType >, Fn>(), void>
     {
       unsigned int index = 0;
       for( const auto &lp : lagrangePoints_ )

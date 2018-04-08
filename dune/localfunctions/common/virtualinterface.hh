@@ -3,6 +3,7 @@
 #ifndef DUNE_LOCALFUNCTIONS_COMMON_VIRTUALINTERFACE_HH
 #define DUNE_LOCALFUNCTIONS_COMMON_VIRTUALINTERFACE_HH
 
+#include <type_traits>
 #include <array>
 #include <vector>
 
@@ -188,7 +189,8 @@ namespace Dune
      * \param[in]  ff   Function instance used to interpolate.
      * \param[out] out Resulting coefficients vector.
      */
-    template<class F>
+    template<class F,
+      std::enable_if_t<not std::is_base_of<FunctionType, F>::value, int> = 0>
     void interpolate (const F& ff, std::vector<CoefficientType>& out) const
     {
       const auto& f = Impl::makeFunctionWithCallOperator<DomainType>(ff);

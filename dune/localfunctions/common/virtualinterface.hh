@@ -196,7 +196,7 @@ namespace Dune
       const auto& f = Impl::makeFunctionWithCallOperator<DomainType>(ff);
 
       const LocalInterpolationVirtualInterfaceBase<DomainType, RangeType>& asBase = *this;
-      asBase.interpolate(makeVirtualFunctionWrapper(f),out);
+      asBase.interpolate(makeVirtualFunction<DomainType, RangeType>(std::cref(f)),out);
     }
 
     /** \brief determine coefficients interpolating a given function
@@ -211,37 +211,10 @@ namespace Dune
 
       std::vector<CoefficientType> outDummy;
       const LocalInterpolationVirtualInterfaceBase<DomainType, RangeType>& asBase = *this;
-      asBase.interpolate(makeVirtualFunctionWrapper(f),outDummy);
+      asBase.interpolate(makeVirtualFunction<DomainType, RangeType>(std::cref(f)),outDummy);
       out.resize(outDummy.size());
       for(typename std::vector<CoefficientType>::size_type i=0; i<outDummy.size(); ++i)
         out[i] = outDummy[i];
-    }
-
-  private:
-
-    template <typename F>
-    struct VirtualFunctionWrapper
-      : public FunctionType
-    {
-    public:
-      VirtualFunctionWrapper(const F &f)
-        : f_(f)
-      {}
-
-      virtual ~VirtualFunctionWrapper() {}
-
-      virtual void evaluate(const DomainType& x, RangeType& y) const
-      {
-        y = f_(x);
-      }
-
-      const F &f_;
-    };
-
-    template<class F>
-    static auto makeVirtualFunctionWrapper(const F& f)
-    {
-      return VirtualFunctionWrapper<F>(f);
     }
   };
 

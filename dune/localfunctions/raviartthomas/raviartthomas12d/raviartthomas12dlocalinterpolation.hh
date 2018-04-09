@@ -117,7 +117,7 @@ namespace Dune
       {
         Dune::FieldVector<double,2> qPos = it->position();
 
-        y = f(qPos);
+        auto y = f(qPos);
         out[6] += y[0]*it->weight();
         out[7] += y[1]*it->weight();
       }

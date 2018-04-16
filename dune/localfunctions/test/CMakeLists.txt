@@ -1,3 +1,5 @@
+dune_add_test(SOURCES bdfmelementtest.cc)
+
 dune_add_test(SOURCES brezzidouglasmarinielementtest.cc)
 
 dune_add_test(SOURCES dualmortarelementtest.cc)

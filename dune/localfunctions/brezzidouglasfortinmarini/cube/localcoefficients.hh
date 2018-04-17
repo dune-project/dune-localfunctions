@@ -13,6 +13,19 @@
 namespace Dune
 {
 
+  /**
+   * \ingroup LocalLayoutImplementation
+   *
+   * \brief Layout map for Brezzi-Douglas-Fortin-Marini elements on cubes.
+   *
+   * \tparam D      Type of represent the field in the domain.
+   * \tparam R      Type of represent the field in the domain.
+   * \tparam dim    dimension of the reference element, must be >= 2.
+   * \tparam order  order of the element, must be >= 1.
+   *
+   * \nosubgrouping
+   * \implements Dune::LocalCoefficientsVirtualImp
+   */
   template<class D, class R, unsigned int dim, unsigned int order>
   class BDFMCubeLocalCoefficients
   {
@@ -23,6 +36,7 @@ namespace Dune
     static constexpr std::size_t numDofs  = numFaces*faceDofs + interiorDofs;
 
     public:
+      //! \brief Standard constructor
       BDFMCubeLocalCoefficients () : li(numDofs)
       {
         for (auto j : range(numFaces))
@@ -33,7 +47,10 @@ namespace Dune
           li[numFaces*faceDofs + i] = LocalKey(0, 0, i);
       }
 
+      //! \brief number of coefficients
       std::size_t size () const { return numDofs; }
+
+      //! \brief geth i'th index
       auto localKey (std::size_t i) const -> const LocalKey& { return li[i]; }
 
     private:

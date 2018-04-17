@@ -1,3 +1,5 @@
+// -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+// vi: set et ts=4 sw=2 sts=2:
 #ifndef DUNE_LOCALFUNCTIONS_BREZZIDOUGLASFORTINMARINI_CUBE_LOCALBASIS_HH
 #define DUNE_LOCALFUNCTIONS_BREZZIDOUGLASFORTINMARINI_CUBE_LOCALBASIS_HH
 
@@ -17,7 +19,17 @@
 
 namespace Dune
 {
-
+  /**
+   * \ingroup LocalBasisImplementation
+   * \brief Brezzi-Douglas-Fortin-Marini shape functions on a reference cube.
+   *
+   * \tparam D      Type to represent the field in the domain.
+   * \tparam R      Type to represent the field in the range.
+   * \tparam dim    dimension of the reference element, must be >= 2.
+   * \tparam order  order of the element, must be >= 1.
+   *
+   * \nosubgroup
+   */
   template<class D, class R, unsigned int dim, unsigned int order>
   class BDFMCubeLocalBasis
   {
@@ -33,9 +45,12 @@ namespace Dune
   };
 
 
-  // BDFMCubeLocalBasis (dim=2, order=1)
-  // -----------------------------------
 
+  /**
+   * \brief First order Brezzi-Douglas-Fortin-Marini shape functions on the refrence quadrialteral.
+   *
+   * \nosubgrouping
+   */
   template<class D, class R >
   class BDFMCubeLocalBasis<D, R, 2, 1>
   {
@@ -46,19 +61,32 @@ namespace Dune
   public:
     using Traits = LocalBasisTraits<D, 2, DomainType, R, 2, RangeType, JacobianType>;
 
+    //! \brief Standard constructor
     BDFMCubeLocalBasis ()
     {
       std::fill(s_.begin(), s_.end(), 1);
     }
 
+    /**
+     * \brief Make set number s, where 0<= s < 16
+     *
+     * \param s  Edge orientation indicator
+     */
     BDFMCubeLocalBasis (std::bitset<4> s)
     {
       for (auto i : range(4))
         s_[i] = s[i] ? -1 : 1;
     }
 
+    //! \brief number of shape functions
     unsigned int size () const { return 4; }
 
+    /**
+     * \brief Evaluate all shape functions
+     *
+     * \param in   Position
+     * \param out  return value
+     */
     inline void evaluateFunction (const DomainType& in, std::vector<RangeType>& out) const
     {
       out.resize(4);
@@ -69,6 +97,12 @@ namespace Dune
       out[3] = {0, s_[3]*(in[1]) };
     }
 
+    /**
+     * \brief Evaluate Jacobian of all shape functions
+     *
+     * \param in   Position
+     * \param out  return value
+     */
     inline void evaluateJacobian (const DomainType& in, std::vector<JacobianType>& out) const
     {
       out.resize(4);
@@ -79,6 +113,13 @@ namespace Dune
       out[3] = {{0, 0}, {0, s_[3]}};
     }
 
+    /**
+     * \brief Evaluate all partial derivatives of all shape functions
+     *
+     * \param order  order the partial derivative
+     * \param in     Position
+     * \param out    return value
+     */
     void partial (const std::array<unsigned int, 2>& order,
                   const DomainType& in,
                   std::vector<RangeType>& out) const
@@ -89,6 +130,7 @@ namespace Dune
         DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
     }
 
+    //! \brief Polynomial order of the shape functions
     unsigned int order () const { return 1; }
 
   private:
@@ -96,9 +138,11 @@ namespace Dune
   };
 
 
-  // BDFMCubeLocalBasis (dim=2, order=2)
-  // -----------------------------------
-
+  /**
+   * \brief Second order Brezzi-Douglas-Fortin-Marini shape functions on the refrence quadrialteral.
+   *
+   * \nosubgrouping
+   */
   template<class D, class R >
   class BDFMCubeLocalBasis<D, R, 2, 2>
   {
@@ -109,19 +153,32 @@ namespace Dune
   public:
     using Traits = LocalBasisTraits<D, 2, DomainType, R, 2, RangeType, JacobianType>;
 
+    //! \brief Standard constructor
     BDFMCubeLocalBasis ()
     {
       std::fill(s_.begin(), s_.end(), 1);
     }
 
+    /**
+     * \brief Make set number s, where 0<= s < 16
+     *
+     * \param s  Edge orientation indicator
+     */
     BDFMCubeLocalBasis (std::bitset<4> s)
     {
       for (auto i : range(4))
         s_[i] = s[i] ? -1 : 1;
     }
 
+    //! \brief number of shape functions
     unsigned int size () const { return 10; }
 
+    /**
+     * \brief Evaluate all shape functions
+     *
+     * \param in   Position
+     * \param out  return value
+     */
     inline void evaluateFunction (const DomainType& in, std::vector<RangeType>& out) const
     {
       out.resize(10);
@@ -150,6 +207,12 @@ namespace Dune
       out[9] = {0, 6*y*(1-y)};
     }
 
+    /**
+     * \brief Evaluate Jacobian of all shape functions
+     *
+     * \param in   Position
+     * \param out  return value
+     */
     inline void evaluateJacobian (const DomainType& in, std::vector<JacobianType>& out) const
     {
       out.resize(10);
@@ -174,6 +237,13 @@ namespace Dune
       out[9] = {{0, 0}, {0, 6-12*y}};
     }
 
+    /**
+     * \brief Evaluate all partial derivatives of all shape functions
+     *
+     * \param order  order the partial derivative
+     * \param in     Position
+     * \param out    return value
+     */
     void partial (const std::array<unsigned int, 2>& order,
                   const DomainType& in,
                   std::vector<RangeType>& out) const
@@ -184,6 +254,7 @@ namespace Dune
         DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
     }
 
+    //! \brief Polynomial order of the shape functions
     unsigned int order () const { return 2; }
 
   private:
@@ -191,9 +262,11 @@ namespace Dune
   };
 
 
-  // BDFMCubeLocalBasis (dim=2, order=3)
-  // -----------------------------------
-
+  /**
+   * \brief Third order Brezzi-Douglas-Fortin-Marini shape functions on the refrence quadrialteral.
+   *
+   * \nosubgrouping
+   */
   template<class D, class R >
   class BDFMCubeLocalBasis<D, R, 2, 3>
   {
@@ -204,19 +277,32 @@ namespace Dune
   public:
     using Traits = LocalBasisTraits<D, 2, DomainType, R, 2, RangeType, JacobianType>;
 
+    //! \brief Standard constructor
     BDFMCubeLocalBasis ()
     {
       std::fill(s_.begin(), s_.end(), 1);
     }
 
+    /**
+     * \brief Make set number s, where 0<= s < 16
+     *
+     * \param s  Edge orientation indicator
+     */
     BDFMCubeLocalBasis (std::bitset<4> s)
     {
       for (auto i : range(4))
         s_[i] = s[i] ? -1 : 1;
     }
 
+    //! \brief number of shape functions
     unsigned int size () const { return 18; }
 
+    /**
+     * \brief Evaluate all shape functions
+     *
+     * \param in   Position
+     * \param out  return value
+     */
     inline void evaluateFunction (const DomainType& in, std::vector<RangeType>& out) const
     {
       out.resize(18);
@@ -255,6 +341,12 @@ namespace Dune
       out[17] = {0, pre*30*(2*y-1)};
     }
 
+    /**
+     * \brief Evaluate Jacobian of all shape functions
+     *
+     * \param in   Position
+     * \param out  return value
+     */
     inline void evaluateJacobian (const DomainType& in, std::vector<JacobianType>& out) const
     {
       out.resize(18);
@@ -287,6 +379,13 @@ namespace Dune
       out[17] = {{0, 0}, {         0,   -30*(6*y*y-6*y+1)}};
     }
 
+    /**
+     * \brief Evaluate all partial derivatives of all shape functions
+     *
+     * \param order  order the partial derivative
+     * \param in     Position
+     * \param out    return value
+     */
     void partial (const std::array<unsigned int, 2>& order,
                   const DomainType& in,
                   std::vector<RangeType>& out) const
@@ -297,6 +396,7 @@ namespace Dune
         DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
     }
 
+    //! \brief Polynomial order of the shape functions
     unsigned int order () const { return 3; }
 
   private:

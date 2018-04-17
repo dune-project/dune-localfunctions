@@ -19,6 +19,18 @@
 namespace Dune
 {
 
+  /**
+   * \ingroup LocalInterpolationImplementation
+   * \brief Interpolation for Brezzi-Douglas-Fortin-Marini shape functions on cubes.
+   *
+   * \tparam D      Type of represent the field in the domain.
+   * \tparam R      Type of represent the field in the domain.
+   * \tparam dim    dimension of the reference element, must be >= 2.
+   * \tparam order  order of the element, must be >= 1.
+   *
+   *
+   * \nosubgrouping
+   */
   template<class D, class R, unsigned int dim, unsigned int order>
   class BDFMCubeLocalInterpolation
   {
@@ -99,11 +111,17 @@ namespace Dune
     }
 
   public:
+    //! \brief Standard constructor
     BDFMCubeLocalInterpolation ()
     {
       std::fill(sign_.begin(), sign_.end(), 1.0);
     }
 
+    /**
+     * \brief Make set number s, where 0 <= s < 2^(2*dim)
+     *
+     * \param s  Edge orientation indicator
+     */
     BDFMCubeLocalInterpolation (std::bitset<numFaces> s)
     {
       for (auto i : range(numFaces))
@@ -113,6 +131,15 @@ namespace Dune
       }
     }
 
+    /**
+     * \brief Interpolate a given function with shape functions
+     *
+     * \tparam F  Function type for function which should be interpolated
+     * \tparam C  Coefficient vector type
+     *
+     * \param ff   function which should be interpolated
+     * \param out  return value, vector of coefficients
+     */
     template<class F, class C>
     void interpolate (const F& ff, C& out) const
     {
@@ -127,6 +154,17 @@ namespace Dune
       interior(f, out);
     }
 
+    /**
+     * \brief Interpolate a given function with shape functions on a face of the reference element
+     *
+     * \tparam F  Function type for function which should be interpolated
+     * \tparam C  Coefficient vector type
+     *
+     * \param face  index of the face on which to interpolate
+     * \param f     function which should be interpolated
+     * \param out   return value, vector of coefficients
+     *
+     */
     template<class F, class C>
     void trace (unsigned int face, const F& f, C& out) const
     {
@@ -157,6 +195,15 @@ namespace Dune
       }
     }
 
+    /**
+     * \brief Interpolate a given function with shape functions in the interior of the reference element
+     *
+     * \tparam F  Function type for function which should be interpolated
+     * \tparam C  Coefficient vector type
+     *
+     * \param ff   function which should be interpolated
+     * \param out  return value, vector of coefficients
+     */
     template<class F, class C>
     void interior (const F& f, C& out) const
     {
@@ -188,6 +235,7 @@ namespace Dune
     std::array<RangeFieldType, numFaces> sign_;
     std::array<DomainType, numFaces> normal_;
   };
+
 
   template<class D, class R, unsigned int dim>
   class BDFMCubeLocalInterpolation<D, R, dim, 0>

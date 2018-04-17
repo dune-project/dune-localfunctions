@@ -136,8 +136,9 @@ namespace Dune
       const auto o = face*faceDofs;
       const auto& n = normal_[face];
       const auto& s = sign_[face];
+      const auto& c = n[face/2];
 
-      const auto& rule = QuadratureRules<DomainFieldType, dim-1>::rule(GeometryTypes::cube(dim-1), order+1);
+      const auto& rule = QuadratureRules<DomainFieldType, dim-1>::rule(GeometryTypes::cube(dim-1), order+(order-1)+5);
       for (const auto& qp : rule)
       {
         const auto& x = qp.position();
@@ -151,7 +152,7 @@ namespace Dune
           for (auto j : range(dim-1))
             phi *= legendre(mi[j], x[j]);
 
-          out[o+i] += (y*n) * phi * qp.weight() * (i%2 ? R(1) : s);
+          out[o+i] += (y*n) * phi * qp.weight() * (i%2 ? c : s);
         }
       }
     }
@@ -163,7 +164,7 @@ namespace Dune
 
        const auto o = numFaces*faceDofs;
 
-      const auto& rule = QuadratureRules<DomainFieldType, dim>::rule(GeometryTypes::cube(dim), order+1);
+      const auto& rule = QuadratureRules<DomainFieldType, dim>::rule(GeometryTypes::cube(dim), order+std::max((int)order-2,(int)0)+5);
       for(const auto& qp : rule)
       {
         const auto& x = qp.position();

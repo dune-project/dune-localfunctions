@@ -27,9 +27,6 @@ namespace Dune
    * \tparam R      Type of represent the field in the domain.
    * \tparam dim    dimension of the reference element, must be >= 2.
    * \tparam order  order of the element, must be >= 1.
-   *
-   *
-   * \nosubgrouping
    */
   template<class D, class R, unsigned int dim, unsigned int order>
   class BDFMCubeLocalInterpolation
@@ -45,6 +42,12 @@ namespace Dune
     static constexpr unsigned int interiorDofs = dim*binomial(dim+order-2, order-2);
     static constexpr unsigned int faceDofs     = binomial(dim+order-2, order-1);
 
+    /**
+     * \brief compute the i'th shifted Legendre function on [0,1]
+     *
+     * \param i  index of function to compute
+     * \param x  Position
+     */
     inline static auto legendre( unsigned int i, const DomainFieldType& x )
       -> RangeFieldType
     {
@@ -63,6 +66,15 @@ namespace Dune
       }
     }
 
+    /**
+     * \brief calculate the i`th multi index in graded lexigraphic order
+     *
+     * \tparam d     number of components of the multi index
+     * \tparam kMax  maximum absolute value to consider. (default is unlimited)
+     *
+     * \param i  index
+     *
+     */
     template<std::size_t d, std::size_t kMax = -1>
     constexpr inline static auto unrank (std::size_t i)
       -> std::array<std::size_t, d>
@@ -92,6 +104,12 @@ namespace Dune
       return mi;
     }
 
+    /**
+     * \brief embed the a local position on a face into the reference element
+     *
+     * \param face  index of the face
+     * \param x     local position
+     */
     inline static auto embed (unsigned int face, const FaceDomainType& x )
       -> DomainType
     {

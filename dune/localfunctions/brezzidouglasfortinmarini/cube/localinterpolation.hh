@@ -27,6 +27,8 @@ namespace Dune
    * \tparam R      Type of represent the field in the domain.
    * \tparam dim    dimension of the reference element, must be >= 2.
    * \tparam order  order of the element, must be >= 1.
+   *
+   * \nosubgrouping
    */
   template<class D, class R, unsigned int dim, unsigned int order>
   class BDFMCubeLocalInterpolation
@@ -252,12 +254,14 @@ namespace Dune
   };
 
 
+#ifndef DOXYGEN
   template<class D, class R, unsigned int dim>
   class BDFMCubeLocalInterpolation<D, R, dim, 0>
   {
     static_assert(AlwaysFalse<D>::value,
                   "`BDFMCubeLocalCoefficients` not defined for order 0.");
   };
+#endif //#ifndef DOXYGEN
 
 } // namespace Dune
 

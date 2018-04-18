@@ -58,12 +58,14 @@ namespace Dune
   };
 
 
+#ifndef DOXYGEN
   template<class D, class R, unsigned int dim>
   class BDFMCubeLocalCoefficients<D, R, dim, 0>
   {
     static_assert( AlwaysFalse<D>::value,
                    "`BDFMCubeLocalCoefficients` not defined for order 0." );
   };
+#endif // #ifndef DOXYGEN
 
 } // namespace Dune
 

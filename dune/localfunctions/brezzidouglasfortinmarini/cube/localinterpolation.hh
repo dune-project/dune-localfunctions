@@ -63,16 +63,13 @@ namespace Dune
       }
     }
 
-    template<std::size_t k>
-    using MultiIndex = FieldVector<std::size_t, k>;
-
     template<std::size_t d, std::size_t kMax = -1>
     constexpr inline static auto unrank (std::size_t i)
-      -> MultiIndex<d>
+      -> std::array<std::size_t, d>
     {
       assert( i < binomial(d+kMax, kMax));
 
-      MultiIndex<d> mi;
+      std::array<std::size_t, d> mi{};
       if (i == 0)
         return mi;
 

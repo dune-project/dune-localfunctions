@@ -18,6 +18,19 @@ namespace Dune
   /**
    * \brief Brezzi-Douglas-Fortin-Marini finite elements for cubes
    *
+   *  Brezzi-Douglas-Fortin-Marini (BDFM) finite elements are reduced
+   *  Brezzi-Douglas-Marini (BDM) finite elements, where the order of
+   *  the normal traces is lowered by one.
+   *
+   *  On a quadrilateral K the BDFM element is given by
+   *
+   *  \f$BDFM_k = (P_k(K)\setminus\{y^k\})\times(P_k(K)\setminus\{x^k\})\quad(k\geq1)\f$
+   *
+   *  The BDFM1 element is identical to the RT0 element.
+   *
+   *  For further reading see
+   *  Brezzi, Fortin "Mixed and Hybrid Finite Element Methods" (1991), Chapter III Section 3
+   *
    * \ingroup BrezziDouglasFortinMarini
    *
    * \tparam D      Type to represent the field in the domain.

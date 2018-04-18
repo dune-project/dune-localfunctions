@@ -37,13 +37,15 @@ namespace Dune
                    "`BDFMCubeLocalBasis` not implemented for chosen `dim` and `order`." );
   };
 
+
+#ifndef DOXYGEN
   template<class D, class R, unsigned int dim>
   class BDFMCubeLocalBasis<D, R, dim, 0>
   {
     static_assert( AlwaysFalse<D>::value,
                    "`BDFMCubeLocalBasis` not defined for order 0." );
   };
-
+#endif // #ifndef DOXYGEN
 
 
   /**

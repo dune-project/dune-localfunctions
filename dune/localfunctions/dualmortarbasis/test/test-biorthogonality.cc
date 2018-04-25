@@ -165,7 +165,7 @@ bool testFaceBiorthogonality(const DualLfe& dualLfe, const LagrangeLfe& lagrange
   return biorthog;
 }
 
-int main(int argc, char** argv) try
+int main(int argc, char** argv)
 {
   bool success = true;
   Dune::DualP1LocalFiniteElement<double,double,1> dualP1lfem1D;
@@ -211,9 +211,4 @@ int main(int argc, char** argv) try
   success = testFaceBiorthogonality(dualFaceQ1lfem3D,q1lfem3D) and success;
 
   return success ? 0 : 1;
-}
-catch(Dune::Exception e)
-{
-  std::cout<<e<<std::endl;
-  return 1;
 }

@@ -125,7 +125,7 @@ void testLocalFiniteElement(const LocalFiniteElementVirtualInterface<T>* localFi
 
 }
 
-int main (int argc, char *argv[]) try
+int main (int argc, char *argv[])
 {
 
   typedef Dune::P1LocalFiniteElement<double, double, 2>::Traits::LocalBasisType::Traits LBTraits;
@@ -156,9 +156,4 @@ int main (int argc, char *argv[]) try
 
   return 0;
 
-}
-catch (Exception e) {
-
-  std::cout << e << std::endl;
-  return 1;
 }

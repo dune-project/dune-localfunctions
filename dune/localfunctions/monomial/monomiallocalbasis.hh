@@ -142,7 +142,7 @@ namespace Dune
         const typename Traits::DomainType &in,
         //! The number of partial derivatives, one entry for
         //! each dimension
-        const std::array<int, Traits::dimDomain> &derivatives,
+        const std::array<unsigned int, Traits::dimDomain> &derivatives,
         //! The product accumulated for the dimensions which
         //! have already been handled
         typename Traits::RangeFieldType prod,
@@ -195,7 +195,7 @@ namespace Dune
       //! \copydoc Evaluate::eval
       template <typename Access>
       static void eval (const typename Traits::DomainType &in,
-                        const std::array<int, Traits::dimDomain> &derivatives,
+                        const std::array<unsigned int, Traits::dimDomain> &derivatives,
                         typename Traits::RangeFieldType prod,
                         int bound, int& index, Access &access)
       {
@@ -247,7 +247,7 @@ namespace Dune
     {
       out.resize(size());
       int index = 0;
-      std::array<int, d> derivatives;
+      std::array<unsigned int, d> derivatives;
       std::fill(derivatives.begin(), derivatives.end(), 0);
       MonomImp::EvalAccess<Traits> access(out);
       for (unsigned int lp = 0; lp <= p; ++lp)
@@ -265,11 +265,9 @@ namespace Dune
     {
       out.resize(size());
       int index = 0;
-      std::array<int, d> derivatives;  // We need 'order' array as a signed int array
-      std::copy(order.begin(), order.end(), derivatives.begin());
       MonomImp::EvalAccess<Traits> access(out);
       for (unsigned int lp = 0; lp <= p; ++lp)
-        MonomImp::Evaluate<Traits, d>::eval(in, derivatives, 1, lp, index, access);
+        MonomImp::Evaluate<Traits, d>::eval(in, order, 1, lp, index, access);
     }
 
     //! \brief Evaluate Jacobian of all shape functions
@@ -278,7 +276,7 @@ namespace Dune
                       std::vector<typename Traits::JacobianType>& out) const      // return value
     {
       out.resize(size());
-      std::array<int, d> derivatives;
+      std::array<unsigned int, d> derivatives;
       for(unsigned int i = 0; i < d; ++i)
         derivatives[i] = 0;
       for(unsigned int i = 0; i < d; ++i)

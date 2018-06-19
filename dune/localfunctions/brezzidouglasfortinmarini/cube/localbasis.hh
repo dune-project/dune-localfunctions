@@ -11,7 +11,7 @@
 
 #include <dune/common/fmatrix.hh>
 #include <dune/common/fvector.hh>
-#include <dune/common/mathutilities.hh>
+#include <dune/common/math.hh>
 #include <dune/common/rangeutilities.hh>
 #include <dune/common/typetraits.hh>
 

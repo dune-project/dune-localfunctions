@@ -14,26 +14,6 @@
 namespace Dune
 {
   namespace MonomImp {
-    /** template meta program to calculate the number of shape functions
-     *  \internal
-     */
-    template<int d, int k>
-    struct Size {
-      enum { val = Size<d,k-1>::val+Size<d-1,k>::val };
-    };
-    template<int d>
-    struct Size<d, 0> {
-      enum { val = 1 };
-    };
-    template<int k>
-    struct Size<0, k> {
-      enum { val = 1 };
-    };
-    template<>
-    struct Size<0, 0> {
-      enum { val = 1 };
-    };
-
     template<class T>
     T ipow(T base, int exp)
     {
@@ -230,15 +210,23 @@ namespace Dune
   template<class D, class R, unsigned int d, unsigned int p>
   class MonomialLocalBasis
   {
+    // Helper: Number of shape functions for a k-th order element in dimension dd
+    static constexpr unsigned int size (int dd, int k)
+    {
+      if (dd==0 || k==0)
+        return 1;
+      return size(dd,k-1) + size(dd-1,k);
+    }
+
   public:
     //! \brief export type traits for function signature
     typedef LocalBasisTraits<D,d,Dune::FieldVector<D,d>,R,1,Dune::FieldVector<R,1>,
         Dune::FieldMatrix<R,1,d> > Traits;
 
-    //! \brief number of shape functions
-    unsigned int size () const
+    /** \brief Number of shape functions */
+    static constexpr unsigned int size ()
     {
-      return MonomImp::Size<d,p>::val;
+      return size(d,p);
     }
 
     //! \brief Evaluate all shape functions

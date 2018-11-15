@@ -72,12 +72,12 @@ namespace Dune
      * \brief calculate the i`th multi index in graded lexigraphic order
      *
      * \tparam d     number of components of the multi index
-     * \tparam kMax  maximum absolute value to consider. (default is unlimited)
+     * \tparam kMax  maximum absolute value to consider. (default is `order`)
      *
      * \param i  index
      *
      */
-    template<std::size_t d, std::size_t kMax = -1>
+    template<std::size_t d, std::size_t kMax = order>
     constexpr inline static auto unrank (std::size_t i)
       -> std::array<std::size_t, d>
     {

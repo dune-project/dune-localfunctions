@@ -171,7 +171,7 @@ namespace Dune
     const auto& refElement = Dune::ReferenceElements<D,dim>::general(type());
 
     // loop over faces
-    for (size_t i=0; i<refElement.size(1);i++) {
+    for (int i=0; i<refElement.size(1);i++) {
 
       const auto& quad = Dune::QuadratureRules<D,dim-1>::rule(refElement.type(i,1),2*dim);
 

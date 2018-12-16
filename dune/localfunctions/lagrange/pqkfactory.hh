@@ -34,7 +34,7 @@ namespace Dune
     //! create finite element for given GeometryType
     static LocalFiniteElementVirtualInterface<T>* create(const GeometryType& gt)
     {
-      return 0;
+      return nullptr;
     }
   };
 
@@ -62,7 +62,7 @@ namespace Dune
         return new LocalFiniteElementVirtualImp<PyramidP1>(PyramidP1());
       if ((gt.isPyramid())and (k==2))
         return new LocalFiniteElementVirtualImp<PyramidP2>(PyramidP2());
-      return 0;
+      return nullptr;
     }
   };
 

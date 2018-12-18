@@ -17,6 +17,7 @@ install(FILES
   interpolation.hh
   lagrangebasis.hh
   lagrangecoefficients.hh
+  lagrangelfecache.hh
   p0.hh
   p1.hh
   p23d.hh

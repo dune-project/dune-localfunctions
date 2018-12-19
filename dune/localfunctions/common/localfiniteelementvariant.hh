@@ -4,9 +4,12 @@
 #define DUNE_FUNCTIONS_COMMON_LOCALFINITEELEMENTVARIANT_HH
 
 #include <cstddef>
+#include <type_traits>
 #include <variant>
 
 #include <dune/common/typeutilities.hh>
+#include <dune/common/std/type_traits.hh>
+//#include <dune/common/std/variant.hh>
 
 #include <dune/geometry/type.hh>
 
@@ -197,7 +200,8 @@ namespace Dune {
       localInterpolation_(impl_)
     {}
 
-    template<class Implementation, disableCopyMove<LocalFiniteElementVariant, Implementation> = 0>
+    template<class Implementation,
+      std::enable_if_t<Std::disjunction<std::is_same<std::decay_t<Implementation>, Implementations>...>::value, int> = 0>
     LocalFiniteElementVariant(Implementation&& impl) :
       impl_(std::forward<Implementation>(impl)),
       size_(std::visit([&](const auto& fe) { return fe.size(); }, impl_)),

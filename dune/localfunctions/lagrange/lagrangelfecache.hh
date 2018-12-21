@@ -162,8 +162,11 @@ public:
    */
   const auto& get(const GeometryType& gt) const
   {
+    if (gt.dim() != dim)
+      DUNE_THROW(Dune::RangeError, "You cannot get a " << gt.dim() << "-dimensional local finite element from a cache for " << dim << "-dimensional elements!");
+
     if (not(cache_[LocalGeometryTypeIndex::index(gt)]))
-      DUNE_THROW(Dune::NotImplemented,"Trying to access LagrangeFiniteElementCache with unsupported GeometryType " << gt);
+      DUNE_THROW(Dune::NotImplemented,"There is no LocalFiniteElement for a " << gt << " in the cache.");
     return *cache_[LocalGeometryTypeIndex::index(gt)];
   }
 

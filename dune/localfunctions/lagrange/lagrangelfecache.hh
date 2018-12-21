@@ -138,6 +138,11 @@ public:
 
   using FiniteElementType = typename GenerateLFEVariant<decltype(implementedFiniteElements())>::type;
 
+  /** \brief Default constructor
+   *
+   * Fills the cache with all implementations of Lagrange elements for the given
+   * order and element dimension
+   */
   LagrangeFiniteElementCache()
   {
     cache_.resize(LocalGeometryTypeIndex::size(dim));
@@ -146,8 +151,15 @@ public:
     });
   }
 
+  /** \brief Copy constructor */
   LagrangeFiniteElementCache(const LagrangeFiniteElementCache& other) = default;
 
+  /** \brief Get the Lagrange LocalFiniteElement for the given GeometryType object
+   *
+   * \throws Dune::RangeError if gt has incorrect dimension
+   * \throws Dune::NotImplemented if the dimension is correct, but still the cache doesn't hold
+   *   a Lagrange LocalFiniteElement implementation for the requested GeometryType.
+   */
   const auto& get(const GeometryType& gt) const
   {
     if (not(cache_[LocalGeometryTypeIndex::index(gt)]))

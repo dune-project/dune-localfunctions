@@ -1,7 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_FUNCTIONS_COMMON_LOCALFINITEELEMENTVARIANT_HH
-#define DUNE_FUNCTIONS_COMMON_LOCALFINITEELEMENTVARIANT_HH
+#ifndef DUNE_LOCALFUNCTIONS_COMMON_LOCALFINITEELEMENTVARIANT_HH
+#define DUNE_LOCALFUNCTIONS_COMMON_LOCALFINITEELEMENTVARIANT_HH
 
 #include <cstddef>
 #include <type_traits>
@@ -265,7 +265,7 @@ namespace Dune {
     }
 
     /**
-     * \brief Provide access to undelying std::variant
+     * \brief Provide access to underlying std::variant
      *
      * This allows to use std::visit on a higher level
      * which allows to avoid the indirection of the
@@ -286,4 +286,4 @@ namespace Dune {
 
 } // end namespace Dune
 
-#endif // DUNE_FUNCTIONS_COMMON_LOCALFINITEELEMENTVARIANT_HH
+#endif // DUNE_LOCALFUNCTIONS_COMMON_LOCALFINITEELEMENTVARIANT_HH

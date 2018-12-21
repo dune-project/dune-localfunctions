@@ -5,11 +5,10 @@
 
 #include <cstddef>
 #include <type_traits>
-#include <variant>
 
 #include <dune/common/typeutilities.hh>
 #include <dune/common/std/type_traits.hh>
-//#include <dune/common/std/variant.hh>
+#include <dune/common/std/variant.hh>
 
 #include <dune/geometry/type.hh>
 

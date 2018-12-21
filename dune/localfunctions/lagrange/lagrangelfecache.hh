@@ -34,7 +34,7 @@ namespace Dune {
 
 namespace Impl {
 
-  // Provide implemented langrange local finite elements
+  // Provide implemented Lagrange local finite elements
 
   template<class D, class R, std::size_t dim, std::size_t order>
   struct ImplementedLagrangeFiniteElements

@@ -45,9 +45,9 @@ namespace Dune {
 
     template<class FEVariant>
     LocalBasisVariant(const FEVariant& feVariant) :
-      impl_(std::visit([&](const auto& fe) { return std::variant<const Implementations*...>(&fe.localBasis()); }, feVariant)),
-      size_(std::visit([&](const auto* impl) { return impl->size(); }, impl_)),
-      order_(std::visit([&](const auto* impl) { return impl->order(); }, impl_))
+      impl_(Std::visit([&](const auto& fe) , feVariant)),
+      size_(Std::visit([&](const auto* impl) { return impl->size(); }, impl_)),
+      order_(Std::visit([&](const auto* impl) { return impl->order(); }, impl_))
     {}
 
     LocalBasisVariant() = delete;
@@ -79,7 +79,7 @@ namespace Dune {
         const typename Traits::DomainType& x,
         std::vector<typename Traits::RangeType>& out) const
     {
-      std::visit([&](const auto* impl) { impl->evaluateFunction(x, out); }, impl_);
+      Std::visit([&](const auto* impl) { impl->evaluateFunction(x, out); }, impl_);
     }
 
     /**
@@ -89,7 +89,7 @@ namespace Dune {
         const typename Traits::DomainType& x,
         std::vector<typename Traits::JacobianType>& out) const
     {
-      std::visit([&](const auto* impl) { impl->evaluateJacobian(x, out); }, impl_);
+      Std::visit([&](const auto* impl) { impl->evaluateJacobian(x, out); }, impl_);
     }
 
     /**
@@ -104,11 +104,11 @@ namespace Dune {
         const typename Traits::DomainType& x,
         std::vector<typename Traits::RangeType>& out) const
     {
-      std::visit([&](const auto* impl) { impl->partial(order, x, out); }, impl_);
+      Std::visit([&](const auto* impl) { impl->partial(order, x, out); }, impl_);
     }
 
   private:
-    std::variant<const Implementations*...> impl_;
+    Std::variant<const Implementations*...> impl_;
     std::size_t size_;
     std::size_t order_;
   };
@@ -121,8 +121,8 @@ namespace Dune {
 
     template<class FEVariant>
     LocalCoefficientsVariant(const FEVariant& feVariant) :
-      impl_(std::visit([&](const auto& fe) { return std::variant<const Implementations*...>(&fe.localCoefficients()); }, feVariant)),
-      size_(std::visit([&](const auto* impl) { return impl->size(); }, impl_))
+      impl_(Std::visit([&](const auto& fe) { return Std::variant<const Implementations*...>(&fe.localCoefficients()); }, feVariant)),
+      size_(Std::visit([&](const auto* impl) { return impl->size(); }, impl_))
     {}
 
     LocalCoefficientsVariant() = delete;
@@ -141,11 +141,11 @@ namespace Dune {
 
     Dune::LocalKey localKey (std::size_t i) const
     {
-      return std::visit([&](const auto* impl) { return impl->localKey(i); }, impl_);
+      return Std::visit([&](const auto* impl) { return impl->localKey(i); }, impl_);
     }
 
   private:
-    std::variant<const Implementations*...> impl_;
+    Std::variant<const Implementations*...> impl_;
     std::size_t size_;
   };
 
@@ -157,7 +157,7 @@ namespace Dune {
 
     template<class FEVariant>
     LocalInterpolationVariant(const FEVariant& feVariant) :
-      impl_(std::visit([&](const auto& fe) { return std::variant<const Implementations*...>(&fe.localInterpolation()); }, feVariant))
+      impl_(Std::visit([&](const auto& fe) { return Std::variant<const Implementations*...>(&fe.localInterpolation()); }, feVariant))
     {}
 
     LocalInterpolationVariant() = delete;
@@ -169,11 +169,11 @@ namespace Dune {
     template<typename F, typename C>
     void interpolate (const F& ff, std::vector<C>& out) const
     {
-      std::visit([&](const auto* impl) { impl->interpolate(ff, out); }, impl_);
+      Std::visit([&](const auto* impl) { impl->interpolate(ff, out); }, impl_);
     }
 
   private:
-    std::variant<const Implementations*...> impl_;
+    Std::variant<const Implementations*...> impl_;
   };
 
 
@@ -181,7 +181,7 @@ namespace Dune {
   template<class... Implementations>
   class LocalFiniteElementVariant
   {
-    // In each LocalFooVariant we store a std::variant<const FooImpl*...>, i.e. a std::variant
+    // In each LocalFooVariant we store a Std::variant<const FooImpl*...>, i.e. a Std::variant
     // with the pointer to the Foo implementation
     using LocalBasis = LocalBasisVariant<typename Implementations::Traits::LocalBasisType...>;
     using LocalCoefficients = LocalCoefficientsVariant<typename Implementations::Traits::LocalCoefficientsType...>;
@@ -193,7 +193,7 @@ namespace Dune {
 
     LocalFiniteElementVariant() :
       impl_(),
-      size_(std::visit([&](const auto& fe) { return fe.size(); }, impl_)),
+      size_(Std::visit([&](const auto& fe) { return fe.size(); }, impl_)),
       localBasis_(impl_),
       localCoefficients_(impl_),
       localInterpolation_(impl_)
@@ -203,7 +203,7 @@ namespace Dune {
       std::enable_if_t<Std::disjunction<std::is_same<std::decay_t<Implementation>, Implementations>...>::value, int> = 0>
     LocalFiniteElementVariant(Implementation&& impl) :
       impl_(std::forward<Implementation>(impl)),
-      size_(std::visit([&](const auto& fe) { return fe.size(); }, impl_)),
+      size_(Std::visit([&](const auto& fe) { return fe.size(); }, impl_)),
       localBasis_(impl_),
       localCoefficients_(impl_),
       localInterpolation_(impl_)
@@ -260,15 +260,15 @@ namespace Dune {
 
     constexpr GeometryType type() const
     {
-      return std::visit([&](const auto& fe) { return fe.type(); }, impl_);
+      return Std::visit([&](const auto& fe) { return fe.type(); }, impl_);
     }
 
     /**
-     * \brief Provide access to underlying std::variant
+     * \brief Provide access to underlying Std::variant
      *
-     * This allows to use std::visit on a higher level
+     * This allows to use Std::visit on a higher level
      * which allows to avoid the indirection of the
-     * std::variant - polymorphism inside the visitor code.
+     * Std::variant - polymorphism inside the visitor code.
      */
     const auto& variant() const
     {
@@ -276,7 +276,7 @@ namespace Dune {
     }
 
   private:
-    std::variant<Implementations...> impl_;
+    Std::variant<Implementations...> impl_;
     std::size_t size_;
     LocalBasis localBasis_;
     LocalCoefficients localCoefficients_;

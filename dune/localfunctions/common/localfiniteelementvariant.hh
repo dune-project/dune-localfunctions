@@ -45,7 +45,7 @@ namespace Dune {
 
     template<class FEVariant>
     LocalBasisVariant(const FEVariant& feVariant) :
-      impl_(Std::visit([&](const auto& fe) , feVariant)),
+      impl_(Std::visit([&](const auto& fe) { return std::variant<const Implementations*...>(&fe.localBasis()); }, feVariant)),
       size_(Std::visit([&](const auto* impl) { return impl->size(); }, impl_)),
       order_(Std::visit([&](const auto* impl) { return impl->order(); }, impl_))
     {}

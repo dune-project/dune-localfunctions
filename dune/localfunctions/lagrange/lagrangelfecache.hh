@@ -4,11 +4,11 @@
 #define DUNE_LOCALFUNCTIONS_LAGRANGE_LAGRANGELFECACHE_HH
 
 #include <vector>
-#include <optional>
 #include <tuple>
 #include <utility>
 #include <type_traits>
 
+#include <dune/common/std/optional.hh>
 #include <dune/common/std/type_traits.hh>
 #include <dune/common/exceptions.hh>
 #include <dune/common/typelist.hh>
@@ -183,7 +183,7 @@ public:
   }
 
 private:
-  std::vector<std::optional<FiniteElementType>> cache_;
+  std::vector<Std::optional<FiniteElementType>> cache_;
 };
 
 

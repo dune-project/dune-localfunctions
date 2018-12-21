@@ -18,7 +18,7 @@
 #include <dune/localfunctions/lagrange/pyramidp1.hh>
 #include <dune/localfunctions/lagrange/pyramidp2.hh>
 #include <dune/localfunctions/lagrange/pq22d.hh>
-
+#include <dune/localfunctions/lagrange/lagrangelfecache.hh>
 
 
 #include <dune/localfunctions/test/test-localfe.hh>
@@ -259,6 +259,21 @@ int main (int argc, char *argv[])
 
   typedef LocalFiniteElementVirtualInterface< P1LocalFiniteElement<double,double, 2>::Traits::LocalBasisType::Traits > Interface;
   TEST_FE(static_cast<const Interface&>(p12dlfemVirtual));
+
+  // Test the LagrangeFiniteElementCache
+  LagrangeFiniteElementCache<double,double,2,2> lagrangeLFECache;
+  TEST_FE(lagrangeLFECache.get(GeometryTypes::simplex(2)));
+  TEST_FE(lagrangeLFECache.get(GeometryTypes::cube(2)));
+
+  // Test whether asking the cache for an element of the wrong dimension throws an exception
+  bool lagrangeLFESuccess = false;
+  try {
+    auto doesntExist = lagrangeLFECache.get(GeometryTypes::simplex(1));
+  } catch (Dune::Exception& e)
+  {
+    lagrangeLFESuccess = true;
+  }
+  success &= lagrangeLFESuccess;
 
   return success ? 0 : 1;
 }

@@ -7,6 +7,7 @@ install(FILES
   localfiniteelementtraits.hh
   localfiniteelementvariant.hh
   localtoglobaladaptors.hh
+  uniquetypes.hh
   virtualinterface.hh
   virtualwrappers.hh
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions/common)

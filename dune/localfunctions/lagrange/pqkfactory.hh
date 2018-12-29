@@ -1,7 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_PQK_FACTORY_HH
-#define DUNE_PQK_FACTORY_HH
+#ifndef DUNE_LOCALFUNCTIONS_LAGRANGE_PQKFACTORY_HH
+#define DUNE_LOCALFUNCTIONS_LAGRANGE_PQKFACTORY_HH
 
 #include <map>
 
@@ -34,7 +34,7 @@ namespace Dune
     //! create finite element for given GeometryType
     static LocalFiniteElementVirtualInterface<T>* create(const GeometryType& gt)
     {
-      return 0;
+      return nullptr;
     }
   };
 
@@ -62,7 +62,7 @@ namespace Dune
         return new LocalFiniteElementVirtualImp<PyramidP1>(PyramidP1());
       if ((gt.isPyramid())and (k==2))
         return new LocalFiniteElementVirtualImp<PyramidP2>(PyramidP2());
-      return 0;
+      return nullptr;
     }
   };
 

@@ -35,7 +35,7 @@ namespace Dune
       for (int j=0; j<=k; j++)
         for (int i=0; i<=k-j; i++)
         {
-          x[0] = ((D)i)/((D)kdiv); x[1] = ((D)j)/((D)kdiv);
+          x = { ((D)i)/((D)kdiv), ((D)j)/((D)kdiv) };
           out[n] = f(x);
           n++;
         }

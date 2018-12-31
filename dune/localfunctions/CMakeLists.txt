@@ -16,6 +16,7 @@ add_subdirectory(whitney)
 
 install(FILES
   dualmortarbasis.hh
+  hierarchical.hh
   lagrange.hh
   mimetic.hh
   monomial.hh

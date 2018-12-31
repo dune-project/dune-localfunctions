@@ -5,9 +5,7 @@
 
 #include <iostream>
 
-#include <dune/localfunctions/hierarchical/hierarchicalp2.hh>
-#include <dune/localfunctions/hierarchical/hierarchicalp2withelementbubble.hh>
-#include <dune/localfunctions/hierarchical/hierarchicalprismp2.hh>
+#include <dune/localfunctions/hierarchical.hh>
 
 #include <dune/localfunctions/test/test-localfe.hh>
 

@@ -4,6 +4,9 @@
   implementations now support functions `f` that either support `f.evaluate(x,y)`
   or `y = f(x)`.
 
+* Introduce a convenience header `hierarchical.hh` that includes
+  all hierarchical FE implementations.
+
 # Release 2.6
 
 *  The `diffOrder` value has disappeared from the `LocalBasisTraits` class.

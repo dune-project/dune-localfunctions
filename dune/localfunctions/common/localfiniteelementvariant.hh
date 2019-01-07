@@ -191,13 +191,7 @@ namespace Dune {
 
     using Traits = typename Dune::LocalFiniteElementTraits<LocalBasis, LocalCoefficients, LocalInterpolation>;
 
-    LocalFiniteElementVariant() :
-      impl_(),
-      size_(Std::visit([&](const auto& fe) { return fe.size(); }, impl_)),
-      localBasis_(impl_),
-      localCoefficients_(impl_),
-      localInterpolation_(impl_)
-    {}
+    LocalFiniteElementVariant() = delete;
 
     template<class Implementation,
       std::enable_if_t<Std::disjunction<std::is_same<std::decay_t<Implementation>, Implementations>...>::value, int> = 0>

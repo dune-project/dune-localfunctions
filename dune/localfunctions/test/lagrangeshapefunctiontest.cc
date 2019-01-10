@@ -102,7 +102,7 @@ int main (int argc, char *argv[])
 {
 #if __linux__ \
   && (!defined __INTEL_COMPILER || __INTEL_COMPILER >= 1010) \
-  && (!defined __clang__ || __clang_major__ >= 4)
+  && (!defined __clang__)
   feenableexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW);
 #endif
 

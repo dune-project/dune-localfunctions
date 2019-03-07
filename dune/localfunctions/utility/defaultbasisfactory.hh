@@ -5,7 +5,6 @@
 
 #include <fstream>
 #include <dune/common/exceptions.hh>
-#include <dune/geometry/topologyfactory.hh>
 
 #include <dune/localfunctions/utility/basismatrix.hh>
 
@@ -33,23 +32,16 @@ namespace Dune
       unsigned int dim, unsigned int dimR,
       class SF, class CF,
       class PreBasisKeyExtractor = Identity >
-  struct DefaultBasisFactory;
-
-  template< class PreBFactory,
-      class InterpolFactory,
-      unsigned int dim, unsigned int dimR,
-      class SF, class CF,
-      class PreBasisKeyExtractor >
-  struct DefaultBasisFactoryTraits
+  struct DefaultBasisFactory
   {
     static const unsigned int dimension = dim;
     static const unsigned int dimRange  = dimR;
-
+    typedef SF StorageField;
+    typedef CF ComputeField;
     typedef PreBFactory PreBasisFactory;
     typedef typename PreBasisFactory::Object PreBasis;
     typedef InterpolFactory InterpolationFactory;
     typedef typename InterpolationFactory::Object Interpolation;
-
     typedef typename PreBasisFactory::template EvaluationBasisFactory<dim,SF>::Type MonomialBasisFactory;
     typedef typename MonomialBasisFactory::Object MonomialBasis;
     typedef StandardEvaluator< MonomialBasis > Evaluator;
@@ -57,63 +49,38 @@ namespace Dune
 
     typedef const Basis Object;
     typedef typename InterpolationFactory::Key Key;
-    typedef DefaultBasisFactory<PreBFactory,InterpolFactory,dim,dimR,SF,CF,PreBasisKeyExtractor> Factory;
-  };
-
-  template< class PreBFactory,
-      class InterpolFactory,
-      unsigned int dim, unsigned int dimR,
-      class SF, class CF,
-      class PreBasisKeyExtractor >
-  struct DefaultBasisFactory
-    : public TopologyFactory<
-          DefaultBasisFactoryTraits< PreBFactory,InterpolFactory,dim,dimR,SF,CF,PreBasisKeyExtractor >
-          >
-  {
-    typedef DefaultBasisFactoryTraits< PreBFactory,InterpolFactory,dim,dimR,SF,CF,PreBasisKeyExtractor > Traits;
-    static const unsigned int dimension = Traits::dimension;
-    static const unsigned int dimRange  = Traits::dimRange;
-    typedef SF StorageField;
-    typedef CF ComputeField;
-    typedef typename Traits::Basis Basis;
-    typedef typename Traits::PreBasisFactory PreBasisFactory;
-
-    typedef typename Traits::Object Object;
-    typedef typename Traits::Key Key;
     template <unsigned int dd, class FF>
     struct EvaluationBasisFactory
     {
-      typedef typename Traits::PreBasisFactory::template EvaluationBasisFactory<dd,FF>::Type
+      typedef typename PreBasisFactory::template EvaluationBasisFactory<dd,FF>::Type
       Type;
     };
 
     template< class Topology >
-    static Object *createObject ( const Key &key )
+    static Object *create ( const Key &key )
     {
       const typename PreBasisFactory::Key preBasisKey = PreBasisKeyExtractor::apply(key);
-      const typename Traits::PreBasis *preBasis = Traits::PreBasisFactory::template create<Topology>( preBasisKey );
-      const typename Traits::Interpolation *interpol = Traits::InterpolationFactory::template create<Topology>( key );
-      BasisMatrix< typename Traits::PreBasis,
-          typename Traits::Interpolation,
-          ComputeField > matrix( *preBasis, *interpol );
+      const PreBasis *preBasis = PreBasisFactory::template create<Topology>( preBasisKey );
+      const Interpolation *interpol = InterpolationFactory::template create<Topology>( key );
+      BasisMatrix< PreBasis, Interpolation, ComputeField > matrix( *preBasis, *interpol );
 
-      const typename Traits::MonomialBasis *monomialBasis = Traits::MonomialBasisFactory::template create< Topology >( preBasis->order() );
+      const MonomialBasis *monomialBasis = MonomialBasisFactory::template create< Topology >( preBasis->order() );
 
       Basis *basis = new Basis( *monomialBasis );
 
       basis->fill( matrix );
 
-      Traits::InterpolationFactory::release(interpol);
-      Traits::PreBasisFactory::release(preBasis);
+      InterpolationFactory::release(interpol);
+      PreBasisFactory::release(preBasis);
 
       return basis;
     }
     //! release the object returned by the create methods
     static void release( Object *object)
     {
-      const typename Traits::MonomialBasis *monomialBasis = &(object->basis());
+      const MonomialBasis *monomialBasis = &(object->basis());
       delete object;
-      Traits::MonomialBasisFactory::release( monomialBasis );
+      MonomialBasisFactory::release( monomialBasis );
     }
   };
 }

@@ -5,7 +5,6 @@
 
 #include <dune/common/concept.hh>
 
-#include <dune/geometry/topologyfactory.hh>
 #include <dune/geometry/quadraturerules.hh>
 
 #include <dune/localfunctions/common/localinterpolation.hh>
@@ -194,41 +193,23 @@ namespace Dune
    *        taking a basis factory.
    **/
   template< class BasisFactory, bool onb >
-  struct LocalL2InterpolationFactory;
-  template< class BasisFactory, bool onb >
-  struct LocalL2InterpolationFactoryTraits
+  struct LocalL2InterpolationFactory
   {
     static const unsigned int dimension = BasisFactory::dimension;
-    // typedef typename BasisFactory::StorageField Field;
+    typedef typename BasisFactory::Key Key;
+    typedef typename BasisFactory::Object Basis;
     typedef double Field;
     typedef QuadratureRule<Field,dimension> Quadrature;
     typedef QuadratureRules<Field,dimension> QuadratureProvider;
-
-    typedef typename BasisFactory::Key Key;
-    typedef typename BasisFactory::Object Basis;
     typedef LocalL2Interpolation< Basis, Quadrature, onb > LocalInterpolation;
     typedef const LocalInterpolation Object;
-    typedef LocalL2InterpolationFactory<BasisFactory,onb> Factory;
-  };
-
-  template< class BasisFactory, bool onb >
-  struct LocalL2InterpolationFactory :
-    public TopologyFactory< LocalL2InterpolationFactoryTraits<BasisFactory,onb> >
-  {
-    typedef LocalL2InterpolationFactoryTraits<BasisFactory,onb> Traits;
-    static const unsigned int dimension = Traits::dimension;
-    typedef typename Traits::Key Key;
-    typedef typename Traits::Basis Basis;
-    typedef typename Traits::Object Object;
-    typedef typename Traits::Field Field;
-    typedef typename Traits::Quadrature Quadrature;
 
     template< class Topology >
-    static Object *createObject ( const Key &key )
+    static Object *create ( const Key &key )
     {
       Dune::GeometryType gt(Topology::id, Topology::dimension);
       const Basis *basis = BasisFactory::template create< Topology >( key );
-      const Quadrature & quadrature = Traits::QuadratureProvider::rule(gt, 2*basis->order()+1);
+      const Quadrature & quadrature = QuadratureProvider::rule(gt, 2*basis->order()+1);
       return new Object( *basis, quadrature );
     }
     static void release ( Object *object )

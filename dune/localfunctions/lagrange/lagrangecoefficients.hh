@@ -7,7 +7,6 @@
 
 #include <dune/common/fvector.hh>
 
-#include <dune/geometry/topologyfactory.hh>
 #include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/utility/field.hh>
@@ -16,31 +15,16 @@
 namespace Dune
 {
 
-  template< template <class,unsigned int> class LP, unsigned int dim, class F >
-  struct LagrangeCoefficientsFactory;
-
   template< template <class,unsigned int> class LP,
       unsigned int dim, class F>
-  struct LagrangeCoefficientsFactoryTraits
+  struct LagrangeCoefficientsFactory
   {
     static const unsigned int dimension = dim;
     const typedef LP<F,dim> Object;
     typedef unsigned int Key;
-    typedef LagrangeCoefficientsFactory< LP,dim,F > Factory;
-  };
-
-  template< template <class,unsigned int> class LP,
-      unsigned int dim, class F>
-  struct LagrangeCoefficientsFactory :
-    public TopologyFactory< LagrangeCoefficientsFactoryTraits< LP,dim,F> >
-  {
-    typedef LagrangeCoefficientsFactoryTraits<LP,dim,F> Traits;
-    static const unsigned int dimension = dim;
-    typedef typename Traits::Object Object;
-    typedef typename Traits::Key Key;
 
     template< class T >
-    static Object *createObject ( const Key &order )
+    static Object *create ( const Key &order )
     {
       if (order == 0 || !Object::template supports<T>(order))
         return 0;
@@ -53,6 +37,7 @@ namespace Dune
       }
       return object;
     }
+    static void release( Object *object ) { delete object; }
   };
 
 }

@@ -12,13 +12,12 @@
 
 namespace Dune
 {
-  template <unsigned int dim, class Field>
-  struct RTPreBasisFactory;
-  template <unsigned int dim, class Field>
-  struct RTPreBasisFactoryTraits
-  {
-    static const unsigned int dimension = dim;
+  template < class Topology, class Field >
+  struct RTVecMatrix;
 
+  template <unsigned int dim, class Field>
+  struct RTPreBasisFactory
+  {
     typedef MonomialBasisProvider<dim,Field> MBasisFactory;
     typedef typename MBasisFactory::Object MBasis;
     typedef StandardEvaluator<MBasis> EvalMBasis;
@@ -26,35 +25,23 @@ namespace Dune
 
     typedef const Basis Object;
     typedef unsigned int Key;
-    typedef RTPreBasisFactory<dim,Field> Factory;
-  };
 
-  template < class Topology, class Field >
-  struct RTVecMatrix;
-
-  template <unsigned int dim, class Field>
-  struct RTPreBasisFactory
-    : public TopologyFactory< RTPreBasisFactoryTraits< dim, Field > >
-  {
-    typedef RTPreBasisFactoryTraits< dim, Field > Traits;
-    static const unsigned int dimension = dim;
-    typedef typename Traits::Object Object;
-    typedef typename Traits::Key Key;
     template <unsigned int dd, class FF>
     struct EvaluationBasisFactory
     {
       typedef MonomialBasisProvider<dd,FF> Type;
     };
     template< class Topology >
-    static Object *createObject ( const Key &order )
+    static Object *create ( const Key &order )
     {
       RTVecMatrix<Topology,Field> vecMatrix(order);
-      typename Traits::MBasis *mbasis = Traits::MBasisFactory::template create<Topology>(order+1);
+      MBasis *mbasis = MBasisFactory::template create<Topology>(order+1);
       typename std::remove_const<Object>::type *tmBasis =
         new typename std::remove_const<Object>::type(*mbasis);
       tmBasis->fill(vecMatrix);
       return tmBasis;
     }
+    static void release( Object *object ) { delete object; }
   };
   template <class Topology, class Field>
   struct RTVecMatrix

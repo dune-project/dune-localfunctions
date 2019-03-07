@@ -6,7 +6,6 @@
 #include <cassert>
 #include <vector>
 
-#include <dune/geometry/topologyfactory.hh>
 #include <dune/localfunctions/common/localkey.hh>
 
 namespace Dune
@@ -53,30 +52,15 @@ namespace Dune
   /**
    * @brief A factory class for the dg local coefficients.
    **/
-  template< class BasisCreator >
-  struct DGLocalCoefficientsFactory;
   template< class BasisFactory >
-  struct DGLocalCoefficientsFactoryTraits
+  struct DGLocalCoefficientsFactory
   {
     static const unsigned int dimension = BasisFactory::dimension;
     typedef typename BasisFactory::Key Key;
-    typedef DGLocalCoefficients LocalCoefficients;
     typedef const DGLocalCoefficients Object;
-    typedef DGLocalCoefficientsFactory<BasisFactory> Factory;
-  };
-
-  template< class BasisFactory >
-  struct DGLocalCoefficientsFactory :
-    public TopologyFactory< DGLocalCoefficientsFactoryTraits<BasisFactory> >
-  {
-    typedef DGLocalCoefficientsFactoryTraits<BasisFactory> Traits;
-
-    static const unsigned int dimension = Traits::dimension;
-    typedef typename Traits::Key Key;
-    typedef typename Traits::Object Object;
 
     template< class Topology >
-    static Object *createObject ( const Key &key )
+    static Object *create ( const Key &key )
     {
       const typename BasisFactory::Object *basis
         = BasisFactory::template create< Topology >( key );
@@ -84,6 +68,7 @@ namespace Dune
       BasisFactory::release( basis );
       return coefficients;
     }
+    static void release( Object *object ) { delete object; }
   };
 
 }

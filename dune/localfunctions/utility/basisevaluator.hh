@@ -41,8 +41,8 @@ namespace Dune
     template <unsigned int deriv>
     struct Iterator
     {
-      typedef BaseIterator<Derivatives<Field,dimension,dimRange,deriv,derivative> > All;
-      typedef BaseIterator<Derivatives<Field,dimension,1,0,value> > Integrate;
+      typedef BaseIterator<Derivatives<Field,dimension,dimRange,deriv,DerivativeLayoutNS::derivative> > All;
+      typedef BaseIterator<Derivatives<Field,dimension,1,0,DerivativeLayoutNS::value> > Integrate;
     };
 
     unsigned int size() const
@@ -60,7 +60,7 @@ namespace Dune
     template <int deriv>
     void resize()
     {
-      const int totalSize = Derivatives<Field,dimension,dimRange,deriv,derivative>::size*size_;
+      const int totalSize = Derivatives<Field,dimension,dimRange,deriv,DerivativeLayoutNS::derivative>::size*size_;
       container_.resize(totalSize);
     }
     MonomialEvaluator(const MonomialEvaluator&);
@@ -78,7 +78,7 @@ namespace Dune
     typedef typename Deriv::Field Field;
     static const unsigned int blockSize = Deriv::size;
     typedef Dune::FieldVector<Field,blockSize> Block;
-    static const DerivativeLayout layout = Deriv::layout;
+    static const DerivativeLayoutNS::DerivativeLayout layout = Deriv::layout;
     static const unsigned int dimDomain = Deriv::dimDomain;
     static const unsigned int dimRange = Deriv::dimRange;
 

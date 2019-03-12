@@ -162,24 +162,26 @@ namespace Dune
   // ***********************************************************
   // Structure for all derivatives up to order deriv
   // for vector valued function
-  enum DerivativeLayout {value,derivative};
+  namespace DerivativeLayoutNS {
+    enum DerivativeLayout {value,derivative};
+  }
   template <class F,int dimD,int dimR,unsigned int deriv,
-      DerivativeLayout layout>
+      DerivativeLayoutNS::DerivativeLayout layout>
   struct Derivatives;
 
   // Implemnetation for valued based layout
   template <class F,int dimD,int dimR,unsigned int deriv>
-  struct Derivatives<F,dimD,dimR,deriv,value>
-    : public Derivatives<F,dimD,dimR,deriv-1,value>
+  struct Derivatives<F,dimD,dimR,deriv,DerivativeLayoutNS::value>
+    : public Derivatives<F,dimD,dimR,deriv-1,DerivativeLayoutNS::value>
   {
-    typedef Derivatives<F,dimD,dimR,deriv,value> This;
-    typedef Derivatives<F,dimD,dimR,deriv-1,value> Base;
+    typedef Derivatives<F,dimD,dimR,deriv,DerivativeLayoutNS::value> This;
+    typedef Derivatives<F,dimD,dimR,deriv-1,DerivativeLayoutNS::value> Base;
     typedef LFETensor<F,dimD,deriv> ThisLFETensor;
 
     typedef F Field;
     typedef F field_type;
 
-    static const DerivativeLayout layout = value;
+    static const DerivativeLayoutNS::DerivativeLayout layout = DerivativeLayoutNS::value;
     static const unsigned int dimDomain = dimD;
     static const unsigned int dimRange = dimR;
     // size needs to be an anonymous enum value for gcc 3.4 compatibility
@@ -221,13 +223,13 @@ namespace Dune
 
     // assign with same layout (only different Field)
     template <class Fy>
-    void assign(const Derivatives<Fy,dimD,dimR,deriv,value> &y)
+    void assign(const Derivatives<Fy,dimD,dimR,deriv,DerivativeLayoutNS::value> &y)
     {
       field_cast(y.block(),block());
     }
     // assign with different layout (same dimRange)
     template <class Fy>
-    void assign(const Derivatives<Fy,dimD,dimR,deriv,derivative> &y)
+    void assign(const Derivatives<Fy,dimD,dimR,deriv,DerivativeLayoutNS::derivative> &y)
     {
       Base::assign(y);
       for (int rr=0; rr<dimR; ++rr)
@@ -235,18 +237,18 @@ namespace Dune
     }
     // assign with rth component of function
     template <class Fy,int dimRy>
-    void assign(const Derivatives<Fy,dimD,dimRy,deriv,value> &y,unsigned int r)
+    void assign(const Derivatives<Fy,dimD,dimRy,deriv,DerivativeLayoutNS::value> &y,unsigned int r)
     {
       assign<Fy,dimRy>(y.block(),r);
     }
     // assign with scalar functions to component r
     template <class Fy>
-    void assign(unsigned int r,const Derivatives<Fy,dimD,1,deriv,value> &y)
+    void assign(unsigned int r,const Derivatives<Fy,dimD,1,deriv,DerivativeLayoutNS::value> &y)
     {
       assign(r,y.block());
     }
     template <class Fy>
-    void assign(unsigned int r,const Derivatives<Fy,dimD,1,deriv,derivative> &y)
+    void assign(unsigned int r,const Derivatives<Fy,dimD,1,deriv,DerivativeLayoutNS::derivative> &y)
     {
       assign(r,y[0]);
     }
@@ -308,7 +310,7 @@ namespace Dune
     }
     // assign with different layout (same dimRange)
     template <class Fy,unsigned int dy>
-    void assign(const Derivatives<Fy,dimD,dimR,dy,derivative> &y)
+    void assign(const Derivatives<Fy,dimD,dimR,dy,DerivativeLayoutNS::derivative> &y)
     {
       Base::assign(y);
       for (int rr=0; rr<dimR; ++rr)
@@ -341,15 +343,15 @@ namespace Dune
   };
 
   template <class F,int dimD,int dimR>
-  struct Derivatives<F,dimD,dimR,0,value>
+  struct Derivatives<F,dimD,dimR,0,DerivativeLayoutNS::value>
   {
-    typedef Derivatives<F,dimD,dimR,0,value> This;
+    typedef Derivatives<F,dimD,dimR,0,DerivativeLayoutNS::value> This;
     typedef LFETensor<F,dimD,0> ThisLFETensor;
 
     typedef F Field;
     typedef F field_type;
 
-    static const DerivativeLayout layout = value;
+    static const DerivativeLayoutNS::DerivativeLayout layout = DerivativeLayoutNS::value;
     static const unsigned int dimDomain = dimD;
     static const unsigned int dimRange = dimR;
     // size needs to be an anonymous enum value for gcc 3.4 compatibility
@@ -386,28 +388,28 @@ namespace Dune
       block().axpy(a,y.block());
     }
     template <class Fy>
-    void assign(const Derivatives<Fy,dimD,dimR,0,value> &y)
+    void assign(const Derivatives<Fy,dimD,dimR,0,DerivativeLayoutNS::value> &y)
     {
       field_cast(y.block(),block());
     }
     template <class Fy>
-    void assign(const Derivatives<Fy,dimD,dimR,0,derivative> &y)
+    void assign(const Derivatives<Fy,dimD,dimR,0,DerivativeLayoutNS::derivative> &y)
     {
       for (int rr=0; rr<dimR; ++rr)
         tensor_[rr] = y[rr].template tensor<0>()[0];
     }
     template <class Fy,int dimRy>
-    void assign(const Derivatives<Fy,dimD,dimRy,0,value> &y,unsigned int r)
+    void assign(const Derivatives<Fy,dimD,dimRy,0,DerivativeLayoutNS::value> &y,unsigned int r)
     {
       assign<Fy,dimRy>(y.block(),r);
     }
     template <class Fy>
-    void assign(unsigned int r,const Derivatives<Fy,dimD,1,0,value> &y)
+    void assign(unsigned int r,const Derivatives<Fy,dimD,1,0,DerivativeLayoutNS::value> &y)
     {
       tensor_[r].assign(y[0]);
     }
     template <class Fy>
-    void assign(unsigned int r,const Derivatives<Fy,dimD,1,0,derivative> &y)
+    void assign(unsigned int r,const Derivatives<Fy,dimD,1,0,DerivativeLayoutNS::derivative> &y)
     {
       tensor_[r].assign(y[0][0]);
     }
@@ -463,7 +465,7 @@ namespace Dune
       return tensor_;
     }
     template <class Fy,unsigned int dy>
-    void assign(const Derivatives<Fy,dimD,dimR,dy,derivative> &y)
+    void assign(const Derivatives<Fy,dimD,dimR,dy,DerivativeLayoutNS::derivative> &y)
     {
       for (int rr=0; rr<dimR; ++rr)
         tensor_[rr] = y[rr].template tensor<0>()[0];
@@ -481,17 +483,17 @@ namespace Dune
     Dune::FieldVector<ThisLFETensor,dimR> tensor_;
   };
 
-  // Implemnetation for derivative based layout
+  // Implemnetation for DerivativeLayoutNS::derivative based layout
   template <class F,int dimD,int dimR,unsigned int deriv>
-  struct Derivatives<F,dimD,dimR,deriv,derivative>
+  struct Derivatives<F,dimD,dimR,deriv,DerivativeLayoutNS::derivative>
   {
-    typedef Derivatives<F,dimD,dimR,deriv,derivative> This;
-    typedef Derivatives<F,dimD,1,deriv,value> ScalarDeriv;
+    typedef Derivatives<F,dimD,dimR,deriv,DerivativeLayoutNS::derivative> This;
+    typedef Derivatives<F,dimD,1,deriv,DerivativeLayoutNS::value> ScalarDeriv;
 
     typedef F Field;
     typedef F field_type;
 
-    static const DerivativeLayout layout = value;
+    static const DerivativeLayoutNS::DerivativeLayout layout = DerivativeLayoutNS::value;
     static const unsigned int dimDomain = dimD;
     static const unsigned int dimRange = dimR;
     // size needs to be an anonymous enum value for gcc 3.4 compatibility
@@ -523,19 +525,19 @@ namespace Dune
     }
     // assign with same layout (only different Field)
     template <class Fy>
-    void assign(const Derivatives<Fy,dimD,dimR,deriv,derivative> &y)
+    void assign(const Derivatives<Fy,dimD,dimR,deriv,DerivativeLayoutNS::derivative> &y)
     {
       field_cast(y.block(),block());
     }
     // assign with different layout (same dimRange)
     template <class Fy>
-    void assign(const Derivatives<Fy,dimD,dimR,deriv,value> &y)
+    void assign(const Derivatives<Fy,dimD,dimR,deriv,DerivativeLayoutNS::value> &y)
     {
       for (unsigned int rr=0; rr<dimR; ++rr)
         deriv_[rr].assign(y,rr);
     }
     // assign with scalar functions to component r
-    template <class Fy,DerivativeLayout layouty>
+    template <class Fy,DerivativeLayoutNS::DerivativeLayout layouty>
     void assign(unsigned int r,const Derivatives<Fy,dimD,1,deriv,layouty> &y)
     {
       deriv_[r].assign(r,y);
@@ -577,9 +579,9 @@ namespace Dune
       unsigned int d,
       class Vec2,
       unsigned int deriv>
-  struct LFETensorAxpy<Derivatives<F1,dimD,dimR,d,value>,Vec2,deriv>
+  struct LFETensorAxpy<Derivatives<F1,dimD,dimR,d,DerivativeLayoutNS::value>,Vec2,deriv>
   {
-    typedef Derivatives<F1,dimD,dimR,d,value> Vec1;
+    typedef Derivatives<F1,dimD,dimR,d,DerivativeLayoutNS::value> Vec1;
     template <class Field>
     static void apply(unsigned int r,const Field &a,
                       const Vec1 &x, Vec2 &y)
@@ -593,15 +595,15 @@ namespace Dune
       unsigned int d,
       class Vec2,
       unsigned int deriv>
-  struct LFETensorAxpy<Derivatives<F1,dimD,dimR,d,derivative>,Vec2,deriv>
+  struct LFETensorAxpy<Derivatives<F1,dimD,dimR,d,DerivativeLayoutNS::derivative>,Vec2,deriv>
   {
-    typedef Derivatives<F1,dimD,dimR,d,derivative> Vec1;
+    typedef Derivatives<F1,dimD,dimR,d,DerivativeLayoutNS::derivative> Vec1;
     template <class Field>
     static void apply(unsigned int r,const Field &a,
                       const Vec1 &x, Vec2 &y)
     {
       for (int rr=0; rr<dimR; ++rr)
-        LFETensorAxpy<Derivatives<F1,dimD,1,d,value>,
+        LFETensorAxpy<Derivatives<F1,dimD,1,d,DerivativeLayoutNS::value>,
             Vec2,deriv>::apply(rr,a,x[rr],y);
     }
   };
@@ -609,14 +611,14 @@ namespace Dune
       unsigned int d,
       class Vec2,
       unsigned int deriv>
-  struct LFETensorAxpy<Derivatives<F1,dimD,1,d,derivative>,Vec2,deriv>
+  struct LFETensorAxpy<Derivatives<F1,dimD,1,d,DerivativeLayoutNS::derivative>,Vec2,deriv>
   {
-    typedef Derivatives<F1,dimD,1,d,derivative> Vec1;
+    typedef Derivatives<F1,dimD,1,d,DerivativeLayoutNS::derivative> Vec1;
     template <class Field>
     static void apply(unsigned int r,const Field &a,
                       const Vec1 &x, Vec2 &y)
     {
-      LFETensorAxpy<Derivatives<F1,dimD,1,d,value>,
+      LFETensorAxpy<Derivatives<F1,dimD,1,d,DerivativeLayoutNS::value>,
           Vec2,deriv>::apply(r,a,x[0],y);
     }
   };
@@ -624,9 +626,9 @@ namespace Dune
       unsigned int d,
       class Vec2,
       unsigned int deriv>
-  struct LFETensorAxpy<Derivatives<F1,dimD,1,d,value>,Vec2,deriv>
+  struct LFETensorAxpy<Derivatives<F1,dimD,1,d,DerivativeLayoutNS::value>,Vec2,deriv>
   {
-    typedef Derivatives<F1,dimD,1,d,value> Vec1;
+    typedef Derivatives<F1,dimD,1,d,DerivativeLayoutNS::value> Vec1;
     template <class Field>
     static void apply(unsigned int r,const Field &a,
                       const Vec1 &x, Vec2 &y)
@@ -650,7 +652,7 @@ namespace Dune
       field_cast(vec1,vec2);
     }
   };
-  template <int dimD,int dimR,unsigned int deriv, DerivativeLayout layout,
+  template <int dimD,int dimR,unsigned int deriv, DerivativeLayoutNS::DerivativeLayout layout,
       class F1,class F2>
   struct DerivativeAssign<Derivatives<F1,dimD,dimR,deriv,layout>,
       Derivatives<F2,dimD,dimR,deriv,layout> >
@@ -664,11 +666,11 @@ namespace Dune
   };
   template <int dimD,int dimR,unsigned int deriv,
       class F1, class F2>
-  struct DerivativeAssign<Derivatives<F1,dimD,dimR,deriv,value>,
-      Derivatives<F2,dimD,dimR,deriv,derivative> >
+  struct DerivativeAssign<Derivatives<F1,dimD,dimR,deriv,DerivativeLayoutNS::value>,
+      Derivatives<F2,dimD,dimR,deriv,DerivativeLayoutNS::derivative> >
   {
-    typedef Derivatives<F1,dimD,dimR,deriv,value> Vec1;
-    typedef Derivatives<F2,dimD,dimR,deriv,derivative> Vec2;
+    typedef Derivatives<F1,dimD,dimR,deriv,DerivativeLayoutNS::value> Vec1;
+    typedef Derivatives<F2,dimD,dimR,deriv,DerivativeLayoutNS::derivative> Vec2;
     static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
       vec2.assign(vec1);
@@ -676,35 +678,35 @@ namespace Dune
   };
   template <int dimD,int dimR,unsigned int deriv,
       class F1, class F2>
-  struct DerivativeAssign<Derivatives<F1,dimD,dimR,deriv,derivative>,
-      Derivatives<F2,dimD,dimR,deriv,value> >
+  struct DerivativeAssign<Derivatives<F1,dimD,dimR,deriv,DerivativeLayoutNS::derivative>,
+      Derivatives<F2,dimD,dimR,deriv,DerivativeLayoutNS::value> >
   {
-    typedef Derivatives<F1,dimD,dimR,deriv,derivative> Vec1;
-    typedef Derivatives<F2,dimD,dimR,deriv,value> Vec2;
+    typedef Derivatives<F1,dimD,dimR,deriv,DerivativeLayoutNS::derivative> Vec1;
+    typedef Derivatives<F2,dimD,dimR,deriv,DerivativeLayoutNS::value> Vec2;
     static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
       vec2.assign(vec1);
     }
   };
-  template <int dimD,int dimR,unsigned int deriv,DerivativeLayout layout,
+  template <int dimD,int dimR,unsigned int deriv,DerivativeLayoutNS::DerivativeLayout layout,
       class F1, class F2>
   struct DerivativeAssign<Derivatives<F1,dimD,1,deriv,layout>,
-      Derivatives<F2,dimD,dimR,deriv,value> >
+      Derivatives<F2,dimD,dimR,deriv,DerivativeLayoutNS::value> >
   {
     typedef Derivatives<F1,dimD,1,deriv,layout> Vec1;
-    typedef Derivatives<F2,dimD,dimR,deriv,value> Vec2;
+    typedef Derivatives<F2,dimD,dimR,deriv,DerivativeLayoutNS::value> Vec2;
     static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
       vec2.assign(r,vec1);
     }
   };
-  template <int dimD,int dimR,unsigned int deriv,DerivativeLayout layout,
+  template <int dimD,int dimR,unsigned int deriv,DerivativeLayoutNS::DerivativeLayout layout,
       class F1, class F2>
   struct DerivativeAssign<Derivatives<F1,dimD,1,deriv,layout>,
-      Derivatives<F2,dimD,dimR,deriv,derivative> >
+      Derivatives<F2,dimD,dimR,deriv,DerivativeLayoutNS::derivative> >
   {
     typedef Derivatives<F1,dimD,1,deriv,layout> Vec1;
-    typedef Derivatives<F2,dimD,dimR,deriv,derivative> Vec2;
+    typedef Derivatives<F2,dimD,dimR,deriv,DerivativeLayoutNS::derivative> Vec2;
     static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
       vec2.assign(r,vec1);
@@ -712,11 +714,11 @@ namespace Dune
   };
   template <int dimD,unsigned int deriv,
       class F1, class F2>
-  struct DerivativeAssign<Derivatives<F1,dimD,1,deriv,value>,
-      Derivatives<F2,dimD,1,deriv,value> >
+  struct DerivativeAssign<Derivatives<F1,dimD,1,deriv,DerivativeLayoutNS::value>,
+      Derivatives<F2,dimD,1,deriv,DerivativeLayoutNS::value> >
   {
-    typedef Derivatives<F1,dimD,1,deriv,value> Vec1;
-    typedef Derivatives<F2,dimD,1,deriv,value> Vec2;
+    typedef Derivatives<F1,dimD,1,deriv,DerivativeLayoutNS::value> Vec1;
+    typedef Derivatives<F2,dimD,1,deriv,DerivativeLayoutNS::value> Vec2;
     static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
       field_cast(vec1.block(),vec2.block());
@@ -724,11 +726,11 @@ namespace Dune
   };
   template <int dimD,unsigned int deriv,
       class F1, class F2>
-  struct DerivativeAssign<Derivatives<F1,dimD,1,deriv,derivative>,
-      Derivatives<F2,dimD,1,deriv,derivative> >
+  struct DerivativeAssign<Derivatives<F1,dimD,1,deriv,DerivativeLayoutNS::derivative>,
+      Derivatives<F2,dimD,1,deriv,DerivativeLayoutNS::derivative> >
   {
-    typedef Derivatives<F1,dimD,1,deriv,derivative> Vec1;
-    typedef Derivatives<F2,dimD,1,deriv,derivative> Vec2;
+    typedef Derivatives<F1,dimD,1,deriv,DerivativeLayoutNS::derivative> Vec1;
+    typedef Derivatives<F2,dimD,1,deriv,DerivativeLayoutNS::derivative> Vec2;
     static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
       field_cast(vec1.block(),vec2.block());
@@ -736,11 +738,11 @@ namespace Dune
   };
   template <int dimD,unsigned int deriv,
       class F1, class F2>
-  struct DerivativeAssign<Derivatives<F1,dimD,1,deriv,derivative>,
-      Derivatives<F2,dimD,1,deriv,value> >
+  struct DerivativeAssign<Derivatives<F1,dimD,1,deriv,DerivativeLayoutNS::derivative>,
+      Derivatives<F2,dimD,1,deriv,DerivativeLayoutNS::value> >
   {
-    typedef Derivatives<F1,dimD,1,deriv,derivative> Vec1;
-    typedef Derivatives<F2,dimD,1,deriv,value> Vec2;
+    typedef Derivatives<F1,dimD,1,deriv,DerivativeLayoutNS::derivative> Vec1;
+    typedef Derivatives<F2,dimD,1,deriv,DerivativeLayoutNS::value> Vec2;
     static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
       field_cast(vec1.block(),vec2.block());
@@ -748,17 +750,17 @@ namespace Dune
   };
   template <int dimD,unsigned int deriv,
       class F1, class F2>
-  struct DerivativeAssign<Derivatives<F1,dimD,1,deriv,value>,
-      Derivatives<F2,dimD,1,deriv,derivative> >
+  struct DerivativeAssign<Derivatives<F1,dimD,1,deriv,DerivativeLayoutNS::value>,
+      Derivatives<F2,dimD,1,deriv,DerivativeLayoutNS::derivative> >
   {
-    typedef Derivatives<F1,dimD,1,deriv,value> Vec1;
-    typedef Derivatives<F2,dimD,1,deriv,derivative> Vec2;
+    typedef Derivatives<F1,dimD,1,deriv,DerivativeLayoutNS::value> Vec1;
+    typedef Derivatives<F2,dimD,1,deriv,DerivativeLayoutNS::derivative> Vec2;
     static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
       field_cast(vec1.block(),vec2.block());
     }
   };
-  template <int dimD,unsigned int deriv,DerivativeLayout layout,
+  template <int dimD,unsigned int deriv,DerivativeLayoutNS::DerivativeLayout layout,
       class F1, class F2>
   struct DerivativeAssign<Derivatives<F1,dimD,1,deriv,layout>,
       F2 >
@@ -773,9 +775,9 @@ namespace Dune
   template <int dimD,int dimR,
       class F1,unsigned int deriv,
       class F2>
-  struct DerivativeAssign<Derivatives<F1,dimD,dimR,deriv,value>,FieldVector<F2,dimR> >
+  struct DerivativeAssign<Derivatives<F1,dimD,dimR,deriv,DerivativeLayoutNS::value>,FieldVector<F2,dimR> >
   {
-    typedef Derivatives<F1,dimD,dimR,deriv,value> Vec1;
+    typedef Derivatives<F1,dimD,dimR,deriv,DerivativeLayoutNS::value> Vec1;
     typedef FieldVector<F2,dimR> Vec2;
     static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
@@ -785,9 +787,9 @@ namespace Dune
   template <int dimD,int dimR,
       class F1,unsigned int deriv,
       class F2>
-  struct DerivativeAssign<Derivatives<F1,dimD,dimR,deriv,derivative>,FieldVector<F2,dimR> >
+  struct DerivativeAssign<Derivatives<F1,dimD,dimR,deriv,DerivativeLayoutNS::derivative>,FieldVector<F2,dimR> >
   {
-    typedef Derivatives<F1,dimD,dimR,deriv,derivative> Vec1;
+    typedef Derivatives<F1,dimD,dimR,deriv,DerivativeLayoutNS::derivative> Vec1;
     typedef FieldVector<F2,dimR> Vec2;
     static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
@@ -798,9 +800,9 @@ namespace Dune
   template <int dimD,
       class F1,unsigned int deriv,
       class F2,int dimR>
-  struct DerivativeAssign<Derivatives<F1,dimD,1,deriv,value>,FieldVector<F2,dimR> >
+  struct DerivativeAssign<Derivatives<F1,dimD,1,deriv,DerivativeLayoutNS::value>,FieldVector<F2,dimR> >
   {
-    typedef Derivatives<F1,dimD,1,deriv,value> Vec1;
+    typedef Derivatives<F1,dimD,1,deriv,DerivativeLayoutNS::value> Vec1;
     typedef FieldVector<F2,dimR> Vec2;
     static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
@@ -810,9 +812,9 @@ namespace Dune
   template <int dimD,
       class F1,unsigned int deriv,
       class F2,int dimR>
-  struct DerivativeAssign<Derivatives<F1,dimD,1,deriv,derivative>,FieldVector<F2,dimR> >
+  struct DerivativeAssign<Derivatives<F1,dimD,1,deriv,DerivativeLayoutNS::derivative>,FieldVector<F2,dimR> >
   {
-    typedef Derivatives<F1,dimD,1,deriv,derivative> Vec1;
+    typedef Derivatives<F1,dimD,1,deriv,DerivativeLayoutNS::derivative> Vec1;
     typedef FieldVector<F2,dimR> Vec2;
     static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
@@ -822,9 +824,9 @@ namespace Dune
   template <int dimD,
       class F1,unsigned int deriv,
       class F2>
-  struct DerivativeAssign<Derivatives<F1,dimD,1,deriv,value>,FieldVector<F2,1> >
+  struct DerivativeAssign<Derivatives<F1,dimD,1,deriv,DerivativeLayoutNS::value>,FieldVector<F2,1> >
   {
-    typedef Derivatives<F1,dimD,1,deriv,value> Vec1;
+    typedef Derivatives<F1,dimD,1,deriv,DerivativeLayoutNS::value> Vec1;
     typedef FieldVector<F2,1> Vec2;
     static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
@@ -834,9 +836,9 @@ namespace Dune
   template <int dimD,
       class F1,unsigned int deriv,
       class F2>
-  struct DerivativeAssign<Derivatives<F1,dimD,1,deriv,derivative>,FieldVector<F2,1> >
+  struct DerivativeAssign<Derivatives<F1,dimD,1,deriv,DerivativeLayoutNS::derivative>,FieldVector<F2,1> >
   {
-    typedef Derivatives<F1,dimD,1,deriv,derivative> Vec1;
+    typedef Derivatives<F1,dimD,1,deriv,DerivativeLayoutNS::derivative> Vec1;
     typedef FieldVector<F2,1> Vec2;
     static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
     {
@@ -868,7 +870,7 @@ namespace Dune
   }
 #endif
   template <class F,int dimD,int dimR,unsigned int deriv>
-  std::ostream &operator<< ( std::ostream &out, const Derivatives< F,dimD,dimR,deriv,derivative > &d )
+  std::ostream &operator<< ( std::ostream &out, const Derivatives< F,dimD,dimR,deriv,DerivativeLayoutNS::derivative > &d )
   {
     out << " ( ";
     out << d[0];
@@ -880,9 +882,9 @@ namespace Dune
     return out;
   }
   template <class F,int dimD,int dimR,unsigned int deriv>
-  std::ostream &operator<< ( std::ostream &out, const Derivatives< F,dimD,dimR,deriv,value > &d )
+  std::ostream &operator<< ( std::ostream &out, const Derivatives< F,dimD,dimR,deriv,DerivativeLayoutNS::value > &d )
   {
-    out << static_cast<const Derivatives< F,dimD,dimR,deriv-1,value > &>(d);
+    out << static_cast<const Derivatives< F,dimD,dimR,deriv-1,DerivativeLayoutNS::value > &>(d);
     out << " ( ";
     out << d[0];
     for (int r=1; r<dimR; ++r)
@@ -893,7 +895,7 @@ namespace Dune
     return out;
   }
   template <class F,int dimD,int dimR>
-  std::ostream &operator<< ( std::ostream &out, const Derivatives< F,dimD,dimR,0,derivative > &d )
+  std::ostream &operator<< ( std::ostream &out, const Derivatives< F,dimD,dimR,0,DerivativeLayoutNS::derivative > &d )
   {
     out << " ( ";
     out << d[0];
@@ -905,7 +907,7 @@ namespace Dune
     return out;
   }
   template <class F,int dimD,int dimR>
-  std::ostream &operator<< ( std::ostream &out, const Derivatives< F,dimD,dimR,0,value > &d )
+  std::ostream &operator<< ( std::ostream &out, const Derivatives< F,dimD,dimR,0,DerivativeLayoutNS::value > &d )
   {
     out << " ( ";
     out << d[0];
@@ -916,7 +918,7 @@ namespace Dune
     out << " ) " << std::endl;
     return out;
   }
-  template <class F,int dimD,int dimR,unsigned int deriv,DerivativeLayout layout>
+  template <class F,int dimD,int dimR,unsigned int deriv,DerivativeLayoutNS::DerivativeLayout layout>
   std::ostream &operator<< ( std::ostream &out, const std::vector<Derivatives< F,dimD,dimR,deriv,layout > > &y )
   {
     out << "Number of basis functions: " << y.size() << std::endl;

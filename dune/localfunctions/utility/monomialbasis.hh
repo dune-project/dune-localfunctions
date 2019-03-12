@@ -711,7 +711,7 @@ namespace Dune
     {
       evaluate<deriv>(x,&(values[0]));
     }
-    template<unsigned int deriv, DerivativeLayout layout >
+    template<unsigned int deriv, DerivativeLayoutNS::DerivativeLayout layout >
     void evaluate ( const DomainVector &x,
                     Derivatives<Field,dimension,1,deriv,layout> *values ) const
     {
@@ -719,7 +719,7 @@ namespace Dune
     }
     template< unsigned int deriv >
     void evaluate ( const DomainVector &x,
-                    FieldVector<Field,Derivatives<Field,dimension,1,deriv,value>::size> *values ) const
+                    FieldVector<Field,Derivatives<Field,dimension,1,deriv,DerivativeLayoutNS::value>::size> *values ) const
     {
       evaluate(0,x,&(values[0][0]));
     }
@@ -855,7 +855,7 @@ namespace Dune
     {
       evaluate( deriv, x, &(values[0][0]) );
     }
-    template<unsigned int deriv, DerivativeLayout layout >
+    template<unsigned int deriv, DerivativeLayoutNS::DerivativeLayout layout >
     void evaluate ( const DomainVector &x,
                     Derivatives<Field,dimension,1,deriv,layout> *values ) const
     {

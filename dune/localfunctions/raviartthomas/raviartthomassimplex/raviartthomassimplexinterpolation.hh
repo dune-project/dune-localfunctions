@@ -8,7 +8,6 @@
 
 #include <dune/common/exceptions.hh>
 
-#include <dune/geometry/topologyfactory.hh>
 #include <dune/geometry/quadraturerules.hh>
 #include <dune/geometry/referenceelements.hh>
 #include <dune/geometry/type.hh>
@@ -23,9 +22,6 @@ namespace Dune
 
   // Internal Forward Declarations
   // -----------------------------
-
-  template < unsigned int dim >
-  struct RaviartThomasCoefficientsFactory;
 
   template < unsigned int dim, class Field >
   struct RaviartThomasL2InterpolationFactory;
@@ -63,46 +59,33 @@ namespace Dune
 
 
 
-  // RaviartThomasCoefficientsFactoryTraits
-  // --------------------------------------
-
-  template < unsigned int dim >
-  struct RaviartThomasCoefficientsFactoryTraits
-  {
-    static const unsigned int dimension = dim;
-    typedef const LocalCoefficientsContainer Object;
-    typedef unsigned int Key;
-    typedef RaviartThomasCoefficientsFactory<dim> Factory;
-  };
-
-
-
   // RaviartThomasCoefficientsFactory
   // --------------------------------
 
   template < unsigned int dim >
   struct RaviartThomasCoefficientsFactory
-    : public TopologyFactory< RaviartThomasCoefficientsFactoryTraits< dim > >
   {
-    typedef RaviartThomasCoefficientsFactoryTraits< dim > Traits;
+    typedef unsigned int Key;
+    typedef const LocalCoefficientsContainer Object;
 
     template< class Topology >
-    static typename Traits::Object *createObject( const typename Traits::Key &key )
+    static Object *create( const Key &key )
     {
       typedef RaviartThomasL2InterpolationFactory< dim, double > InterpolationFactory;
       if( !supports< Topology >( key ) )
         return nullptr;
       typename InterpolationFactory::Object *interpolation = InterpolationFactory::template create< Topology >( key );
-      typename Traits::Object *localKeys = new typename Traits::Object( *interpolation );
+      Object *localKeys = new Object( *interpolation );
       InterpolationFactory::release( interpolation );
       return localKeys;
     }
 
     template< class Topology >
-    static bool supports ( const typename Traits::Key &key )
+    static bool supports ( const Key &key )
     {
       return Impl::IsSimplex< Topology >::value;
     }
+    static void release( Object *object ) { delete object; }
   };
 
 
@@ -391,24 +374,15 @@ namespace Dune
     unsigned int size_;
   };
 
-  template < unsigned int dim, class F >
-  struct RaviartThomasL2InterpolationFactoryTraits
-  {
-    static const unsigned int dimension = dim;
-    typedef unsigned int Key;
-    typedef const RaviartThomasL2Interpolation<dim,F> Object;
-    typedef RaviartThomasL2InterpolationFactory<dim,F> Factory;
-  };
   template < unsigned int dim, class Field >
-  struct RaviartThomasL2InterpolationFactory :
-    public TopologyFactory< RaviartThomasL2InterpolationFactoryTraits<dim,Field> >
+  struct RaviartThomasL2InterpolationFactory
   {
-    typedef RaviartThomasL2InterpolationFactoryTraits<dim,Field> Traits;
     typedef RTL2InterpolationBuilder<dim,Field> Builder;
-    typedef typename Traits::Object Object;
+    typedef const RaviartThomasL2Interpolation<dim,Field> Object;
+    typedef unsigned int Key;
     typedef typename std::remove_const<Object>::type NonConstObject;
     template <class Topology>
-    static typename Traits::Object *createObject( const typename Traits::Key &key )
+    static Object *create( const Key &key )
     {
       if ( !supports<Topology>(key) )
         return 0;
@@ -417,10 +391,11 @@ namespace Dune
       return interpol;
     }
     template< class Topology >
-    static bool supports ( const typename Traits::Key &key )
+    static bool supports ( const Key &key )
     {
       return Impl::IsSimplex<Topology>::value;
     }
+    static void release( Object *object ) { delete object; }
   };
 
 } // namespace Dune

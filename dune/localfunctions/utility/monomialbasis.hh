@@ -943,27 +943,13 @@ namespace Dune
   // --------------------
 
   template< int dim, class F >
-  struct MonomialBasisFactory;
-
-  template< int dim, class F >
-  struct MonomialBasisFactoryTraits
-  {
-    static const unsigned int dimension = dim;
-    typedef unsigned int Key;
-    typedef const VirtualMonomialBasis< dimension, F > Object;
-    typedef MonomialBasisFactory<dim,F> Factory;
-  };
-
-  template< int dim, class F >
-  struct MonomialBasisFactory :
-    public TopologyFactory< MonomialBasisFactoryTraits<dim,F> >
+  struct MonomialBasisFactory
   {
     static const unsigned int dimension = dim;
     typedef F StorageField;
-    typedef MonomialBasisFactoryTraits<dim,F> Traits;
 
-    typedef typename Traits::Key Key;
-    typedef typename Traits::Object Object;
+    typedef unsigned int Key;
+    typedef const VirtualMonomialBasis< dimension, F > Object;
 
     template < int dd, class FF >
     struct EvaluationBasisFactory
@@ -972,10 +958,11 @@ namespace Dune
     };
 
     template< class Topology >
-    static Object* createObject ( const Key &order )
+    static Object* create ( const Key &order )
     {
       return new VirtualMonomialBasisImpl< Topology, StorageField >( order );
     }
+    static void release( Object *object ) { delete object; }
   };
 
 

@@ -10,8 +10,6 @@
 #include <dune/common/std/type_traits.hh>
 #include <dune/common/typeutilities.hh>
 
-#include <dune/geometry/topologyfactory.hh>
-
 #include <dune/localfunctions/common/localinterpolation.hh>
 #include <dune/localfunctions/lagrange/lagrangecoefficients.hh>
 
@@ -95,45 +93,32 @@ namespace Dune
   // ---------------------------------
   template< template <class,unsigned int> class LP,
       unsigned int dim, class F >
-  struct LagrangeInterpolationFactoryTraits
+  struct LagrangeInterpolationFactory
   {
     typedef LagrangeCoefficientsFactory<LP,dim,F> LagrangePointSetFactory;
     typedef typename LagrangePointSetFactory::Object LagrangePointSet;
 
     typedef typename LagrangePointSetFactory::Key Key;
     typedef const LocalLagrangeInterpolation< LP,dim,F > Object;
-    typedef LagrangeInterpolationFactory<LP,dim,F> Factory;
-
-    static const unsigned int dimension = dim;
-  };
-
-  template< template <class,unsigned int> class LP,
-      unsigned int dim, class F >
-  struct LagrangeInterpolationFactory :
-    public TopologyFactory< LagrangeInterpolationFactoryTraits< LP,dim,F > >
-  {
-    typedef LagrangeInterpolationFactoryTraits< LP,dim,F > Traits;
-    typedef typename Traits::Key Key;
-    typedef typename Traits::Object Object;
 
     template< class Topology >
-    static Object *createObject ( const Key &key )
+    static Object *create ( const Key &key )
     {
-      const typename Traits::LagrangePointSet *lagrangeCoeff
-        = Traits::LagrangePointSetFactory::template create< Topology >( key );
+      const LagrangePointSet *lagrangeCoeff
+        = LagrangePointSetFactory::template create< Topology >( key );
       if ( lagrangeCoeff == 0 )
         return 0;
       else
         return new Object( *lagrangeCoeff );
     }
     template< class Topology >
-    static bool supports ( const typename Traits::Key &key )
+    static bool supports ( const Key &key )
     {
       return true;
     }
     static void release( Object *object)
     {
-      Traits::LagrangePointSetFactory::release( object->points() );
+      LagrangePointSetFactory::release( object->points() );
       delete object;
     }
   };

@@ -76,6 +76,9 @@ namespace Dune
         FieldMatrix<R,dimRange,dimension> > Traits;
     typedef typename Evaluator::Basis Basis;
     typedef typename Evaluator::DomainVector DomainVector;
+    template <class Fy>
+    using HessianFyType = FieldVector<FieldMatrix<Fy,dimension,dimension>,dimRange>;
+    using HessianType = HessianFyType<R>;
 
     PolynomialBasis (const Basis &basis,
                      const CoefficientMatrix &coeffMatrix,
@@ -126,15 +129,47 @@ namespace Dune
       jacobian(x,out);
     }
 
+    //! \brief Evaluate Jacobian of all shape functions
+    void evaluateHessian (const typename Traits::DomainType& x,         // position
+                          std::vector<HessianType>& out) const          // return value
+    {
+      out.resize(size());
+      hessian(x,out);
+    }
+
     //! \brief Evaluate partial derivatives of all shape functions
     void partial (const std::array<unsigned int, dimension>& order,
-                  const typename Traits::DomainType& in,         // position
+                  const typename Traits::DomainType& in,                   // position
                   std::vector<typename Traits::RangeType>& out) const      // return value
     {
       auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
       if (totalOrder == 0) {
         evaluateFunction(in, out);
-      } else {
+      }
+      else if (totalOrder == 1) {
+        std::vector<typename Traits::JacobianType> jacs(out.size());
+        unsigned int k;
+        for (unsigned int i=0;i<order.size();++i)
+          if (order[i]==1) k=i;
+        evaluateJacobian(in, jacs);
+        for (unsigned int i=0;i<out.size();++i)
+          for (unsigned int r=0;r<Traits::RangeType::dimension;++r)
+            out[i][r] = jacs[i][r][k];
+      }
+      else if (totalOrder == 2) {
+        std::vector<HessianType> hesss(out.size());
+        unsigned int k=-1,l=-1;
+        for (unsigned int i=0;i<order.size();++i) {
+          if (order[i]==1 && k==-1) k=i;
+          else if (order[i]==1) l=i;
+        }
+        if (l==-1) l=k;
+        evaluateHessian(in, hesss);
+        for (unsigned int i=0;i<out.size();++i)
+          for (unsigned int r=0;r<Traits::RangeType::dimension;++r)
+            out[i][r] = hesss[i][r][k][l];
+      }
+      else {
         DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
       }
     }
@@ -217,7 +252,8 @@ namespace Dune
     }
 
     template <class Fy>
-    void jacobian ( const DomainVector &x, std::vector<FieldMatrix<Fy,dimRange,dimension> > &values ) const
+    void jacobian ( const DomainVector &x,
+        std::vector<FieldMatrix<Fy,dimRange,dimension> > &values ) const
     {
       assert(values.size()>=size());
       evaluateSingle<1>(x,reinterpret_cast<std::vector<FieldVector<Fy,dimRange*dimension> >&>(values));
@@ -230,6 +266,38 @@ namespace Dune
       for( unsigned int d = 0; d < dimension; ++d )
         field_cast( x[ d ], bx[ d ] );
       jacobian( bx, values );
+    }
+    template <class Fy>
+    void hessian ( const DomainVector &x,
+        std::vector<HessianFyType<Fy>> &values ) const
+    {
+      assert(values.size()>=size());
+      // only upper part of hessians matrix is computed - so we have
+      // y[0] = FV< FV<Fy,d*(d+1)/2>, dimRange>
+      const unsigned int hsize = LFETensor<Fy,dimension,2>::size;
+      std::vector< FieldVector< FieldVector<Fy,hsize>, dimRange> > y( size() );
+      evaluateSingle<2>( x, y );
+      unsigned int q=0;
+      for (unsigned int i=0;i<size();++i)
+        for (unsigned int r=0;r<dimRange;++r)
+          for (unsigned int k=0;k<dimension;++k)
+            for (unsigned int l=k;l<dimension;++l)
+            {
+              values[i][r][k][l] = y[i][r][q];
+              values[i][r][l][k] = y[i][r][q];
+              ++q;
+              assert(q < hsize);
+            }
+      // evaluateSingle<2>(x,reinterpret_cast<std::vector<FieldVector<Fy,dimRange*dimension*dimension> >&>(values));
+    }
+    template< class DVector, class HVector >
+    void hessian ( const DVector &x, HVector &values ) const
+    {
+      assert( DVector::dimension == dimension);
+      DomainVector bx;
+      for( unsigned int d = 0; d < dimension; ++d )
+        field_cast( x[ d ], bx[ d ] );
+      hessian( bx, values );
     }
 
     template <class Fy>

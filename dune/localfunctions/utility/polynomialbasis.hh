@@ -158,7 +158,7 @@ namespace Dune
       }
       else if (totalOrder == 2) {
         std::vector<HessianType> hesss(out.size());
-        unsigned int k=-1,l=-1;
+        int k=-1,l=-1;
         for (unsigned int i=0;i<order.size();++i) {
           if (order[i]==1 && k==-1) k=i;
           else if (order[i]==1) l=i;

@@ -200,20 +200,25 @@ namespace Dune
         size_(0)
     {}
 
-    template< class Function, class Fy >
-    void interpolate ( const Function &function, std::vector< Fy > &coefficients ) const
+    template< class Function, class Vector >
+    auto interpolate ( const Function &function, Vector &coefficients ) const
+    -> std::enable_if_t< std::is_same< decltype(std::declval<Vector>().resize(1) ),void >::value,void>
     {
       coefficients.resize(size());
-      typename Base::template Helper<Function,std::vector<Fy>,true> func( function,coefficients );
+      typename Base::template Helper<Function,Vector,true> func( function,coefficients );
       interpolate(func);
     }
+
     template< class Basis, class Matrix >
-    void interpolate ( const Basis &basis, Matrix &matrix ) const
+    auto interpolate ( const Basis &basis, Matrix &matrix ) const
+    -> std::enable_if_t< std::is_same<
+           decltype(std::declval<Matrix>().rowPtr(0)), typename Matrix::Field* >::value,void>
     {
       matrix.resize( size(), basis.size() );
       typename Base::template Helper<Basis,Matrix,false> func( basis,matrix );
       interpolate(func);
     }
+
 
     unsigned int order() const
     {

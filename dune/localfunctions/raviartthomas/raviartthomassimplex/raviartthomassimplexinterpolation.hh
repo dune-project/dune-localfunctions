@@ -200,7 +200,7 @@ namespace Dune
         size_(0)
     {}
 
-    template< class Functionn, class Vector >
+    template< class Function, class Vector >
     auto interpolate ( const Function &function, Vector &coefficients ) const
     -> std::enable_if_t< std::is_same< decltype(std::declval<Vector>().resize(1) ),void >::value,void>
     {
@@ -210,7 +210,7 @@ namespace Dune
     }
 
     template< class Basis, class Matrix >
-    void interpolate ( const Basis &basis, Matrix &matrix ) const
+    auto interpolate ( const Basis &basis, Matrix &matrix ) const
     -> std::enable_if_t< std::is_same<
            decltype(std::declval<Matrix>().rowPtr(0)), typename Matrix::Field* >::value,void>
     {

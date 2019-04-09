@@ -148,9 +148,9 @@ bool testFaceBiorthogonality(const DualLfe& dualLfe, const LagrangeLfe& lagrange
     }
 
     // check if diagonal of mixedMassMat equals the lagrange integral and the off-diagonals are zero
-    for (unsigned int p=0; p<refElement.size(i,1,dim); p++) {
+    for (unsigned int p=0; p<(unsigned int)refElement.size(i,1,dim); p++) {
       int k= refElement.subEntity(i,1,p,dim);
-      for (unsigned int q=0; q<refElement.size(i,1,dim); q++) {
+      for (unsigned int q=0; q<(unsigned int)refElement.size(i,1,dim); q++) {
         int l= refElement.subEntity(i,1,q,dim);
         if(std::fabs(mixedMassMat[k][l] - (k==l)*(integralLagrange[k])) > TOL) {
           std::cout<<"for face "<<i<<" : \n";

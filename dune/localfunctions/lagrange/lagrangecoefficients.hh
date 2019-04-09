@@ -21,7 +21,7 @@ namespace Dune
   {
     static const unsigned int dimension = dim;
     const typedef LP<F,dim> Object;
-    typedef unsigned int Key;
+    typedef std::size_t Key;
 
     template< class T >
     static Object *create ( const Key &order )

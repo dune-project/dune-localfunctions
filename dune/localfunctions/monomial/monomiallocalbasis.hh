@@ -139,7 +139,7 @@ namespace Dune
           // the rest of the available exponents, to be used by the other
           // dimensions
           int newbound = bound - e;
-          if(e < derivatives[d])
+          if(e < (int)derivatives[d])
             Evaluate<Traits,c-1>::
             eval(in, derivatives, 0, newbound, index, access);
           else {
@@ -179,7 +179,7 @@ namespace Dune
                         typename Traits::RangeFieldType prod,
                         int bound, int& index, Access &access)
       {
-        if(bound < derivatives[d])
+        if(bound < (int)derivatives[d])
           prod = 0;
         else {
           int coeff = 1;

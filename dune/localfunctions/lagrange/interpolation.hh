@@ -44,18 +44,17 @@ namespace Dune
 
     const LagrangePointSet *points () const { return &lagrangePoints_; }
 
-    template< class Fn, class Fy >
-    auto interpolate ( const Fn &fn, std::vector< Fy > &coefficients, PriorityTag< 1 > ) const
+    template< class Fn, class Vector >
+    auto interpolate ( const Fn &fn, Vector &coefficients, PriorityTag< 1 > ) const
       -> std::enable_if_t< Std::is_invocable< const Fn &, decltype( this->lagrangePoints_.begin()->point() ) >::value >
     {
       unsigned int index = 0;
       for( const auto &lp : lagrangePoints_ )
         field_cast( fn( lp.point() ), coefficients[ index++ ] );
     }
-
-    template< class Fn, class Fy >
-    auto interpolate ( const Fn &fn, std::vector< Fy > &coefficients, PriorityTag< 0 > ) const
-      -> std::enable_if_t< models<Impl::FunctionWithEvaluate< typename Fn::DomainType, typename Fn::RangeType >, Fn>(), void>
+    template< class Fn, class Vector >
+    auto interpolate ( const Fn &fn, Vector &coefficients, PriorityTag< 0 > ) const
+       -> std::enable_if_t< models<Impl::FunctionWithEvaluate< typename Fn::DomainType, typename Fn::RangeType >, Fn>(), void>
     {
       unsigned int index = 0;
       for( const auto &lp : lagrangePoints_ )
@@ -67,15 +66,18 @@ namespace Dune
     }
 
   public:
-    template< class Fn, class Fy >
-    void interpolate ( const Fn &fn, std::vector< Fy > &coefficients ) const
+    template< class Fn, class Vector >
+    auto interpolate ( const Fn &fn, Vector &coefficients ) const
+    -> std::enable_if_t< std::is_same< decltype(std::declval<Vector>().resize(1) ),void >::value,void>
     {
       coefficients.resize( lagrangePoints_.size() );
       interpolate( fn, coefficients, PriorityTag< 42 >() );
     }
 
-    template< class Matrix, class Basis >
-    void interpolate ( const Basis &basis, Matrix &coefficients ) const
+    template< class Basis, class Matrix >
+    auto interpolate ( const Basis &basis, Matrix &coefficients ) const
+    -> std::enable_if_t< std::is_same<
+           decltype(std::declval<Matrix>().rowPtr(0)), typename Matrix::Field* >::value,void>
     {
       coefficients.resize( lagrangePoints_.size(), basis.size( ) );
 

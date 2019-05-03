@@ -139,9 +139,9 @@ namespace Dune {
       return size_;
     }
 
-    Dune::LocalKey localKey (std::size_t i) const
+    const Dune::LocalKey& localKey (std::size_t i) const
     {
-      return Std::visit([&](const auto* impl) { return impl->localKey(i); }, impl_);
+      return Std::visit([&](const auto* impl) -> decltype(auto) { return impl->localKey(i); }, impl_);
     }
 
   private:

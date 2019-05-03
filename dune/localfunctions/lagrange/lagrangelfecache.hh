@@ -25,7 +25,6 @@
 #include <dune/localfunctions/lagrange/pyramidp1.hh>
 #include <dune/localfunctions/lagrange/pyramidp2.hh>
 #include <dune/localfunctions/common/localfiniteelementvariant.hh>
-#include <dune/localfunctions/common/uniquetypes.hh>
 
 
 namespace Dune {

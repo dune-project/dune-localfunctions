@@ -260,8 +260,8 @@ int main (int argc, char *argv[])
   typedef LocalFiniteElementVirtualInterface< P1LocalFiniteElement<double,double, 2>::Traits::LocalBasisType::Traits > Interface;
   TEST_FE(static_cast<const Interface&>(p12dlfemVirtual));
 
-  // Test the LagrangeFiniteElementCache
-  LagrangeFiniteElementCache<double,double,2,2> lagrangeLFECache;
+  // Test the LagrangeLocalFiniteElementCache
+  LagrangeLocalFiniteElementCache<double,double,2,2> lagrangeLFECache;
   TEST_FE(lagrangeLFECache.get(GeometryTypes::simplex(2)));
   TEST_FE(lagrangeLFECache.get(GeometryTypes::cube(2)));
 

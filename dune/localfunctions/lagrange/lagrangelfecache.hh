@@ -116,7 +116,7 @@ namespace Impl {
  * \tparam order Element order
  */
 template<class D, class R, std::size_t dim, std::size_t order>
-class LagrangeFiniteElementCache
+class LagrangeLocalFiniteElementCache
 {
 
   template<class LFEImplTuple>
@@ -142,7 +142,7 @@ public:
    * Fills the cache with all implementations of Lagrange elements for the given
    * order and element dimension
    */
-  LagrangeFiniteElementCache()
+  LagrangeLocalFiniteElementCache()
   {
     cache_.resize(LocalGeometryTypeIndex::size(dim));
     Dune::Hybrid::forEach(implementedFiniteElements(), [&](auto feImpl) {
@@ -151,7 +151,7 @@ public:
   }
 
   /** \brief Copy constructor */
-  LagrangeFiniteElementCache(const LagrangeFiniteElementCache& other) = default;
+  LagrangeLocalFiniteElementCache(const LagrangeLocalFiniteElementCache& other) = default;
 
   /** \brief Get the Lagrange LocalFiniteElement for the given GeometryType object
    *

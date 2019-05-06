@@ -283,11 +283,12 @@ namespace Dune
    */
   typename Traits::RangeType lagrangianFactorDerivative(const int direction, const int no, const int i, const int j, const typename Traits::DomainType& x) const
   {
+    using T = typename Traits::RangeType;
     if ( no < i)
-      return (direction == 0) ? 1.0/(pos_[i]-pos_[no]) : 0;
+      return (direction == 0) ? T(1.0/(pos_[i]-pos_[no])) : T(0);
 
     if (no < i+j)
-      return (direction == 0) ? 0: 1.0/(pos_[j]-pos_[no-i]);
+      return (direction == 0) ? T(0) : T(1.0/(pos_[j]-pos_[no-i]));
 
     return -1.0/(pos_[no+1]-pos_[i]-pos_[j]);
   }

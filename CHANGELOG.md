@@ -3,6 +3,19 @@
 * The header `lagrange.hh` now includes all headers of all Lagrange implementations,
   not just the ones with run-time order.
 
+* Introduce a run-time polymorphic container `LocalFiniteElementVariant`.
+  Much like `std::variant`, it implements a type-safe
+  union of different `LocalFiniteElement` implementations.  Elements of type
+  `LocalFiniteElementVariant` can hold one object from a list of types
+  given as template parameters.  These types must be implementations of
+  the `LocalFiniteElement` interface, and the container will in turn
+  implement this interface.
+
+  Such a `variant`-based polymorphism is not as flexible as full type erasure,
+  but it is much easier to implement.  What is more, it is believed that in
+  many situations the restriction to a fixed set of implementation types
+  is not a problem.
+
 * Add support for `operator()` syntax to `interpolate()`. All `interpolate()`
   implementations now support functions `f` that either support `f.evaluate(x,y)`
   or `y = f(x)`.

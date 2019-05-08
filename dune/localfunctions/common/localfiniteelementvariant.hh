@@ -9,6 +9,7 @@
 #include <dune/common/typeutilities.hh>
 #include <dune/common/std/type_traits.hh>
 #include <dune/common/std/variant.hh>
+#include <dune/common/overloadset.hh>
 
 #include <dune/geometry/type.hh>
 
@@ -18,6 +19,22 @@
 
 
 namespace Dune {
+
+namespace Impl {
+
+  // Helper for visiting a variant containing monostate.
+  // Since a generic lambda will inmost cases not compile
+  // for monostate, we add special empty overloads for monostate.
+  // Hence visitIf will simply do nothing in the case of a
+  // monostate value.
+  template<class Visitor, class Variant>
+  void visitIf(Visitor&& visitor, Variant&& variant)
+  {
+    auto visitorWithFallback = overload([](Std::monostate& impl) {},  [](const Std::monostate& impl) {}, visitor);
+    Std::visit(visitorWithFallback, variant);
+  }
+
+} // namespace Impl
 
   template<class... Implementations>
   class LocalBasisVariant
@@ -43,14 +60,14 @@ namespace Dune {
       typename FirstImpTraits::RangeType,
       typename FirstImpTraits::JacobianType>;
 
-    template<class FEVariant>
-    LocalBasisVariant(const FEVariant& feVariant) :
-      impl_(Std::visit([&](const auto& fe) { return Std::variant<const Implementations*...>(&fe.localBasis()); }, feVariant)),
-      size_(Std::visit([&](const auto* impl) { return impl->size(); }, impl_)),
-      order_(Std::visit([&](const auto* impl) { return impl->order(); }, impl_))
+    template<class Implementation>
+    LocalBasisVariant(const Implementation& impl) :
+      impl_(&impl),
+      size_(impl.size()),
+      order_(impl.order())
     {}
 
-    LocalBasisVariant() = delete;
+    LocalBasisVariant() = default;
     LocalBasisVariant(const LocalBasisVariant& other) = default;
     LocalBasisVariant(LocalBasisVariant&& other) = default;
     LocalBasisVariant& operator=(const LocalBasisVariant& other) = default;
@@ -79,7 +96,7 @@ namespace Dune {
         const typename Traits::DomainType& x,
         std::vector<typename Traits::RangeType>& out) const
     {
-      Std::visit([&](const auto* impl) { impl->evaluateFunction(x, out); }, impl_);
+      Impl::visitIf([&](const auto* impl) { impl->evaluateFunction(x, out); }, impl_);
     }
 
     /**
@@ -89,7 +106,7 @@ namespace Dune {
         const typename Traits::DomainType& x,
         std::vector<typename Traits::JacobianType>& out) const
     {
-      Std::visit([&](const auto* impl) { impl->evaluateJacobian(x, out); }, impl_);
+      Impl::visitIf([&](const auto* impl) { impl->evaluateJacobian(x, out); }, impl_);
     }
 
     /**
@@ -104,11 +121,11 @@ namespace Dune {
         const typename Traits::DomainType& x,
         std::vector<typename Traits::RangeType>& out) const
     {
-      Std::visit([&](const auto* impl) { impl->partial(order, x, out); }, impl_);
+      Impl::visitIf([&](const auto* impl) { impl->partial(order, x, out); }, impl_);
     }
 
   private:
-    Std::variant<const Implementations*...> impl_;
+    Std::variant<Std::monostate, const Implementations*...> impl_;
     std::size_t size_;
     std::size_t order_;
   };
@@ -119,13 +136,13 @@ namespace Dune {
   {
   public:
 
-    template<class FEVariant>
-    LocalCoefficientsVariant(const FEVariant& feVariant) :
-      impl_(Std::visit([&](const auto& fe) { return Std::variant<const Implementations*...>(&fe.localCoefficients()); }, feVariant)),
-      size_(Std::visit([&](const auto* impl) { return impl->size(); }, impl_))
+    template<class Implementation>
+    LocalCoefficientsVariant(const Implementation& impl) :
+      impl_(&impl),
+      size_(impl.size())
     {}
 
-    LocalCoefficientsVariant() = delete;
+    LocalCoefficientsVariant() = default;
     LocalCoefficientsVariant(const LocalCoefficientsVariant& other) = default;
     LocalCoefficientsVariant(LocalCoefficientsVariant&& other) = default;
     LocalCoefficientsVariant& operator=(const LocalCoefficientsVariant& other) = default;
@@ -141,11 +158,18 @@ namespace Dune {
 
     const Dune::LocalKey& localKey (std::size_t i) const
     {
-      return Std::visit([&](const auto* impl) -> decltype(auto) { return impl->localKey(i); }, impl_);
+      // We can't use visitIf since we have to return something
+      // even for a monostate value. Since the return type is
+      // an l-value reference, we use a default constructed
+      // dummy LocalKey value.
+      static const Dune::LocalKey dummyLocalKey;
+      return Std::visit(overload(
+          [&](const Std::monostate& impl) -> decltype(auto) { return (dummyLocalKey);},
+          [&](const auto* impl) -> decltype(auto) { return impl->localKey(i); }), impl_);
     }
 
   private:
-    Std::variant<const Implementations*...> impl_;
+    Std::variant<Std::monostate, const Implementations*...> impl_;
     std::size_t size_;
   };
 
@@ -155,12 +179,12 @@ namespace Dune {
   {
   public:
 
-    template<class FEVariant>
-    LocalInterpolationVariant(const FEVariant& feVariant) :
-      impl_(Std::visit([&](const auto& fe) { return Std::variant<const Implementations*...>(&fe.localInterpolation()); }, feVariant))
+    template<class Implementation>
+    LocalInterpolationVariant(const Implementation& impl) :
+      impl_(&impl)
     {}
 
-    LocalInterpolationVariant() = delete;
+    LocalInterpolationVariant() = default;
     LocalInterpolationVariant(const LocalInterpolationVariant& other) = default;
     LocalInterpolationVariant(LocalInterpolationVariant&& other) = default;
     LocalInterpolationVariant& operator=(const LocalInterpolationVariant& other) = default;
@@ -169,69 +193,71 @@ namespace Dune {
     template<typename F, typename C>
     void interpolate (const F& ff, std::vector<C>& out) const
     {
-      Std::visit([&](const auto* impl) { impl->interpolate(ff, out); }, impl_);
+      Impl::visitIf([&](const auto* impl) { impl->interpolate(ff, out); }, impl_);
     }
 
   private:
-    Std::variant<const Implementations*...> impl_;
+    Std::variant<Std::monostate, const Implementations*...> impl_;
   };
-
-
 
   template<class... Implementations>
   class LocalFiniteElementVariant
   {
-    // In each LocalFooVariant we store a Std::variant<const FooImpl*...>, i.e. a Std::variant
-    // with the pointer to the Foo implementation
+
+    // In each LocalFooVariant we store a Std::variant<Std::monostate, const FooImpl*...>, i.e. a Std::variant
+    // with the pointer to the Foo implementation unless LocalFiniteElementVariant stores a monostate. In this
+    // case each LocalFooVariant also stores a monostate (and not a monostate*).
     using LocalBasis = LocalBasisVariant<typename Implementations::Traits::LocalBasisType...>;
     using LocalCoefficients = LocalCoefficientsVariant<typename Implementations::Traits::LocalCoefficientsType...>;
     using LocalInterpolation = LocalInterpolationVariant<typename Implementations::Traits::LocalInterpolationType...>;
+
+    // Update members after changing impl_
+    void updateMembers()
+    {
+      Std::visit(overload(
+          [&](Std::monostate&) {
+            localBasis_ = LocalBasis();
+            localCoefficients_ = LocalCoefficients();
+            localInterpolation_ = LocalInterpolation();
+            size_ = 0;
+          }, [&](auto&& impl) {
+            localBasis_ = LocalBasis(impl.localBasis());
+            localCoefficients_ = LocalCoefficients(impl.localCoefficients());
+            localInterpolation_ = LocalInterpolation(impl.localInterpolation());
+            size_ = impl.size();
+          }), impl_);
+    }
 
   public:
 
     using Traits = typename Dune::LocalFiniteElementTraits<LocalBasis, LocalCoefficients, LocalInterpolation>;
 
-    LocalFiniteElementVariant() :
-      impl_(),
-      size_(Std::visit([&](const auto& fe) { return fe.size(); }, impl_)),
-      localBasis_(impl_),
-      localCoefficients_(impl_),
-      localInterpolation_(impl_)
-    {}
+    LocalFiniteElementVariant() = default;
 
     template<class Implementation,
       std::enable_if_t<Std::disjunction<std::is_same<std::decay_t<Implementation>, Implementations>...>::value, int> = 0>
     LocalFiniteElementVariant(Implementation&& impl) :
-      impl_(std::forward<Implementation>(impl)),
-      size_(Std::visit([&](const auto& fe) { return fe.size(); }, impl_)),
-      localBasis_(impl_),
-      localCoefficients_(impl_),
-      localInterpolation_(impl_)
-    {}
+      impl_(std::forward<Implementation>(impl))
+    {
+      updateMembers();
+    }
 
     LocalFiniteElementVariant(const LocalFiniteElementVariant& other) :
-      impl_(other.impl_),
-      size_(other.size_),
-      localBasis_(impl_),
-      localCoefficients_(impl_),
-      localInterpolation_(impl_)
-    {}
+      impl_(other.impl_)
+    {
+      updateMembers();
+    }
 
     LocalFiniteElementVariant(LocalFiniteElementVariant&& other) :
-      impl_(std::move(other.impl_)),
-      size_(other.size_),
-      localBasis_(impl_),
-      localCoefficients_(impl_),
-      localInterpolation_(impl_)
-    {}
+      impl_(std::move(other.impl_))
+    {
+      updateMembers();
+    }
 
     LocalFiniteElementVariant& operator=(const LocalFiniteElementVariant& other)
     {
       impl_ = other.impl_;
-      size_ = other.size_;
-      localBasis_ = LocalBasis(impl_);
-      localCoefficients_ = LocalCoefficients(impl_);
-      localInterpolation_ = LocalInterpolation(impl_);
+      updateMembers();
       return *this;
     }
 
@@ -260,7 +286,11 @@ namespace Dune {
 
     constexpr GeometryType type() const
     {
-      return Std::visit([&](const auto& fe) { return fe.type(); }, impl_);
+      // We can't use visitIf since we have to return something
+      // even for a monostate value.
+      return Std::visit(overload(
+          [](const Std::monostate& impl) { return GeometryType{};},
+          [](const auto& fe) { return fe.type(); }), impl_);
     }
 
     /**
@@ -275,8 +305,18 @@ namespace Dune {
       return impl_;
     }
 
+    /**
+     * \brief Check if LocalFiniteElementVariant stores an implementation
+     *
+     * This returns true iff variant() does not store a monostate.
+     */
+    operator bool () const
+    {
+      return not(Std::holds_alternative<Std::monostate>(variant()));
+    }
+
   private:
-    Std::variant<Implementations...> impl_;
+    Std::variant<Std::monostate, Implementations...> impl_;
     std::size_t size_;
     LocalBasis localBasis_;
     LocalCoefficients localCoefficients_;

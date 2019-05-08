@@ -8,7 +8,6 @@
 #include <utility>
 #include <type_traits>
 
-#include <dune/common/std/optional.hh>
 #include <dune/common/std/type_traits.hh>
 #include <dune/common/exceptions.hh>
 #include <dune/common/typelist.hh>
@@ -146,7 +145,7 @@ public:
   {
     cache_.resize(LocalGeometryTypeIndex::size(dim));
     Dune::Hybrid::forEach(implementedFiniteElements(), [&](auto feImpl) {
-      cache_[LocalGeometryTypeIndex::index(feImpl.first)].emplace(feImpl.second());
+      cache_[LocalGeometryTypeIndex::index(feImpl.first)] = feImpl.second();
     });
   }
 
@@ -166,11 +165,11 @@ public:
 
     if (not(cache_[LocalGeometryTypeIndex::index(gt)]))
       DUNE_THROW(Dune::NotImplemented,"There is no LocalFiniteElement for a " << gt << " in the cache.");
-    return *cache_[LocalGeometryTypeIndex::index(gt)];
+    return cache_[LocalGeometryTypeIndex::index(gt)];
   }
 
 private:
-  std::vector<Std::optional<FiniteElementType>> cache_;
+  std::vector<FiniteElementType> cache_;
 };
 
 

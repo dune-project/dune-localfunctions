@@ -30,7 +30,7 @@ namespace Impl {
   template<class Visitor, class Variant>
   void visitIf(Visitor&& visitor, Variant&& variant)
   {
-    auto visitorWithFallback = overload([](Std::monostate& impl) {},  [](const Std::monostate& impl) {}, visitor);
+    auto visitorWithFallback = overload([&](Std::monostate& impl) {},  [&](const Std::monostate& impl) {}, visitor);
     Std::visit(visitorWithFallback, variant);
   }
 
@@ -287,10 +287,13 @@ namespace Impl {
     constexpr GeometryType type() const
     {
       // We can't use visitIf since we have to return something
-      // even for a monostate value.
+      // even for a monostate value. There seems to be a bug
+      // in gcc-5 and gcc-6 letting them fail to compile the
+      // following code if we drop the reference capture [&]
+      // for the first overload.
       return Std::visit(overload(
-          [](const Std::monostate& impl) { return GeometryType{};},
-          [](const auto& fe) { return fe.type(); }), impl_);
+          [&](const Dune::Std::monostate& fe) { return GeometryType{};},
+          [&](const auto& fe) { return fe.type(); }), impl_);
     }
 
     /**

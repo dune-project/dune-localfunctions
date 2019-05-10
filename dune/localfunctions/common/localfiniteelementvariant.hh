@@ -291,9 +291,10 @@ namespace Impl {
       // in gcc-5 and gcc-6 letting them fail to compile the
       // following code if we drop the reference capture [&]
       // for the first overload.
+      int dummyCapture=0;
       return Std::visit(overload(
-          [&](const Dune::Std::monostate& fe) { return GeometryType{};},
-          [&](const auto& fe) { return fe.type(); }), impl_);
+          [dummyCapture](const Dune::Std::monostate&) { return GeometryType{};},
+          [dummyCapture](const auto& fe) { return fe.type(); }), impl_);
     }
 
     /**

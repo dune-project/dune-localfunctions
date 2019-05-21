@@ -34,8 +34,6 @@ namespace Impl {
     Std::visit(visitorWithFallback, variant);
   }
 
-} // namespace Impl
-
   template<class... Implementations>
   class LocalBasisVariant
   {
@@ -200,6 +198,8 @@ namespace Impl {
     Std::variant<Std::monostate, const Implementations*...> impl_;
   };
 
+} // namespace Impl
+
   template<class... Implementations>
   class LocalFiniteElementVariant
   {
@@ -207,9 +207,9 @@ namespace Impl {
     // In each LocalFooVariant we store a Std::variant<Std::monostate, const FooImpl*...>, i.e. a Std::variant
     // with the pointer to the Foo implementation unless LocalFiniteElementVariant stores a monostate. In this
     // case each LocalFooVariant also stores a monostate (and not a monostate*).
-    using LocalBasis = LocalBasisVariant<typename Implementations::Traits::LocalBasisType...>;
-    using LocalCoefficients = LocalCoefficientsVariant<typename Implementations::Traits::LocalCoefficientsType...>;
-    using LocalInterpolation = LocalInterpolationVariant<typename Implementations::Traits::LocalInterpolationType...>;
+    using LocalBasis = Impl::LocalBasisVariant<typename Implementations::Traits::LocalBasisType...>;
+    using LocalCoefficients = Impl::LocalCoefficientsVariant<typename Implementations::Traits::LocalCoefficientsType...>;
+    using LocalInterpolation = Impl::LocalInterpolationVariant<typename Implementations::Traits::LocalInterpolationType...>;
 
     // Update members after changing impl_
     void updateMembers()

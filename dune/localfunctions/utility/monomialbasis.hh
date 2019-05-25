@@ -77,10 +77,10 @@ namespace Dune
   // MonomialBasisSize
   // -----------------
 
-  template<>
-  class MonomialBasisSize< Impl::Point >
+  template< class TopologyType >
+  class MonomialBasisSize
   {
-    typedef MonomialBasisSize< Impl::Point > This;
+    typedef MonomialBasisSize< TopologyType > This;
 
   public:
     static This &instance ()
@@ -89,83 +89,11 @@ namespace Dune
       return _instance;
     }
 
-    typedef Impl::Point Topology;
+    unsigned int maxOrder_;
 
-    friend class MonomialBasisSize< Impl::Prism< Topology > >;
-    friend class MonomialBasisSize< Impl::Pyramid< Topology > >;
-
-    mutable unsigned int maxOrder_;
     // sizes_[ k ]: number of basis functions of exactly order k
     mutable unsigned int *sizes_;
-    // numBaseFunctions_[ k ] = sizes_[ 0 ] + ... + sizes_[ k ]
-    mutable unsigned int *numBaseFunctions_;
 
-    MonomialBasisSize ()
-      : maxOrder_( 0 ),
-        sizes_( 0 ),
-        numBaseFunctions_( 0 )
-    {
-      computeSizes( 2 );
-    }
-
-    ~MonomialBasisSize ()
-    {
-      delete[] sizes_;
-      delete[] numBaseFunctions_;
-    }
-
-    unsigned int operator() ( const unsigned int order ) const
-    {
-      return numBaseFunctions_[ order ];
-    }
-
-    unsigned int maxOrder () const
-    {
-      return maxOrder_;
-    }
-
-    void computeSizes ( unsigned int order ) const
-    {
-      if (order <= maxOrder_)
-        return;
-
-      maxOrder_ = order;
-
-      delete [] sizes_;
-      delete [] numBaseFunctions_;
-      sizes_            = new unsigned int [ order+1 ];
-      numBaseFunctions_ = new unsigned int [ order+1 ];
-
-      sizes_[ 0 ] = 1;
-      numBaseFunctions_[ 0 ] = 1;
-      for( unsigned int k = 1; k <= order; ++k )
-      {
-        sizes_[ k ]            = 0;
-        numBaseFunctions_[ k ] = 1;
-      }
-    }
-  };
-
-  template< class BaseTopology >
-  class MonomialBasisSize< Impl::Prism< BaseTopology > >
-  {
-    typedef MonomialBasisSize< Impl::Prism< BaseTopology > > This;
-
-  public:
-    static This &instance ()
-    {
-      static This _instance;
-      return _instance;
-    }
-
-    typedef Impl::Prism< BaseTopology > Topology;
-
-    friend class MonomialBasisSize< Impl::Prism< Topology > >;
-    friend class MonomialBasisSize< Impl::Pyramid< Topology > >;
-
-    mutable unsigned int maxOrder_;
-    // sizes_[ k ]: number of basis functions of exactly order k
-    mutable unsigned int *sizes_;
     // numBaseFunctions_[ k ] = sizes_[ 0 ] + ... + sizes_[ k ]
     mutable unsigned int *numBaseFunctions_;
 
@@ -193,7 +121,7 @@ namespace Dune
       return maxOrder_;
     }
 
-    void computeSizes ( unsigned int order ) const
+    void computeSizes ( unsigned int order )
     {
       if (order <= maxOrder_)
         return;
@@ -205,93 +133,32 @@ namespace Dune
       sizes_            = new unsigned int[ order+1 ];
       numBaseFunctions_ = new unsigned int[ order+1 ];
 
-      MonomialBasisSize<BaseTopology> &baseBasis =
-        MonomialBasisSize<BaseTopology>::instance();
-      baseBasis.computeSizes( order );
-      const unsigned int *const baseSizes = baseBasis.sizes_;
-      const unsigned int *const baseNBF   = baseBasis.numBaseFunctions_;
+      constexpr auto dim = TopologyType::dimension;
 
       sizes_[ 0 ] = 1;
-      numBaseFunctions_[ 0 ] = 1;
       for( unsigned int k = 1; k <= order; ++k )
+        sizes_[ k ] = 0;
+
+      std::fill(numBaseFunctions_, numBaseFunctions_+order+1, 1);
+
+      for( int codim=dim-1; codim>=0; codim--)
       {
-        sizes_[ k ]            = baseNBF[ k ] + k*baseSizes[ k ];
-        numBaseFunctions_[ k ] = numBaseFunctions_[ k-1 ] + sizes_[ k ];
-      }
-    }
-  };
-
-  template< class BaseTopology >
-  class MonomialBasisSize< Impl::Pyramid< BaseTopology > >
-  {
-    typedef MonomialBasisSize< Impl::Pyramid< BaseTopology > > This;
-
-  public:
-    static This &instance ()
-    {
-      static This _instance;
-      return _instance;
-    }
-
-    typedef Impl::Pyramid< BaseTopology > Topology;
-
-    friend class MonomialBasisSize< Impl::Prism< Topology > >;
-    friend class MonomialBasisSize< Impl::Pyramid< Topology > >;
-
-    mutable unsigned int maxOrder_;
-    // sizes_[ k ]: number of basis functions of exactly order k
-    mutable unsigned int *sizes_;
-    // numBaseFunctions_[ k ] = sizes_[ 0 ] + ... + sizes_[ k ]
-    mutable unsigned int *numBaseFunctions_;
-
-    MonomialBasisSize ()
-      : maxOrder_( 0 ),
-        sizes_( 0 ),
-        numBaseFunctions_( 0 )
-    {
-      computeSizes( 2 );
-    }
-
-    ~MonomialBasisSize ()
-    {
-      delete[] sizes_;
-      delete[] numBaseFunctions_;
-    }
-
-    unsigned int operator() ( const unsigned int order ) const
-    {
-      return numBaseFunctions_[ order ];
-    }
-
-    unsigned int maxOrder() const
-    {
-      return maxOrder_;
-    }
-
-    void computeSizes ( unsigned int order ) const
-    {
-      if (order <= maxOrder_)
-        return;
-
-      maxOrder_ = order;
-
-      delete[] sizes_;
-      delete[] numBaseFunctions_;
-      sizes_            = new unsigned int[ order+1 ];
-      numBaseFunctions_ = new unsigned int[ order+1 ];
-
-      MonomialBasisSize<BaseTopology> &baseBasis =
-        MonomialBasisSize<BaseTopology>::instance();
-
-      baseBasis.computeSizes( order );
-
-      const unsigned int *const baseNBF = baseBasis.numBaseFunctions_;
-      sizes_[ 0 ] = 1;
-      numBaseFunctions_[ 0 ] = 1;
-      for( unsigned int k = 1; k <= order; ++k )
-      {
-        sizes_[ k ]            = baseNBF[ k ];
-        numBaseFunctions_[ k ] = numBaseFunctions_[ k-1 ] + sizes_[ k ];
+        if (Impl::isPrism(TopologyType::id,dim,codim))
+        {
+          for( unsigned int k = 1; k <= order; ++k )
+          {
+            sizes_[ k ]            = numBaseFunctions_[ k ] + k*sizes_[ k ];
+            numBaseFunctions_[ k ] = numBaseFunctions_[ k-1 ] + sizes_[ k ];
+          }
+        }
+        else
+        {
+          for( unsigned int k = 1; k <= order; ++k )
+          {
+            sizes_[ k ]            = numBaseFunctions_[ k ];
+            numBaseFunctions_[ k ] = numBaseFunctions_[ k-1 ] + sizes_[ k ];
+          }
+        }
       }
     }
   };

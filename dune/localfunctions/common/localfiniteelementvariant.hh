@@ -200,6 +200,27 @@ namespace Impl {
 
 } // namespace Impl
 
+
+  /**
+   * \brief Type erasure class for wrapping LocalFiniteElement classes
+   *
+   * This is a type erasure wrapper class for types implementing the
+   * LocalFiniteElement interface. The types of the LocalFiniteElement
+   * implementations that this class can hold have to be provided as
+   * template parameter. The implementation is based on Std::variant
+   * which is either std::variant or a drop-in replacement if the former is
+   * not available. The LocalBasisTraits are extracted from the implementation
+   * provided as first template parameter. The other implementations are
+   * required to be compatible with this one.
+   *
+   * Notice that this prepends Std::monostate to the Implementations
+   * list for the internally stored Std::variant such that
+   * LocalFiniteElementVariant can be empty and is default-constructible.
+   * As a consequence providing Std::monostate manually to
+   * LocalFiniteElementVariant is neither nesseccary noreallowed.
+   *
+   * \tparam Implementations List of supported LocalFiniteElement implementations
+   */
   template<class... Implementations>
   class LocalFiniteElementVariant
   {
@@ -230,10 +251,22 @@ namespace Impl {
 
   public:
 
+    /**
+     * \brief Export LocalFiniteElementTraits
+     */
     using Traits = typename Dune::LocalFiniteElementTraits<LocalBasis, LocalCoefficients, LocalInterpolation>;
 
+    /**
+     * \brief Construct empty LocalFiniteElementVariant
+     */
     LocalFiniteElementVariant() = default;
 
+    /**
+     * \brief Construct LocalFiniteElementVariant
+     *
+     * The created LocalFiniteElementVariant will store a
+     * copy of the provided implementation.
+     */
     template<class Implementation,
       std::enable_if_t<Std::disjunction<std::is_same<std::decay_t<Implementation>, Implementations>...>::value, int> = 0>
     LocalFiniteElementVariant(Implementation&& impl) :
@@ -242,18 +275,27 @@ namespace Impl {
       updateMembers();
     }
 
+    /**
+     * \brief Copy constructor
+     */
     LocalFiniteElementVariant(const LocalFiniteElementVariant& other) :
       impl_(other.impl_)
     {
       updateMembers();
     }
 
+    /**
+     * \brief Move constructor
+     */
     LocalFiniteElementVariant(LocalFiniteElementVariant&& other) :
       impl_(std::move(other.impl_))
     {
       updateMembers();
     }
 
+    /**
+     * \brief Copy assignment
+     */
     LocalFiniteElementVariant& operator=(const LocalFiniteElementVariant& other)
     {
       impl_ = other.impl_;
@@ -261,16 +303,25 @@ namespace Impl {
       return *this;
     }
 
+    /**
+     * \brief Provide access to LocalBasis implementation of this LocalFiniteElement
+     */
     const typename Traits::LocalBasisType& localBasis() const
     {
       return localBasis_;
     }
 
+    /**
+     * \brief Provide access to LocalCoefficients implementation of this LocalFiniteElement
+     */
     const typename Traits::LocalCoefficientsType& localCoefficients() const
     {
       return localCoefficients_;
     }
 
+    /**
+     * \brief Provide access to LocalInterpolation implementation of this LocalFiniteElement
+     */
     const typename Traits::LocalInterpolationType& localInterpolation() const
     {
       return localInterpolation_;
@@ -284,6 +335,9 @@ namespace Impl {
       return size_;
     }
 
+    /**
+     * \brief Number of shape functions
+     */
     constexpr GeometryType type() const
     {
       // We can't use visitIf since we have to return something
@@ -303,6 +357,10 @@ namespace Impl {
      * This allows to use Std::visit on a higher level
      * which allows to avoid the indirection of the
      * Std::variant - polymorphism inside the visitor code.
+     * Notice that the provided Std::variant contains
+     * Std::monostate in its type list. Hence any
+     * visitor used to access the variant has to be
+     * Std::monostate-aware.
      */
     const auto& variant() const
     {

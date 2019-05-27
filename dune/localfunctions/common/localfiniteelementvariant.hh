@@ -262,6 +262,12 @@ namespace Impl {
     LocalFiniteElementVariant() = default;
 
     /**
+     * \brief Construct empty LocalFiniteElementVariant
+     */
+    LocalFiniteElementVariant(const Std::monostate& monostate)
+    {}
+
+    /**
      * \brief Construct LocalFiniteElementVariant
      *
      * The created LocalFiniteElementVariant will store a

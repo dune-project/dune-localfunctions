@@ -152,6 +152,9 @@ public:
   /** \brief Copy constructor */
   LagrangeLocalFiniteElementCache(const LagrangeLocalFiniteElementCache& other) = default;
 
+  /** \brief Move constructor */
+  LagrangeLocalFiniteElementCache(LagrangeLocalFiniteElementCache&& other) = default;
+
   /** \brief Get the Lagrange LocalFiniteElement for the given GeometryType object
    *
    * \throws Dune::RangeError if gt has incorrect dimension

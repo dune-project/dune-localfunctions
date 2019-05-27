@@ -216,14 +216,14 @@ namespace Impl {
    * list for the internally stored Std::variant such that
    * LocalFiniteElementVariant can be empty and is default-constructible.
    * As a consequence providing Std::monostate manually to
-   * LocalFiniteElementVariant is neither nesseccary nore allowed.
+   * LocalFiniteElementVariant is neither necessary nor allowed.
    * Access to the stored implementation is internally implemented
    * using Std::visit(). To avoid multiple trivial Std::visit()
    * calls, the results of size(), order(), and type() are cached
    * on creation and assignment.
    *
    * In empty state accessing any method beyond operator bool(), variant(),
-   * or assigment leads to undefined behaviour.
+   * or assignment leads to undefined behavior.
    *
    * The LocalBasisTraits are extracted from the implementation
    * provided as first template parameter. The other implementations are

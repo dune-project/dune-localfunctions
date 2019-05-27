@@ -207,17 +207,27 @@ namespace Impl {
    * This is a type erasure wrapper class for types implementing the
    * LocalFiniteElement interface. The types of the LocalFiniteElement
    * implementations that this class can hold have to be provided as
-   * template parameter. The implementation is based on Std::variant
-   * which is either std::variant or a drop-in replacement if the former is
-   * not available. The LocalBasisTraits are extracted from the implementation
-   * provided as first template parameter. The other implementations are
-   * required to be compatible with this one.
+   * template parameter.
    *
+   * The implementation is based on Std::variant
+   * which is either std::variant or a drop-in replacement if the former is
+   * not available.
    * Notice that this prepends Std::monostate to the Implementations
    * list for the internally stored Std::variant such that
    * LocalFiniteElementVariant can be empty and is default-constructible.
    * As a consequence providing Std::monostate manually to
-   * LocalFiniteElementVariant is neither nesseccary noreallowed.
+   * LocalFiniteElementVariant is neither nesseccary nore allowed.
+   * Access to the stored implementation is internally implemented
+   * using Std::visit(). To avoid multiple trivial Std::visit()
+   * calls, the results of size(), order(), and type() are cached
+   * on creation and assignment.
+   *
+   * In empty state accessing any method beyond operator bool(), variant(),
+   * or assigment leads to undefined behaviour.
+   *
+   * The LocalBasisTraits are extracted from the implementation
+   * provided as first template parameter. The other implementations are
+   * required to be compatible with this one.
    *
    * \tparam Implementations List of supported LocalFiniteElement implementations
    */
@@ -241,11 +251,13 @@ namespace Impl {
             localCoefficients_ = LocalCoefficients();
             localInterpolation_ = LocalInterpolation();
             size_ = 0;
+            geometryType_ = GeometryType{};
           }, [&](auto&& impl) {
             localBasis_ = LocalBasis(impl.localBasis());
             localCoefficients_ = LocalCoefficients(impl.localCoefficients());
             localInterpolation_ = LocalInterpolation(impl.localInterpolation());
             size_ = impl.size();
+            geometryType_ = impl.type();
           }), impl_);
     }
 
@@ -346,15 +358,7 @@ namespace Impl {
      */
     constexpr GeometryType type() const
     {
-      // We can't use visitIf since we have to return something
-      // even for a monostate value. There seems to be a bug
-      // in gcc-5 and gcc-6 letting them fail to compile the
-      // following code if we drop the reference capture [&]
-      // for the first overload.
-      int dummyCapture=0;
-      return Std::visit(overload(
-          [dummyCapture](const Dune::Std::monostate&) { return GeometryType{};},
-          [dummyCapture](const auto& fe) { return fe.type(); }), impl_);
+      return geometryType_;
     }
 
     /**
@@ -386,6 +390,7 @@ namespace Impl {
   private:
     Std::variant<Std::monostate, Implementations...> impl_;
     std::size_t size_;
+    GeometryType geometryType_;
     LocalBasis localBasis_;
     LocalCoefficients localCoefficients_;
     LocalInterpolation localInterpolation_;

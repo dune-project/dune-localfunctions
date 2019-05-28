@@ -984,7 +984,7 @@ lower dimensional grids in a higher dimensional world, since then the Jacobian
 is no longer quadratic and has no determinant.
 
 The reason why the information about the vertex ids is not enough is roughly
-that to construct the normal orientation there is alway some kind of rotation
+that to construct the normal orientation there is always some kind of rotation
 involved.  In 2D the codimension 1 sub-entities are edges.  We can obtain a
 normal orientation by rotating the tangential orientation by 90°.  To get a
 consistent result however, this rotation must be done in the global coordinate
@@ -1130,7 +1130,7 @@ The reason to mandate copy-construction is as follows: Up to now with local
 finite elements \modulename{dune-pdelab} used the class {\tt FiniteElementMap}
 as a kind of finite element factory.  If the finite element was required in
 different variants for a given grid (i.e.\ because normal continuity was
-required for Raviar-Thomas elements), the {\tt FiniteElementMap} would store
+required for Raviart-Thomas elements), the {\tt FiniteElementMap} would store
 all the variants internally and return a reference to the correct variant upon
 request.  Since global-valued finite elements depend on the geometry of the
 grid element, this trick is no longer useful, especially if you plan to modify
@@ -1330,8 +1330,6 @@ coefficients class of the local finite element.
 If there is some dof-matching required for common sub-entities of neighbouring
 elements however, and this dof-matching can be done entirely by reordering the
 dofs on the sub-entity, then the coefficients class is the place to do it.
-
-\section{Appendix: List of Available Elements}
 
 
 

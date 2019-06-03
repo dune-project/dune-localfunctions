@@ -6,6 +6,7 @@ install(FILES
   localkey.hh
   localfiniteelementtraits.hh
   localfiniteelementvariant.hh
+  localfiniteelementvariantcache.hh
   localtoglobaladaptors.hh
   virtualinterface.hh
   virtualwrappers.hh

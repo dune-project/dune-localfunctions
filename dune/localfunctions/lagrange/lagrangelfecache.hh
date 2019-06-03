@@ -6,8 +6,6 @@
 #include <tuple>
 #include <utility>
 
-#include <dune/common/std/type_traits.hh>
-
 #include <dune/geometry/type.hh>
 #include <dune/geometry/typeindex.hh>
 
@@ -30,8 +28,9 @@ namespace Impl {
   // Provide implemented Lagrange local finite elements
 
   template<class D, class R, std::size_t dim, std::size_t order>
-  struct ImplementedLagrangeFiniteElements : public LocalGeometryTypeIndex
+  struct ImplementedLagrangeFiniteElements : public FixedDimLocalGeometryTypeIndex<dim>
   {
+    using FixedDimLocalGeometryTypeIndex<dim>::index;
     static auto getImplementations()
     {
       return std::make_tuple(
@@ -42,8 +41,9 @@ namespace Impl {
   };
 
   template<class D, class R, std::size_t dim>
-  struct ImplementedLagrangeFiniteElements<D,R,dim,0> : public LocalGeometryTypeIndex
+  struct ImplementedLagrangeFiniteElements<D,R,dim,0> : public FixedDimLocalGeometryTypeIndex<dim>
   {
+    using FixedDimLocalGeometryTypeIndex<dim>::index;
     static auto getImplementations()
     {
       return std::make_tuple(
@@ -55,8 +55,9 @@ namespace Impl {
   };
 
   template<class D, class R>
-  struct ImplementedLagrangeFiniteElements<D,R,3,0> : public LocalGeometryTypeIndex
+  struct ImplementedLagrangeFiniteElements<D,R,3,0> : public FixedDimLocalGeometryTypeIndex<3>
   {
+    using FixedDimLocalGeometryTypeIndex<3>::index;
     static auto getImplementations()
     {
       return std::make_tuple(
@@ -69,8 +70,9 @@ namespace Impl {
   };
 
   template<class D, class R>
-  struct ImplementedLagrangeFiniteElements<D,R,3,1> : public LocalGeometryTypeIndex
+  struct ImplementedLagrangeFiniteElements<D,R,3,1> : public FixedDimLocalGeometryTypeIndex<3>
   {
+    using FixedDimLocalGeometryTypeIndex<3>::index;
     static auto getImplementations()
     {
       return std::make_tuple(
@@ -83,8 +85,9 @@ namespace Impl {
   };
 
   template<class D, class R>
-  struct ImplementedLagrangeFiniteElements<D,R,3,2> : public LocalGeometryTypeIndex
+  struct ImplementedLagrangeFiniteElements<D,R,3,2> : public FixedDimLocalGeometryTypeIndex<3>
   {
+    using FixedDimLocalGeometryTypeIndex<3>::index;
     static auto getImplementations()
     {
       return std::make_tuple(

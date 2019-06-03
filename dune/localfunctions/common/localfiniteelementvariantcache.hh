@@ -13,12 +13,31 @@
 #include <dune/common/typelist.hh>
 #include <dune/common/hybridutilities.hh>
 
+#include <dune/geometry/type.hh>
+#include <dune/geometry/typeindex.hh>
+
 #include <dune/localfunctions/common/localfiniteelementvariant.hh>
 
 
 namespace Dune {
 
+namespace Impl {
 
+  // This class provides the index method of LocalGeometryTypeIndex
+  // but throws a Dune::RangeError if the dimension does not match.
+  // This can be helpful to catch errors in a LocalFiniteElementVariantCache
+  // instance based on dimension specific GeometryType indices.
+  template<std::size_t dim>
+  struct FixedDimLocalGeometryTypeIndex {
+    inline static std::size_t index(const GeometryType &gt)
+    {
+      if (gt.dim() != dim)
+        DUNE_THROW(Dune::RangeError, "Asking for dim=" << dim << " specific index of GeometryType with dimension " << gt.dim());
+      return LocalGeometryTypeIndex::index(gt);
+    }
+  };
+
+} // end namespace Impl
 
 /** \brief A cache storing a compile time selection of local finite element implementations
  *

@@ -1,5 +1,8 @@
 # Master (will become release 2.7)
 
+* The header `lagrange.hh` now includes all headers of all Lagrange implementations,
+  not just the ones with run-time order.
+
 * Add support for `operator()` syntax to `interpolate()`. All `interpolate()`
   implementations now support functions `f` that either support `f.evaluate(x,y)`
   or `y = f(x)`.

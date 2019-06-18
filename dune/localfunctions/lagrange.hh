@@ -1,14 +1,40 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_LAGRANGEFINITEELEMENT_HH
-#define DUNE_LAGRANGEFINITEELEMENT_HH
+#ifndef DUNE_LOCALFUNCTIONS_LAGRANGE_HH
+#define DUNE_LOCALFUNCTIONS_LAGRANGE_HH
 
+/** \file
+ * \brief Convenience header that includes all implementations of Lagrange finite elements
+ */
+
+// Headers for Lagrange elements with run-time order
 #include <dune/localfunctions/utility/localfiniteelement.hh>
 #include <dune/localfunctions/utility/dglocalcoefficients.hh>
 
 #include <dune/localfunctions/lagrange/lagrangecoefficients.hh>
 #include <dune/localfunctions/lagrange/interpolation.hh>
 #include <dune/localfunctions/lagrange/lagrangebasis.hh>
+
+// Headers for Lagrange elements with compile-time order
+#include <dune/localfunctions/lagrange/p0.hh>
+#include <dune/localfunctions/lagrange/p1.hh>
+#include <dune/localfunctions/lagrange/p2.hh>
+#include <dune/localfunctions/lagrange/p23d.hh>
+#include <dune/localfunctions/lagrange/pk.hh>
+#include <dune/localfunctions/lagrange/pk1d.hh>
+#include <dune/localfunctions/lagrange/pk2d.hh>
+#include <dune/localfunctions/lagrange/pk3d.hh>
+#include <dune/localfunctions/lagrange/pq22d.hh>
+
+#include <dune/localfunctions/lagrange/q1.hh>
+#include <dune/localfunctions/lagrange/q2.hh>
+#include <dune/localfunctions/lagrange/qk.hh>
+
+#include <dune/localfunctions/lagrange/prismp1.hh>
+#include <dune/localfunctions/lagrange/prismp2.hh>
+#include <dune/localfunctions/lagrange/pyramidp1.hh>
+#include <dune/localfunctions/lagrange/pyramidp2.hh>
+
 
 namespace Dune
 {
@@ -63,4 +89,4 @@ namespace Dune
   };
 }
 
-#endif // #ifndef DUNE_LAGRANGEFINITEELEMENT_HH
+#endif // #ifndef DUNE_LOCALFUNCTIONS_LAGRANGE_HH

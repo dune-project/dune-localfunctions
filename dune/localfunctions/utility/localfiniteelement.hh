@@ -95,7 +95,9 @@ namespace Dune
     }
 
     /** \todo Please doc me !
+     * \deprecated Deprecated in dune-localfunctions 2.7.  Use type().id() instead!
      */
+    DUNE_DEPRECATED_MSG("Use type().id() instead!")
     unsigned int topologyId () const
     {
       return topologyId_;

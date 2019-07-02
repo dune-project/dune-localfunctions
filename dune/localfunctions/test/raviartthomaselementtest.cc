@@ -8,6 +8,7 @@
 #include <dune/localfunctions/raviartthomas/raviartthomassimplex.hh>
 #include <dune/localfunctions/raviartthomas/raviartthomascube.hh>
 #include <dune/localfunctions/raviartthomas/raviartthomas02d.hh>
+#include <dune/localfunctions/raviartthomas/raviartthomas12d.hh>
 
 #include <dune/localfunctions/test/test-localfe.hh>
 
@@ -45,8 +46,14 @@ int main(int argc, char** argv)
   Dune::RT0Cube2DLocalFiniteElement<double,double> rt0cube2dlfemDedicated;
   TEST_FE(rt0cube2dlfemDedicated);
 
+  Dune::RT1Cube2DLocalFiniteElement<double,double> rt1cube2dlfemDedicated;
+  TEST_FE(rt1cube2dlfemDedicated);
+
   Dune::RT02DLocalFiniteElement<double,double> rt02dlfemDedicated;
   TEST_FE(rt02dlfemDedicated);
+
+  Dune::RT12DLocalFiniteElement<double,double> rt12dlfemDedicated;
+  TEST_FE(rt12dlfemDedicated);
 
   return success ? 0 : 1;
 }

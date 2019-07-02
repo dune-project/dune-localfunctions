@@ -29,18 +29,12 @@ namespace Dune
     typedef LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,2,Dune::FieldVector<R,2>,
         Dune::FieldMatrix<R,2,2> > Traits;
 
-    //! \brief Standard constructor
-    RT2Cube2DLocalBasis ()
-    {
-      sign0 = sign1 = sign2 = sign3 = 1.0;
-    }
-
     /**
      * \brief Make set number s, where 0 <= s < 16
      *
      * \param s Edge orientation indicator
      */
-    RT2Cube2DLocalBasis (unsigned int s)
+    RT2Cube2DLocalBasis (unsigned int s = 0)
     {
       sign0 = sign1 = sign2 = sign3 = 1.0;
       if (s & 1)

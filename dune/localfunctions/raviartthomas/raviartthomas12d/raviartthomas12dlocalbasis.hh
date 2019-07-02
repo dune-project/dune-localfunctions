@@ -28,18 +28,13 @@ namespace Dune
   public:
     typedef LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,2,Dune::FieldVector<R,2>,
         Dune::FieldMatrix<R,2,2> > Traits;
-    //! \brief Standard constructor
-    RT12DLocalBasis ()
-    {
-      sign0 = sign1 = sign2 = 1.0;
-    }
 
     /**
      * \brief Make set number s, where 0 <= s < 8
      *
      * \param s Edge orientation indicator
      */
-    RT12DLocalBasis (unsigned int s)
+    RT12DLocalBasis (unsigned int s = 0)
     {
       sign0 = sign1 = sign2 = 1.0;
       if (s & 1)

@@ -25,18 +25,12 @@ namespace Dune
   {
 
   public:
-    //! \brief Standard constructor
-    RT1Cube2DLocalInterpolation ()
-    {
-      sign0 = sign1 = sign2 = sign3 = 1.0;
-    }
-
     /**
      * \brief Make set number s, where 0 <= s < 16
      *
      * \param s Edge orientation indicator
      */
-    RT1Cube2DLocalInterpolation (unsigned int s)
+    RT1Cube2DLocalInterpolation (unsigned int s = 0)
     {
       sign0 = sign1 = sign2 = sign3 = 1.0;
       if (s & 1)

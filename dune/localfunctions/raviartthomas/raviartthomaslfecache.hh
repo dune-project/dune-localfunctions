@@ -18,7 +18,6 @@
 #include <dune/geometry/typeindex.hh>
 
 #include <dune/localfunctions/common/localfiniteelementvariant.hh>
-#include <dune/localfunctions/common/uniquetypes.hh>
 #include <dune/localfunctions/raviartthomas.hh>
 
 

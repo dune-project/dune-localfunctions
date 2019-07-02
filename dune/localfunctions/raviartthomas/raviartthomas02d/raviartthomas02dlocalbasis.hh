@@ -26,14 +26,8 @@ namespace Dune
     typedef LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,2,Dune::FieldVector<R,2>,
         Dune::FieldMatrix<R,2,2> > Traits;
 
-    //! \brief Standard constructor
-    RT02DLocalBasis ()
-    {
-      std::fill(sign_.begin(), sign_.end(), 1.0);
-    }
-
-    //! \brief Make set numer s, where 0<=s<4
-    RT02DLocalBasis (std::bitset<3> s)
+    //! \brief Make set number s, where 0 <= s < 8
+    RT02DLocalBasis (std::bitset<3> s = 0)
     {
       for (int i=0; i<3; i++)
         sign_[i] = s[i] ? -1.0 : 1.0;

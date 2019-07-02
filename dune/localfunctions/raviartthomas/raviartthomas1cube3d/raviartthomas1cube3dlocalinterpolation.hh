@@ -23,18 +23,13 @@ namespace Dune
   {
 
   public:
-    //! \brief Standard constructor
-    RT1Cube3DLocalInterpolation ()
-    {
-      sign0 = sign1 = sign2 = sign3 = sign4 = sign5 = 1.0;
-    }
 
     /**
      * \brief Make set number s, where 0 <= s < 64
      *
      * \param s Edge orientation indicator
      */
-    RT1Cube3DLocalInterpolation (unsigned int s)
+    RT1Cube3DLocalInterpolation (unsigned int s = 0)
     {
       sign0 = sign1 = sign2 = sign3 = sign4 = sign5 = 1.0;
       if (s & 1)

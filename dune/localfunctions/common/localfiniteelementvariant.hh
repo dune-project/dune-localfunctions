@@ -322,6 +322,29 @@ namespace Impl {
     }
 
     /**
+     * \brief Move assignment
+     */
+    LocalFiniteElementVariant& operator=(LocalFiniteElementVariant&& other)
+    {
+      impl_ = std::move(other.impl_);
+      updateMembers();
+      return *this;
+    }
+
+    /**
+     * \brief Assignment from implementation
+     */
+    template<class Implementation,
+      std::enable_if_t<Std::disjunction<std::is_same<std::decay_t<Implementation>, Implementations>...>::value, int> = 0>
+    LocalFiniteElementVariant& operator=(Implementation&& impl)
+    {
+      impl_ = std::forward<Implementation>(impl);
+      updateMembers();
+      return *this;
+    }
+
+
+    /**
      * \brief Provide access to LocalBasis implementation of this LocalFiniteElement
      */
     const typename Traits::LocalBasisType& localBasis() const

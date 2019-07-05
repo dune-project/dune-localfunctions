@@ -8,6 +8,7 @@
 #include <dune/localfunctions/raviartthomas/raviartthomassimplex.hh>
 #include <dune/localfunctions/raviartthomas/raviartthomascube.hh>
 #include <dune/localfunctions/raviartthomas/raviartthomas02d.hh>
+#include <dune/localfunctions/raviartthomas/raviartthomaslfecache.hh>
 
 #include <dune/localfunctions/test/test-localfe.hh>
 
@@ -47,6 +48,21 @@ int main(int argc, char** argv)
 
   Dune::RT02DLocalFiniteElement<double,double> rt02dlfemDedicated;
   TEST_FE(rt02dlfemDedicated);
+
+  // Test the RaviartThomasLocalFiniteElementCache
+  Dune::RaviartThomasLocalFiniteElementCache<double,double,2,0> lagrangeLFECache;
+  TEST_FE(lagrangeLFECache.get(Dune::GeometryTypes::simplex(2)));
+  TEST_FE(lagrangeLFECache.get(Dune::GeometryTypes::cube(2)));
+
+  // Test whether asking the cache for an element of the wrong dimension throws an exception
+  bool lagrangeLFESuccess = false;
+  try {
+    auto doesntExist = lagrangeLFECache.get(Dune::GeometryTypes::simplex(1));
+  } catch (Dune::Exception& e)
+  {
+    lagrangeLFESuccess = true;
+  }
+  success &= lagrangeLFESuccess;
 
   return success ? 0 : 1;
 }

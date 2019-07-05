@@ -20,5 +20,6 @@ install(FILES
   raviartthomas3cube2d.hh
   raviartthomas4cube2d.hh
   raviartthomascube.hh
+  raviartthomaslfecache.hh
   raviartthomassimplex.hh
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions/raviartthomas)

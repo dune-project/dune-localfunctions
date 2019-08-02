@@ -3,12 +3,7 @@
 #ifndef DUNE_P1LOCALFINITEELEMENT_HH
 #define DUNE_P1LOCALFINITEELEMENT_HH
 
-#include <dune/geometry/type.hh>
-
-#include <dune/localfunctions/common/localfiniteelementtraits.hh>
-#include "p1/p1localbasis.hh"
-#include "p1/p1localcoefficients.hh"
-#include "p1/p1localinterpolation.hh"
+#include <dune/localfunctions/lagrange/lagrangesimplex.hh>
 
 namespace Dune
 {
@@ -17,62 +12,11 @@ namespace Dune
       \tparam D Domain data type
       \tparam R Range data type
       \tparam dim Dimension of the simplex
+
+      \deprecated This class is obsolete. Please use LagrangeSimplexLocalFiniteElement instead!
    */
   template<class D, class R, int dim>
-  class P1LocalFiniteElement
-  {
-  public:
-    /** \todo Please doc me !
-     */
-    typedef LocalFiniteElementTraits<P1LocalBasis<D,R,dim>,P1LocalCoefficients<dim>,
-        P1LocalInterpolation<dim,P1LocalBasis<D,R,dim> > > Traits;
-
-    /** \todo Please doc me !
-     */
-    P1LocalFiniteElement ()
-    {}
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalBasisType& localBasis () const
-    {
-      return basis;
-    }
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalCoefficientsType& localCoefficients () const
-    {
-      return coefficients;
-    }
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalInterpolationType& localInterpolation () const
-    {
-      return interpolation;
-    }
-
-    /** \brief Number of shape functions in this finite element */
-    unsigned int size () const
-    {
-      return basis.size();
-    }
-
-    /** \todo Please doc me !
-     */
-    static constexpr GeometryType type ()
-    {
-      return GeometryTypes::simplex(dim);
-    }
-
-  private:
-    P1LocalBasis<D,R,dim> basis;
-    P1LocalCoefficients<dim> coefficients;
-    P1LocalInterpolation<dim,P1LocalBasis<D,R,dim> > interpolation;
-  };
-
-
+  using P1LocalFiniteElement = LagrangeSimplexLocalFiniteElement<D,R,dim,1>;
 
 }
 

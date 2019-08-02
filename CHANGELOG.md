@@ -23,6 +23,13 @@
 * Introduce a convenience header `hierarchical.hh` that includes
   all hierarchical FE implementations.
 
+* Introduce a new class `LagrangeSimplexLocalFiniteElement`, which implements
+  Lagrange finite elements on simplices with compile-time dimension and order.
+  It currently does not cover more general dimension/order situations than
+  what is already available in dune-localfunctions, but it gathers the
+  plethora of different Pk3DNodal, PkNodal, P1Nodal, etc implementations
+  under one single name.
+
 # Release 2.6
 
 *  The `diffOrder` value has disappeared from the `LocalBasisTraits` class.

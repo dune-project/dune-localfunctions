@@ -18,6 +18,7 @@ install(FILES
   lagrangebasis.hh
   lagrangecoefficients.hh
   lagrangelfecache.hh
+  lagrangesimplex.hh
   p0.hh
   p1.hh
   p23d.hh

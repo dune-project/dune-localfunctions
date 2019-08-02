@@ -1,5 +1,4 @@
 add_subdirectory(p0)
-add_subdirectory(p1)
 add_subdirectory(p23d)
 add_subdirectory(pk1d)
 add_subdirectory(pk2d)

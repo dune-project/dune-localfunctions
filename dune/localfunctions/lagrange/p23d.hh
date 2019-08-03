@@ -3,72 +3,20 @@
 #ifndef DUNE_P2_3DLOCALFINITEELEMENT_HH
 #define DUNE_P2_3DLOCALFINITEELEMENT_HH
 
-#include <dune/geometry/type.hh>
-
-#include <dune/localfunctions/common/localfiniteelementtraits.hh>
-#include "p23d/p23dlocalbasis.hh"
-#include "p23d/p23dlocalcoefficients.hh"
-#include "p23d/p23dlocalinterpolation.hh"
+#include <dune/localfunctions/lagrange/lagrangesimplex.hh>
 
 namespace Dune
 {
 
-  /** \todo Please doc me !
+  /** \brief Second-order Lagrange local finite element on the reference tetrahedron
+   *
+   * \tparam D Number type used for domain coordinates
+   * \tparam R Number type used for shape function values
+   *
+   * \deprecated This class is obsolete. Please use LagrangeSimplexLocalFiniteElement instead!
    */
   template<class D, class R>
-  class P23DLocalFiniteElement
-  {
-  public:
-    /** \todo Please doc me !
-     */
-    typedef LocalFiniteElementTraits<P23DLocalBasis<D,R>,
-        P23DLocalCoefficients,
-        P23DLocalInterpolation<P23DLocalBasis<D,R> > > Traits;
-
-    /** \todo Please doc me !
-     */
-    P23DLocalFiniteElement ()
-    {}
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalBasisType& localBasis () const
-    {
-      return basis;
-    }
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalCoefficientsType& localCoefficients () const
-    {
-      return coefficients;
-    }
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalInterpolationType& localInterpolation () const
-    {
-      return interpolation;
-    }
-
-    /** \brief Number of shape functions in this finite element */
-    unsigned int size () const
-    {
-      return basis.size();
-    }
-
-    /** \todo Please doc me !
-     */
-    static constexpr GeometryType type ()
-    {
-      return GeometryTypes::tetrahedron;
-    }
-
-  private:
-    P23DLocalBasis<D,R> basis;
-    P23DLocalCoefficients coefficients;
-    P23DLocalInterpolation<P23DLocalBasis<D,R> > interpolation;
-  };
+  using P23DLocalFiniteElement = LagrangeSimplexLocalFiniteElement<D,R,3,2>;
 
 }
 

@@ -9,83 +9,18 @@
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include <dune/localfunctions/common/localtoglobaladaptors.hh>
-#include "pk1d/pk1dlocalbasis.hh"
-#include "pk1d/pk1dlocalcoefficients.hh"
-#include "pk1d/pk1dlocalinterpolation.hh"
+#include <dune/localfunctions/lagrange/lagrangesimplex.hh>
 
 namespace Dune
 {
 
-  /** \todo Please doc me !
+  /** \brief Lagrange finite element on the unit interval with arbitrary compile-time order
+
+      \deprecated This class is obsolete. Please use LagrangeSimplexLocalFiniteElement instead!
    */
   template<class D, class R, unsigned int k>
-  class Pk1DLocalFiniteElement
-  {
-  public:
-    /** \todo Please doc me !
-     */
-    typedef LocalFiniteElementTraits<Pk1DLocalBasis<D,R,k>,
-        Pk1DLocalCoefficients<k>,
-        Pk1DLocalInterpolation<Pk1DLocalBasis<D,R,k> > > Traits;
+  using Pk1DLocalFiniteElement = LagrangeSimplexLocalFiniteElement<D,R,1,k>;
 
-    /** \todo Please doc me !
-     */
-    Pk1DLocalFiniteElement ()
-    {}
-
-    /** \todo Please doc me !
-     */
-    Pk1DLocalFiniteElement (int variant) :
-      coefficients(variant)
-    {}
-
-    /** Constructor for two variants with permuted vertices.
-
-        \param vertexmap The permutation of the vertices.
-     */
-    Pk1DLocalFiniteElement (const unsigned int vertexmap[3]) :
-      coefficients(vertexmap)
-    {}
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalBasisType& localBasis () const
-    {
-      return basis;
-    }
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalCoefficientsType& localCoefficients () const
-    {
-      return coefficients;
-    }
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalInterpolationType& localInterpolation () const
-    {
-      return interpolation;
-    }
-
-    /** \brief Number of shape functions in this finite element */
-    unsigned int size () const
-    {
-      return basis.size();
-    }
-
-    /** \todo Please doc me !
-     */
-    static constexpr GeometryType type ()
-    {
-      return GeometryTypes::line;
-    }
-
-  private:
-    Pk1DLocalBasis<D,R,k> basis;
-    Pk1DLocalCoefficients<k> coefficients;
-    Pk1DLocalInterpolation<Pk1DLocalBasis<D,R,k> > interpolation;
-  };
 
   //! Langrange finite element of arbitrary order on triangles
   /**

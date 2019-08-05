@@ -7,6 +7,7 @@
 
 #include <dune/localfunctions/common/localbasis.hh>
 
+#if 0
 namespace Dune
 {
   /**@ingroup LocalBasisImplementation
@@ -135,4 +136,5 @@ namespace Dune
   };
 
 }
+#endif
 #endif

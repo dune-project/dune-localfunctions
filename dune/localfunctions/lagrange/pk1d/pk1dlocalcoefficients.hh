@@ -9,6 +9,7 @@
 
 #include <dune/localfunctions/common/localkey.hh>
 
+#if 0
 namespace Dune
 {
 
@@ -83,4 +84,5 @@ namespace Dune
 
 }
 
+#endif
 #endif

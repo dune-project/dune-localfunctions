@@ -6,6 +6,7 @@
 #include <vector>
 #include <dune/localfunctions/common/localinterpolation.hh>
 
+#if 0
 namespace Dune
 {
   template<class LB>
@@ -41,5 +42,6 @@ namespace Dune
 
   };
 }
+#endif
 
 #endif

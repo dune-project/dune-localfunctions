@@ -3,30 +3,17 @@
 #ifndef DUNE_P2_LOCALFINITEELEMENT_HH
 #define DUNE_P2_LOCALFINITEELEMENT_HH
 
-#include "pk2d.hh"
-#include "p23d.hh"
+#include <dune/localfunctions/lagrange/lagrangesimplex.hh>
 
 namespace Dune
 {
 
-  /** \todo Please doc me !
+  /** \brief Second-order Lagrange finite element on the reference simplex with compile-time dimension
+
+      \deprecated This class is obsolete. Please use LagrangeSimplexLocalFiniteElement instead!
    */
   template<class D, class R, int d>
-  class P2LocalFiniteElement;
-
-  /** \todo Please doc me !
-   */
-  template<class D, class R>
-  class P2LocalFiniteElement<D, R, 2>
-    : public Pk2DLocalFiniteElement<D, R, 2>
-  {};
-
-  /** \todo Please doc me !
-   */
-  template<class D, class R>
-  class P2LocalFiniteElement<D, R, 3>
-    : public P23DLocalFiniteElement<D, R>
-  {};
+  using P2LocalFiniteElement = LagrangeSimplexLocalFiniteElement<D,R,d,2>;
 
 }
 

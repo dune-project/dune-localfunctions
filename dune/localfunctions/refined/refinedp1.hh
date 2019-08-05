@@ -8,10 +8,8 @@
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include <dune/localfunctions/lagrange/p0.hh>
 
+#include <dune/localfunctions/lagrange/lagrangesimplex.hh>
 #include <dune/localfunctions/refined/refinedp1/refinedp1localbasis.hh>
-#include <dune/localfunctions/lagrange/pk1d/pk1dlocalcoefficients.hh>
-#include <dune/localfunctions/lagrange/pk1d/pk1dlocalinterpolation.hh>
-#include <dune/localfunctions/lagrange/pk1d/pk1dlocalbasis.hh>
 #include <dune/localfunctions/lagrange/pk2d/pk2dlocalcoefficients.hh>
 #include <dune/localfunctions/lagrange/pk2d/pk2dlocalinterpolation.hh>
 #include <dune/localfunctions/lagrange/pk2d/pk2dlocalbasis.hh>
@@ -31,8 +29,8 @@ namespace Dune
     /** \todo Please doc me !
      */
     typedef LocalFiniteElementTraits<RefinedP1LocalBasis<D,R,1>,
-        Pk1DLocalCoefficients<2>,
-        Pk1DLocalInterpolation<Pk1DLocalBasis<D,R,2> > > Traits;
+                                     Impl::LagrangeSimplexLocalCoefficients<1,2>,
+                                     Impl::LagrangeSimplexLocalInterpolation<RefinedP1LocalBasis<D,R,1> > > Traits;
 
     /** \todo Please doc me !
      */
@@ -75,8 +73,8 @@ namespace Dune
 
   private:
     RefinedP1LocalBasis<D,R,1> basis;
-    Pk1DLocalCoefficients<2> coefficients;
-    Pk1DLocalInterpolation<Pk1DLocalBasis<D,R,2> > interpolation;
+    Impl::LagrangeSimplexLocalCoefficients<1,2> coefficients;
+    Impl::LagrangeSimplexLocalInterpolation<RefinedP1LocalBasis<D,R,1> > interpolation;
   };
 
 

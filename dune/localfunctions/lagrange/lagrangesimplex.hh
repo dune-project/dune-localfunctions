@@ -69,8 +69,25 @@ namespace Dune { namespace Impl
         return;
       }
 
+      if (dim==1)
+      {
+        assert(k>=2);
+
+        auto lagrangeNode = [](unsigned int i) { return ((D)i)/k; };
+
+        for (unsigned int i=0; i<size(); i++)
+        {
+          out[i] = 1.0;
+          for (unsigned int alpha=0; alpha<i; alpha++)
+            out[i] *= (x[0]-lagrangeNode(alpha))/(lagrangeNode(i)-lagrangeNode(alpha));
+          for (unsigned int gamma=i+1; gamma<=k; gamma++)
+            out[i] *= (x[0]-lagrangeNode(gamma))/(lagrangeNode(i)-lagrangeNode(gamma));
+        }
+        return;
+      }
+
       if (dim!=3)
-        DUNE_THROW(NotImplemented, "LagrangeSimplexLocalBasis for k>=2 only implemented for dim==3");
+        DUNE_THROW(NotImplemented, "LagrangeSimplexLocalBasis for k>=2 only implemented for dim==1 or dim==3");
 
       typename Traits::DomainType kx = x;
       kx *= k;
@@ -129,6 +146,40 @@ namespace Dune { namespace Impl
           for (unsigned int j=0; j<dim; j++)
             out[i+1][0][j] = (i==j);
 
+        return;
+      }
+
+      // Specialization for dim==1
+      if (dim==1)
+      {
+        auto lagrangeNode = [](unsigned int i) { return ((D)i)/k; };
+
+        for (unsigned int i=0; i<=k; i++)
+        {
+          // x_0 derivative
+          out[i][0][0] = 0.0;
+          R factor=1.0;
+          for (unsigned int a=0; a<i; a++)
+          {
+            R product=factor;
+            for (unsigned int alpha=0; alpha<i; alpha++)
+              product *= (alpha==a) ? 1.0/(lagrangeNode(i)-lagrangeNode(alpha))
+                                    : (x[0]-lagrangeNode(alpha))/(lagrangeNode(i)-lagrangeNode(alpha));
+            for (unsigned int gamma=i+1; gamma<=k; gamma++)
+              product *= (lagrangeNode(gamma)-x[0])/(lagrangeNode(gamma)-lagrangeNode(i));
+            out[i][0][0] += product;
+          }
+          for (unsigned int c=i+1; c<=k; c++)
+          {
+            R product=factor;
+            for (unsigned int alpha=0; alpha<i; alpha++)
+              product *= (x[0]-lagrangeNode(alpha))/(lagrangeNode(i)-lagrangeNode(alpha));
+            for (unsigned int gamma=i+1; gamma<=k; gamma++)
+              product *= (gamma==c) ? -1.0/(lagrangeNode(gamma)-lagrangeNode(i))
+                                    : (lagrangeNode(gamma)-x[0])/(lagrangeNode(gamma)-lagrangeNode(i));
+            out[i][0][0] += product;
+          }
+        }
         return;
       }
 
@@ -261,10 +312,26 @@ namespace Dune { namespace Impl
     LagrangeSimplexLocalCoefficients ()
     : localKeys_(size())
     {
+      if (k==0)
+      {
+        localKeys_[0] = LocalKey(0,0,0);
+        return;
+      }
+
       if (k==1)
       {
         for (std::size_t i=0; i<size(); i++)
           localKeys_[i] = LocalKey(i,dim,0);
+        return;
+      }
+
+      if (dim==1)
+      {
+        // Order is at least 2 here
+        localKeys_[0] = LocalKey(0,1,0);          // vertex dof
+        for (unsigned int i=1; i<k; i++)
+          localKeys_[i] = LocalKey(0,0,i-1);      // element dofs
+        localKeys_.back() = LocalKey(1,1,0);      // vertex dof
         return;
       }
 
@@ -276,7 +343,7 @@ namespace Dune { namespace Impl
         generateLocalKeys(vertexMap);
         return;
       }
-      DUNE_THROW(NotImplemented, "LagrangeSimplexLocalCoefficients only implemented for k==1 or dim==3!");
+      DUNE_THROW(NotImplemented, "LagrangeSimplexLocalCoefficients only implemented for k<=1 or dim==1 or dim==3!");
     }
 
     /** Constructor for variants with permuted vertices
@@ -374,11 +441,20 @@ namespace Dune { namespace Impl
     {
       constexpr auto dim = LocalBasis::Traits::dimDomain;
       constexpr auto k = LocalBasis::order();
+      using D = typename LocalBasis::Traits::DomainFieldType;
 
       typename LocalBasis::Traits::DomainType x;
       auto&& f = Impl::makeFunctionWithCallOperator<typename LocalBasis::Traits::DomainType>(ff);
 
       out.resize(LocalBasis::size());
+
+      // Specialization for zero-order case
+      if (k==0)
+      {
+        auto center = ReferenceElements<D,dim>::simplex().position(0,0);
+        out[0] = f(center);
+        return;
+      }
 
       // Specialization for first-order case
       if (k==1)
@@ -398,10 +474,18 @@ namespace Dune { namespace Impl
         return;
       }
 
-      if (dim!=3)
-        DUNE_THROW(NotImplemented, "LagrangeSimplexLocalInterpolation only implemented for dim==3!");
+      if (dim==1)
+      {
+        for (unsigned int i=0; i<k+1; i++)
+        {
+          x[0] = ((D)i)/k;
+          out[i] = f(x);
+        }
+        return;
+      }
 
-      using D = typename LocalBasis::Traits::DomainFieldType;
+      if (dim!=3)
+        DUNE_THROW(NotImplemented, "LagrangeSimplexLocalInterpolation only implemented for dim==1 or dim==3!");
 
       int n=0;
       for (int i2 = 0; i2 <= (int)k; i2++)

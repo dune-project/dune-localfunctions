@@ -59,7 +59,7 @@ namespace Dune
         Dune::FieldMatrix<R,1,1> > Traits;
 
     //! \brief number of shape functions
-    unsigned int size () const
+    static constexpr unsigned int size ()
     {
       return 3;
     }
@@ -159,7 +159,7 @@ namespace Dune
     /** \brief Polynomial order of the shape functions
         Doesn't really apply: these shape functions are only piecewise linear
      */
-    unsigned int order () const
+    static constexpr unsigned int order ()
     {
       return 1;
     }
@@ -200,7 +200,7 @@ namespace Dune
         Dune::FieldMatrix<R,1,2> > Traits;
 
     //! \brief number of shape functions
-    unsigned int size () const
+    static constexpr unsigned int size ()
     {
       return 6;
     }
@@ -384,7 +384,7 @@ namespace Dune
     /** \brief Polynomial order of the shape functions
         Doesn't really apply: these shape functions are only piecewise linear
      */
-    unsigned int order () const
+    static constexpr unsigned int order ()
     {
       return 1;
     }
@@ -429,7 +429,7 @@ namespace Dune
         Dune::FieldMatrix<R,1,3> > Traits;
 
     //! \brief number of shape functions
-    unsigned int size () const
+    static constexpr unsigned int size ()
     {
       return 10;
     }
@@ -836,7 +836,7 @@ namespace Dune
     /** \brief Polynomial order of the shape functions
      *  Doesn't really apply: these shape functions are only piecewise linear
      */
-    unsigned int order () const
+    static constexpr unsigned int order ()
     {
       return 1;
     }

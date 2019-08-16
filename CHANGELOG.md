@@ -20,6 +20,8 @@
   implementations now support functions `f` that either support `f.evaluate(x,y)`
   or `y = f(x)`.
 
+* Add an implementation of the Crouzeix-Raviart element.
+
 * Introduce a convenience header `hierarchical.hh` that includes
   all hierarchical FE implementations.
 

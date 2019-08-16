@@ -15,6 +15,7 @@ add_subdirectory(utility)
 add_subdirectory(whitney)
 
 install(FILES
+  crouzeixraviart.hh
   dualmortarbasis.hh
   hierarchical.hh
   lagrange.hh

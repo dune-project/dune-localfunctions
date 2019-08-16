@@ -1,5 +1,7 @@
 dune_add_test(SOURCES brezzidouglasmarinielementtest.cc)
 
+dune_add_test(SOURCES crouzeixraviartelementtest.cc)
+
 dune_add_test(SOURCES dualmortarelementtest.cc)
 
 dune_add_test(SOURCES hierarchicalelementtest.cc)

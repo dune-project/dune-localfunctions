@@ -1,5 +1,4 @@
 add_subdirectory(p0)
-add_subdirectory(pk2d)
 add_subdirectory(pk3d)
 add_subdirectory(prismp1)
 add_subdirectory(prismp2)

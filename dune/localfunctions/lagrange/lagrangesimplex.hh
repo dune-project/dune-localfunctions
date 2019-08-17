@@ -67,12 +67,12 @@ namespace Dune { namespace Impl
         return;
       }
 
+      assert(k>=2);
+
+      auto lagrangeNode = [](unsigned int i) { return ((D)i)/k; };
+
       if (dim==1)
       {
-        assert(k>=2);
-
-        auto lagrangeNode = [](unsigned int i) { return ((D)i)/k; };
-
         for (unsigned int i=0; i<size(); i++)
         {
           out[i] = 1.0;
@@ -81,6 +81,25 @@ namespace Dune { namespace Impl
           for (unsigned int gamma=i+1; gamma<=k; gamma++)
             out[i] *= (x[0]-lagrangeNode(gamma))/(lagrangeNode(i)-lagrangeNode(gamma));
         }
+        return;
+      }
+
+      if (dim==2)
+      {
+        int n=0;
+        for (unsigned int j=0; j<=k; j++)
+          for (unsigned int i=0; i<=k-j; i++)
+          {
+            out[n] = 1.0;
+            for (unsigned int alpha=0; alpha<i; alpha++)
+              out[n] *= (x[0]-lagrangeNode(alpha))/(lagrangeNode(i)-lagrangeNode(alpha));
+            for (unsigned int beta=0; beta<j; beta++)
+              out[n] *= (x[1]-lagrangeNode(beta))/(lagrangeNode(j)-lagrangeNode(beta));
+            for (unsigned int gamma=i+j+1; gamma<=k; gamma++)
+              out[n] *= (lagrangeNode(gamma)-x[0]-x[1])/(lagrangeNode(gamma)-lagrangeNode(i)-lagrangeNode(j));
+            n++;
+          }
+
         return;
       }
 
@@ -147,11 +166,11 @@ namespace Dune { namespace Impl
         return;
       }
 
+      auto lagrangeNode = [](unsigned int i) { return ((D)i)/k; };
+
       // Specialization for dim==1
       if (dim==1)
       {
-        auto lagrangeNode = [](unsigned int i) { return ((D)i)/k; };
-
         for (unsigned int i=0; i<=k; i++)
         {
           // x_0 derivative
@@ -178,6 +197,78 @@ namespace Dune { namespace Impl
             out[i][0][0] += product;
           }
         }
+        return;
+      }
+
+      if (dim==2)
+      {
+        int n=0;
+        for (unsigned int j=0; j<=k; j++)
+          for (unsigned int i=0; i<=k-j; i++)
+          {
+            // x_0 derivative
+            out[n][0][0] = 0.0;
+            R factor=1.0;
+            for (unsigned int beta=0; beta<j; beta++)
+              factor *= (x[1]-lagrangeNode(beta))/(lagrangeNode(j)-lagrangeNode(beta));
+            for (unsigned int a=0; a<i; a++)
+            {
+              R product=factor;
+              for (unsigned int alpha=0; alpha<i; alpha++)
+                if (alpha==a)
+                  product *= D(1)/(lagrangeNode(i)-lagrangeNode(alpha));
+                else
+                  product *= (x[0]-lagrangeNode(alpha))/(lagrangeNode(i)-lagrangeNode(alpha));
+              for (unsigned int gamma=i+j+1; gamma<=k; gamma++)
+                product *= (lagrangeNode(gamma)-x[0]-x[1])/(lagrangeNode(gamma)-lagrangeNode(i)-lagrangeNode(j));
+              out[n][0][0] += product;
+            }
+            for (unsigned int c=i+j+1; c<=k; c++)
+            {
+              R product=factor;
+              for (unsigned int alpha=0; alpha<i; alpha++)
+                product *= (x[0]-lagrangeNode(alpha))/(lagrangeNode(i)-lagrangeNode(alpha));
+              for (unsigned int gamma=i+j+1; gamma<=k; gamma++)
+                if (gamma==c)
+                  product *= -D(1)/(lagrangeNode(gamma)-lagrangeNode(i)-lagrangeNode(j));
+                else
+                  product *= (lagrangeNode(gamma)-x[0]-x[1])/(lagrangeNode(gamma)-lagrangeNode(i)-lagrangeNode(j));
+              out[n][0][0] += product;
+            }
+
+            // x_1 derivative
+            out[n][0][1] = 0.0;
+            factor = 1.0;
+            for (unsigned int alpha=0; alpha<i; alpha++)
+              factor *= (x[0]-lagrangeNode(alpha))/(lagrangeNode(i)-lagrangeNode(alpha));
+            for (unsigned int b=0; b<j; b++)
+            {
+              R product=factor;
+              for (unsigned int beta=0; beta<j; beta++)
+                if (beta==b)
+                  product *= D(1)/(lagrangeNode(j)-lagrangeNode(beta));
+                else
+                  product *= (x[1]-lagrangeNode(beta))/(lagrangeNode(j)-lagrangeNode(beta));
+              for (unsigned int gamma=i+j+1; gamma<=k; gamma++)
+                product *= (lagrangeNode(gamma)-x[0]-x[1])/(lagrangeNode(gamma)-lagrangeNode(i)-lagrangeNode(j));
+              out[n][0][1] += product;
+            }
+            for (unsigned int c=i+j+1; c<=k; c++)
+            {
+              R product=factor;
+              for (unsigned int beta=0; beta<j; beta++)
+                product *= (x[1]-lagrangeNode(beta))/(lagrangeNode(j)-lagrangeNode(beta));
+              for (unsigned int gamma=i+j+1; gamma<=k; gamma++)
+                if (gamma==c)
+                  product *= -D(1)/(lagrangeNode(gamma)-lagrangeNode(i)-lagrangeNode(j));
+                else
+                  product *= (lagrangeNode(gamma)-x[0]-x[1])/(lagrangeNode(gamma)-lagrangeNode(i)-lagrangeNode(j));
+              out[n][0][1] += product;
+            }
+
+            n++;
+          }
+
         return;
       }
 
@@ -287,6 +378,110 @@ namespace Dune { namespace Impl
         return;
       }
 
+      if (dim==2)
+      {
+        auto lagrangeNode = [](unsigned int i) { return ((D)i)/k; };
+
+        // Helper method: Return a single Lagrangian factor of l_ij evaluated at x
+        auto lagrangianFactor = [&lagrangeNode]
+                                (const int no, const int i, const int j, const typename Traits::DomainType& x)
+                                -> typename Traits::RangeType
+          {
+            if ( no < i)
+              return (x[0]-lagrangeNode(no))/(lagrangeNode(i)-lagrangeNode(no));
+            if (no < i+j)
+              return (x[1]-lagrangeNode(no-i))/(lagrangeNode(j)-lagrangeNode(no-i));
+            return (lagrangeNode(no+1)-x[0]-x[1])/(lagrangeNode(no+1)-lagrangeNode(i)-lagrangeNode(j));
+          };
+
+        // Helper method: Return the derivative of a single Lagrangian factor of l_ij evaluated at x
+        // direction: Derive in x-direction if this is 0, otherwise derive in y direction
+        auto lagrangianFactorDerivative = [&lagrangeNode]
+                                          (const int direction, const int no, const int i, const int j, const typename Traits::DomainType& x)
+                                          -> typename Traits::RangeType
+          {
+            using T = typename Traits::RangeType;
+            if ( no < i)
+              return (direction == 0) ? T(1.0/(lagrangeNode(i)-lagrangeNode(no))) : T(0);
+
+            if (no < i+j)
+              return (direction == 0) ? T(0) : T(1.0/(lagrangeNode(j)-lagrangeNode(no-i)));
+
+            return -1.0/(lagrangeNode(no+1)-lagrangeNode(i)-lagrangeNode(j));
+          };
+
+        if (totalOrder==1)
+        {
+          int direction = std::find(order.begin(), order.end(), 1)-order.begin();
+
+          int n=0;
+          for (unsigned int j=0; j<=k; j++)
+          {
+            for (unsigned int i=0; i<=k-j; i++, n++)
+            {
+              out[n] = 0.0;
+              for (unsigned int no1=0; no1 < k; no1++)
+              {
+                R factor = lagrangianFactorDerivative(direction, no1, i, j, in);
+                for (unsigned int no2=0; no2 < k; no2++)
+                  if (no1 != no2)
+                    factor *= lagrangianFactor(no2, i, j, in);
+
+                out[n] += factor;
+              }
+            }
+          }
+          return;
+        }
+
+        if (totalOrder==2)
+        {
+          std::array<int,2> directions;
+          unsigned int counter = 0;
+          auto nonconstOrder = order;  // need a copy that I can modify
+          for (int i=0; i<2; i++)
+          {
+            while (nonconstOrder[i])
+            {
+              directions[counter++] = i;
+              nonconstOrder[i]--;
+            }
+          }
+
+          //f = prod_{i} f_i -> dxa dxb f = sum_{i} {dxa f_i sum_{k \neq i} dxb f_k prod_{l \neq k,i} f_l
+          int n=0;
+          for (unsigned int j=0; j<=k; j++)
+          {
+            for (unsigned int i=0; i<=k-j; i++, n++)
+            {
+              R res = 0.0;
+
+              for (unsigned int no1=0; no1 < k; no1++)
+              {
+                R factor1 = lagrangianFactorDerivative(directions[0], no1, i, j, in);
+                for (unsigned int no2=0; no2 < k; no2++)
+                {
+                  if (no1 == no2)
+                    continue;
+                  R factor2 = factor1*lagrangianFactorDerivative(directions[1], no2, i, j, in);
+                  for (unsigned int no3=0; no3 < k; no3++)
+                  {
+                    if (no3 == no1 || no3 == no2)
+                      continue;
+                    factor2 *= lagrangianFactor(no3, i, j, in);
+                  }
+                  res += factor2;
+                }
+              }
+              out[n] = res;
+            }
+          }
+
+          return;
+        }  // totalOrder==2
+
+      }   // dim==2
+
       DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
     }
 
@@ -333,6 +528,48 @@ namespace Dune { namespace Impl
         return;
       }
 
+      if (dim==2)
+      {
+        int n=0;
+        int c=0;
+        for (unsigned int j=0; j<=k; j++)
+          for (unsigned int i=0; i<=k-j; i++)
+          {
+            if (i==0 && j==0)
+            {
+              localKeys_[n++] = LocalKey(0,2,0);
+              continue;
+            }
+            if (i==k && j==0)
+            {
+              localKeys_[n++] = LocalKey(1,2,0);
+              continue;
+            }
+            if (i==0 && j==k)
+            {
+              localKeys_[n++] = LocalKey(2,2,0);
+              continue;
+            }
+            if (j==0)
+            {
+              localKeys_[n++] = LocalKey(0,1,i-1);
+              continue;
+            }
+            if (i==0)
+            {
+              localKeys_[n++] = LocalKey(1,1,j-1);
+              continue;
+            }
+            if (i+j==k)
+            {
+              localKeys_[n++] = LocalKey(2,1,j-1);
+              continue;
+            }
+            localKeys_[n++] = LocalKey(0,0,c++);
+          }
+        return;
+      }
+
       if (dim==3)
       {
         std::array<unsigned int, dim+1> vertexMap;
@@ -341,7 +578,7 @@ namespace Dune { namespace Impl
         generateLocalKeys(vertexMap);
         return;
       }
-      DUNE_THROW(NotImplemented, "LagrangeSimplexLocalCoefficients only implemented for k<=1 or dim==1 or dim==3!");
+      DUNE_THROW(NotImplemented, "LagrangeSimplexLocalCoefficients only implemented for k<=1 or dim<=3!");
     }
 
     /** Constructor for variants with permuted vertices
@@ -353,8 +590,8 @@ namespace Dune { namespace Impl
     LagrangeSimplexLocalCoefficients (const std::array<unsigned int, dim+1> vertexMap)
     : localKeys_(size())
     {
-      if (dim!=3)
-        DUNE_THROW(NotImplemented, "LagrangeSimplexLocalCoefficients only implemented for dim==3!");
+      if (dim!=2 && dim!=3)
+        DUNE_THROW(NotImplemented, "LagrangeSimplexLocalCoefficients only implemented for dim==2 and dim==3!");
 
       generateLocalKeys(vertexMap);
     }
@@ -381,6 +618,60 @@ namespace Dune { namespace Impl
         localKeys_[0] = LocalKey(0,0,0);
         return;
       }
+
+      if (dim==2)
+      {
+        // Create default assignment
+        int n=0;
+        int c=0;
+        for (unsigned int j=0; j<=k; j++)
+          for (unsigned int i=0; i<=k-j; i++)
+          {
+            if (i==0 && j==0)
+            {
+              localKeys_[n++] = LocalKey(0,2,0);
+              continue;
+            }
+            if (i==k && j==0)
+            {
+              localKeys_[n++] = LocalKey(1,2,0);
+              continue;
+            }
+            if (i==0 && j==k)
+            {
+              localKeys_[n++] = LocalKey(2,2,0);
+              continue;
+            }
+            if (j==0)
+            {
+              localKeys_[n++] = LocalKey(0,1,i-1);
+              continue;
+            }
+            if (i==0)
+            {
+              localKeys_[n++] = LocalKey(1,1,j-1);
+              continue;
+            }
+            if (i+j==k)
+            {
+              localKeys_[n++] = LocalKey(2,1,j-1);
+              continue;
+            }
+            localKeys_[n++] = LocalKey(0,0,c++);
+          }
+
+        // Flip edge orientations, if requested
+        bool flip[3];
+        flip[0] = vertexMap[0] > vertexMap[1];
+        flip[1] = vertexMap[0] > vertexMap[2];
+        flip[2] = vertexMap[1] > vertexMap[2];
+        for (std::size_t i=0; i<size(); i++)
+          if (localKeys_[i].codim()==1 && flip[localKeys_[i].subEntity()])
+            localKeys_[i].index(k-2-localKeys_[i].index());
+
+        return;
+      }
+
       if (dim!=3)
         DUNE_THROW(NotImplemented, "LagrangeSimplexLocalCoefficients only implemented for dim==3!");
 
@@ -482,8 +773,21 @@ namespace Dune { namespace Impl
         return;
       }
 
+      if (dim==2)
+      {
+        int n=0;
+        for (unsigned int j=0; j<=k; j++)
+          for (unsigned int i=0; i<=k-j; i++)
+          {
+            x = { ((D)i)/k, ((D)j)/k };
+            out[n] = f(x);
+            n++;
+          }
+        return;
+      }
+
       if (dim!=3)
-        DUNE_THROW(NotImplemented, "LagrangeSimplexLocalInterpolation only implemented for dim==1 or dim==3!");
+        DUNE_THROW(NotImplemented, "LagrangeSimplexLocalInterpolation only implemented for dim<=3!");
 
       int n=0;
       for (int i2 = 0; i2 <= (int)k; i2++)

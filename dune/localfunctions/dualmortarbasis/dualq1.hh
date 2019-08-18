@@ -13,7 +13,7 @@
 #include <dune/geometry/quadraturerules.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
-#include <dune/localfunctions/lagrange/q1/q1localbasis.hh>
+#include <dune/localfunctions/lagrange/lagrangecube.hh>
 #include "dualq1/dualq1localbasis.hh"
 #include "dualq1/dualq1localcoefficients.hh"
 #include "dualq1/dualq1localinterpolation.hh"
@@ -120,7 +120,7 @@ namespace Dune
     for (int i=0; i<size; i++)
       integral[i] = 0;
 
-    Dune::Q1LocalBasis<D,R,dim> q1Basis;
+    Dune::Impl::LagrangeCubeLocalBasis<D,R,dim,1> q1Basis;
     for(size_t pt=0; pt<quad.size(); pt++) {
 
       const Dune::FieldVector<D ,dim>& pos = quad[pt].position();
@@ -166,7 +166,7 @@ namespace Dune
     std::array<Dune::FieldVector<R, size>, size> coeffs;
 
     // dual basis functions are linear combinations of Lagrange elements
-    Dune::Q1LocalBasis<D,R,dim> q1Basis;
+    Dune::Impl::LagrangeCubeLocalBasis<D,R,dim,1> q1Basis;
 
     const auto& refElement = Dune::ReferenceElements<D,dim>::general(type());
 

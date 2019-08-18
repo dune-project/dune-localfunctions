@@ -3,7 +3,6 @@ add_subdirectory(prismp1)
 add_subdirectory(prismp2)
 add_subdirectory(pyramidp1)
 add_subdirectory(pyramidp2)
-add_subdirectory(q1)
 add_subdirectory(qk)
 
 install(FILES
@@ -12,6 +11,7 @@ install(FILES
   interpolation.hh
   lagrangebasis.hh
   lagrangecoefficients.hh
+  lagrangecube.hh
   lagrangelfecache.hh
   lagrangesimplex.hh
   p0.hh

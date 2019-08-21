@@ -3,7 +3,6 @@ add_subdirectory(prismp1)
 add_subdirectory(prismp2)
 add_subdirectory(pyramidp1)
 add_subdirectory(pyramidp2)
-add_subdirectory(qk)
 
 install(FILES
   emptypoints.hh

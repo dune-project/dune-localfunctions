@@ -53,7 +53,7 @@ namespace Dune
    * if the point set can be build for a specified Topology.
    *
    * Examples include:
-   * - EqualdistantPointSet: standard point set for lagrange points
+   * - EquidistantPointSet:  standard point set for Lagrange points
    * - LobattoPointSet:      an approximate Freget type point set
    *                         (provided for simplex and generalized prism
    *                         topologies (i.e. not for a 3d pyramid)

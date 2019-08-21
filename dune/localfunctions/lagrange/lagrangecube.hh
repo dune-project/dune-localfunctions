@@ -714,6 +714,13 @@ namespace Dune
                                             Impl::LagrangeCubeLocalCoefficients<d,k>,
                                             Impl::LagrangeCubeLocalInterpolation<Impl::LagrangeCubeLocalBasis<D,R,d,k> > >;
 
+    /** \brief Default constructor
+     *
+     * \deprecated This explicit implementation only exists to work around a bug in clang 3.8
+     *   which disappeared in clang 6
+     */
+    LagrangeCubeLocalFiniteElement() {}
+
     /** \brief Returns the local basis, i.e., the set of shape functions
      */
     const typename Traits::LocalBasisType& localBasis () const

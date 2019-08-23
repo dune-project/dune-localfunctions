@@ -1,9 +1,4 @@
 add_subdirectory(p0)
-add_subdirectory(p1)
-add_subdirectory(p23d)
-add_subdirectory(pk1d)
-add_subdirectory(pk2d)
-add_subdirectory(pk3d)
 add_subdirectory(prismp1)
 add_subdirectory(prismp2)
 add_subdirectory(pyramidp1)
@@ -18,6 +13,7 @@ install(FILES
   lagrangebasis.hh
   lagrangecoefficients.hh
   lagrangelfecache.hh
+  lagrangesimplex.hh
   p0.hh
   p1.hh
   p23d.hh

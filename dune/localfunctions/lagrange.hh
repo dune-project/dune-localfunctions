@@ -16,6 +16,7 @@
 #include <dune/localfunctions/lagrange/lagrangebasis.hh>
 
 // Headers for Lagrange elements with compile-time order
+#include <dune/localfunctions/lagrange/lagrangesimplex.hh>
 #include <dune/localfunctions/lagrange/p0.hh>
 #include <dune/localfunctions/lagrange/p1.hh>
 #include <dune/localfunctions/lagrange/p2.hh>

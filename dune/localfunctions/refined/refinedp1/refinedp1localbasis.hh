@@ -29,8 +29,6 @@ namespace Dune
   /**@ingroup LocalBasisImplementation
      \brief Uniformly refined linear Lagrange shape functions in 1D.
 
-     1D IMPLEMENTATION IS NOT TESTED (the LocalElement for 1D does not exist due to lack of P21D elements)
-
      This shape function set mimicks the P1 shape functions that you would get on
      a uniformly refined grid.  Hence these shape functions are only piecewise
      linear!  The data layout is identical to P2 shape functions.
@@ -41,8 +39,8 @@ namespace Dune
      The functions are associated to points by:
 
      f_0 ~ (0.0)
-     f_1 ~ (1.0)
-     f_2 ~ (0.5)
+     f_1 ~ (0.5)
+     f_2 ~ (1.0)
 
      \tparam D Type to represent the field in the domain.
      \tparam R Type to represent the field in the range.

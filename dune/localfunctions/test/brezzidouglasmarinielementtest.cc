@@ -5,9 +5,7 @@
 
 #include <iostream>
 
-#include <dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini1cube2d.hh>
-#include <dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini1cube3d.hh>
-#include <dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini2cube2d.hh>
+#include <dune/localfunctions/brezzidouglasmarini/brezzidouglasmarinicube.hh>
 #include <dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini1simplex2d.hh>
 #include <dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini2simplex2d.hh>
 
@@ -17,13 +15,13 @@ int main(int argc, char** argv)
 {
   bool success = true;
 
-  Dune::BDM1Cube2DLocalFiniteElement<double,double> bdm1cube2dlfem(1);
+  Dune::BrezziDouglasMariniCubeLocalFiniteElement<double,double,2,1> bdm1cube2dlfem(1);
   TEST_FE(bdm1cube2dlfem);
 
-  Dune::BDM1Cube3DLocalFiniteElement<double,double> bdm1cube3dlfem(1);
+  Dune::BrezziDouglasMariniCubeLocalFiniteElement<double,double,3,1> bdm1cube3dlfem(1);
   TEST_FE2(bdm1cube3dlfem, DisableLocalInterpolation);
 
-  Dune::BDM2Cube2DLocalFiniteElement<double,double> bdm2cube2dlfem(1);
+  Dune::BrezziDouglasMariniCubeLocalFiniteElement<double,double,2,2> bdm2cube2dlfem(1);
   TEST_FE(bdm2cube2dlfem);
 
   Dune::BDM1Simplex2DLocalFiniteElement<double,double> bdm1simplex2dlfem(1);

@@ -6,8 +6,7 @@
 #include <iostream>
 
 #include <dune/localfunctions/brezzidouglasmarini/brezzidouglasmarinicube.hh>
-#include <dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini1simplex2d.hh>
-#include <dune/localfunctions/brezzidouglasmarini/brezzidouglasmarini2simplex2d.hh>
+#include <dune/localfunctions/brezzidouglasmarini/brezzidouglasmarinisimplex.hh>
 
 #include <dune/localfunctions/test/test-localfe.hh>
 
@@ -24,10 +23,10 @@ int main(int argc, char** argv)
   Dune::BrezziDouglasMariniCubeLocalFiniteElement<double,double,2,2> bdm2cube2dlfem(1);
   TEST_FE(bdm2cube2dlfem);
 
-  Dune::BDM1Simplex2DLocalFiniteElement<double,double> bdm1simplex2dlfem(1);
+  Dune::BrezziDouglasMariniSimplexLocalFiniteElement<double,double,2,1> bdm1simplex2dlfem(1);
   TEST_FE(bdm1simplex2dlfem);
 
-  Dune::BDM2Simplex2DLocalFiniteElement<double,double> bdm2simplex2dlfem(1);
+  Dune::BrezziDouglasMariniSimplexLocalFiniteElement<double,double,2,2> bdm2simplex2dlfem(1);
   TEST_FE(bdm2simplex2dlfem);
 
   return success ? 0 : 1;

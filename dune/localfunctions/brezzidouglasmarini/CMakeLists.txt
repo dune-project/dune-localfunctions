@@ -6,6 +6,7 @@ add_subdirectory(brezzidouglasmarini2simplex2d)
 
 install(FILES
   brezzidouglasmarinicube.hh
+  brezzidouglasmarinisimplex.hh
   brezzidouglasmarini1cube2d.hh
   brezzidouglasmarini1cube3d.hh
   brezzidouglasmarini2cube2d.hh

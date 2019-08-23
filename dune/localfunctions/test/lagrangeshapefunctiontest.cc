@@ -197,13 +197,13 @@ int main (int argc, char *argv[])
     TEST_FE(pklfem);
   });
 
-  Hybrid::forEach(std::make_index_sequence<11>{},[&success](auto i)
+  Hybrid::forEach(std::make_index_sequence<4>{},[&success](auto i)
   {
     PkLocalFiniteElement<double,double,2,i> pklfem;
     TEST_FE3(pklfem,DisableNone,2);
   });
 
-  Hybrid::forEach(std::make_index_sequence<11>{},[&success](auto i)
+  Hybrid::forEach(std::make_index_sequence<4>{},[&success](auto i)
   {
     PkLocalFiniteElement<double,double,3,i> pklfem;
     TEST_FE(pklfem);

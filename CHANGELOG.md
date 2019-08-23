@@ -37,6 +37,9 @@
   BDM element implementations under a single name.  Domain dimension and
   polynomial order are template parameters now.
 
+* Introduce a convenience header `dune/localfunctions/brezzidouglasmarini.hh`
+  that includes all BDM implementations.
+
 # Release 2.6
 
 *  The `diffOrder` value has disappeared from the `LocalBasisTraits` class.

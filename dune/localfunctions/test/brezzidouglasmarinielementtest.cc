@@ -5,8 +5,7 @@
 
 #include <iostream>
 
-#include <dune/localfunctions/brezzidouglasmarini/brezzidouglasmarinicube.hh>
-#include <dune/localfunctions/brezzidouglasmarini/brezzidouglasmarinisimplex.hh>
+#include <dune/localfunctions/brezzidouglasmarini.hh>
 
 #include <dune/localfunctions/test/test-localfe.hh>
 

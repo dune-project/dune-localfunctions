@@ -8,16 +8,8 @@
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include <dune/localfunctions/lagrange/p0.hh>
 
+#include <dune/localfunctions/lagrange/lagrangesimplex.hh>
 #include <dune/localfunctions/refined/refinedp1/refinedp1localbasis.hh>
-#include <dune/localfunctions/lagrange/pk1d/pk1dlocalcoefficients.hh>
-#include <dune/localfunctions/lagrange/pk1d/pk1dlocalinterpolation.hh>
-#include <dune/localfunctions/lagrange/pk1d/pk1dlocalbasis.hh>
-#include <dune/localfunctions/lagrange/pk2d/pk2dlocalcoefficients.hh>
-#include <dune/localfunctions/lagrange/pk2d/pk2dlocalinterpolation.hh>
-#include <dune/localfunctions/lagrange/pk2d/pk2dlocalbasis.hh>
-#include <dune/localfunctions/lagrange/pk3d/pk3dlocalcoefficients.hh>
-#include <dune/localfunctions/lagrange/pk3d/pk3dlocalinterpolation.hh>
-#include <dune/localfunctions/lagrange/pk3d/pk3dlocalbasis.hh>
 
 namespace Dune
 {
@@ -31,8 +23,8 @@ namespace Dune
     /** \todo Please doc me !
      */
     typedef LocalFiniteElementTraits<RefinedP1LocalBasis<D,R,1>,
-        Pk1DLocalCoefficients<2>,
-        Pk1DLocalInterpolation<Pk1DLocalBasis<D,R,2> > > Traits;
+                                     Impl::LagrangeSimplexLocalCoefficients<1,2>,
+                                     Impl::LagrangeSimplexLocalInterpolation<Impl::LagrangeSimplexLocalBasis<D,R,1,2> > > Traits;
 
     /** \todo Please doc me !
      */
@@ -75,8 +67,12 @@ namespace Dune
 
   private:
     RefinedP1LocalBasis<D,R,1> basis;
-    Pk1DLocalCoefficients<2> coefficients;
-    Pk1DLocalInterpolation<Pk1DLocalBasis<D,R,2> > interpolation;
+    Impl::LagrangeSimplexLocalCoefficients<1,2> coefficients;
+    // Yes, the template argument here really is LagrangeSimplexLocalBasis, even though this is not
+    // the local basis of the refined locale finite element:  The reason is that LagrangeSimplexLocalInterpolation
+    // uses this argument to determine the polynomial order, and RefinedP1LocalBasis returns order 1
+    // whereas order 2 is needed here.
+    Impl::LagrangeSimplexLocalInterpolation<Impl::LagrangeSimplexLocalBasis<D,R,1,2> > interpolation;
   };
 
 
@@ -90,8 +86,8 @@ namespace Dune
     /** \todo Please doc me !
      */
     typedef LocalFiniteElementTraits<RefinedP1LocalBasis<D,R,2>,
-        Pk2DLocalCoefficients<2>,
-        Pk2DLocalInterpolation<Pk2DLocalBasis<D,R,2> > > Traits;
+                                     Impl::LagrangeSimplexLocalCoefficients<2,2>,
+                                     Impl::LagrangeSimplexLocalInterpolation<Impl::LagrangeSimplexLocalBasis<D,R,2,2> > > Traits;
 
     /** \todo Please doc me !
      */
@@ -134,8 +130,12 @@ namespace Dune
 
   private:
     RefinedP1LocalBasis<D,R,2> basis;
-    Pk2DLocalCoefficients<2> coefficients;
-    Pk2DLocalInterpolation<Pk2DLocalBasis<D,R,2> > interpolation;
+    Impl::LagrangeSimplexLocalCoefficients<2,2> coefficients;
+    // Yes, the template argument here really is LagrangeSimplexLocalBasis, even though this is not
+    // the local basis of the refined locale finite element:  The reason is that LagrangeSimplexLocalInterpolation
+    // uses this argument to determine the polynomial order, and RefinedP1LocalBasis returns order 1
+    // whereas order 2 is needed here.
+    Impl::LagrangeSimplexLocalInterpolation<Impl::LagrangeSimplexLocalBasis<D,R,2,2> > interpolation;
   };
 
   /** \todo Please doc me !
@@ -147,8 +147,8 @@ namespace Dune
     /** \todo Please doc me !
      */
     typedef LocalFiniteElementTraits<RefinedP1LocalBasis<D,R,3>,
-        Pk3DLocalCoefficients<2>,
-        Pk3DLocalInterpolation<Pk3DLocalBasis<D,R,2> > > Traits;
+                                     Impl::LagrangeSimplexLocalCoefficients<3,2>,
+                                     Impl::LagrangeSimplexLocalInterpolation<Impl::LagrangeSimplexLocalBasis<D,R,3,2> > > Traits;
 
     /** \todo Please doc me !
      */
@@ -191,8 +191,12 @@ namespace Dune
 
   private:
     RefinedP1LocalBasis<D,R,3> basis;
-    Pk3DLocalCoefficients<2> coefficients;
-    Pk3DLocalInterpolation<Pk3DLocalBasis<D,R,2> > interpolation;
+    Impl::LagrangeSimplexLocalCoefficients<3,2> coefficients;
+    // Yes, the template argument here really is LagrangeSimplexLocalBasis, even though this is not
+    // the local basis of the refined locale finite element:  The reason is that LagrangeSimplexLocalInterpolation
+    // uses this argument to determine the polynomial order, and RefinedP1LocalBasis returns order 1
+    // whereas order 2 is needed here.
+    Impl::LagrangeSimplexLocalInterpolation<Impl::LagrangeSimplexLocalBasis<D,R,3,2> > interpolation;
   };
 
 }

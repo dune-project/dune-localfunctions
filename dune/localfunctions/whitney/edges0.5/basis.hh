@@ -11,7 +11,7 @@
 #include <dune/common/fvector.hh>
 
 #include <dune/localfunctions/common/localtoglobaladaptors.hh>
-#include <dune/localfunctions/lagrange/p1/p1localbasis.hh>
+#include <dune/localfunctions/lagrange/lagrangesimplex.hh>
 #include <dune/localfunctions/whitney/edges0.5/common.hh>
 
 namespace Dune {
@@ -51,9 +51,10 @@ namespace Dune {
     };
 
   private:
-    typedef Dune::P1LocalBasis<typename Traits::DomainField,
+    typedef Dune::Impl::LagrangeSimplexLocalBasis<typename Traits::DomainField,
         typename Traits::RangeField,
-        Traits::dimDomainLocal
+        Traits::dimDomainLocal,
+        1    // Polynomial order
         > P1LocalBasis;
     typedef ScalarLocalToGlobalBasisAdaptor<P1LocalBasis, Geometry> P1Basis;
 

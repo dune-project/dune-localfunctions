@@ -9,6 +9,7 @@
 #include <dune/localfunctions/lagrange/p0.hh>
 #include <dune/localfunctions/lagrange/p1.hh>
 #include <dune/localfunctions/lagrange/p23d.hh>
+#include <dune/localfunctions/lagrange/pk1d.hh>
 #include <dune/localfunctions/lagrange/pk2d.hh>
 #include <dune/localfunctions/lagrange/pk3d.hh>
 #include <dune/localfunctions/lagrange/pk.hh>
@@ -167,6 +168,9 @@ int main (int argc, char *argv[])
 
   Q1LocalFiniteElement<double,double,3> q13dlfem;
   TEST_FE(q13dlfem);
+
+  Pk1DLocalFiniteElement<double,double,2> p11dfem;
+  TEST_FE(p11dfem);
 
   PQ22DLocalFiniteElement<double,double> pq22dlfem(
     GeometryTypes::simplex(2));

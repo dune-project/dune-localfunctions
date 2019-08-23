@@ -22,9 +22,9 @@ namespace Dune
   public:
     /** \todo Please doc me !
      */
-    typedef LocalFiniteElementTraits<RefinedP1LocalBasis<D,R,1>,
-                                     Impl::LagrangeSimplexLocalCoefficients<1,2>,
-                                     Impl::LagrangeSimplexLocalInterpolation<Impl::LagrangeSimplexLocalBasis<D,R,1,2> > > Traits;
+    typedef LocalFiniteElementTraits<RefinedP1LocalBasis<D,R,dim>,
+                                     Impl::LagrangeSimplexLocalCoefficients<dim,2>,
+                                     Impl::LagrangeSimplexLocalInterpolation<Impl::LagrangeSimplexLocalBasis<D,R,dim,2> > > Traits;
 
     /** \todo Please doc me !
      */
@@ -62,141 +62,17 @@ namespace Dune
      */
     static constexpr GeometryType type ()
     {
-      return GeometryTypes::line;
+      return GeometryTypes::simplex(dim);
     }
 
   private:
-    RefinedP1LocalBasis<D,R,1> basis;
-    Impl::LagrangeSimplexLocalCoefficients<1,2> coefficients;
+    RefinedP1LocalBasis<D,R,dim> basis;
+    Impl::LagrangeSimplexLocalCoefficients<dim,2> coefficients;
     // Yes, the template argument here really is LagrangeSimplexLocalBasis, even though this is not
     // the local basis of the refined locale finite element:  The reason is that LagrangeSimplexLocalInterpolation
     // uses this argument to determine the polynomial order, and RefinedP1LocalBasis returns order 1
     // whereas order 2 is needed here.
-    Impl::LagrangeSimplexLocalInterpolation<Impl::LagrangeSimplexLocalBasis<D,R,1,2> > interpolation;
-  };
-
-
-
-  /** \todo Please doc me !
-   */
-  template<class D, class R>
-  class RefinedP1LocalFiniteElement<D,R,2>
-  {
-  public:
-    /** \todo Please doc me !
-     */
-    typedef LocalFiniteElementTraits<RefinedP1LocalBasis<D,R,2>,
-                                     Impl::LagrangeSimplexLocalCoefficients<2,2>,
-                                     Impl::LagrangeSimplexLocalInterpolation<Impl::LagrangeSimplexLocalBasis<D,R,2,2> > > Traits;
-
-    /** \todo Please doc me !
-     */
-    RefinedP1LocalFiniteElement ()
-    {}
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalBasisType& localBasis () const
-    {
-      return basis;
-    }
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalCoefficientsType& localCoefficients () const
-    {
-      return coefficients;
-    }
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalInterpolationType& localInterpolation () const
-    {
-      return interpolation;
-    }
-
-    /** \brief Number of shape functions in this finite element */
-    unsigned int size () const
-    {
-      return basis.size();
-    }
-
-    /** \todo Please doc me !
-     */
-    static constexpr GeometryType type ()
-    {
-      return GeometryTypes::triangle;
-    }
-
-  private:
-    RefinedP1LocalBasis<D,R,2> basis;
-    Impl::LagrangeSimplexLocalCoefficients<2,2> coefficients;
-    // Yes, the template argument here really is LagrangeSimplexLocalBasis, even though this is not
-    // the local basis of the refined locale finite element:  The reason is that LagrangeSimplexLocalInterpolation
-    // uses this argument to determine the polynomial order, and RefinedP1LocalBasis returns order 1
-    // whereas order 2 is needed here.
-    Impl::LagrangeSimplexLocalInterpolation<Impl::LagrangeSimplexLocalBasis<D,R,2,2> > interpolation;
-  };
-
-  /** \todo Please doc me !
-   */
-  template<class D, class R>
-  class RefinedP1LocalFiniteElement<D,R,3>
-  {
-  public:
-    /** \todo Please doc me !
-     */
-    typedef LocalFiniteElementTraits<RefinedP1LocalBasis<D,R,3>,
-                                     Impl::LagrangeSimplexLocalCoefficients<3,2>,
-                                     Impl::LagrangeSimplexLocalInterpolation<Impl::LagrangeSimplexLocalBasis<D,R,3,2> > > Traits;
-
-    /** \todo Please doc me !
-     */
-    RefinedP1LocalFiniteElement ()
-    {}
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalBasisType& localBasis () const
-    {
-      return basis;
-    }
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalCoefficientsType& localCoefficients () const
-    {
-      return coefficients;
-    }
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalInterpolationType& localInterpolation () const
-    {
-      return interpolation;
-    }
-
-    /** \brief Number of shape functions in this finite element */
-    unsigned int size () const
-    {
-      return basis.size();
-    }
-
-    /** \todo Please doc me !
-     */
-    static constexpr GeometryType type ()
-    {
-      return GeometryTypes::tetrahedron;
-    }
-
-  private:
-    RefinedP1LocalBasis<D,R,3> basis;
-    Impl::LagrangeSimplexLocalCoefficients<3,2> coefficients;
-    // Yes, the template argument here really is LagrangeSimplexLocalBasis, even though this is not
-    // the local basis of the refined locale finite element:  The reason is that LagrangeSimplexLocalInterpolation
-    // uses this argument to determine the polynomial order, and RefinedP1LocalBasis returns order 1
-    // whereas order 2 is needed here.
-    Impl::LagrangeSimplexLocalInterpolation<Impl::LagrangeSimplexLocalBasis<D,R,3,2> > interpolation;
+    Impl::LagrangeSimplexLocalInterpolation<Impl::LagrangeSimplexLocalBasis<D,R,dim,2> > interpolation;
   };
 
 }

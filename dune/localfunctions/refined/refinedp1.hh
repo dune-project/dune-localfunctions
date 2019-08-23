@@ -39,27 +39,27 @@ namespace Dune
      */
     const typename Traits::LocalBasisType& localBasis () const
     {
-      return basis;
+      return basis_;
     }
 
     /** \brief Produces the assignments of the degrees of freedom to the element subentities
      */
     const typename Traits::LocalCoefficientsType& localCoefficients () const
     {
-      return coefficients;
+      return coefficients_;
     }
 
     /** \brief Evaluates all degrees of freedom for a given function
      */
     const typename Traits::LocalInterpolationType& localInterpolation () const
     {
-      return interpolation;
+      return interpolation_;
     }
 
     /** \brief Number of shape functions of this finite element */
     unsigned int size () const
     {
-      return basis.size();
+      return basis_.size();
     }
 
     /** \brief The element type that this finite element is defined on
@@ -70,13 +70,13 @@ namespace Dune
     }
 
   private:
-    RefinedP1LocalBasis<D,R,dim> basis;
-    Impl::LagrangeSimplexLocalCoefficients<dim,2> coefficients;
+    RefinedP1LocalBasis<D,R,dim> basis_;
+    Impl::LagrangeSimplexLocalCoefficients<dim,2> coefficients_;
     // Yes, the template argument here really is LagrangeSimplexLocalBasis, even though this is not
     // the local basis of the refined locale finite element:  The reason is that LagrangeSimplexLocalInterpolation
     // uses this argument to determine the polynomial order, and RefinedP1LocalBasis returns order 1
     // whereas order 2 is needed here.
-    Impl::LagrangeSimplexLocalInterpolation<Impl::LagrangeSimplexLocalBasis<D,R,dim,2> > interpolation;
+    Impl::LagrangeSimplexLocalInterpolation<Impl::LagrangeSimplexLocalBasis<D,R,dim,2> > interpolation_;
   };
 
 }

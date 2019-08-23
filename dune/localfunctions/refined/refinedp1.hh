@@ -14,51 +14,55 @@
 namespace Dune
 {
 
-  /** \todo Please doc me !
+  /** \brief Piecewise linear continuous Lagrange functions on a uniformly refined simplex element
+   *
+   * \tparam D Number type used for domain coordinates
+   * \tparam R Number type used for shape function values
+   * \tparam dim Dimension of the domain
    */
   template<class D, class R, int dim>
   class RefinedP1LocalFiniteElement
   {
   public:
-    /** \todo Please doc me !
+    /** \brief Export all types used by this implementation
      */
     typedef LocalFiniteElementTraits<RefinedP1LocalBasis<D,R,dim>,
                                      Impl::LagrangeSimplexLocalCoefficients<dim,2>,
                                      Impl::LagrangeSimplexLocalInterpolation<Impl::LagrangeSimplexLocalBasis<D,R,dim,2> > > Traits;
 
-    /** \todo Please doc me !
+    /** \brief Default constructor
      */
     RefinedP1LocalFiniteElement ()
     {}
 
-    /** \todo Please doc me !
+    /** \brief The set of shape functions
      */
     const typename Traits::LocalBasisType& localBasis () const
     {
       return basis;
     }
 
-    /** \todo Please doc me !
+    /** \brief Produces the assignments of the degrees of freedom to the element subentities
      */
     const typename Traits::LocalCoefficientsType& localCoefficients () const
     {
       return coefficients;
     }
 
-    /** \todo Please doc me !
+    /** \brief Evaluates all degrees of freedom for a given function
      */
     const typename Traits::LocalInterpolationType& localInterpolation () const
     {
       return interpolation;
     }
 
-    /** \brief Number of shape functions in this finite element */
+    /** \brief Number of shape functions of this finite element */
     unsigned int size () const
     {
       return basis.size();
     }
 
-    /** \todo Please doc me !
+    /** \brief The element type that this finite element is defined on
      */
     static constexpr GeometryType type ()
     {

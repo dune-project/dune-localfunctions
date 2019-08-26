@@ -4,9 +4,7 @@
 #ifndef DUNE_LOCALFUNCTIONS_QK_LOCALFINITEELEMENT_HH
 #define DUNE_LOCALFUNCTIONS_QK_LOCALFINITEELEMENT_HH
 
-#include "qk/qklocalinterpolation.hh"
-#include "qk/qklocalbasis.hh"
-#include "qk/qklocalcoefficients.hh"
+#include <dune/localfunctions/lagrange/lagrangecube.hh>
 
 namespace Dune
 {
@@ -17,64 +15,11 @@ namespace Dune
    * \tparam R type used for function values
    * \tparam d dimension of the reference element
    * \tparam k polynomial order
+   *
+   * \deprecated This class is deprecated!  Please use LagrangeCubeLocalFiniteElement instead.
    */
   template<class D, class R, int d, int k>
-  class QkLocalFiniteElement {
-
-    typedef QkLocalBasis<D,R,k,d> LocalBasis;
-    typedef QkLocalCoefficients<k,d> LocalCoefficients;
-    typedef QkLocalInterpolation<k,d,LocalBasis> LocalInterpolation;
-
-  public:
-
-    /** \todo Please doc me !
-     */
-    typedef LocalFiniteElementTraits<LocalBasis,QkLocalCoefficients<k,d>,LocalInterpolation> Traits;
-
-    /** \todo Please doc me !
-     */
-    QkLocalFiniteElement ()
-    {}
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalBasisType& localBasis () const
-    {
-      return basis;
-    }
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalCoefficientsType& localCoefficients () const
-    {
-      return coefficients;
-    }
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalInterpolationType& localInterpolation () const
-    {
-      return interpolation;
-    }
-
-    /** \brief Number of shape functions in this finite element */
-    unsigned int size () const
-    {
-      return basis.size();
-    }
-
-    /** \todo Please doc me !
-     */
-    static constexpr GeometryType type ()
-    {
-      return GeometryTypes::cube(d);
-    }
-
-  private:
-    LocalBasis basis;
-    LocalCoefficients coefficients;
-    LocalInterpolation interpolation;
-  };
+  using QkLocalFiniteElement = LagrangeCubeLocalFiniteElement<D,R,d,k>;
 
 }
 

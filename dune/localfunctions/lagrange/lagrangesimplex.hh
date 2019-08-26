@@ -849,8 +849,14 @@ namespace Dune
      *  This version is deprecated - use the std::array variant instead.
      * */
     template<typename VertexMap>
+    DUNE_DEPRECATED_MSG("Use std::array to pass a vertex permutation to LagrangeSimplexLocalFiniteElement!")
     LagrangeSimplexLocalFiniteElement(const VertexMap& vertexmap)
       : coefficients_(vertexmap)
+    {}
+
+    /** Constructs a finite element given a vertex reordering */
+    LagrangeSimplexLocalFiniteElement(const std::array<unsigned int, d+1> vertexMap)
+      : coefficients_(vertexMap)
     {}
 
     /** \brief Returns the local basis, i.e., the set of shape functions

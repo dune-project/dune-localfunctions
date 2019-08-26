@@ -6,6 +6,7 @@
 #include <array>
 #include <numeric>
 
+#include <dune/common/deprecated.hh>
 #include <dune/common/fmatrix.hh>
 #include <dune/common/fvector.hh>
 #include <dune/common/math.hh>
@@ -589,7 +590,7 @@ namespace Dune { namespace Impl
      *   can for instance be generated from the global indices of
      *   the vertices by reducing those to the integers 0...dim
      */
-    LagrangeSimplexLocalCoefficients (const std::array<unsigned int, dim+1> vertexMap, char(*)[dim!=2] = 0)
+    LagrangeSimplexLocalCoefficients (const std::array<unsigned int, dim+1> vertexMap)
     : localKeys_(size())
     {
       if (dim!=2 && dim!=3)
@@ -600,55 +601,15 @@ namespace Dune { namespace Impl
 
 
     template<class VertexMap>
-    LagrangeSimplexLocalCoefficients(const VertexMap &vertexmap, char(*)[dim==2] = 0)
+    LagrangeSimplexLocalCoefficients(const VertexMap &vertexmap)
     : localKeys_(size())
     {
-      // Create default assignment
-      int n=0;
-      int c=0;
-      for (unsigned int j=0; j<=k; j++)
-        for (unsigned int i=0; i<=k-j; i++)
-        {
-          if (i==0 && j==0)
-          {
-            localKeys_[n++] = LocalKey(0,2,0);
-            continue;
-          }
-          if (i==k && j==0)
-          {
-            localKeys_[n++] = LocalKey(1,2,0);
-            continue;
-          }
-          if (i==0 && j==k)
-          {
-            localKeys_[n++] = LocalKey(2,2,0);
-            continue;
-          }
-          if (j==0)
-          {
-            localKeys_[n++] = LocalKey(0,1,i-1);
-            continue;
-          }
-          if (i==0)
-          {
-            localKeys_[n++] = LocalKey(1,1,j-1);
-            continue;
-          }
-          if (i+j==k)
-          {
-            localKeys_[n++] = LocalKey(2,1,j-1);
-            continue;
-          }
-          localKeys_[n++] = LocalKey(0,0,c++);
-        }
+      if (dim!=2 && dim!=3)
+        DUNE_THROW(NotImplemented, "LagrangeSimplexLocalCoefficients only implemented for dim==2 and dim==3!");
 
-      bool flip[3];
-      flip[0] = vertexmap[0] > vertexmap[1];
-      flip[1] = vertexmap[0] > vertexmap[2];
-      flip[2] = vertexmap[1] > vertexmap[2];
-      for (std::size_t i=0; i<size(); i++)
-        if (localKeys_[i].codim()==1 && flip[localKeys_[i].subEntity()])
-          localKeys_[i].index(k-2-localKeys_[i].index());
+      std::array<unsigned int, dim+1> vertexmap_array;
+      std::copy(vertexmap, vertexmap + dim + 1, vertexmap_array.begin());
+      generateLocalKeys(vertexmap_array);
     }
 
     //! number of coefficients
@@ -879,6 +840,18 @@ namespace Dune
     using Traits = LocalFiniteElementTraits<Impl::LagrangeSimplexLocalBasis<D,R,d,k>,
                                             Impl::LagrangeSimplexLocalCoefficients<d,k>,
                                             Impl::LagrangeSimplexLocalInterpolation<Impl::LagrangeSimplexLocalBasis<D,R,d,k> > >;
+
+    /** Default-construct the finite element */
+    LagrangeSimplexLocalFiniteElement() {}
+
+    /** Constructs a finite element given a vertex reordering
+     *
+     *  This version is deprecated - use the std::array variant instead.
+     * */
+    template<typename VertexMap>
+    LagrangeSimplexLocalFiniteElement(const VertexMap& vertexmap)
+      : coefficients_(vertexmap)
+    {}
 
     /** \brief Returns the local basis, i.e., the set of shape functions
      */

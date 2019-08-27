@@ -8,9 +8,7 @@
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include <dune/localfunctions/common/localtoglobaladaptors.hh>
-#include <dune/localfunctions/lagrange/q1/q1localbasis.hh>
-#include <dune/localfunctions/lagrange/q1/q1localcoefficients.hh>
-#include <dune/localfunctions/lagrange/q1/q1localinterpolation.hh>
+#include <dune/localfunctions/lagrange/lagrangecube.hh>
 
 namespace Dune
 {
@@ -19,7 +17,44 @@ namespace Dune
       \tparam D Domain data type
       \tparam R Range data type
       \tparam dim Dimension of the cube
+
+      \deprecated This class is deprecated!  Please use LagrangeCubeLocalFiniteElement instead.
    */
+  // The test test-q1.cc triggers compiler bugs in gcc-6 and earlier when Q1LocalFiniteElement
+  // is simply redefined as LagrangeCubeLocalFiniteElement: it grabs more and more main memory,
+  // and eventually stalls the machine.  Since I didn't find the real cause for this let's just
+  // keep the relevant parts of Q1LocalFiniteElement until we can retire the problematic gcc versions.
+#if !defined __GNUC__ || __GNUC__ > 6
+  template<class D, class R, int dim>
+  using Q1LocalFiniteElement = LagrangeCubeLocalFiniteElement<D,R,dim,1>;
+#else
+  template <int dim>
+  class Q1LocalCoefficients
+  {
+  public:
+    //! \brief Standard constructor
+    Q1LocalCoefficients () : li(1<<dim)
+    {
+      for (std::size_t i=0; i<(1<<dim); i++)
+        li[i] = LocalKey(i,dim,0);
+    }
+
+    //! number of coefficients
+    std::size_t size () const
+    {
+      return 1<<dim;
+    }
+
+    //! get i'th index
+    const LocalKey& localKey (std::size_t i) const
+    {
+      return li[i];
+    }
+
+  private:
+    std::vector<LocalKey> li;
+  };
+
   template<class D, class R, int dim>
   class Q1LocalFiniteElement
   {
@@ -31,8 +66,8 @@ namespace Dune
 
     /** \todo Please doc me !
      */
-    typedef LocalFiniteElementTraits<Q1LocalBasis<D,R,dim>,Q1LocalCoefficients<dim>,
-        Q1LocalInterpolation<dim,Q1LocalBasis<D,R,dim> > > Traits;
+    typedef LocalFiniteElementTraits<Impl::LagrangeCubeLocalBasis<D,R,dim,1>,Q1LocalCoefficients<dim>,
+        Impl::LagrangeCubeLocalInterpolation<Impl::LagrangeCubeLocalBasis<D,R,dim,1> > > Traits;
 
     /** \todo Please doc me !
      */
@@ -69,10 +104,11 @@ namespace Dune
     }
 
   private:
-    Q1LocalBasis<D,R,dim> basis;
+    Impl::LagrangeCubeLocalBasis<D,R,dim,1> basis;
     Q1LocalCoefficients<dim> coefficients;
-    Q1LocalInterpolation<dim,Q1LocalBasis<D,R,dim> > interpolation;
+    Impl::LagrangeCubeLocalInterpolation<Impl::LagrangeCubeLocalBasis<D,R,dim,1> > interpolation;
   };
+#endif
 
   //! Factory for global-valued Q1 elements
   /**
@@ -83,15 +119,27 @@ namespace Dune
   template<class Geometry, class RF>
   class Q1FiniteElementFactory :
     public ScalarLocalToGlobalFiniteElementAdaptorFactory<
+#if !defined __GNUC__ || __GNUC__ > 6
+        LagrangeCubeLocalFiniteElement<
+            typename Geometry::ctype, RF, Geometry::mydimension, 1
+            >,
+#else
         Q1LocalFiniteElement<
             typename Geometry::ctype, RF, Geometry::mydimension
             >,
+#endif
         Geometry
         >
   {
+#if !defined __GNUC__ || __GNUC__ > 6
+    typedef LagrangeCubeLocalFiniteElement<
+        typename Geometry::ctype, RF, Geometry::mydimension, 1
+        > LFE;
+#else
     typedef Q1LocalFiniteElement<
         typename Geometry::ctype, RF, Geometry::mydimension
         > LFE;
+#endif
     typedef ScalarLocalToGlobalFiniteElementAdaptorFactory<LFE, Geometry> Base;
 
     static const LFE lfe;

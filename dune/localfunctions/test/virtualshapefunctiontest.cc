@@ -10,6 +10,7 @@
 
 #include <dune/geometry/type.hh>
 #include <dune/localfunctions/common/virtualinterface.hh>
+#include <dune/localfunctions/common/virtualwrappers.hh>
 
 #include <dune/localfunctions/lagrange/p0.hh>
 #include <dune/localfunctions/lagrange/p1.hh>

@@ -5,96 +5,72 @@
 
 #include <dune/common/fmatrix.hh>
 
-#include <dune/localfunctions/common/virtualinterface.hh>
-#include <dune/localfunctions/common/virtualwrappers.hh>
-#include "qk.hh"
-#include "pk2d.hh"
+#include <dune/localfunctions/common/localfiniteelementvariant.hh>
+
+#include <dune/localfunctions/lagrange/lagrangesimplex.hh>
+#include <dune/localfunctions/lagrange/lagrangecube.hh>
 
 namespace Dune
 {
   template<class D, class R>
   class PQ22DLocalFiniteElement
   {
-    typedef Dune::FieldVector<D,2> Domain;
-    typedef Dune::FieldVector<R,1> Range;
-    typedef LocalBasisTraits<D,2,Domain, R,1,Range, Dune::FieldMatrix<R,1,2> > BasisTraits;
-
-    typedef typename Dune::LocalFiniteElementVirtualInterface<BasisTraits> LocalFiniteElementBase;
+    using LFEVariant = LocalFiniteElementVariant<LagrangeSimplexLocalFiniteElement<D,R,2,2>,
+                                                 LagrangeCubeLocalFiniteElement<D,R,2,2> >;
   public:
-    typedef LocalFiniteElementTraits<
-        LocalBasisVirtualInterface<BasisTraits>,
-        LocalCoefficientsVirtualInterface,
-        LocalInterpolationVirtualInterface< Domain, Range >
-        > Traits;
-    typedef typename Traits::LocalBasisType LocalBasis;
-    typedef typename Traits::LocalCoefficientsType LocalCoefficients;
-    typedef typename Traits::LocalInterpolationType LocalInterpolation;
+    using Traits = LocalFiniteElementTraits<typename LFEVariant::Traits::LocalBasisType,
+                                            typename LFEVariant::Traits::LocalCoefficientsType,
+                                            typename LFEVariant::Traits::LocalInterpolationType>;
+
+    using LocalBasis = typename Traits::LocalBasisType;
+    using LocalCoefficients = typename Traits::LocalCoefficientsType;
+    using LocalInterpolation = typename Traits::LocalInterpolationType;
 
     PQ22DLocalFiniteElement ( const GeometryType &gt )
-      : gt_(gt)
     {
       if ( gt.isTriangle() )
-        setup( Pk2DLocalFiniteElement<D,R,2>() );
+        lfeVariant_ = LagrangeSimplexLocalFiniteElement<D,R,2,2>();
       else if ( gt.isQuadrilateral() )
-        setup( QkLocalFiniteElement<D,R,2,2>() );
+        lfeVariant_ = LagrangeCubeLocalFiniteElement<D,R,2,2>();
     }
 
     PQ22DLocalFiniteElement ( const GeometryType &gt, const std::vector<unsigned int> vertexmap )
-      : gt_(gt)
     {
       if ( gt.isTriangle() )
-        setup( Pk2DLocalFiniteElement<D,R,2>(vertexmap) );
+        lfeVariant_ = LagrangeSimplexLocalFiniteElement<D,R,2,2>(vertexmap);
       else if ( gt.isQuadrilateral() )
-        setup( QkLocalFiniteElement<D,R,2,2>() );
-    }
-
-    PQ22DLocalFiniteElement ( const PQ22DLocalFiniteElement<D, R>& other )
-      : gt_(other.gt_)
-    {
-      fe_ = other.fe_->clone();
-    }
-
-    ~PQ22DLocalFiniteElement ( )
-    {
-      delete fe_;
+        lfeVariant_ = LagrangeCubeLocalFiniteElement<D,R,2,2>();
     }
 
     const LocalBasis& localBasis () const
     {
-      return fe_->localBasis();
+      return lfeVariant_.localBasis();
     }
 
     const LocalCoefficients& localCoefficients () const
     {
-      return fe_->localCoefficients();
+      return lfeVariant_.localCoefficients();
     }
 
     const LocalInterpolation& localInterpolation () const
     {
-      return fe_->localInterpolation();
+      return lfeVariant_.localInterpolation();
     }
 
     /** \brief Number of shape functions in this finite element */
     unsigned int size () const
     {
-      return fe_->localBasis().size();
+      return lfeVariant_.size();
     }
 
-    const GeometryType &type () const
+    GeometryType type () const
     {
-      return gt_;
+      return lfeVariant_.type();
     }
 
   private:
 
-    template <class FE>
-    void setup(const FE& fe)
-    {
-      fe_ = new LocalFiniteElementVirtualImp<FE>(fe);
-    }
-
-    const GeometryType gt_;
-    const LocalFiniteElementBase *fe_;
+    LFEVariant lfeVariant_;
   };
 
 }

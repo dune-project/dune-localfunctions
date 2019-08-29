@@ -18,13 +18,7 @@ namespace Dune
     using LFEVariant = LocalFiniteElementVariant<LagrangeSimplexLocalFiniteElement<D,R,2,2>,
                                                  LagrangeCubeLocalFiniteElement<D,R,2,2> >;
   public:
-    using Traits = LocalFiniteElementTraits<typename LFEVariant::Traits::LocalBasisType,
-                                            typename LFEVariant::Traits::LocalCoefficientsType,
-                                            typename LFEVariant::Traits::LocalInterpolationType>;
-
-    using LocalBasis = typename Traits::LocalBasisType;
-    using LocalCoefficients = typename Traits::LocalCoefficientsType;
-    using LocalInterpolation = typename Traits::LocalInterpolationType;
+    using Traits = typename LFEVariant::Traits;
 
     PQ22DLocalFiniteElement ( const GeometryType &gt )
     {
@@ -42,17 +36,17 @@ namespace Dune
         lfeVariant_ = LagrangeCubeLocalFiniteElement<D,R,2,2>();
     }
 
-    const LocalBasis& localBasis () const
+    const typename Traits::LocalBasisType& localBasis () const
     {
       return lfeVariant_.localBasis();
     }
 
-    const LocalCoefficients& localCoefficients () const
+    const typename Traits::LocalCoefficientsType& localCoefficients () const
     {
       return lfeVariant_.localCoefficients();
     }
 
-    const LocalInterpolation& localInterpolation () const
+    const typename Traits::LocalInterpolationType& localInterpolation () const
     {
       return lfeVariant_.localInterpolation();
     }

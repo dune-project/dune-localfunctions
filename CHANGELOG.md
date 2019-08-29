@@ -32,6 +32,14 @@
   plethora of different Pk3DNodal, PkNodal, P1Nodal, etc implementations
   under one single name.
 
+* Introduce new class `BrezziDouglasMariniSimplexLocalFiniteElement`
+  (and the same for cubes) that subsumes all currently existing simplex
+  BDM element implementations under a single name.  Domain dimension and
+  polynomial order are template parameters now.
+
+* Introduce a convenience header `dune/localfunctions/brezzidouglasmarini.hh`
+  that includes all BDM implementations.
+
 # Release 2.6
 
 *  The `diffOrder` value has disappeared from the `LocalBasisTraits` class.

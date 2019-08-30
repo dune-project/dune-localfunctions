@@ -1,6 +1,4 @@
 add_subdirectory(p0)
-add_subdirectory(pyramidp1)
-add_subdirectory(pyramidp2)
 
 install(FILES
   emptypoints.hh
@@ -11,6 +9,7 @@ install(FILES
   lagrangecube.hh
   lagrangelfecache.hh
   lagrangeprism.hh
+  lagrangepyramid.hh
   lagrangesimplex.hh
   p0.hh
   p1.hh

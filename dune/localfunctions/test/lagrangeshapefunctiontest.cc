@@ -180,10 +180,10 @@ int main (int argc, char *argv[])
   TEST_FE(p23dlfem);
 
   PrismP1LocalFiniteElement<double,double> prismp1fem;
-  TEST_FE(prismp1fem);
+  TEST_FE3(prismp1fem, DisableNone, 2);
 
   PrismP2LocalFiniteElement<double,double> prismp2fem;
-  TEST_FE(prismp2fem);
+  TEST_FE3(prismp2fem, DisableNone, 1);
 
   PyramidP1LocalFiniteElement<double,double> pyramidp1fem;
   TEST_FE2(pyramidp1fem, DisableJacobian);

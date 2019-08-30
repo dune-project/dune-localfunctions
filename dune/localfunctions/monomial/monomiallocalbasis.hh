@@ -8,26 +8,14 @@
 #include <numeric>
 
 #include <dune/common/fmatrix.hh>
+#include <dune/common/math.hh>
 
 #include "../common/localbasis.hh"
 
 namespace Dune
 {
-  namespace MonomImp {
-    template<class T>
-    T ipow(T base, int exp)
-    {
-      T result(1);
-      while (exp)
-      {
-        if (exp & 1)
-          result *= base;
-        exp >>= 1;
-        base *= base;
-      }
-      return result;
-    }
-
+  namespace MonomImp
+  {
     //! Access output vector of evaluateFunction() and evaluate()
     template <typename Traits>
     class EvalAccess {
@@ -152,7 +140,7 @@ namespace Dune
               in, derivatives,
               // also pass the product accumulated so far, but also
               // include the current dimension
-              prod * ipow(in[d], e-derivatives[d]) * coeff,
+              prod * power(in[d], e-derivatives[d]) * coeff,
               // pass the number of remaining exponents to the next
               // dimension
               newbound,
@@ -185,7 +173,7 @@ namespace Dune
           int coeff = 1;
           for(int i = bound - derivatives[d] + 1; i <= bound; ++i)
             coeff *= i;
-          prod *= ipow(in[d], bound-derivatives[d]) * coeff;
+          prod *= power(in[d], bound-derivatives[d]) * coeff;
         }
         access[index] = prod;
         ++index;

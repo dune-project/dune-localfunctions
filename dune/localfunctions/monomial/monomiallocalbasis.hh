@@ -100,7 +100,7 @@ namespace Dune
      *  \tparam c      The "codim of the next dimension to try for factors".
      *                 Unfortunately, we cannot recurs over that dimension
      *                 directly, since the end of the recursion cannot be
-     *                 specialized for dimDomain-1, but we can recurs over
+     *                 specialized for dimDomain-1, but we can recurse over
      *                 dimDomain minus that dimension, since it can be
      *                 specialized for 1.
      */

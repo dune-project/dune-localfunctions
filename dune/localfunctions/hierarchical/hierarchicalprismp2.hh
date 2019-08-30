@@ -6,7 +6,7 @@
 #include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
-#include <dune/localfunctions/lagrange/prismp2/prismp2localcoefficients.hh>
+#include <dune/localfunctions/lagrange/lagrangeprism.hh>
 
 #include "hierarchicalprismp2/hierarchicalprismp2localbasis.hh"
 #include "hierarchicalprismp2/hierarchicalprismp2localinterpolation.hh"
@@ -26,7 +26,7 @@ namespace Dune
     /** \todo Please doc me !
      */
     typedef LocalFiniteElementTraits<HierarchicalPrismP2LocalBasis<D,R>,
-        PrismP2LocalCoefficients,
+        Impl::LagrangePrismLocalCoefficients<2>,
         HierarchicalPrismP2LocalInterpolation<HierarchicalPrismP2LocalBasis<D,R> > > Traits;
 
     /** \todo Please doc me !
@@ -72,7 +72,7 @@ namespace Dune
     HierarchicalPrismP2LocalBasis<D,R> basis;
 
     /** \todo Stupid, Pk local coefficients can't be parametrized */
-    PrismP2LocalCoefficients coefficients;
+    Impl::LagrangePrismLocalCoefficients<2> coefficients;
 
     HierarchicalPrismP2LocalInterpolation<HierarchicalPrismP2LocalBasis<D,R> > interpolation;
   };

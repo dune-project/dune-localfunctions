@@ -191,19 +191,19 @@ int main (int argc, char *argv[])
   PyramidP2LocalFiniteElement<double,double> pyramidp2fem;
   TEST_FE2(pyramidp2fem, DisableJacobian);
 
-  Hybrid::forEach(std::make_index_sequence<3>{},[&success](auto i)
+  Hybrid::forEach(std::make_index_sequence<4>{},[&success](auto i)
   {
     PkLocalFiniteElement<double,double,1,i> pklfem;
     TEST_FE(pklfem);
   });
 
-  Hybrid::forEach(std::make_index_sequence<4>{},[&success](auto i)
+  Hybrid::forEach(std::make_index_sequence<5>{},[&success](auto i)
   {
     PkLocalFiniteElement<double,double,2,i> pklfem;
     TEST_FE3(pklfem,DisableNone,2);
   });
 
-  Hybrid::forEach(std::make_index_sequence<4>{},[&success](auto i)
+  Hybrid::forEach(std::make_index_sequence<6>{},[&success](auto i)
   {
     PkLocalFiniteElement<double,double,3,i> pklfem;
     TEST_FE(pklfem);

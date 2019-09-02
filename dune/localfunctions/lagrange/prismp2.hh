@@ -3,72 +3,17 @@
 #ifndef DUNE_PRISM2_3DLOCALFINITEELEMENT_HH
 #define DUNE_PRISM2_3DLOCALFINITEELEMENT_HH
 
-#include <dune/geometry/type.hh>
-
-#include <dune/localfunctions/common/localfiniteelementtraits.hh>
-#include "prismp2/prismp2localbasis.hh"
-#include "prismp2/prismp2localcoefficients.hh"
-#include "prismp2/prismp2localinterpolation.hh"
+#include <dune/localfunctions/lagrange/lagrangeprism.hh>
 
 namespace Dune
 {
 
-  /** \todo Please doc me !
+  /** \brief Second-order Lagrange finite element on a three-dimensional prism
+   *
+   * \deprecated Please use LagrangePrismLocalFiniteElement<D,R,2> instead!
    */
   template<class D, class R>
-  class PrismP2LocalFiniteElement
-  {
-  public:
-    /** \todo Please doc me !
-     */
-    typedef LocalFiniteElementTraits<PrismP2LocalBasis<D,R>,
-        PrismP2LocalCoefficients,
-        PrismP2LocalInterpolation<PrismP2LocalBasis<D,R> > > Traits;
-
-    /** \todo Please doc me !
-     */
-    PrismP2LocalFiniteElement ()
-    {}
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalBasisType& localBasis () const
-    {
-      return basis;
-    }
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalCoefficientsType& localCoefficients () const
-    {
-      return coefficients;
-    }
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalInterpolationType& localInterpolation () const
-    {
-      return interpolation;
-    }
-
-    /** \brief Number of shape functions in this finite element */
-    unsigned int size () const
-    {
-      return basis.size();
-    }
-
-    /** \todo Please doc me !
-     */
-    static constexpr GeometryType type ()
-    {
-      return GeometryTypes::prism;
-    }
-
-  private:
-    PrismP2LocalBasis<D,R> basis;
-    PrismP2LocalCoefficients coefficients;
-    PrismP2LocalInterpolation<PrismP2LocalBasis<D,R> > interpolation;
-  };
+  using PrismP2LocalFiniteElement = LagrangePrismLocalFiniteElement<D,R,2>;
 
 }
 

@@ -3,72 +3,17 @@
 #ifndef DUNE_PYRAMIDP2_3DLOCALFINITEELEMENT_HH
 #define DUNE_PYRAMIDP2_3DLOCALFINITEELEMENT_HH
 
-#include <dune/geometry/type.hh>
-
-#include <dune/localfunctions/common/localfiniteelementtraits.hh>
-#include "pyramidp2/pyramidp2localbasis.hh"
-#include "pyramidp2/pyramidp2localcoefficients.hh"
-#include "pyramidp2/pyramidp2localinterpolation.hh"
+#include <dune/localfunctions/lagrange/lagrangepyramid.hh>
 
 namespace Dune
 {
 
-  /** \todo Please doc me !
+  /** \brief Second-order Lagrangian finite element on a three-dimensional pyramid
+   *
+   * \deprecated Please use LagrangePyramidLocalFiniteElement<D,R,2> instead!
    */
   template<class D, class R>
-  class PyramidP2LocalFiniteElement
-  {
-  public:
-    /** \todo Please doc me !
-     */
-    typedef LocalFiniteElementTraits<PyramidP2LocalBasis<D,R>,
-        PyramidP2LocalCoefficients,
-        PyramidP2LocalInterpolation<PyramidP2LocalBasis<D,R> > > Traits;
-
-    /** \todo Please doc me !
-     */
-    PyramidP2LocalFiniteElement ()
-    {}
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalBasisType& localBasis () const
-    {
-      return basis;
-    }
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalCoefficientsType& localCoefficients () const
-    {
-      return coefficients;
-    }
-
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalInterpolationType& localInterpolation () const
-    {
-      return interpolation;
-    }
-
-    /** \brief Number of shape functions in this finite element */
-    unsigned int size () const
-    {
-      return basis.size();
-    }
-
-    /** \todo Please doc me !
-     */
-    static constexpr GeometryType type ()
-    {
-      return GeometryTypes::pyramid;
-    }
-
-  private:
-    PyramidP2LocalBasis<D,R> basis;
-    PyramidP2LocalCoefficients coefficients;
-    PyramidP2LocalInterpolation<PyramidP2LocalBasis<D,R> > interpolation;
-  };
+  using PyramidP2LocalFiniteElement = LagrangePyramidLocalFiniteElement<D,R,2>;
 
 }
 

@@ -238,9 +238,9 @@ namespace Dune {
      * \param in Position where to evaluate the derivatives
      * \param[out] out Return value: the desired partial derivatives
      */
-    void partial(const std::array<unsigned int,Traits::dimDomain>& order,
-                 const typename Traits::DomainType& in,
-      std::vector<typename Traits::RangeType>& out) const;
+    void partial(const std::array<unsigned int,Traits::dimDomainLocal>& order,
+                 const typename Traits::DomainLocal& in,
+      std::vector<typename Traits::Range>& out) const;
   };
 
   //! Interface for global-valued interpolation

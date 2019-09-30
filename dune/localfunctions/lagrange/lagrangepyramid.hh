@@ -4,6 +4,7 @@
 #define DUNE_LOCALFUNCTIONS_LAGRANGE_LAGRANGEPYRAMID_HH
 
 #include <array>
+#include <numeric>
 
 #include <dune/common/fmatrix.hh>
 #include <dune/common/fvector.hh>

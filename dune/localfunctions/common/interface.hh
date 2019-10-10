@@ -188,15 +188,14 @@ namespace Dune {
       //! \{
 
       //! Field type of the domain
-      typedef ImplementationDefined DomainField;
-      //! Dimension of the local coordinate system
-      static const std::size_t dimDomainLocal = implementationDefined;
-      //! Dimension of the world coordinate system
-      static const std::size_t dimDomainGlobal = implementationDefined;
-      //! Type used for coordinate vectors in the local domain
-      typedef ImplementationDefined DomainLocal;
-      //! Type used for coordinate vectors in the world domain
-      typedef ImplementationDefined DomainGlobal;
+      typedef ImplementationDefined DomainFieldType;
+      //! \brief Enum for domain dimension
+      enum {
+        //! \brief dimension of the domain
+        dimDomain = implementationDefined
+      };
+      //! Type used for coordinate vectors in the domain
+      typedef ImplementationDefined DomainType;
 
       //! \}
 
@@ -204,18 +203,21 @@ namespace Dune {
       //! \{
 
       //! Field type of the range
-      typedef ImplementationDefined RangeField;
-      //! Dimension of the range values
-      static const std::size_t dimRange = implementationDefined;
+      typedef ImplementationDefined RangeFieldType;
+      //! \brief Enum for range dimension
+      enum {
+        //! \brief dimension of the range
+        dimRange = implementationDefined
+      };
       //! Type used for range values
-      typedef ImplementationDefined Range;
+      typedef ImplementationDefined RangeType;
 
       //! \}
 
       //! Jacobian properties
       /**
        * \note The Jacobian should be some matrix type with \c dimRange x
-       *       \c dimDomainGlobal components of type \c RangeField.
+       *       \c dimDomain components of type \c RangeFieldType.
        */
       typedef ImplementationDefined Jacobian;
     };
@@ -226,11 +228,11 @@ namespace Dune {
     std::size_t order () const;
 
     //! Evaluate all shape functions at given position
-    void evaluateFunction(const Traits::DomainLocal& in,
-                          std::vector<Traits::Range>& out) const;
+    void evaluateFunction(const Traits::DomainType& in,
+                          std::vector<Traits::RangeType>& out) const;
 
     //! Evaluate Jacobian of all shape functions at given position
-    void evaluateJacobian(const Traits::DomainLocal& in,
+    void evaluateJacobian(const Traits::DomainType& in,
                           std::vector<Traits::Jacobian>& out) const;
 
     /** \brief Evaluate partial derivatives of any order of all shape functions

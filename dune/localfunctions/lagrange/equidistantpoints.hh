@@ -18,7 +18,7 @@ namespace Dune
   // numLagrangePoints
   // -----------------
 
-  inline std::size_t numLagrangePoints ( unsigned int topologyId, int dim, unsigned int order )
+  inline std::size_t numLagrangePoints ( unsigned int topologyId, int dim, std::size_t order )
   {
     assert( topologyId < Impl::numTopologies( dim ) );
 
@@ -45,7 +45,7 @@ namespace Dune
   // -------------------------
 
   template< class ct, unsigned int cdim >
-  inline static unsigned int equidistantLagrangePoints ( unsigned int topologyId, unsigned int dim, unsigned int codim, unsigned int order, unsigned int *count, LagrangePoint< ct, cdim > *points )
+  inline static unsigned int equidistantLagrangePoints ( unsigned int topologyId, unsigned int dim, unsigned int codim, std::size_t order, unsigned int *count, LagrangePoint< ct, cdim > *points )
   {
     assert( (0 <= codim) && (codim <= dim) && (dim <= cdim) );
     assert( topologyId < Impl::numTopologies( dim ) );
@@ -151,7 +151,7 @@ namespace Dune
 
     using Base::order;
 
-    EquidistantPointSet ( unsigned int order ) : Base( order ) {}
+    EquidistantPointSet ( std::size_t order ) : Base( order ) {}
 
     void build ( GeometryType gt )
     {
@@ -176,7 +176,7 @@ namespace Dune
     }
 
     template< class T >
-    static bool supports ( unsigned int order ) { return true; }
+    static bool supports ( std::size_t order ) { return true; }
 
   private:
     using Base::points_;

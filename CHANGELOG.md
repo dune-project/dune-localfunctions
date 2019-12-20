@@ -1,4 +1,6 @@
-# Master (will become release 2.7)
+# Master (will become release 2.8)
+
+# Release 2.7
 
 * The header `lagrange.hh` now includes all headers of all Lagrange implementations,
   not just the ones with run-time order.

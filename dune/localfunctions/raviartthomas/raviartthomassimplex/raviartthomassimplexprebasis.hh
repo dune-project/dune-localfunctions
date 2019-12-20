@@ -24,7 +24,7 @@ namespace Dune
     typedef PolynomialBasisWithMatrix<EvalMBasis,SparseCoeffMatrix<Field,dim> > Basis;
 
     typedef const Basis Object;
-    typedef unsigned int Key;
+    typedef std::size_t Key;
 
     template <unsigned int dd, class FF>
     struct EvaluationBasisFactory
@@ -49,7 +49,7 @@ namespace Dune
     static const unsigned int dim = Topology::dimension;
     typedef MultiIndex<dim,Field> MI;
     typedef MonomialBasis<Topology,MI> MIBasis;
-    RTVecMatrix(unsigned int order)
+    RTVecMatrix(std::size_t order)
     {
       MIBasis basis(order+1);
       FieldVector< MI, dim > x;

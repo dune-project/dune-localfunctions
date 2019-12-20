@@ -48,7 +48,7 @@ namespace Dune
       return localKey_[ i ];
     }
 
-    unsigned int size () const
+    std::size_t size () const
     {
       return localKey_.size();
     }
@@ -65,7 +65,7 @@ namespace Dune
   template < unsigned int dim >
   struct RaviartThomasCoefficientsFactory
   {
-    typedef unsigned int Key;
+    typedef std::size_t Key;
     typedef const LocalCoefficientsContainer Object;
 
     template< class Topology >
@@ -125,7 +125,7 @@ namespace Dune
 
     GeometryType type () const { return GeometryType( topologyId(), dimension ); }
 
-    unsigned int order () const { return order_; }
+    std::size_t order () const { return order_; }
 
     unsigned int faceSize () const { return faceSize_; }
 
@@ -135,7 +135,7 @@ namespace Dune
     const Normal &normal ( unsigned int f ) const { assert( f < faceSize() ); return *(faceStructure_[ f ].normal_); }
 
     template< class Topology >
-    void build ( unsigned int order )
+    void build ( std::size_t order )
     {
       order_ = order;
       topologyId_ = Topology::id;
@@ -167,12 +167,13 @@ namespace Dune
     template< class FaceTopology >
     struct CreateFaceBasis
     {
-      static TestFaceBasis *apply ( unsigned int order ) { return TestFaceBasisFactory::template create< FaceTopology >( order ); }
+      static TestFaceBasis *apply ( std::size_t order ) { return TestFaceBasisFactory::template create< FaceTopology >( order ); }
     };
 
     std::vector< FaceStructure > faceStructure_;
     TestBasis *testBasis_ = nullptr;
-    unsigned int topologyId_, order_, faceSize_;
+    unsigned int topologyId_, faceSize_;
+    std::size_t order_;
   };
 
 
@@ -219,17 +220,16 @@ namespace Dune
       interpolate(func);
     }
 
-
-    unsigned int order() const
+    std::size_t order() const
     {
       return order_;
     }
-    unsigned int size() const
+    std::size_t size() const
     {
       return size_;
     }
     template <class Topology>
-    void build( unsigned int order )
+    void build( std::size_t order )
     {
       size_ = 0;
       order_ = order;
@@ -375,8 +375,8 @@ namespace Dune
     }
 
     Builder builder_;
-    unsigned int order_;
-    unsigned int size_;
+    std::size_t order_;
+    std::size_t size_;
   };
 
   template < unsigned int dim, class Field >
@@ -384,7 +384,7 @@ namespace Dune
   {
     typedef RTL2InterpolationBuilder<dim,Field> Builder;
     typedef const RaviartThomasL2Interpolation<dim,Field> Object;
-    typedef unsigned int Key;
+    typedef std::size_t Key;
     typedef typename std::remove_const<Object>::type NonConstObject;
     template <class Topology>
     static Object *create( const Key &key )

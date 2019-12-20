@@ -5,6 +5,7 @@
 #include <array>
 #include <bitset>
 #include <vector>
+#include <limits>
 
 #include <dune/common/fvector.hh>
 #include <dune/common/math.hh>
@@ -72,12 +73,12 @@ namespace Dune
      * \brief calculate the i`th multi index in graded lexigraphic order
      *
      * \tparam d     number of components of the multi index
-     * \tparam kMax  maximum absolute value to consider. (default is `order`)
+     * \tparam kMax  maximum absolute value to consider. (default is `unlimited`)
      *
      * \param i  index
      *
      */
-    template<std::size_t d, std::size_t kMax = order>
+    template<std::size_t d, std::size_t kMax = std::numeric_limits<std::size_t>::max()>
     constexpr inline static auto unrank (std::size_t i)
       -> std::array<std::size_t, d>
     {

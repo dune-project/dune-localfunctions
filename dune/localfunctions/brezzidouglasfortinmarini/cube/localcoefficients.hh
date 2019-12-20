@@ -57,6 +57,18 @@ namespace Dune
       std::vector<LocalKey> li;
   };
 
+  template<class D, class R, unsigned int dim, unsigned int order>
+  constexpr unsigned int BDFMCubeLocalCoefficients<D, R, dim, order>::interiorDofs;
+
+  template<class D, class R, unsigned int dim, unsigned int order>
+  constexpr unsigned int BDFMCubeLocalCoefficients<D, R, dim, order>::faceDofs;
+
+  template<class D, class R, unsigned int dim, unsigned int order>
+  constexpr std::size_t BDFMCubeLocalCoefficients<D, R, dim, order>::numFaces;
+
+  // template<class D, class R, unsigned int dim, unsigned int order>
+  // constexpr std::size_t BDFMCubeLocalCoefficients<D, R, dim, order>::numDofs;
+
 
 #ifndef DOXYGEN
   template<class D, class R, unsigned int dim>

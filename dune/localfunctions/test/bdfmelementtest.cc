@@ -6,7 +6,7 @@
 
 #include <dune/localfunctions/test/test-localfe.hh>
 
-int main(int argc, char** argv) try
+int main(int argc, char** argv)
 {
   bool success = true;
 
@@ -20,9 +20,4 @@ int main(int argc, char** argv) try
   TEST_FE(bdfm3cube2dlfem);
 
   return success ? 0 : 1;
-}
-catch (Dune::Exception e)
-{
-  std::cout << e.what() << std::endl;
-  return 1;
 }

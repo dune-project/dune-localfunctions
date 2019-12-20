@@ -255,6 +255,16 @@ namespace Dune
   };
 
 
+  template<class D, class R, unsigned int dim, unsigned int order>
+  static constexpr std::size_t BDFMCubeLocalInterpolation<D, R, dim, order>::numFaces;
+
+  template<class D, class R, unsigned int dim, unsigned int order>
+  static constexpr unsigned int BDFMCubeLocalInterpolation<D, R, dim, order>::interiorDofs;
+
+  template<class D, class R, unsigned int dim, unsigned int order>
+  static constexpr unsigned int BDFMCubeLocalInterpolation<D, R, dim, order>::faceDofs;
+
+
 #ifndef DOXYGEN
   template<class D, class R, unsigned int dim>
   class BDFMCubeLocalInterpolation<D, R, dim, 0>

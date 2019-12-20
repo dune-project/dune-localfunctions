@@ -4,8 +4,9 @@
 #include <algorithm>
 #include <array>
 #include <bitset>
-#include <vector>
 #include <limits>
+#include <type_traits>
+#include <vector>
 
 #include <dune/common/fvector.hh>
 #include <dune/common/math.hh>
@@ -40,10 +41,8 @@ namespace Dune
     using DomainFieldType = D;
     using RangeFieldType  = R;
 
-    static constexpr std::size_t numFaces = 2*dim;
-
-    static constexpr unsigned int interiorDofs = dim*binomial(dim+order-2, order-2);
-    static constexpr unsigned int faceDofs     = binomial(dim+order-2, order-1);
+    static constexpr auto interiorDofs = std::integral_constant<unsigned int, dim*binomial(dim+order-2, order-2)>{};
+    static constexpr auto faceDofs = std::integral_constant<unsigned int, binomial(dim+order-2, order-1)>{};
 
     /**
      * \brief compute the i'th shifted Legendre function on [0,1]
@@ -140,9 +139,9 @@ namespace Dune
      *
      * \param s  Edge orientation indicator
      */
-    BDFMCubeLocalInterpolation (std::bitset<numFaces> s)
+    BDFMCubeLocalInterpolation (std::bitset<2*dim> s)
     {
-      for (auto i : range(numFaces))
+      for (auto i : range(2*dim))
       {
         sign_[i] = s[i] ? -1 : 1;
         normal_[i][i/2] = i%2 ? 1 : -1;
@@ -161,12 +160,12 @@ namespace Dune
     template<class F, class C>
     void interpolate (const F& ff, C& out) const
     {
-      out.resize(numFaces*faceDofs + interiorDofs);
+      out.resize(2*dim*faceDofs + interiorDofs);
       std::fill(out.begin(),out.end(), 0.0);
 
       auto&& f = Impl::makeFunctionWithCallOperator<DomainType>(ff);
 
-      for(auto i : range(numFaces))
+      for(auto i : range(2*dim))
         trace(i, f, out);
 
       interior(f, out);
@@ -186,8 +185,8 @@ namespace Dune
     template<class F, class C>
     void trace (unsigned int face, const F& f, C& out) const
     {
-      assert(out.size() >= numFaces*faceDofs + interiorDofs);
-      assert(face < numFaces);
+      assert(out.size() >= 2*dim*faceDofs + interiorDofs);
+      assert(face < 2*dim);
 
       const auto o = face*faceDofs;
       const auto& n = normal_[face];
@@ -225,9 +224,9 @@ namespace Dune
     template<class F, class C>
     void interior (const F& f, C& out) const
     {
-      assert(out.size() >= numFaces*faceDofs + interiorDofs);
+      assert(out.size() >= 2*dim*faceDofs + interiorDofs);
 
-       const auto o = numFaces*faceDofs;
+       const auto o = 2*dim*faceDofs;
 
       const auto& rule = QuadratureRules<DomainFieldType, dim>::rule(GeometryTypes::cube(dim), order+std::max((int)order-2,(int)0)+5);
       for(const auto& qp : rule)
@@ -250,8 +249,8 @@ namespace Dune
     }
 
   private:
-    std::array<RangeFieldType, numFaces> sign_;
-    std::array<DomainType, numFaces> normal_;
+    std::array<RangeFieldType, 2*dim> sign_;
+    std::array<DomainType, 2*dim> normal_;
   };
 
 

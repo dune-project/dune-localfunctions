@@ -24,6 +24,13 @@
 
 * Add an implementation of the Crouzeix-Raviart element.
 
+* Add an implementation of the Brezzi-Douglas-Fortin-Marini element.
+  The coefficients and interpolation are implemented for arbitrary
+  dimension (>1) and order (>0). The actual basis is only implemented
+  for dim=2 and order=1,2,3.
+
+  See core/dune-localfunctions!105 and core/dune-localfunctions!145
+
 * Introduce a convenience header `hierarchical.hh` that includes
   all hierarchical FE implementations.
 

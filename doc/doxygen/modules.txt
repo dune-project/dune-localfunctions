@@ -3,6 +3,11 @@
  */
 
 /**
+ * \defgroup BrezziDouglasFortinMarini Brezzi-Douglas-Fortin-Marini elements
+ * \ingroup LocalFunctions
+ */
+
+/**
  * \defgroup BrezziDouglasMarini Brezzi-Douglas-Marini elements
  * \ingroup LocalFunctions
  */

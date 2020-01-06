@@ -14,6 +14,7 @@ Copyright holders:
 2011--2013    Bernd Flemisch
 2015          Elisa Friebel
 2012          Christoph Gersbacher
+2019          Janick Gerstenberger
 2009--2019    Carsten Gräser
 2015--2018    Felix Gruber
 2011--2019    Christoph Grüninger

@@ -19,6 +19,7 @@ namespace Dune
     //! \brief Constructor with given set of edge orientations
     RT02DLocalInterpolation (std::bitset<3> s = 0)
     {
+      using std::sqrt;
       for (std::size_t i=0; i<sign_.size(); i++)
         sign_[i] = (s[i]) ? -1.0 : 1.0;
 

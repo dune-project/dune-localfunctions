@@ -6,8 +6,6 @@
 #include <functional>
 
 #include <dune/common/concept.hh>
-#include <dune/common/function.hh>
-
 
 
 namespace Dune {

@@ -37,6 +37,7 @@ namespace Dune
      */
     RT12DLocalInterpolation (unsigned int s)
     {
+      using std::sqrt;
       sign0 = sign1 = sign2 = 1.0;
       if (s & 1)
       {

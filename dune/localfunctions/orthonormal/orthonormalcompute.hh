@@ -167,6 +167,7 @@ namespace ONBCompute
 
     void gramSchmidt ()
     {
+      using std::sqrt;
       // setup identity
       const std::size_t N = Base::rows();
       for( std::size_t i = 0; i < N; ++i )

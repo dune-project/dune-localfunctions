@@ -23,7 +23,7 @@ namespace Dune {
 namespace Impl {
 
   // Helper for visiting a variant containing monostate.
-  // Since a generic lambda will inmost cases not compile
+  // Since a generic lambda will in most cases not compile
   // for monostate, we add special empty overloads for monostate.
   // Hence visitIf will simply do nothing in the case of a
   // monostate value.

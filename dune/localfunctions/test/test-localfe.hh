@@ -206,7 +206,7 @@ bool testJacobian(const FE& fe, unsigned order = 2)
     std::vector<typename LB::Traits::JacobianType> jacobians;
     fe.localBasis().evaluateJacobian(testPoint, jacobians);
     if(jacobians.size() != fe.localBasis().size()) {
-      std::cout << "Bug in evaluateJacobianGlobal() for finite element type "
+      std::cout << "Bug in evaluateJacobian() for finite element type "
                 << Dune::className(fe) << std::endl;
       std::cout << "    Jacobian vector has size " << jacobians.size()
                 << std::endl;

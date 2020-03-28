@@ -778,11 +778,35 @@ namespace Dune { namespace Impl
 
 namespace Dune
 {
-  /** \brief Lagrange finite element for 3d pyramids with arbitrary compile-time polynomial order
+  /** \brief Lagrange finite element for 3d pyramids with compile-time polynomial order
    *
    * \tparam D Type used for domain coordinates
-   * \tparam R Type used for function values
-   * \tparam k Polynomial order
+   * \tparam R Type used for shape function values
+   * \tparam k Polynomial order, only orders 1 and 2 are actually implemented
+   *
+   * Lagrange shape functions are tricky.  In the paper mentioned below, Christian Wieners states
+   * "There exists no continuously differentiable conforming shape function for the pyramid
+   *  which is linear, resp. bilinear on the faces."
+   * The same holds, mutatis mutandis, for second-order Lagrange functions.
+   * The usual remedy, employed here, is to use shape functions that are continuous,
+   * but only piecewise differentiable.
+   *
+   * More specifically, the implementations in this file are taken from the following papers:
+   * * First order: C. Wieners, Conforming discretizations on tetrahedrons, pyramids, prisms and hexahedrons (1997)
+   * * Second order: L. Liu et.al. On Higher Order Pyramidal Finite Elements, (2011) [anisotropic variant]
+   *
+   * These are piecewise trilinear/triquadratic basis functions with the following properties:
+   * * Shape functions with Lagrange property
+   * * Each basis function is bilinear/biquadratic on the rectangular face
+   * * Each basis function is linear/quadratic on all triangular faces
+   * * Each basis function is continuous in the interelement boundary
+   *
+   * As the derivatives are not continuous, numerical quadrature for expressions involving
+   * shape function derivatives should employ a composite rule composed of two tetrahedral parts.
+   *
+   * \warning The shape functions currently do not sum up to 1, even though my understanding
+   *  of the Liu et al. paper is that they should.
+   *
    */
   template<class D, class R, int k>
   class LagrangePyramidLocalFiniteElement

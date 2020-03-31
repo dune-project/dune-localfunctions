@@ -180,7 +180,10 @@ bool testLocalInterpolation(const FE& fe)
 
 // check whether Jacobian agrees with FD approximation
 template<class FE>
-bool testJacobian(const FE& fe, unsigned order = 2)
+bool testJacobian(const FE& fe,
+                  unsigned order = 2,
+                  const std::function<bool(const typename FE::Traits::LocalBasisType::Traits::DomainType&)> derivativePointSkip = [](const typename FE::Traits::LocalBasisType::Traits::DomainType&){return false;}
+)
 {
   typedef typename FE::Traits::LocalBasisType LB;
 
@@ -215,6 +218,10 @@ bool testJacobian(const FE& fe, unsigned order = 2)
       std::cout << std::endl;
       return false;
     }
+
+    // Skip this test point if we are supposed to
+    if (derivativePointSkip(quad[i].position()))
+      continue;
 
     // Loop over all directions
     for (int k=0; k<LB::Traits::dimDomain; k++) {
@@ -274,7 +281,8 @@ struct TestPartial
 {
   template <class FE>
   static bool test(const FE& fe,
-                   double eps, double delta, unsigned int diffOrder, std::size_t order = 2)
+                   double eps, double delta, unsigned int diffOrder, std::size_t order = 2,
+                  const std::function<bool(const typename FE::Traits::LocalBasisType::Traits::DomainType&)> derivativePointSkip = [](const typename FE::Traits::LocalBasisType::Traits::DomainType&){return false;})
   {
     bool success = true;
 
@@ -282,10 +290,10 @@ struct TestPartial
       std::cout << "No test for differentiability orders larger than 2!" << std::endl;
 
     if (diffOrder >= 2)
-      success = success and testOrder2(fe, eps, delta, order);
+      success = success and testOrder2(fe, eps, delta, order, derivativePointSkip);
 
     if (diffOrder >= 1)
-      success = success and testOrder1(fe, eps, delta, order);
+      success = success and testOrder1(fe, eps, delta, order, derivativePointSkip);
 
     success = success and testOrder0(fe, eps, delta, order);
 
@@ -377,7 +385,8 @@ struct TestPartial
   static bool testOrder1(const FE& fe,
                    double eps,
                    double delta,
-                   std::size_t order = 2)
+                   std::size_t order = 2,
+                  const std::function<bool(const typename FE::Traits::LocalBasisType::Traits::DomainType&)> derivativePointSkip = [](const typename FE::Traits::LocalBasisType::Traits::DomainType&){return false;})
   {
     typedef typename FE::Traits::LocalBasisType LB;
     typedef typename LB::Traits::RangeFieldType RangeField;
@@ -399,6 +408,10 @@ struct TestPartial
     {
       // Get a test point
       const Dune::FieldVector<double, LB::Traits::dimDomain>& testPoint = quad[i].position();
+
+      // Skip the test points we are supposed to skip
+      if (derivativePointSkip(testPoint))
+        continue;
 
       // Loop over all directions
       for (int k = 0; k < LB::Traits::dimDomain; k++)
@@ -474,7 +487,8 @@ struct TestPartial
   static bool testOrder2(const FE& fe,
                    double eps,
                    double delta,
-                   std::size_t order = 2)
+                   std::size_t order = 2,
+                   const std::function<bool(const typename FE::Traits::LocalBasisType::Traits::DomainType&)> derivativePointSkip = [](const typename FE::Traits::LocalBasisType::Traits::DomainType&){return false;})
   {
     typedef typename FE::Traits::LocalBasisType LocalBasis;
     typedef typename LocalBasis::Traits::DomainFieldType DF;
@@ -501,6 +515,10 @@ struct TestPartial
     {
       // Get a test point
       const Domain& testPoint = quad[i].position();
+
+      // Skip the test points we are supposed to skip
+      if (derivativePointSkip(testPoint))
+        continue;
 
       // For testing the 'partial' method
       std::array<std::vector<Dune::FieldMatrix<RangeField, dimDomain, dimDomain> >, dimR> partialHessians;
@@ -614,9 +632,22 @@ enum {
   DisableEvaluate = 8
 };
 
-// call tests for given finite element
+/** \brief Call tests for given finite element
+ *
+ * \param derivativePointSkip This is a small predicate class that allows to skip certain
+ *   points when testing the derivative implementations.  It exists because some
+ *   finite elements are not everywhere differentiable, but we still want to run
+ *   the tests for derivatives.  Rather than constructing special sets of test
+ *   points that avoid the problematic parts of the domain, we simply skip
+ *   all test points that happen to be somewhere where the shape functions are
+ *   not differentiable.
+ */
 template<class FE>
-bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned int diffOrder = 0)
+bool testFE(const FE& fe,
+            char disabledTests = DisableNone,
+            unsigned int diffOrder = 0,
+            const std::function<bool(const typename FE::Traits::LocalBasisType::Traits::DomainType&)> derivativePointSkip = [](const typename FE::Traits::LocalBasisType::Traits::DomainType&){return false;}
+           )
 {
   // Order of the quadrature rule used to generate test points
   unsigned int quadOrder = 2;
@@ -683,7 +714,7 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned int diffOrd
   }
   if (not (disabledTests & DisableJacobian))
   {
-    success = testJacobian<FE>(fe, quadOrder) and success;
+    success = testJacobian<FE>(fe, quadOrder, derivativePointSkip) and success;
   }
   else
   {
@@ -693,7 +724,7 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned int diffOrd
 
   if (not (disabledTests & DisableEvaluate))
   {
-    success = TestPartial::test(fe, TOL, jacobianTOL, diffOrder, quadOrder) and success;
+    success = TestPartial::test(fe, TOL, jacobianTOL, diffOrder, quadOrder, derivativePointSkip) and success;
   }
 
   if (not (disabledTests & DisableVirtualInterface))
@@ -707,7 +738,7 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned int diffOrd
       success = testLocalInterpolation<VirtualFEInterface>(virtualFE) and success;
     if (not (disabledTests & DisableJacobian))
     {
-      success = testJacobian<VirtualFEInterface>(virtualFE) and success;
+      success = testJacobian<VirtualFEInterface>(virtualFE, quadOrder, derivativePointSkip) and success;
     }
     else
     {
@@ -722,5 +753,6 @@ bool testFE(const FE& fe, char disabledTests = DisableNone, unsigned int diffOrd
 #define TEST_FE(A) { bool b = testFE(A); std::cout << "testFE(" #A ") " << (b?"succeeded\n":"failed\n"); success &= b; }
 #define TEST_FE2(A,B) { bool b = testFE(A, B); std::cout << "testFE(" #A ", " #B ") " << (b?"succeeded\n":"failed\n"); success &= b; }
 #define TEST_FE3(A,B,C) { bool b = testFE(A, B, C); std::cout << "testFE(" #A ", " #B ", " #C ") " << (b?"succeeded\n":"failed\n"); success &= b; }
+#define TEST_FE4(A,B,C,D) { bool b = testFE(A, B, C, D); std::cout << "testFE(" #A ", " #B ", " #C ", " #D ") " << (b?"succeeded\n":"failed\n"); success &= b; }
 
 #endif // DUNE_LOCALFUNCTIONS_TEST_TEST_LOCALFE_HH

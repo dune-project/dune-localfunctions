@@ -178,6 +178,47 @@ bool testLocalInterpolation(const FE& fe)
 }
 
 
+// check whether the shape functions sum up to '1' everywhere
+template<class FE>
+bool testSumToOne(const FE& fe,
+                  unsigned order = 5)
+{
+  typedef typename FE::Traits::LocalBasisType LB;
+
+  bool success = true;
+
+  // A set of test points
+  const auto& quad = Dune::QuadratureRules<double,LB::Traits::dimDomain>::rule(fe.type(),order);
+
+  // Loop over all quadrature points
+  for (size_t i=0; i<quad.size(); i++) {
+
+    // Get a test point
+    const auto& testPoint = quad[i].position();
+
+    // Get the shape function derivatives there
+    std::vector<typename LB::Traits::RangeType> values;
+    fe.localBasis().evaluateFunction(testPoint, values);
+
+    auto sum = std::accumulate(values.begin(), values.end(), typename LB::Traits::RangeType(0.0));
+
+    if (std::abs(1-sum) > TOL)
+    {
+      std::cout << "Bug in testSumToOne() for finite element type "
+                << Dune::className(fe) << std::endl;
+      std::cout << "    At position: " << testPoint << ","
+                << std::endl;
+      std::cout << "    shape functions sum up to " << sum
+                << std::endl;
+      std::cout << std::endl;
+      success = false;
+    }
+
+  } // Loop over all quadrature points
+
+  return success;
+}
+
 // check whether Jacobian agrees with FD approximation
 template<class FE>
 bool testJacobian(const FE& fe,
@@ -629,7 +670,8 @@ enum {
   DisableLocalInterpolation = 1,
   DisableVirtualInterface = 2,
   DisableJacobian = 4,
-  DisableEvaluate = 8
+  DisableEvaluate = 8,
+  DisableSumToOne = 16
 };
 
 /** \brief Call tests for given finite element
@@ -712,6 +754,12 @@ bool testFE(const FE& fe,
   {
     success = testLocalInterpolation<FE>(fe) and success;
   }
+
+  if (not (disabledTests & DisableSumToOne))
+  {
+    success = testSumToOne<FE>(fe) and success;
+  }
+
   if (not (disabledTests & DisableJacobian))
   {
     success = testJacobian<FE>(fe, quadOrder, pointSkip) and success;

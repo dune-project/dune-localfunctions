@@ -178,6 +178,58 @@ bool testLocalInterpolation(const FE& fe)
 }
 
 
+// Check whether the space spanned by the shape functions
+// contains the constant functions
+template<class FE>
+bool testCanRepresentConstants(const FE& fe,
+                               unsigned order = 5)
+{
+  typedef typename FE::Traits::LocalBasisType LB;
+  using RangeType = typename LB::Traits::RangeType;
+
+  bool success = true;
+
+  // Construct the constant '1' function
+  auto constantOne = [](const typename LB::Traits::DomainType& xi) { return RangeType(1.0); };
+
+  // Project the constant function onto the FE space
+  std::vector<double> coefficients;
+  fe.localInterpolation().interpolate(constantOne, coefficients);
+
+  // A set of test points
+  const auto& quad = Dune::QuadratureRules<double,LB::Traits::dimDomain>::rule(fe.type(),order);
+
+  // Loop over all quadrature points
+  for (size_t i=0; i<quad.size(); i++) {
+
+    // Get a test point
+    const auto& testPoint = quad[i].position();
+
+    // Compute value of the representation of constantOne at the test point
+    std::vector<RangeType> values;
+    fe.localBasis().evaluateFunction(testPoint, values);
+
+    RangeType sum(0);
+    for (size_t j=0; j<values.size(); j++)
+      sum += coefficients[j] * values[j];
+
+    if ((RangeType(1.0)-sum).two_norm() > TOL)
+    {
+      std::cout << "Finite element type " << Dune::className(fe)
+                << " cannot represent constant functions!" << std::endl;
+      std::cout << "    At position: " << testPoint << ","
+                << std::endl;
+      std::cout << "    discrete approximation of the '1' function has value " << sum
+                << std::endl;
+      std::cout << std::endl;
+      success = false;
+    }
+
+  } // Loop over all quadrature points
+
+  return success;
+}
+
 // check whether Jacobian agrees with FD approximation
 template<class FE>
 bool testJacobian(const FE& fe,
@@ -628,7 +680,8 @@ enum {
   DisableLocalInterpolation = 1,
   DisableVirtualInterface = 2,
   DisableJacobian = 4,
-  DisableEvaluate = 8
+  DisableEvaluate = 8,
+  DisableRepresentConstants = 16
 };
 
 /** \brief Call tests for given finite element
@@ -710,6 +763,12 @@ bool testFE(const FE& fe,
   {
     success = testLocalInterpolation<FE>(fe) and success;
   }
+
+  if (not (disabledTests & DisableRepresentConstants))
+  {
+    success = testCanRepresentConstants<FE>(fe) and success;
+  }
+
   if (not (disabledTests & DisableJacobian))
   {
     success = testJacobian<FE>(fe, quadOrder, derivativePointSkip) and success;

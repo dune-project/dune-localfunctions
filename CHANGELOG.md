@@ -1,5 +1,8 @@
 # Master (will become release 2.8)
 
+* Fix a bug in a shape function of the second-order Lagrange element
+  on the three-dimensional pyramid.
+
 # Release 2.7
 
 * The header `lagrange.hh` now includes all headers of all Lagrange implementations,

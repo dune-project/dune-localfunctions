@@ -193,8 +193,7 @@ int main (int argc, char *argv[])
   TEST_FE4(pyramidp1fem, DisableNone, 1, xySkip);
 
   PyramidP2LocalFiniteElement<double,double> pyramidp2fem;
-  //! \todo Disable representation-of-constants test, because it fails (apparently a bug)
-  TEST_FE4(pyramidp2fem, DisableRepresentConstants, 1, xySkip);
+  TEST_FE4(pyramidp2fem, DisableNone, 1, xySkip);
 
   Hybrid::forEach(std::make_index_sequence<4>{},[&success](auto i)
   {

@@ -3,6 +3,9 @@
 * The header `lagrange.hh` now includes all headers of all Lagrange implementations,
   not just the ones with run-time order.
 
+* Fix a bug in a shape function of the second-order Lagrange element
+  on the three-dimensional pyramid.
+
 * Introduce a run-time polymorphic container `LocalFiniteElementVariant`.
   Much like `std::variant`, it implements a type-safe
   union of different `LocalFiniteElement` implementations.  Elements of type

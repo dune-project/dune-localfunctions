@@ -11,8 +11,6 @@
 #include <cstdlib>
 #include <vector>
 
-#include <dune/common/function.hh>
-
 #include <dune/common/gmpfield.hh>
 
 // Lagrange type elements

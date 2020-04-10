@@ -8,11 +8,11 @@
 #include <cstddef>
 #include <iostream>
 #include <ostream>
+#include <utility>
 
 #include <dune/common/exceptions.hh>
 #include <dune/common/fvector.hh>
 #include <dune/common/hybridutilities.hh>
-#include <dune/common/std/utility.hh>
 
 #include <dune/geometry/type.hh>
 #include <dune/geometry/generalvertexorder.hh>
@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
     int result = 77;
 
     static constexpr std::size_t max_k = 20;
-    Dune::Hybrid::forEach(Dune::Std::make_index_sequence<max_k+1>{},[&](auto i){test<i>(result);});
+    Dune::Hybrid::forEach(std::make_index_sequence<max_k+1>{},[&](auto i){test<i>(result);});
 
     return result;
   }

@@ -8,8 +8,6 @@
 #include <vector>
 #include <functional>
 
-#include <dune/common/function.hh>
-
 #include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
@@ -32,27 +30,51 @@ namespace Dune
    * @brief Return a proper base class for functions to use with LocalInterpolation.
    *
    * @tparam FE A FiniteElement type
+   *
+   * This class is deprecated.
+   * To keep this traits class working it exports a simple
+   * look-a-like of the old Dune::Function base class.
+   * However, you should stop using this and pass functions with
+   * plain operator() interface to interpolate() from now on.
    */
   template<class FE>
-  class LocalFiniteElementFunctionBase
+  class
+  [[deprecated("Dune::LocalFiniteElementFunctionBase is deprecated after Dune 2.7. You can now pass functions provinding operator() to interpolate.")]]
+  LocalFiniteElementFunctionBase
   {
-    typedef typename FE::Traits::LocalBasisType::Traits::DomainType DomainType;
-    typedef typename FE::Traits::LocalBasisType::Traits::RangeType RangeType;
+    typedef typename FE::Traits::LocalBasisType::Traits::DomainType Domain;
+    typedef typename FE::Traits::LocalBasisType::Traits::RangeType Range;
 
-    typedef LocalInterpolationVirtualInterface<DomainType, RangeType> Interface;
-    typedef typename FE::Traits::LocalInterpolationType Implementation;
+    // Hack: Keep a copy of Dune::Functions here. This allows to avoid depening
+    // on the deprecated dune-common header while still keeping the LocalFiniteElementFunctionBase
+    // mechanism working during its deprecation period.
+    class FunctionBaseDummy
+    {
+    public:
+
+      using RangeType = Range;
+      using DomainType = Domain;
+
+      struct Traits
+      {
+        using RangeType = Range;
+        using DomainType = Domain;
+      };
+
+      void evaluate(const DomainType& x, RangeType& y) const;
+    };
 
   public:
 
-    typedef VirtualFunction<DomainType, RangeType> VirtualFunctionBase;
-    typedef Function<const DomainType&, RangeType&> FunctionBase;
+    using VirtualFunctionBase = FunctionBaseDummy;
+    using FunctionBase = FunctionBaseDummy;
 
     /** \brief Base class type for functions to use with LocalInterpolation
      *
-     * This is the VirtualFunction interface class if FE implements the virtual
+     * This is just a dummy prociding the old type defs.
      * interface and Function base class otherwise.
      */
-    typedef typename std::conditional<std::is_base_of<Interface, Implementation>::value, VirtualFunctionBase, FunctionBase>::type type;
+    using type = FunctionBaseDummy;
   };
 
 

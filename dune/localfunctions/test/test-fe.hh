@@ -20,7 +20,6 @@
 
 #include <dune/common/classname.hh>
 #include <dune/common/fmatrix.hh>
-#include <dune/common/function.hh>
 
 #include <dune/geometry/quadraturerules.hh>
 
@@ -30,15 +29,19 @@
 // This provides the evaluate method needed by the interpolate()
 // method.
 template<class FE>
-class FEFunction :
-  public Dune::Function<const typename FE::Traits::Basis::Traits::DomainLocal&, typename FE::Traits::Basis::Traits::Range>
+class FEFunction
 {
-  typedef typename FE::Traits::Basis::Traits::DomainLocal DomainLocal;
-  typedef typename FE::Traits::Basis::Traits::Range Range;
-
   const FE& fe;
 
 public:
+  using RangeType = typename FE::Traits::Basis::Traits::Range;
+  using DomainType = typename FE::Traits::Basis::Traits::DomainLocal;
+
+  struct Traits {
+    using RangeType = typename FE::Traits::Basis::Traits::Range;
+    using DomainType = typename FE::Traits::Basis::Traits::DomainLocal;
+  };
+
   typedef typename FE::Traits::Basis::Traits::RangeField CT;
 
   std::vector<CT> coeff;
@@ -57,10 +60,9 @@ public:
       coeff[i] = ((1.0*std::rand()) / RAND_MAX - 0.5)*2.0*max;
   }
 
-  void evaluate (const DomainLocal& x, Range& y) const {
-    std::vector<Range> yy;
+  void evaluate (const DomainType& x, RangeType& y) const {
+    std::vector<RangeType> yy;
     fe.basis().evaluateFunction(x, yy);
-
     y = 0.0;
     for (std::size_t i=0; i<yy.size(); ++i)
       y.axpy(coeff[i], yy[i]);
@@ -87,12 +89,37 @@ bool testInterpolation(const FE& fe, double eps, int n=5)
   FEFunction<FE> f(fe);
 
   std::vector<typename FEFunction<FE>::CT> coeff;
+  std::vector<typename FEFunction<FE>::CT> coeff2;
   for(int i=0; i<n && success; ++i) {
     // Set random coefficient vector
     f.setRandom(100);
 
     // Compute interpolation weights
+
+    //////////////////////////////////////////////////////////////////////////////
+    //  Part A: Feed the function to the 'interpolate' method in form of
+    //    a class providing an evaluate() method.
+    //    This way is deprecated since dune-localfunctions 2.7.
+    //////////////////////////////////////////////////////////////////////////////
     fe.interpolation().interpolate(f, coeff);
+
+    //////////////////////////////////////////////////////////////////////////////
+    //  Part B: Redo the same test, but feed the function to the
+    //    'interpolate' method in form of a callable.
+    //////////////////////////////////////////////////////////////////////////////
+    auto callableF = [&](const auto& x) {
+      using Range = typename FE::Traits::Basis::Traits::Range;
+      Range y(0);
+      f.evaluate(x,y);
+      return y;
+    };
+    fe.interpolation().interpolate(callableF, coeff2);
+    if (coeff != coeff2) {
+      std::cout << "Passing callable and function with evaluate yields different "
+                << "interpolation weights for finite element type "
+                << Dune::className<FE>() << ":" << std::endl;
+      success = false;
+    }
 
     // Check size of weight vector
     if (coeff.size() != fe.basis().size()) {

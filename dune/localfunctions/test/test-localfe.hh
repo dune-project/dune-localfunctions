@@ -30,15 +30,16 @@ double jacobianTOL = 1e-5;  // sqrt(TOL)
 // This class wraps one shape function of a local finite element as a function
 // that can be feed to the LocalInterpolation::interpolate method.
 template<class FE>
-class ShapeFunctionAsFunction :
-  //  public Dune::LocalFiniteElementFunctionBase<FE>::type
-  public Dune::LocalFiniteElementFunctionBase<FE>::FunctionBase
-  //  public Dune::LocalFiniteElementFunctionBase<FE>::VirtualFunctionBase
+class ShapeFunctionAsFunction
 {
 public:
   typedef typename FE::Traits::LocalBasisType::Traits::DomainType DomainType;
   typedef typename FE::Traits::LocalBasisType::Traits::RangeType RangeType;
-  typedef typename Dune::Function<const DomainType&, RangeType&> Base;
+
+  struct Traits {
+    typedef typename FE::Traits::LocalBasisType::Traits::DomainType DomainType;
+    typedef typename FE::Traits::LocalBasisType::Traits::RangeType RangeType;
+  };
 
   typedef typename FE::Traits::LocalBasisType::Traits::RangeFieldType CT;
 
@@ -98,7 +99,7 @@ bool testLocalInterpolation(const FE& fe)
   {
     //////////////////////////////////////////////////////////////////////////////
     //  Part A: Feed the shape functions to the 'interpolate' method in form of
-    //    a class derived from FunctionBase.
+    //    a class providing an evaluate() method.
     //    This way is deprecated since dune-localfunctions 2.7.
     //////////////////////////////////////////////////////////////////////////////
 

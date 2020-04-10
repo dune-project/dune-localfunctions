@@ -5,10 +5,10 @@
 
 #include <cstddef>
 #include <type_traits>
+#include <variant>
 
 #include <dune/common/typeutilities.hh>
 #include <dune/common/std/type_traits.hh>
-#include <dune/common/std/variant.hh>
 #include <dune/common/overloadset.hh>
 
 #include <dune/geometry/type.hh>
@@ -30,8 +30,8 @@ namespace Impl {
   template<class Visitor, class Variant>
   void visitIf(Visitor&& visitor, Variant&& variant)
   {
-    auto visitorWithFallback = overload([&](Std::monostate& impl) {},  [&](const Std::monostate& impl) {}, visitor);
-    Std::visit(visitorWithFallback, variant);
+    auto visitorWithFallback = overload([&](std::monostate& impl) {},  [&](const std::monostate& impl) {}, visitor);
+    std::visit(visitorWithFallback, variant);
   }
 
   template<class... Implementations>
@@ -123,7 +123,7 @@ namespace Impl {
     }
 
   private:
-    Std::variant<Std::monostate, const Implementations*...> impl_;
+    std::variant<std::monostate, const Implementations*...> impl_;
     std::size_t size_;
     std::size_t order_;
   };
@@ -161,13 +161,13 @@ namespace Impl {
       // an l-value reference, we use a default constructed
       // dummy LocalKey value.
       static const Dune::LocalKey dummyLocalKey;
-      return Std::visit(overload(
-          [&](const Std::monostate& impl) -> decltype(auto) { return (dummyLocalKey);},
+      return std::visit(overload(
+          [&](const std::monostate& impl) -> decltype(auto) { return (dummyLocalKey);},
           [&](const auto* impl) -> decltype(auto) { return impl->localKey(i); }), impl_);
     }
 
   private:
-    Std::variant<Std::monostate, const Implementations*...> impl_;
+    std::variant<std::monostate, const Implementations*...> impl_;
     std::size_t size_;
   };
 
@@ -195,7 +195,7 @@ namespace Impl {
     }
 
   private:
-    Std::variant<Std::monostate, const Implementations*...> impl_;
+    std::variant<std::monostate, const Implementations*...> impl_;
   };
 
 } // namespace Impl
@@ -209,16 +209,14 @@ namespace Impl {
    * implementations that this class can hold have to be provided as
    * template parameter.
    *
-   * The implementation is based on Std::variant
-   * which is either std::variant or a drop-in replacement if the former is
-   * not available.
-   * Notice that this prepends Std::monostate to the Implementations
-   * list for the internally stored Std::variant such that
+   * The implementation is based on std::variant.
+   * Notice that this prepends std::monostate to the Implementations
+   * list for the internally stored std::variant such that
    * LocalFiniteElementVariant can be empty and is default-constructible.
-   * As a consequence providing Std::monostate manually to
+   * As a consequence providing std::monostate manually to
    * LocalFiniteElementVariant is neither necessary nor allowed.
    * Access to the stored implementation is internally implemented
-   * using Std::visit(). To avoid multiple trivial Std::visit()
+   * using std::visit(). To avoid multiple trivial std::visit()
    * calls, the results of size(), order(), and type() are cached
    * on creation and assignment.
    *
@@ -235,7 +233,7 @@ namespace Impl {
   class LocalFiniteElementVariant
   {
 
-    // In each LocalFooVariant we store a Std::variant<Std::monostate, const FooImpl*...>, i.e. a Std::variant
+    // In each LocalFooVariant we store a std::variant<std::monostate, const FooImpl*...>, i.e. a std::variant
     // with the pointer to the Foo implementation unless LocalFiniteElementVariant stores a monostate. In this
     // case each LocalFooVariant also stores a monostate (and not a monostate*).
     using LocalBasis = Impl::LocalBasisVariant<typename Implementations::Traits::LocalBasisType...>;
@@ -245,8 +243,8 @@ namespace Impl {
     // Update members after changing impl_
     void updateMembers()
     {
-      Std::visit(overload(
-          [&](Std::monostate&) {
+      std::visit(overload(
+          [&](std::monostate&) {
             localBasis_ = LocalBasis();
             localCoefficients_ = LocalCoefficients();
             localInterpolation_ = LocalInterpolation();
@@ -276,7 +274,7 @@ namespace Impl {
     /**
      * \brief Construct empty LocalFiniteElementVariant
      */
-    LocalFiniteElementVariant(const Std::monostate& monostate)
+    LocalFiniteElementVariant(const std::monostate& monostate)
     {}
 
     /**
@@ -286,7 +284,7 @@ namespace Impl {
      * copy of the provided implementation.
      */
     template<class Implementation,
-      std::enable_if_t<Std::disjunction<std::is_same<std::decay_t<Implementation>, Implementations>...>::value, int> = 0>
+      std::enable_if_t<std::disjunction<std::is_same<std::decay_t<Implementation>, Implementations>...>::value, int> = 0>
     LocalFiniteElementVariant(Implementation&& impl) :
       impl_(std::forward<Implementation>(impl))
     {
@@ -335,7 +333,7 @@ namespace Impl {
      * \brief Assignment from implementation
      */
     template<class Implementation,
-      std::enable_if_t<Std::disjunction<std::is_same<std::decay_t<Implementation>, Implementations>...>::value, int> = 0>
+      std::enable_if_t<std::disjunction<std::is_same<std::decay_t<Implementation>, Implementations>...>::value, int> = 0>
     LocalFiniteElementVariant& operator=(Implementation&& impl)
     {
       impl_ = std::forward<Implementation>(impl);
@@ -385,15 +383,15 @@ namespace Impl {
     }
 
     /**
-     * \brief Provide access to underlying Std::variant
+     * \brief Provide access to underlying std::variant
      *
-     * This allows to use Std::visit on a higher level
+     * This allows to use std::visit on a higher level
      * which allows to avoid the indirection of the
-     * Std::variant - polymorphism inside the visitor code.
-     * Notice that the provided Std::variant contains
-     * Std::monostate in its type list. Hence any
+     * std::variant - polymorphism inside the visitor code.
+     * Notice that the provided std::variant contains
+     * std::monostate in its type list. Hence any
      * visitor used to access the variant has to be
-     * Std::monostate-aware.
+     * std::monostate-aware.
      */
     const auto& variant() const
     {
@@ -407,11 +405,11 @@ namespace Impl {
      */
     operator bool () const
     {
-      return not(Std::holds_alternative<Std::monostate>(variant()));
+      return not(std::holds_alternative<std::monostate>(variant()));
     }
 
   private:
-    Std::variant<Std::monostate, Implementations...> impl_;
+    std::variant<std::monostate, Implementations...> impl_;
     std::size_t size_;
     GeometryType geometryType_;
     LocalBasis localBasis_;

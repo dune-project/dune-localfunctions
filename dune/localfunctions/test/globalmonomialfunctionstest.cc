@@ -12,7 +12,6 @@
 #include <dune/common/exceptions.hh>
 #include <dune/common/fvector.hh>
 #include <dune/common/hybridutilities.hh>
-#include <dune/common/std/utility.hh>
 
 #include <dune/geometry/type.hh>
 #include <dune/geometry/generalvertexorder.hh>
@@ -56,14 +55,14 @@ static void Order(int &result)
 template<int dim>
 static void Dim(int &result)
 {
-  Dune::Hybrid::forEach(Dune::Std::make_index_sequence<4>{},[&](auto i){Order<dim,i>(result);});
+  Dune::Hybrid::forEach(std::make_index_sequence<4>{},[&](auto i){Order<dim,i>(result);});
 }
 
 int main(int argc, char** argv) {
   try {
     int result = 77;
 
-    Dune::Hybrid::forEach(Dune::Std::make_index_sequence<3>{},[&](auto i){Dim<i+1>(result);});
+    Dune::Hybrid::forEach(std::make_index_sequence<3>{},[&](auto i){Dim<i+1>(result);});
 
     return result;
   }

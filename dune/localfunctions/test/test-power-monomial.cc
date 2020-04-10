@@ -8,10 +8,10 @@
 #include <cstddef>
 #include <iostream>
 #include <ostream>
+#include <utility>
 
 #include <dune/common/exceptions.hh>
 #include <dune/common/hybridutilities.hh>
-#include <dune/common/std/utility.hh>
 
 #include <dune/localfunctions/meta/power.hh>
 #include <dune/localfunctions/monomial.hh>
@@ -64,20 +64,20 @@ static void Order(int &result)
 template<int dimD,int dimR>
 static void DimR(int &result)
 {
-   Dune::Hybrid::forEach(Dune::Std::make_index_sequence<4>{},[&](auto i){Order<dimD,dimR,i>(result);});
+   Dune::Hybrid::forEach(std::make_index_sequence<4>{},[&](auto i){Order<dimD,dimR,i>(result);});
 }
 
 template<int dimD>
 static void DimD(int &result)
 {
-  Dune::Hybrid::forEach(Dune::Std::make_index_sequence<4>{},[&](auto i){DimR<dimD,i>(result);});
+  Dune::Hybrid::forEach(std::make_index_sequence<4>{},[&](auto i){DimR<dimD,i>(result);});
 }
 
 int main(int argc, char** argv) {
   try {
     int result = 77;
 
-    Dune::Hybrid::forEach(Dune::Std::make_index_sequence<3>{},[&](auto i){DimD<i+1>(result);});
+    Dune::Hybrid::forEach(std::make_index_sequence<3>{},[&](auto i){DimD<i+1>(result);});
 
     return result;
   }

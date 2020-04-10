@@ -5,8 +5,9 @@
 #include "config.h"
 #endif
 
+#include <utility>
+
 #include <dune/common/hybridutilities.hh>
-#include <dune/common/std/utility.hh>
 
 #include <dune/geometry/type.hh>
 
@@ -24,7 +25,7 @@ static void test(Dune::GeometryType type)
 
 int main() {
   static constexpr std::size_t max_k = 3;
-  Dune::Hybrid::forEach(Dune::Std::make_index_sequence<max_k+1>{},[&](auto k)
+  Dune::Hybrid::forEach(std::make_index_sequence<max_k+1>{},[&](auto k)
           {
             constexpr int dim = 2;
             using FiniteElementCache = typename

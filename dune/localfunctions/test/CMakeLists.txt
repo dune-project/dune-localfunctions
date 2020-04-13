@@ -14,6 +14,8 @@ dune_add_test(SOURCES lagrangeshapefunctiontest.cc)
 
 dune_add_test(SOURCES monomialshapefunctiontest.cc)
 
+dune_add_test(SOURCES nedelec1stkindelementtest.cc)
+
 dune_add_test(SOURCES rannacherturekelementtest.cc)
 
 dune_add_test(SOURCES raviartthomaselementtest.cc)

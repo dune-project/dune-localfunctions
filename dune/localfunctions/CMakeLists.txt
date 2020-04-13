@@ -7,6 +7,7 @@ add_subdirectory(lagrange)
 add_subdirectory(meta)
 add_subdirectory(mimetic)
 add_subdirectory(monomial)
+add_subdirectory(nedelec)
 add_subdirectory(orthonormal)
 add_subdirectory(rannacherturek)
 add_subdirectory(raviartthomas)
@@ -23,6 +24,7 @@ install(FILES
   lagrange.hh
   mimetic.hh
   monomial.hh
+  nedelec.hh
   orthonormal.hh
   rannacherturek.hh
   raviartthomas.hh

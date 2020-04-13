@@ -8,7 +8,6 @@
 #include <cassert>
 #include <cstddef>
 #include <vector>
-#include <dune/common/function.hh>
 #include <dune/localfunctions/common/localinterpolation.hh>
 
 namespace Dune {
@@ -43,8 +42,7 @@ namespace Dune {
 
   private:
     template<class F>
-    class ComponentEvaluator :
-      public Function<typename Backend::Traits::DomainLocal, typename Backend::Traits::Range>
+    class ComponentEvaluator
     {
       const F &f;
       std::size_t comp;
@@ -54,11 +52,12 @@ namespace Dune {
         f(f_), comp(comp_)
       { }
 
-      void evaluate(const typename Backend::Traits::DomainLocal &x,
-                    typename Backend::Traits::Range &y) const
+      typename Backend::Traits::Range operator()(const typename Backend::Traits::DomainLocal &x) const
       {
         typename Traits::Range fy = f(x);
+        typename Backend::Traits::Range y;
         y[0] = fy[comp];
+        return y;
       }
     };
 

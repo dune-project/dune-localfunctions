@@ -6,7 +6,6 @@
 #include <functional>
 
 #include <dune/common/concept.hh>
-#include <dune/common/function.hh>
 
 
 
@@ -34,24 +33,6 @@ namespace Dune {
       );
     };
 
-    // Create function supporting f.evaluate(Domain, Range&)
-    // If the argument already does this, just forward it.
-    template<class Domain, class Range, class F,
-      std::enable_if_t<models<FunctionWithEvaluate<Domain, Range>, F>(), int> = 0>
-    decltype(auto) makeFunctionWithEvaluate(const F& f)
-    {
-      return f;
-    }
-
-    // Create function supporting f.evaluate(Domain, Range&)
-    // If the argument does not support this, wrap it as VirtualFunction
-    template<class Domain, class Range, class F,
-      std::enable_if_t<not models<FunctionWithEvaluate<Domain, Range>, F>(), int> = 0>
-    decltype(auto) makeFunctionWithEvaluate(const F& f)
-    {
-      return makeVirtualFunction<Domain, Range>(std::cref(f));
-    }
-
     // Create function supporting Range = f(Domain)
     // If the argument already does this, just forward it.
     template<class Domain, class F,
@@ -65,6 +46,10 @@ namespace Dune {
     // If the argument does not support this, wrap it in a lambda
     template<class Domain, class F,
       std::enable_if_t<not models<FunctionWithCallOperator<std::decay_t<Domain> >, F>(), int> = 0>
+#ifndef DUNE_DEPRECATED_INTERPOLATE_CHECK
+    [[deprecated( "Passing functions only supporting 'f.evaluate(x,y)' to interpolate() is deprecated."
+                  "Use functions supporting operator(), i.e. f(x) instead!")]]
+#endif
     decltype(auto) makeFunctionWithCallOperator(const F& f)
     {
       return [&](auto&& x) {

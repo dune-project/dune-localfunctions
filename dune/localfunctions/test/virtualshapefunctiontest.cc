@@ -32,11 +32,17 @@ void syntax_check( const T& )
 {}
 
 // A test function to test the local interpolation
-template <class DomainType, class RangeType>
+template <class D, class R>
 struct TestFunction
-//    : public VirtualFunction<DomainType,RangeType>
-  : public Function<const DomainType&,RangeType&>
 {
+  using DomainType = D;
+  using RangeType = R;
+
+  struct Traits {
+    using DomainType = D;
+    using RangeType = R;
+  };
+
   void evaluate(const DomainType& in, RangeType& out) const {
     // May not be flexible enough to compile for all range types
     out = 1;
@@ -87,7 +93,24 @@ void testLocalInterpolation(const LocalInterpolationVirtualInterface<DomainType,
   // Test interpolation of a function object derived from VirtualFunction
   TestFunction<DomainType,RangeType> testFunction;
   std::vector<typename RangeType::field_type> coefficients;
+
+  //////////////////////////////////////////////////////////////////////////////
+  //  Part A: Feed the function to the 'interpolate' method in form of
+  //    a class providing an evaluate() method.
+  //    This way is deprecated since dune-localfunctions 2.7.
+  //////////////////////////////////////////////////////////////////////////////
   localInterpolation->interpolate(testFunction, coefficients);
+
+  //////////////////////////////////////////////////////////////////////////////
+  //  Part B: Redo the same test, but feed the function to the
+  //    'interpolate' method in form of a callable.
+  //////////////////////////////////////////////////////////////////////////////
+  auto callableTestFunction = [&](const auto& x) {
+    RangeType y(0);
+    testFunction.evaluate(x,y);
+    return y;
+  };
+  localInterpolation->interpolate(callableTestFunction, coefficients);
 }
 
 // Test all methods of a local finite element given as a pointer to the abstract base class

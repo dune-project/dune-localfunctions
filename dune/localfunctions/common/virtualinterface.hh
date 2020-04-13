@@ -6,8 +6,7 @@
 #include <type_traits>
 #include <array>
 #include <vector>
-
-#include <dune/common/function.hh>
+#include <functional>
 
 #include <dune/geometry/type.hh>
 
@@ -31,27 +30,52 @@ namespace Dune
    * @brief Return a proper base class for functions to use with LocalInterpolation.
    *
    * @tparam FE A FiniteElement type
+   *
+   * \deprecated
+   * This class is deprecated.
+   * To keep this traits class working it exports a simple
+   * look-a-like of the old Dune::Function base class.
+   * However, you should stop using this and pass functions with
+   * plain operator() interface to interpolate() from now on.
    */
   template<class FE>
-  class LocalFiniteElementFunctionBase
+  class
+  [[deprecated("Dune::LocalFiniteElementFunctionBase is deprecated after Dune 2.7. You can now pass functions providing operator() to interpolate.")]]
+  LocalFiniteElementFunctionBase
   {
-    typedef typename FE::Traits::LocalBasisType::Traits::DomainType DomainType;
-    typedef typename FE::Traits::LocalBasisType::Traits::RangeType RangeType;
+    typedef typename FE::Traits::LocalBasisType::Traits::DomainType Domain;
+    typedef typename FE::Traits::LocalBasisType::Traits::RangeType Range;
 
-    typedef LocalInterpolationVirtualInterface<DomainType, RangeType> Interface;
-    typedef typename FE::Traits::LocalInterpolationType Implementation;
+    // Hack: Keep a copy of Dune::Function here. This allows to avoid depending
+    // on the deprecated dune-common header while still keeping the LocalFiniteElementFunctionBase
+    // mechanism working during its deprecation period.
+    class FunctionBaseDummy
+    {
+    public:
+
+      using RangeType = Range;
+      using DomainType = Domain;
+
+      struct Traits
+      {
+        using RangeType = Range;
+        using DomainType = Domain;
+      };
+
+      void evaluate(const DomainType& x, RangeType& y) const;
+    };
 
   public:
 
-    typedef VirtualFunction<DomainType, RangeType> VirtualFunctionBase;
-    typedef Function<const DomainType&, RangeType&> FunctionBase;
+    using VirtualFunctionBase = FunctionBaseDummy;
+    using FunctionBase = FunctionBaseDummy;
 
     /** \brief Base class type for functions to use with LocalInterpolation
      *
-     * This is the VirtualFunction interface class if FE implements the virtual
+     * This is just a dummy providing the old typedefs.
      * interface and Function base class otherwise.
      */
-    typedef typename std::conditional<std::is_base_of<Interface, Implementation>::value, VirtualFunctionBase, FunctionBase>::type type;
+    using type = FunctionBaseDummy;
   };
 
 
@@ -133,8 +157,8 @@ namespace Dune
   {
   public:
 
-    //! type of virtual function to interpolate
-    typedef Dune::VirtualFunction<DomainType, RangeType> FunctionType;
+    //! type of function to interpolate
+    using FunctionType = std::function<RangeType(DomainType)>;
 
     //! type of the coefficient vector in the interpolate method
     typedef typename RangeType::field_type CoefficientType;
@@ -164,8 +188,8 @@ namespace Dune
   {
   public:
 
-    //! type of virtual function to interpolate
-    typedef Dune::VirtualFunction<DomainType, RangeType> FunctionType;
+    //! type of function to interpolate
+    using FunctionType = std::function<RangeType(DomainType)>;
 
     //! type of the coefficient vector in the interpolate method
     typedef typename RangeType::field_type CoefficientType;
@@ -196,7 +220,7 @@ namespace Dune
       const auto& f = Impl::makeFunctionWithCallOperator<DomainType>(ff);
 
       const LocalInterpolationVirtualInterfaceBase<DomainType, RangeType>& asBase = *this;
-      asBase.interpolate(makeVirtualFunction<DomainType, RangeType>(std::cref(f)),out);
+      asBase.interpolate(FunctionType(std::cref(f)),out);
     }
 
     /** \brief determine coefficients interpolating a given function
@@ -211,7 +235,7 @@ namespace Dune
 
       std::vector<CoefficientType> outDummy;
       const LocalInterpolationVirtualInterfaceBase<DomainType, RangeType>& asBase = *this;
-      asBase.interpolate(makeVirtualFunction<DomainType, RangeType>(std::cref(f)),outDummy);
+      asBase.interpolate(FunctionType(std::cref(f)),outDummy);
       out.resize(outDummy.size());
       for(typename std::vector<CoefficientType>::size_type i=0; i<outDummy.size(); ++i)
         out[i] = outDummy[i];

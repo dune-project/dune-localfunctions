@@ -1,5 +1,17 @@
 # Master (will become release 2.8)
 
+* Passing functions that support `f.evaluate(x,y)` to `interpolate()`
+  is deprecated. Instead the functions should now provide `operator()`.
+  Passing functions providing the old interface is still supported in 2.8.
+  * `LocalFiniteElementFunctionBase` is deprecated. You can rely
+    on duck-typing when passing functions with the new interface.
+  * The virtual interface for interpolating functions in `LocalFiniteElementVirtualInterface`
+    now uses `std::function` instead of the deprecated `VirtualFunction`
+    for the passed function.
+  * The virtual interface wrapper `LocalFiniteElementVirtualImp` now
+    requires that the wrapped `LocalFiniteElement` implementation
+    supports the new `operator()` based interpolation interface.
+
 * Fix a bug in a shape function of the second-order Lagrange element
   on the three-dimensional pyramid.
 

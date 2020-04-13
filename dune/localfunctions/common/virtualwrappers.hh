@@ -5,8 +5,6 @@
 
 #include <array>
 
-#include <dune/common/function.hh>
-
 #include <dune/localfunctions/common/localbasis.hh>
 #include <dune/localfunctions/common/localkey.hh>
 #include <dune/localfunctions/common/virtualinterface.hh>
@@ -139,8 +137,8 @@ namespace Dune
    * @brief class for wrapping a local interpolation
    *        using the virtual interface
    *
-   * @tparam DomainType domain type of the Dune::VirtualFunction to interpolate
-   * @tparam RangeType range type of the Dune::VirtualFunction to interpolate
+   * @tparam DomainType domain type of the function to interpolate
+   * @tparam RangeType range type of the function to interpolate
    * \tparam Imp LocalInterpolationVirtualInterface implementation
    */
   template<class DomainType, class RangeType, class Imp>

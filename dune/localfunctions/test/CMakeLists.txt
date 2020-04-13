@@ -1,3 +1,5 @@
+add_definitions(-DDUNE_DEPRECATED_INTERPOLATE_CHECK=1)
+
 dune_add_test(SOURCES bdfmelementtest.cc)
 
 dune_add_test(SOURCES brezzidouglasmarinielementtest.cc)

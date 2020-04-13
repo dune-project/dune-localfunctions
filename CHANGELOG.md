@@ -1,5 +1,16 @@
 # Master (will become release 2.8)
 
+* The virtual interface for interpolating functions in `LocalFiniteElementVirtualInterface`
+  now uses `std::function` instead of the deprecated `VirtualFunction`
+  for the passed function. Passing functions providing the old interface
+  is still supported in 2.8.
+  The virtual interface wrapper `LocalFiniteElementVirtualImp`
+  now requires that the wrapped `LocalFiniteElement` implementation
+  supports the new `operator()` based interpolation interface.
+  `LocalFiniteElementFunctionBase` is deprecated since you should
+  now use `std::function` (or funtions convertible to the latter)
+  for passing functions to `interpolate()`.
+
 * Fix a bug in a shape function of the second-order Lagrange element
   on the three-dimensional pyramid.
 

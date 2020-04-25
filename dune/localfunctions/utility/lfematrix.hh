@@ -86,6 +86,7 @@ namespace Dune
 
     bool invert ()
     {
+      using std::abs;
       assert( rows() == cols() );
       std::vector<unsigned int> p(rows());
       for (unsigned int j=0; j<rows(); ++j)
@@ -94,12 +95,12 @@ namespace Dune
       {
         // pivot search
         unsigned int r = j;
-        Field max = std::abs( (*this)(j,j) );
+        Field max = abs( (*this)(j,j) );
         for (unsigned int i=j+1; i<rows(); ++i)
         {
-          if ( std::abs( (*this)(i,j) ) > max )
+          if ( abs( (*this)(i,j) ) > max )
           {
-            max = std::abs( (*this)(i,j) );
+            max = abs( (*this)(i,j) );
             r = i;
           }
         }

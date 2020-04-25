@@ -61,7 +61,7 @@ namespace Dune
   template< class Eval, class CM, class D=double, class R=double >
   class PolynomialBasis
   {
-    typedef PolynomialBasis< Eval, CM > This;
+    typedef PolynomialBasis This;
     typedef Eval Evaluator;
 
   public:
@@ -339,8 +339,8 @@ namespace Dune
   private:
     typedef Eval Evaluator;
 
-    typedef PolynomialBasisWithMatrix< Evaluator, CM > This;
-    typedef PolynomialBasis<Evaluator,CM> Base;
+    typedef PolynomialBasisWithMatrix This;
+    typedef PolynomialBasis<Eval,CM,D,R> Base;
 
   public:
     typedef typename Base::Basis Basis;

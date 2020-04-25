@@ -45,7 +45,7 @@ namespace Dune
     typedef typename PreBasisFactory::template EvaluationBasisFactory<dim,SF>::Type MonomialBasisFactory;
     typedef typename MonomialBasisFactory::Object MonomialBasis;
     typedef StandardEvaluator< MonomialBasis > Evaluator;
-    typedef PolynomialBasisWithMatrix< Evaluator, SparseCoeffMatrix< SF, dimRange > > Basis;
+    typedef PolynomialBasisWithMatrix< Evaluator, SparseCoeffMatrix< SF, dimRange >, SF, SF > Basis;
 
     typedef const Basis Object;
     typedef typename InterpolationFactory::Key Key;

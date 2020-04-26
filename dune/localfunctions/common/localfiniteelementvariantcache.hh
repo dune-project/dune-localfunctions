@@ -109,7 +109,7 @@ public:
   LocalFiniteElementVariantCache(const LocalFiniteElementVariantCache& other) = default;
 
   /** \brief Move constructor */
-  LocalFiniteElementVariantCache(LocalFiniteElementVariantCache&& other) = default;
+  LocalFiniteElementVariantCache(LocalFiniteElementVariantCache&& other) noexcept = default;
 
   /** \brief Get the LocalFiniteElement for the given key data
    *

@@ -67,9 +67,9 @@ namespace Impl {
 
     LocalBasisVariant() = default;
     LocalBasisVariant(const LocalBasisVariant& other) = default;
-    LocalBasisVariant(LocalBasisVariant&& other) = default;
+    LocalBasisVariant(LocalBasisVariant&& other) noexcept = default;
     LocalBasisVariant& operator=(const LocalBasisVariant& other) = default;
-    LocalBasisVariant& operator=(LocalBasisVariant&& other) = default;
+    LocalBasisVariant& operator=(LocalBasisVariant&& other) noexcept = default;
 
     /**
      * \brief Number of shape functions
@@ -142,9 +142,9 @@ namespace Impl {
 
     LocalCoefficientsVariant() = default;
     LocalCoefficientsVariant(const LocalCoefficientsVariant& other) = default;
-    LocalCoefficientsVariant(LocalCoefficientsVariant&& other) = default;
+    LocalCoefficientsVariant(LocalCoefficientsVariant&& other) noexcept = default;
     LocalCoefficientsVariant& operator=(const LocalCoefficientsVariant& other) = default;
-    LocalCoefficientsVariant& operator=(LocalCoefficientsVariant&& other) = default;
+    LocalCoefficientsVariant& operator=(LocalCoefficientsVariant&& other) noexcept = default;
 
     /**
      * \brief Number of shape functions
@@ -184,9 +184,9 @@ namespace Impl {
 
     LocalInterpolationVariant() = default;
     LocalInterpolationVariant(const LocalInterpolationVariant& other) = default;
-    LocalInterpolationVariant(LocalInterpolationVariant&& other) = default;
+    LocalInterpolationVariant(LocalInterpolationVariant&& other) noexcept = default;
     LocalInterpolationVariant& operator=(const LocalInterpolationVariant& other) = default;
-    LocalInterpolationVariant& operator=(LocalInterpolationVariant&& other) = default;
+    LocalInterpolationVariant& operator=(LocalInterpolationVariant&& other) noexcept = default;
 
     template<typename F, typename C>
     void interpolate (const F& ff, std::vector<C>& out) const
@@ -305,7 +305,7 @@ namespace Impl {
     /**
      * \brief Move constructor
      */
-    LocalFiniteElementVariant(LocalFiniteElementVariant&& other) :
+    LocalFiniteElementVariant(LocalFiniteElementVariant&& other) noexcept :
       impl_(std::move(other.impl_))
     {
       updateMembers();
@@ -324,7 +324,7 @@ namespace Impl {
     /**
      * \brief Move assignment
      */
-    LocalFiniteElementVariant& operator=(LocalFiniteElementVariant&& other)
+    LocalFiniteElementVariant& operator=(LocalFiniteElementVariant&& other) noexcept
     {
       impl_ = std::move(other.impl_);
       updateMembers();

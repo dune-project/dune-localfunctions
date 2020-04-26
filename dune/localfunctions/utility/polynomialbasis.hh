@@ -55,12 +55,10 @@ namespace Dune
    *           void mult( val, y )
    *              Container val
    *              std::vector<RangeVector> y
-   * \tparam Container access to basis functions through forward iterator
-   *           typedef value_type
-   *           typedef const_iterator
-   *           const_iterator begin()
+   * \tparam D  Domain field-type of the basis functions
+   * \tparam R  Range field-type of the basis functions
    **/
-  template< class Eval, class CM, class D=double, class R=double >
+  template< class Eval, class CM, class D, class R >
   class PolynomialBasis
   {
     typedef PolynomialBasis This;

@@ -23,7 +23,7 @@ namespace Dune
     typedef MonomialBasisProvider<dim,Field> MBasisFactory;
     typedef typename MBasisFactory::Object MBasis;
     typedef StandardEvaluator<MBasis> EvalMBasis;
-    typedef PolynomialBasisWithMatrix<EvalMBasis,SparseCoeffMatrix<Field,dim> > Basis;
+    typedef PolynomialBasisWithMatrix<EvalMBasis,SparseCoeffMatrix<Field,dim>,Field,Field> Basis;
 
     typedef const Basis Object;
     typedef std::size_t Key;

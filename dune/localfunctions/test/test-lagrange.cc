@@ -79,8 +79,8 @@ template <Dune::GeometryType::Id geometryId>
 bool test(unsigned int order, bool verbose = false)
 {
   constexpr Dune::GeometryType geometry = geometryId;
-  typedef Dune::LagrangeBasisFactory<Dune::EquidistantPointSet, geometry.dim(), StorageField, ComputeField> BasisFactory;
-  typedef Dune::LagrangeCoefficientsFactory< Dune::EquidistantPointSet, geometry.dim(), double > LagrangeCoefficientsFactory;
+  typedef Dune::LagrangeBasisFactory<Dune::EquidistantPointSet,geometry.dim(),double,double,StorageField,ComputeField> BasisFactory;
+  typedef Dune::LagrangeCoefficientsFactory< Dune::EquidistantPointSet,geometry.dim(),double > LagrangeCoefficientsFactory;
 
   bool ret = true;
 

@@ -35,11 +35,11 @@ namespace Dune
   template<unsigned int dimDomain, class D, class R,
       class SF=R, class CF=SF>
   class RaviartThomasSimplexLocalFiniteElement
-    : public GenericLocalFiniteElement<RaviartThomasBasisFactory<dimDomain, SF, CF>,
+    : public GenericLocalFiniteElement<RaviartThomasBasisFactory<dimDomain, D, R, SF, CF>,
           RaviartThomasCoefficientsFactory<dimDomain>,
           RaviartThomasL2InterpolationFactory<dimDomain, SF> >
   {
-    typedef GenericLocalFiniteElement<RaviartThomasBasisFactory<dimDomain, SF, CF>,
+    typedef GenericLocalFiniteElement<RaviartThomasBasisFactory<dimDomain, D, R, SF, CF>,
         RaviartThomasCoefficientsFactory<dimDomain>,
         RaviartThomasL2InterpolationFactory<dimDomain, SF> > Base;
   public:

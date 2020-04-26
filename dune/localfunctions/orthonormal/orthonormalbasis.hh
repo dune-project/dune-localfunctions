@@ -13,10 +13,12 @@ namespace Dune
 
   // OrthonormalBasisFactory
   // -----------------------
-  template< int dim, class SF, class CF = typename ComputeField< SF, 512 >::Type >
+  template< int dim, class D, class R, class SF, class CF = typename ComputeField< SF, 512 >::Type >
   struct OrthonormalBasisFactory
   {
     static const unsigned int dimension = dim;
+    typedef D  Domain;
+    typedef R  Range;
     typedef SF StorageField;
     typedef CF ComputeField;
 
@@ -31,7 +33,7 @@ namespace Dune
 
     typedef SparseCoeffMatrix< StorageField, 1 > CoefficientMatrix;
     typedef StandardEvaluator< MonomialBasisType > Evaluator;
-    typedef PolynomialBasis< Evaluator, CoefficientMatrix > Basis;
+    typedef PolynomialBasis< Evaluator, CoefficientMatrix, Domain, Range > Basis;
 
     typedef unsigned int Key;
     typedef const Basis Object;

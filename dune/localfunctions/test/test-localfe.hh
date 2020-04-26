@@ -93,6 +93,7 @@ private:
 template<class FE>
 bool testLocalInterpolation(const FE& fe)
 {
+  using std::abs;
   std::vector<typename ShapeFunctionAsFunction<FE>::CT> coeff;
   for(size_t i=0; i<fe.size(); ++i)
   {
@@ -123,7 +124,7 @@ bool testLocalInterpolation(const FE& fe)
     // Check if interpolation weights are equal to coefficients
     for(std::size_t j=0; j<coeff.size(); ++j)
     {
-      if ( std::abs(coeff[j] - (i==j)) > TOL)
+      if ( abs(coeff[j] - (i==j)) > TOL)
       {
         std::cout << std::setprecision(16);
         std::cout << "Bug in LocalInterpolation for finite element type "
@@ -162,7 +163,7 @@ bool testLocalInterpolation(const FE& fe)
     // Check if interpolation weights are equal to coefficients
     for(std::size_t j=0; j<coeff.size(); ++j)
     {
-      if ( std::abs(coeff[j] - (i==j)) > TOL)
+      if ( abs(coeff[j] - (i==j)) > TOL)
       {
         std::cout << std::setprecision(16);
         std::cout << "Bug in LocalInterpolation for finite element type "

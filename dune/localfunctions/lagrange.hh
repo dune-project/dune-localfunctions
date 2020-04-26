@@ -73,11 +73,11 @@ namespace Dune
       unsigned int dimDomain, class D, class R,
       class SF=R, class CF=SF >
   class LagrangeLocalFiniteElement
-    : public GenericLocalFiniteElement< LagrangeBasisFactory< LP, dimDomain, SF, CF >,
+    : public GenericLocalFiniteElement< LagrangeBasisFactory< LP, dimDomain, D, R, SF, CF >,
           LagrangeCoefficientsFactory<LP, dimDomain, SF >,
           LagrangeInterpolationFactory< LP, dimDomain, SF > >
   {
-    typedef GenericLocalFiniteElement< LagrangeBasisFactory< LP, dimDomain, SF, CF >,
+    typedef GenericLocalFiniteElement< LagrangeBasisFactory< LP, dimDomain, D, R, SF, CF >,
         LagrangeCoefficientsFactory<LP, dimDomain, SF >,
         LagrangeInterpolationFactory< LP, dimDomain, SF > > Base;
   public:

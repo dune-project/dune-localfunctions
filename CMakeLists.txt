@@ -2,7 +2,7 @@
 project("dune-localfunctions" C CXX)
 
 # general stuff
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.13)
 
 # guess dune-common build dir
 if(NOT (dune-common_DIR OR dune-common_ROOT OR

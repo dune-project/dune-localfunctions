@@ -50,6 +50,8 @@
 * Introduce a convenience header `dune/localfunctions/brezzidouglasmarini.hh`
   that includes all BDM implementations.
 
+* Fix bugs in the implementation of `interpolate` for Raviart-Thomas elements.
+
 # Release 2.6
 
 *  The `diffOrder` value has disappeared from the `LocalBasisTraits` class.

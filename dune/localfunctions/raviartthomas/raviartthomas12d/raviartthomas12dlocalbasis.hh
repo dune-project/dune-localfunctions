@@ -28,32 +28,16 @@ namespace Dune
   public:
     typedef LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,2,Dune::FieldVector<R,2>,
         Dune::FieldMatrix<R,2,2> > Traits;
-    //! \brief Standard constructor
-    RT12DLocalBasis ()
-    {
-      sign0 = sign1 = sign2 = 1.0;
-    }
 
     /**
      * \brief Make set number s, where 0 <= s < 8
      *
      * \param s Edge orientation indicator
      */
-    RT12DLocalBasis (unsigned int s)
+    RT12DLocalBasis (std::bitset<3> s = 0)
     {
-      sign0 = sign1 = sign2 = 1.0;
-      if (s & 1)
-      {
-        sign0 = -1.0;
-      }
-      if (s & 2)
-      {
-        sign1 = -1.0;
-      }
-      if (s & 4)
-      {
-        sign2 = -1.0;
-      }
+      for (size_t i=0; i<3; i++)
+        sign_[i] = (s[i]) ? -1.0 : 1.0;
     }
 
     //! \brief number of shape functions
@@ -72,12 +56,12 @@ namespace Dune
                                   std::vector<typename Traits::RangeType>& out) const
     {
       out.resize(8);
-      out[0][0] = sign0*(in[0] - 4.0*in[0]*in[1]);
-      out[0][1] = sign0*(-1.0 + 5.0*in[1] - 4.0*in[1]*in[1]);
-      out[1][0] = sign1*(-1.0 + 5.0*in[0] - 4.0*in[0]*in[0]);
-      out[1][1] = sign1*(in[1] - 4.0*in[0]*in[1]);
-      out[2][0] = sign2*(-3.0*in[0] + 4.0*in[0]*in[0] + 4.0*in[1]*in[0]);
-      out[2][1] = sign2*(-3.0*in[1] + 4.0*in[0]*in[1] + 4.0*in[1]*in[1]);
+      out[0][0] = sign_[0]*(in[0] - 4.0*in[0]*in[1]);
+      out[0][1] = sign_[0]*(-1.0 + 5.0*in[1] - 4.0*in[1]*in[1]);
+      out[1][0] = sign_[1]*(-1.0 + 5.0*in[0] - 4.0*in[0]*in[0]);
+      out[1][1] = sign_[1]*(in[1] - 4.0*in[0]*in[1]);
+      out[2][0] = sign_[2]*(-3.0*in[0] + 4.0*in[0]*in[0] + 4.0*in[1]*in[0]);
+      out[2][1] = sign_[2]*(-3.0*in[1] + 4.0*in[0]*in[1] + 4.0*in[1]*in[1]);
       out[3][0] = -5.0*in[0] + 8.0*in[0]*in[0] + 4.0*in[1]*in[0];
       out[3][1] = 3.0 - 6.0*in[0] - 7.0*in[1] + 8.0*in[0]*in[1] + 4.0*in[1]*in[1];
       out[4][0] = -3.0 + 7.0*in[0] + 6.0*in[1] - 4.0*in[0]*in[0] - 8.0*in[1]*in[0];
@@ -101,20 +85,20 @@ namespace Dune
     {
       out.resize(8);
 
-      out[0][0][0] = sign0*(1.0 - 4.0*in[1]);
-      out[0][0][1] = sign0*(-4.0*in[0]);
+      out[0][0][0] = sign_[0]*(1.0 - 4.0*in[1]);
+      out[0][0][1] = sign_[0]*(-4.0*in[0]);
       out[0][1][0] = 0.0;
-      out[0][1][1] = sign0*(5.0 - 8.0*in[1]);
+      out[0][1][1] = sign_[0]*(5.0 - 8.0*in[1]);
 
-      out[1][0][0] = sign1*(5.0 - 8.0*in[0]);
+      out[1][0][0] = sign_[1]*(5.0 - 8.0*in[0]);
       out[1][0][1] = 0.0;
-      out[1][1][0] = sign1*(-4.0*in[1]);
-      out[1][1][1] = sign1*(1.0 - 4.0*in[0]);
+      out[1][1][0] = sign_[1]*(-4.0*in[1]);
+      out[1][1][1] = sign_[1]*(1.0 - 4.0*in[0]);
 
-      out[2][0][0] = sign2*(-3.0 + 8.0*in[0] + 4.0*in[1]);
-      out[2][0][1] = sign2*(4.0*in[0]);
-      out[2][1][0] = sign2*(4.0*in[1]);
-      out[2][1][1] = sign2*(-3.0 + 4.0*in[0] + 8.0*in[1]);
+      out[2][0][0] = sign_[2]*(-3.0 + 8.0*in[0] + 4.0*in[1]);
+      out[2][0][1] = sign_[2]*(4.0*in[0]);
+      out[2][1][0] = sign_[2]*(4.0*in[1]);
+      out[2][1][1] = sign_[2]*(-3.0 + 4.0*in[0] + 8.0*in[1]);
 
       out[3][0][0] = -5.0 + 16.0*in[0] + 4.0*in[1];
       out[3][0][1] = 4.0*in[0];
@@ -156,12 +140,12 @@ namespace Dune
 
         switch (direction) {
           case 0:
-            out[0][0] = sign0*(1.0 - 4.0*in[1]);
+            out[0][0] = sign_[0]*(1.0 - 4.0*in[1]);
             out[0][1] = 0.0;
-            out[1][0] = sign1*(5.0 - 8.0*in[0]);
-            out[1][1] = sign1*(-4.0*in[1]);
-            out[2][0] = sign2*(-3.0 + 8.0*in[0] + 4.0*in[1]);
-            out[2][1] = sign2*(4.0*in[1]);
+            out[1][0] = sign_[1]*(5.0 - 8.0*in[0]);
+            out[1][1] = sign_[1]*(-4.0*in[1]);
+            out[2][0] = sign_[2]*(-3.0 + 8.0*in[0] + 4.0*in[1]);
+            out[2][1] = sign_[2]*(4.0*in[1]);
             out[3][0] = -5.0 + 16.0*in[0] + 4.0*in[1];
             out[3][1] = -6.0 + 8.0*in[1];
             out[4][0] = 7.0 - 8.0*in[0] - 8.0*in[1];
@@ -174,12 +158,12 @@ namespace Dune
             out[7][1] = -8.0*in[1];
             break;
           case 1:
-            out[2][1] = sign2*(-3.0 + 4.0*in[0] + 8.0*in[1]);
-            out[2][0] = sign2*(4.0*in[0]);
-            out[1][1] = sign1*(1.0 - 4.0*in[0]);
+            out[2][1] = sign_[2]*(-3.0 + 4.0*in[0] + 8.0*in[1]);
+            out[2][0] = sign_[2]*(4.0*in[0]);
+            out[1][1] = sign_[1]*(1.0 - 4.0*in[0]);
             out[1][0] = 0.0;
-            out[0][0] = sign0*(-4.0*in[0]);
-            out[0][1] = sign0*(5.0 - 8.0*in[1]);
+            out[0][0] = sign_[0]*(-4.0*in[0]);
+            out[0][1] = sign_[0]*(5.0 - 8.0*in[1]);
             out[3][0] = 4.0*in[0];
             out[3][1] = -7.0 + 8.0*in[0] + 8.0*in[1];
             out[4][0] = 6.0 - 8.0*in[0];
@@ -206,7 +190,7 @@ namespace Dune
     }
 
   private:
-    R sign0, sign1, sign2;
+    std::array<R,3> sign_;
   };
 }
 #endif // DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS12DLOCALBASIS_HH

@@ -30,14 +30,8 @@ namespace Dune
     typedef LocalBasisTraits<D,3,Dune::FieldVector<D,3>,R,3,Dune::FieldVector<R,3>,
         Dune::FieldMatrix<R,3,3> > Traits;
 
-    //! \brief Standard constructor
-    RT0Cube3DLocalBasis ()
-    {
-      sign0 = sign1 = sign2 = sign3 = sign4 = sign5 = 1.0;
-    }
-
-    //! \brief Make set numer s, where 0<=s<64
-    RT0Cube3DLocalBasis (unsigned int s)
+    //! \brief Make set number s, where 0 <= s < 64
+    RT0Cube3DLocalBasis (unsigned int s = 0)
     {
       sign0 = sign1 = sign2 = sign3 = sign4 = sign5 = 1.0;
       if (s&1) sign0 = -1.0;
@@ -161,14 +155,8 @@ namespace Dune
   {
   public:
 
-    //! \brief Standard constructor
-    RT0Cube3DLocalInterpolation ()
-    {
-      sign0 = sign1 = sign2 = sign3 = sign4 = sign5 = 1.0;
-    }
-
-    //! \brief Make set numer s, where 0<=s<64
-    RT0Cube3DLocalInterpolation (unsigned int s)
+    //! \brief Make set number s, where 0 <= s < 64
+    RT0Cube3DLocalInterpolation (unsigned int s = 0)
     {
       sign0 = sign1 = sign2 = sign3 = sign4 = sign5 = 1.0;
       if (s&1) sign0 *= -1.0;

@@ -34,25 +34,10 @@ namespace Dune
      *
      * \param s Edge orientation indicator
      */
-    RT1Cube2DLocalBasis (unsigned int s = 0)
+    RT1Cube2DLocalBasis (std::bitset<4> s = 0)
     {
-      sign0 = sign1 = sign2 = sign3 = 1.0;
-      if (s & 1)
-      {
-        sign0 = -1.0;
-      }
-      if (s & 2)
-      {
-        sign1 = -1.0;
-      }
-      if (s & 4)
-      {
-        sign2 = -1.0;
-      }
-      if (s & 8)
-      {
-        sign3 = -1.0;
-      }
+      for (size_t i=0; i<4; i++)
+        sign_[i] = (s[i]) ? -1.0 : 1.0;
     }
 
     //! \brief number of shape functions
@@ -72,20 +57,20 @@ namespace Dune
     {
       out.resize(12);
 
-      out[0][0] = sign0*(-1.0 + 4.0*in[0]-3*in[0]*in[0]);
+      out[0][0] = sign_[0]*(-1.0 + 4.0*in[0]-3*in[0]*in[0]);
       out[0][1] = 0.0;
       out[1][0] = 3.0 - 12.0*in[0] - 6.0*in[1] + 24.0*in[0]*in[1]+9*in[0]*in[0] - 18.0*in[0]*in[0]*in[1];
       out[1][1] = 0.0;
-      out[2][0] = sign1*(-2.0*in[0] + 3.0*in[0]*in[0]);
+      out[2][0] = sign_[1]*(-2.0*in[0] + 3.0*in[0]*in[0]);
       out[2][1] = 0.0;
       out[3][0] = -6.0*in[0] + 12.0*in[0]*in[1] + 9.0*in[0]*in[0] - 18.0*in[0]*in[0]*in[1];
       out[3][1] = 0.0;
       out[4][0] = 0.0;
-      out[4][1] = sign2*(-1.0 + 4.0*in[1] - 3.0*in[1]*in[1]);
+      out[4][1] = sign_[2]*(-1.0 + 4.0*in[1] - 3.0*in[1]*in[1]);
       out[5][0] = 0.0;
       out[5][1] = -3.0 + 6.0*in[0] + 12.0*in[1] - 24.0*in[0]*in[1] - 9.0*in[1]*in[1] + 18.0*in[0]*in[1]*in[1];
       out[6][0] = 0.0;
-      out[6][1] = sign3*(-2.0*in[1] + 3.0*in[1]*in[1]);
+      out[6][1] = sign_[3]*(-2.0*in[1] + 3.0*in[1]*in[1]);
       out[7][0] = 0.0;
       out[7][1] = 6.0*in[1] - 12.0*in[0]*in[1] - 9.0*in[1]*in[1] + 18.0*in[0]*in[1]*in[1];
       out[8][0] = 24.0*in[0] - 36.0*in[0]*in[1] - 24.0*in[0]*in[0] + 36.0*in[0]*in[0]*in[1];
@@ -109,7 +94,7 @@ namespace Dune
     {
       out.resize(12);
 
-      out[0][0][0] = sign0*(4.0 - 6.0*in[0]);
+      out[0][0][0] = sign_[0]*(4.0 - 6.0*in[0]);
       out[0][0][1] = 0.0;
       out[0][1][0] = 0.0;
       out[0][1][1] = 0.0;
@@ -119,7 +104,7 @@ namespace Dune
       out[1][1][0] = 0.0;
       out[1][1][1] = 0.0;
 
-      out[2][0][0] = sign1*(-2.0 + 6.0*in[0]);
+      out[2][0][0] = sign_[1]*(-2.0 + 6.0*in[0]);
       out[2][0][1] = 0.0;
       out[2][1][0] = 0.0;
       out[2][1][1] = 0.0;
@@ -132,7 +117,7 @@ namespace Dune
       out[4][0][0] = 0.0;
       out[4][0][1] = 0.0;
       out[4][1][0] = 0.0;
-      out[4][1][1] = sign2*(4.0 - 6.0*in[1]);
+      out[4][1][1] = sign_[2]*(4.0 - 6.0*in[1]);
 
       out[5][0][0] = 0.0;
       out[5][0][1] = 0.0;
@@ -142,7 +127,7 @@ namespace Dune
       out[6][0][0] = 0.0;
       out[6][0][1] = 0.0;
       out[6][1][0] = 0.0;
-      out[6][1][1] = sign3*(-2.0 + 6.0*in[1]);
+      out[6][1][1] = sign_[3]*(-2.0 + 6.0*in[1]);
 
       out[7][0][0] = 0.0;
       out[7][0][1] = 0.0;
@@ -190,7 +175,7 @@ namespace Dune
     }
 
   private:
-    R sign0, sign1, sign2, sign3;
+    std::array<R,4> sign_;
   };
 }
 #endif // DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS1_CUBE2D_LOCALBASIS_HH

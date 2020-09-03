@@ -6,7 +6,8 @@
 #include <algorithm>
 #include <vector>
 
-#include <dune/geometry/referenceelementimplementation.hh>
+// #include <dune/geometry/referenceelementimplementation.hh>
+#include <dune/geometry/referenceelements.hh>
 #include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/lagrange/emptypoints.hh>
@@ -166,6 +167,10 @@ namespace Dune
         std::fill( count.begin(), count.end(), 0u );
         p += equidistantLagrangePoints( gt.id(), dimension, dimension-mydim, order(), count.data(), p );
       }
+      const auto &refElement = referenceElement<F,dimension>(gt);
+      F weight = refElement.volume()/F(double(points_.size()));
+      for (auto &p : points_)
+        p.weight_ = weight;
     }
 
     template< class T >
@@ -175,8 +180,11 @@ namespace Dune
       return true;
     }
 
+    static bool supports ( GeometryType gt, std::size_t order ) { return true; }
     template< class T >
-    static bool supports ( std::size_t order ) { return true; }
+    static bool supports ( std::size_t order ) {
+      return supports( GeometryType( T() ), order );
+    }
 
   private:
     using Base::points_;

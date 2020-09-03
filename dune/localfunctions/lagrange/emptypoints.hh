@@ -36,8 +36,14 @@ namespace Dune
       return localKey_;
     }
 
+    const Field weight () const
+    {
+      return weight_;
+    }
+
     Vector point_;
     LocalKey localKey_;
+    Field weight_;
   };
 
   // EmptyPointSet

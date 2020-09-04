@@ -8,6 +8,7 @@
 
 // #include <dune/geometry/referenceelementimplementation.hh>
 #include <dune/geometry/referenceelements.hh>
+#include <dune/geometry/quadraturerules.hh>
 #include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/lagrange/emptypoints.hh>

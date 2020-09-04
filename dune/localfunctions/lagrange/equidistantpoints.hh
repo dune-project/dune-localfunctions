@@ -6,9 +6,7 @@
 #include <algorithm>
 #include <vector>
 
-// #include <dune/geometry/referenceelementimplementation.hh>
 #include <dune/geometry/referenceelements.hh>
-#include <dune/geometry/quadraturerules.hh>
 #include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/lagrange/emptypoints.hh>
@@ -150,9 +148,6 @@ namespace Dune
 
   public:
     static const unsigned int dimension = dim;
-
-    // set an id for this PointSet
-    static const int pointSetId = Dune::QuadratureType::size;
 
     using Base::order;
 

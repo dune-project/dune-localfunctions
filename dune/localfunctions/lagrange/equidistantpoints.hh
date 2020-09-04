@@ -150,6 +150,9 @@ namespace Dune
   public:
     static const unsigned int dimension = dim;
 
+    // set an id for this PointSet
+    static const int pointSetId = Dune::QuadratureType::size;
+
     using Base::order;
 
     EquidistantPointSet ( std::size_t order ) : Base( order ) {}
@@ -178,6 +181,12 @@ namespace Dune
     {
       build( GeometryType( T() ) );
       return true;
+    }
+
+    bool buildCube ()
+    {
+      using namespace Impl;
+      return build< typename CubeTopology< dim >::type > ();
     }
 
     static bool supports ( GeometryType gt, std::size_t order ) { return true; }

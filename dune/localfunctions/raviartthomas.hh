@@ -10,6 +10,7 @@
 // Raviart-Thomas implementations with compile-time order
 #include <dune/localfunctions/raviartthomas/raviartthomas02d.hh>
 #include <dune/localfunctions/raviartthomas/raviartthomas12d.hh>
+#include <dune/localfunctions/raviartthomas/raviartthomas03d.hh>
 #include <dune/localfunctions/raviartthomas/raviartthomas0cube2d.hh>
 #include <dune/localfunctions/raviartthomas/raviartthomas1cube2d.hh>
 #include <dune/localfunctions/raviartthomas/raviartthomas2cube2d.hh>

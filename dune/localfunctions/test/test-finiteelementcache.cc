@@ -13,6 +13,7 @@
 
 #include <dune/localfunctions/lagrange/pqkfactory.hh>
 #include <dune/localfunctions/dualmortarbasis/dualpq1factory.hh>
+#include <dune/localfunctions/raviartthomas/raviartthomaslfecache.hh>
 
 template<class FiniteElementCache>
 static void test(Dune::GeometryType type)
@@ -37,6 +38,33 @@ int main() {
     constexpr int dim = 2;
     using FiniteElementCache = typename
         Dune::DualPQ1LocalFiniteElementCache<double, double, dim>;
+    test<FiniteElementCache>(Dune::GeometryTypes::simplex(dim));
+    test<FiniteElementCache>(Dune::GeometryTypes::cube(dim));
+  }
+
+  {
+    constexpr int dim = 2;
+    constexpr int order = 0;
+    using FiniteElementCache = typename
+        Dune::RaviartThomasLocalFiniteElementCache<double, double, dim, order>;
+    test<FiniteElementCache>(Dune::GeometryTypes::simplex(dim));
+    test<FiniteElementCache>(Dune::GeometryTypes::cube(dim));
+  }
+
+  {
+    constexpr int dim = 2;
+    constexpr int order = 1;
+    using FiniteElementCache = typename
+        Dune::RaviartThomasLocalFiniteElementCache<double, double, dim, order>;
+    test<FiniteElementCache>(Dune::GeometryTypes::simplex(dim));
+    test<FiniteElementCache>(Dune::GeometryTypes::cube(dim));
+  }
+
+  {
+    constexpr int dim = 3;
+    constexpr int order = 0;
+    using FiniteElementCache = typename
+        Dune::RaviartThomasLocalFiniteElementCache<double, double, dim, order>;
     test<FiniteElementCache>(Dune::GeometryTypes::simplex(dim));
     test<FiniteElementCache>(Dune::GeometryTypes::cube(dim));
   }

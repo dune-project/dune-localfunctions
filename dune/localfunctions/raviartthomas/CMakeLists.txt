@@ -1,4 +1,5 @@
 add_subdirectory(raviartthomas02d)
+add_subdirectory(raviartthomas03d)
 add_subdirectory(raviartthomas0cube2d)
 add_subdirectory(raviartthomas0cube3d)
 add_subdirectory(raviartthomas12d)

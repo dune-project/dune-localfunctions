@@ -8,6 +8,7 @@
 #include <dune/localfunctions/raviartthomas/raviartthomassimplex.hh>
 #include <dune/localfunctions/raviartthomas/raviartthomascube.hh>
 #include <dune/localfunctions/raviartthomas/raviartthomas02d.hh>
+#include <dune/localfunctions/raviartthomas/raviartthomas03d.hh>
 #include <dune/localfunctions/raviartthomas/raviartthomaslfecache.hh>
 #include <dune/localfunctions/raviartthomas/raviartthomas12d.hh>
 
@@ -22,6 +23,9 @@ int main(int argc, char** argv)
 
   Dune::RaviartThomasSimplexLocalFiniteElement<2,double,double> rt1simplex2dlfem(Dune::GeometryTypes::simplex(2),1);
   TEST_FE(rt1simplex2dlfem);
+
+  Dune::RaviartThomasSimplexLocalFiniteElement<3,double,double> rt0simplex3dlfem(Dune::GeometryTypes::simplex(3),0);
+  TEST_FE(rt0simplex3dlfem);
 
   Dune::RaviartThomasCubeLocalFiniteElement<double,double,2,0> rt0cube2dlfem;
   TEST_FE(rt0cube2dlfem);
@@ -109,6 +113,14 @@ int main(int argc, char** argv)
   {
     Dune::RT12DLocalFiniteElement<double,double> rt12dlfemDedicated(s);
     TEST_FE(rt12dlfemDedicated);
+  }
+
+  Dune::RT03DLocalFiniteElement<double,double> rt03dlfemDedicated;
+  TEST_FE(rt03dlfemDedicated);
+  for (unsigned int s = 0; s < 16; s++)
+  {
+    Dune::RT03DLocalFiniteElement<double,double> rt03dlfemDedicated(s);
+    TEST_FE(rt03dlfemDedicated);
   }
 
   Dune::RT0Cube3DLocalFiniteElement<double,double> rt0cube3dlfemDedicated;

@@ -15,6 +15,8 @@
 * Fix a bug in a shape function of the second-order Lagrange element
   on the three-dimensional pyramid.
 
+* Add an implementation of the Raviart-Thomas element for tetrehedra with order 0.
+
 # Release 2.7
 
 * The header `lagrange.hh` now includes all headers of all Lagrange implementations,

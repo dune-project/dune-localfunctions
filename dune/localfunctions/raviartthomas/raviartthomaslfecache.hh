@@ -67,6 +67,7 @@ namespace Impl {
     static auto getImplementations()
     {
       return std::make_tuple(
+        std::make_pair(index(GeometryTypes::tetrahedron), []() { return RT03DLocalFiniteElement<D,R>(); }),
         std::make_pair(index(GeometryTypes::hexahedron), []() { return RT0Cube3DLocalFiniteElement<D,R>(); })
       );
     }

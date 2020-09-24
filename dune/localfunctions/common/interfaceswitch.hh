@@ -73,7 +73,13 @@ namespace Dune {
      * with allocation and copy-construction and storing that.
      */
     static void setStore(Store& store, const FiniteElement& fe)
-    { store.reset(new FiniteElement(fe)); }
+    { store = std::make_shared<const FiniteElement>(fe); }
+    //! Store a finite element in the store.
+    static void setStore(Store& store, FiniteElement&& fe)
+    { store = std::make_shared<const FiniteElement>(std::move(fe)); }
+    //! Store a finite element in the store.
+    static void setStore(Store& store, const Store& fe)
+    { store = fe; }
   };
 
 #ifndef DOXYGEN
@@ -105,10 +111,16 @@ namespace Dune {
     { return fe.localCoefficients(); }
 
     //! Type for storing finite elements
-    typedef const FiniteElement *Store;
+    typedef std::shared_ptr<const FiniteElement> Store;
     //! Store a finite element in the store.
     static void setStore(Store& store, const FiniteElement& fe)
-    { store = &fe; }
+    { store = stackobject_to_shared_ptr<const FiniteElement>(fe); }
+    //! Store a finite element in the store.
+    static void setStore(Store& store, FiniteElement&& fe)
+    { store = std::make_shared<const FiniteElement>(std::move(fe)); }
+    //! Store a finite element in the store.
+    static void setStore(Store& store, const Store& fe)
+    { store = fe; }
   };
 #endif // !DOXYGEN
 

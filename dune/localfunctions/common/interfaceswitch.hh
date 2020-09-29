@@ -10,6 +10,7 @@
 
 #include <dune/common/fmatrix.hh>
 #include <dune/common/std/type_traits.hh>
+#include <dune/common/shared_ptr.hh>
 
 namespace Dune {
 

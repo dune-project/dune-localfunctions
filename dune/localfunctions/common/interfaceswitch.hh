@@ -45,25 +45,32 @@ namespace Dune {
 
     //! Type for storing finite elements
     /**
-     * Some algorithms use one variable to store (a pointer) a finite element
-     * and update that pointer while iterating through the grid.  This works
-     * well for local finite elements, since they exists in a finite number of
-     * variants, which can be stored somewhere and don't need to change for
-     * the duration of the algorithm, so we can always store a simple pointer.
-     * For global finite elements we have to store the object itself however,
-     * and we must make sure that we destroy the object when we are done with
-     * it.  Since global finite elements are not assignable in general, we
-     * needs to copy-construct them for each grid element we visit.
+     * Some algorithms use one variable to store (as a shared pointer)
+     * a finite element and update that pointer while iterating
+     * through the grid. This works well as long as there is only a
+     * moderate number of different finite elements, which can be
+     * stored somewhere and don't change for the duration of the
+     * algorithm.  This is the case for most local finite elements,
+     * since they exists in a finite number of variants.
      *
-     * To accommodate both interfaces, we define a store: for local finite
-     * elements it is a simple pointer, and if we want to store a finite
-     * element in it we simply store its address.  For global finite elements
-     * we use a shared_ptr, and if we want to store a finite element in it we
-     * allocate a new object and initialise it with the copy-constructor.  For
-     * local finite elements we don't need to do anything when we are done
-     * with it, global finite elements are automatically destructed by the
-     * shared_ptr when we store a new one or when the shared_ptr itself is
-     * destroyed.  Access to the finite element is done by simply
+     * If the number of possible finite element realizations grows to
+     * big, e.g. for global finite elements or also for p-adaptive
+     * local finite elements, these are only created on the
+     * fly. Therefore we need to store a copy.  Since finite elements
+     * in general are not assignable, we either copy-construct or
+     * move-construt them for each grid element we visit.
+     *
+     * To accommodate both interfaces, we store in a `shared_ptr`.
+     * Different ways to initialize a possible, from an l-value
+     * reference, an r-value reference or from a shared_ptr.
+     *
+     * For backwards compatibility we assume that an l-value reference
+     * to a local finite element is persistent and that we can simply
+     * store the pointer using `stackobject_to_shared_ptr`, while in
+     * the case of global finite elements we always need to copy
+     * construct using `make_shared`. If a local finite element is not
+     * persistent, it should be passed in as an r-value
+     * reference. Access to the finite element is done by simply
      * dereferencing the store in both cases.
      */
     typedef std::shared_ptr<const FiniteElement> Store;

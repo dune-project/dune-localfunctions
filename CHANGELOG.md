@@ -17,6 +17,9 @@
 
 * Add an implementation of the Raviart-Thomas element for tetrehedra with order 0.
 
+* Remove deprecated `GenericLocalFiniteElement::topologyId()`, use
+  `type().id()` instead.
+
 # Release 2.7
 
 * The header `lagrange.hh` now includes all headers of all Lagrange implementations,

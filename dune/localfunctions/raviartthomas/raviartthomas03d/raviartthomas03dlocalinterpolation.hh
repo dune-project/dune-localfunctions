@@ -20,7 +20,6 @@ namespace Dune
     RT03DLocalInterpolation (std::bitset<4> s = 0)
     {
       using std::sqrt;
-      using D =  typename LB::Traits::DomainType;
       for (std::size_t i=0; i<sign_.size(); i++)
         sign_[i] = (s[i]) ? -1.0 : 1.0;
 

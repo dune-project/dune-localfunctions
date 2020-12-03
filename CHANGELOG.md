@@ -15,7 +15,7 @@
 * Add an implementation of the Nédélec element of the first kind,
   as introduced in "Nédélec, Mixed finite elements in R^3, 1980,
   DOI: http://dx.doi.org/10.1007/BF01396415".
-  Only the first-order case for triangles is implemented.
+  Only the first-order case for triangles and tetrahedra is implemented.
 
 * Fix a bug in a shape function of the second-order Lagrange element
   on the three-dimensional pyramid.

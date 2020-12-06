@@ -8,6 +8,7 @@
 #include <dune/common/fmatrix.hh>
 #include <dune/common/fvector.hh>
 
+#include <dune/geometry/referenceelements.hh>
 #include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
@@ -32,6 +33,9 @@ namespace Impl
   template<class D, class R, int dim, int k>
   class Nedelec1stKindSimplexLocalBasis
   {
+    // Number of edges of the reference simplex
+    constexpr static std::size_t numberOfEdges = dim*(dim+1)/2;
+
   public:
     using Traits = LocalBasisTraits<D,dim,FieldVector<D,dim>,
                                     R,dim,FieldVector<R,dim>,
@@ -45,15 +49,15 @@ namespace Impl
      */
     Nedelec1stKindSimplexLocalBasis()
     {
-      edgeOrientation_ = {-1.0, 1.0, -1.0};
+      std::fill(edgeOrientation_.begin(), edgeOrientation_.end(), 1.0);
     }
 
     /** \brief Constructor for a given edge orientation
      */
-    Nedelec1stKindSimplexLocalBasis(std::bitset<dim*(dim+1)/2> edgeOrientation)
+    Nedelec1stKindSimplexLocalBasis(std::bitset<numberOfEdges> edgeOrientation)
+    : Nedelec1stKindSimplexLocalBasis()
     {
-      edgeOrientation_ = {-1.0, 1.0, -1.0};
-      for (int i=0; i<dim*(dim+1)/2; i++)
+      for (std::size_t i=0; i<edgeOrientation_.size(); i++)
         edgeOrientation_[i] *= edgeOrientation[i] ? -1.0 : 1.0;
     }
 
@@ -75,10 +79,48 @@ namespace Impl
     void evaluateFunction(const typename Traits::DomainType& in,
                            std::vector<typename Traits::RangeType>& out) const
     {
+      static_assert(k==1, "Evaluating Nédélec shape functions is implemented only for first order.");
       out.resize(size());
-      out[0] = {edgeOrientation_[0]*(in[1]-D(1)), edgeOrientation_[0]*(-in[0])};
-      out[1] = {edgeOrientation_[1]*in[1],        edgeOrientation_[1]*(-in[0]+D(1))};
-      out[2] = {edgeOrientation_[2]*in[1],        edgeOrientation_[2]*(-in[0])};
+
+      if (dim==2)
+      {
+        // First-order Nédélec shape functions on a triangle are of the form
+        //
+        //         (a1, a2) + b(-x2, x1)^T,     a_1, a_2, b \in R
+        out[0] = {D(1) - in[1],  in[0]};
+        out[1] = {in[1],        -in[0]+D(1)};
+        out[2] = {-in[1],        in[0]};
+      }
+
+      if constexpr (dim==3)
+      {
+        // First-order Nédélec shape functions on a tetrahedron are of the form
+        //
+        //          a + b \times x,       a, b \in R^3
+        //
+        // The following coefficients create the six basis vectors
+        // that are dual to the edge degrees of freedom:
+        //
+        // a[0] = { 1,  0,  0}              b[0] = { 0, -1,  1}
+        // a[1] = { 0,  1,  0}              b[1] = { 1,  0, -1}
+        // a[2] = { 0,  0,  0}              b[2] = { 0,  0,  1}
+        // a[3] = { 0,  0,  1}              b[3] = {-1,  1,  0}
+        // a[4] = { 0,  0,  0}              b[4] = { 0, -1,  0}
+        // a[5] = { 0,  0,  0}              b[5] = { 1,  0,  0}
+        //
+        // The following implementation uses these values, and simply
+        // skips all the zeros.
+
+        out[0] = { 1 - in[1] - in[2],     in[0]        ,     in[0]        };
+        out[1] = {     in[1]        , 1 - in[0] - in[2],             in[1]};
+        out[2] = {   - in[1]        ,     in[0]        , 0                };
+        out[3] = {             in[2],             in[2], 1 - in[0] - in[1]};
+        out[4] = {            -in[2], 0                ,     in[0]        };
+        out[5] = { 0                ,            -in[2],             in[1]};
+      }
+
+      for (std::size_t i=0; i<out.size(); i++)
+        out[i] *= edgeOrientation_[i];
     }
 
     /** \brief Evaluate Jacobians of all shape functions at a given point
@@ -90,11 +132,47 @@ namespace Impl
                           std::vector<typename Traits::JacobianType>& out) const
     {
       out.resize(size());
-      for (std::size_t i=0; i<out.size(); i++)
+      if (dim==2)
       {
-        out[i][0] = {                   0, edgeOrientation_[i]};
-        out[i][1] = {-edgeOrientation_[i],                   0};
+        out[0][0] = { 0, -1};
+        out[0][1] = { 1,  0};
+
+        out[1][0] = { 0,  1};
+        out[1][1] = {-1,  0};
+
+        out[2][0] = { 0, -1};
+        out[2][1] = { 1,  0};
       }
+      if (dim==3)
+      {
+        out[0][0] = { 0,-1,-1};
+        out[0][1] = { 1, 0, 0};
+        out[0][2] = { 1, 0, 0};
+
+        out[1][0] = { 0, 1,  0};
+        out[1][1] = {-1, 0, -1};
+        out[1][2] = { 0, 1,  0};
+
+        out[2][0] = { 0, -1, 0};
+        out[2][1] = { 1,  0, 0};
+        out[2][2] = { 0,  0, 0};
+
+        out[3][0] = { 0,  0, 1};
+        out[3][1] = { 0,  0, 1};
+        out[3][2] = {-1, -1, 0};
+
+        out[4][0] = { 0, 0, -1};
+        out[4][1] = { 0, 0,  0};
+        out[4][2] = { 1, 0,  0};
+
+        out[5][0] = { 0, 0,  0};
+        out[5][1] = { 0, 0, -1};
+        out[5][2] = { 0, 1,  0};
+      }
+
+      for (std::size_t i=0; i<out.size(); i++)
+        out[i] *= edgeOrientation_[i];
+
     }
 
     /** \brief Evaluate partial derivatives of all shape functions at a given point
@@ -114,15 +192,58 @@ namespace Impl
         auto const direction = std::distance(order.begin(), std::find(order.begin(), order.end(), 1));
         out.resize(size());
 
-        for (std::size_t i=0; i<size(); i++)
+        if (dim==2)
         {
-          out[i][direction] = edgeOrientation_[i];
-          out[i][1-direction] = 0;
           if (direction==0)
-            out[i] = {0.0, -edgeOrientation_[i]};
+          {
+            out[0] = {0,  1};
+            out[1] = {0, -1};
+            out[2] = {0,  1};
+          }
           else
-            out[i] = {edgeOrientation_[i], 0.0};
+          {
+            out[0] = {-1, 0};
+            out[1] = { 1, 0};
+            out[2] = {-1, 0};
+          }
         }
+
+        if (dim==3)
+        {
+          switch (direction)
+          {
+            case 0:
+            out[0] = { 0, 1, 1};
+            out[1] = { 0,-1, 0};
+            out[2] = { 0, 1, 0};
+            out[3] = { 0, 0,-1};
+            out[4] = { 0, 0, 1};
+            out[5] = { 0, 0, 0};
+            break;
+
+            case 1:
+            out[0] = {-1, 0, 0};
+            out[1] = { 1, 0, 1};
+            out[2] = {-1, 0, 0};
+            out[3] = { 0, 0,-1};
+            out[4] = { 0, 0, 0};
+            out[5] = { 0, 0, 1};
+            break;
+
+            case 2:
+            out[0] = {-1, 0, 0};
+            out[1] = { 0,-1, 0};
+            out[2] = { 0, 0, 0};
+            out[3] = { 1, 1, 0};
+            out[4] = {-1, 0, 0};
+            out[5] = { 0,-1, 0};
+            break;
+          }
+        }
+
+        for (std::size_t i=0; i<out.size(); i++)
+          out[i] *= edgeOrientation_[i];
+
       } else {
         out.resize(size());
         for (std::size_t i = 0; i < size(); ++i)
@@ -141,7 +262,7 @@ namespace Impl
   private:
 
     // Orientations of the simplex edges
-    std::array<R,dim*(dim+1)/2> edgeOrientation_;
+    std::array<R,numberOfEdges> edgeOrientation_;
   };
 
 
@@ -157,14 +278,19 @@ namespace Impl
     Nedelec1stKindSimplexLocalCoefficients ()
     : localKey_(size())
     {
+      static_assert(k==1, "Only first-order Nédélec local coefficients are implemented.");
+      // Assign all degrees of freedom to edges
+      // TODO: This is correct only for first-order Nédélec elements
       for (std::size_t i=0; i<size(); i++)
-        localKey_[i] = LocalKey(i,1,0);
+        localKey_[i] = LocalKey(i,dim-1,0);
     }
 
     //! Number of degrees of freedom
     std::size_t size() const
     {
-      return 3;
+      static_assert(dim==2 || dim==3, "Nédélec shape functions are implemented only for 2d and 3d simplices.");
+      return (dim==2) ? k * (k+2)
+                      : k * (k+2) * (k+3) / 2;
     }
 
     /** \brief Get assignment of i-th degree of freedom to a reference simplex subentity
@@ -188,23 +314,31 @@ namespace Impl
     static constexpr auto dim = LB::Traits::dimDomain;
     static constexpr auto size = LB::size();
 
+    // Number of edges of the reference simplex
+    constexpr static std::size_t numberOfEdges = dim*(dim+1)/2;
+
   public:
 
     //! \brief Constructor with given set of edge orientations
-    Nedelec1stKindSimplexLocalInterpolation (std::bitset<dim*(dim+1)/2> s = 0)
+    Nedelec1stKindSimplexLocalInterpolation (std::bitset<numberOfEdges> s = 0)
     {
-      using std::sqrt;
-      edgeOrientation_ = {-1.0, 1.0, -1.0};
-      for (std::size_t i=0; i<edgeOrientation_.size(); i++)
-        edgeOrientation_[i] *= (s[i]) ? -1.0 : 1.0;
+      auto refElement = Dune::referenceElement<double,dim>(GeometryTypes::simplex(dim));
 
-      m_[0] = {0.5, 0.0};
-      m_[1] = {0.0, 0.5};
-      m_[2] = {0.5, 0.5};
-      t_[0] = {-1.0,            0.0};
-      t_[1] = {0.0,            1.0};
-      t_[2] = {1.0/sqrt(2.0), -1.0/sqrt(2.0)};
-      c_ = {1.0, 1.0, sqrt(2.0)};
+      for (std::size_t i=0; i<numberOfEdges; i++)
+        m_[i] = refElement.position(i,dim-1);
+
+      for (std::size_t i=0; i<numberOfEdges; i++)
+      {
+        auto vertexIterator = refElement.subEntities(i,dim-1,dim).begin();
+        auto v0 = *vertexIterator;
+        auto v1 = *(++vertexIterator);
+        // By default, edges point from the vertex with the smaller index
+        // to the vertex with the larger index.
+        if (v0>v1)
+          std::swap(v0,v1);
+        edge_[i] = refElement.position(v1,dim) - refElement.position(v0,dim);
+        edge_[i] *= (s[i]) ? -1.0 : 1.0;
+      }
     }
 
     /** \brief Project a given function into the Nedelec space
@@ -218,26 +352,20 @@ namespace Impl
       out.resize(size);
       auto&& f = Impl::makeFunctionWithCallOperator<typename LB::Traits::DomainType>(ff);
 
-      // f gives v*outer normal at a point on the edge!
       for (std::size_t i=0; i<size; i++)
       {
         auto y = f(m_[i]);
         out[i] = 0.0;
         for (int j=0; j<dim; j++)
-          out[i] += y[j]*t_[i][j];
-        out[i] *= edgeOrientation_[i]*c_[i];
+          out[i] += y[j]*edge_[i][j];
       }
     }
 
   private:
-    // Edge orientations
-    std::array<typename LB::Traits::RangeFieldType,3> edgeOrientation_;
-    // Edge midpoints of the reference triangle
-    std::array<typename LB::Traits::DomainType,3> m_;
-    // Unit tangents of the reference triangle
-    std::array<typename LB::Traits::DomainType,3> t_;
-    // Triangle edge lengths
-    std::array<typename LB::Traits::RangeFieldType,3> c_;
+    // Edge midpoints of the reference simplex
+    std::array<typename LB::Traits::DomainType, numberOfEdges> m_;
+    // Edges of the reference simplex
+    std::array<typename LB::Traits::DomainType, numberOfEdges> edge_;
   };
 
 }
@@ -276,7 +404,7 @@ namespace Impl
                                             Impl::Nedelec1stKindSimplexLocalCoefficients<dim,k>,
                                             Impl::Nedelec1stKindSimplexLocalInterpolation<Impl::Nedelec1stKindSimplexLocalBasis<D,R,dim,k> > >;
 
-    static_assert(dim==2, "Nedelec elements of the first kind are currently only implemented for triangles.");
+    static_assert(dim==2 || dim==3, "Nedelec elements are only implemented for 2d and 3d elements.");
     static_assert(k==1,   "Nedelec elements of the first kind are currently only implemented for order k==1.");
 
     /** \brief Default constructor
@@ -288,7 +416,7 @@ namespace Impl
      *
      * \param s Edge orientation indicator
      */
-    Nedelec1stKindSimplexLocalFiniteElement (std::bitset<dim+1> s) :
+    Nedelec1stKindSimplexLocalFiniteElement (std::bitset<dim*(dim+1)/2> s) :
       basis_(s),
       interpolation_(s)
     {}
@@ -310,7 +438,7 @@ namespace Impl
 
     static constexpr unsigned int size ()
     {
-      return 3;
+      return Traits::LocalBasisType::size();
     }
 
     static constexpr GeometryType type ()

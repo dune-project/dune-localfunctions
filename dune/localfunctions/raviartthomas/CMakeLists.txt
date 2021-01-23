@@ -12,6 +12,7 @@ add_subdirectory(raviartthomassimplex)
 
 install(FILES
   raviartthomas02d.hh
+  raviartthomas03d.hh
   raviartthomas0cube2d.hh
   raviartthomas0cube3d.hh
   raviartthomas12d.hh

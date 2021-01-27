@@ -29,7 +29,7 @@ namespace Dune {
     MIBasisFactory;
     typedef typename MIBasisFactory::Object MIBasis;
     typedef typename Basis::CoefficientMatrix CMatrix;
-    typedef PolynomialBasis<StandardEvaluator<MIBasis>, CMatrix > PrintBasis;
+    typedef PolynomialBasis<StandardEvaluator<MIBasis>, CMatrix, double, double > PrintBasis;
 
     MIBasis *miBasis = MIBasisFactory::template create<Topology>( basis.basis().order());
     PrintBasis printBasis(*miBasis,basis.matrix(),basis.size());

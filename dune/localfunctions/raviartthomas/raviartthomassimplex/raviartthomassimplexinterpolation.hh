@@ -103,9 +103,9 @@ namespace Dune
   struct RTL2InterpolationBuilder
   {
     static const unsigned int dimension = dim;
-    typedef OrthonormalBasisFactory< dimension, Field > TestBasisFactory;
+    typedef OrthonormalBasisFactory< dimension, Field, Field, Field > TestBasisFactory;
     typedef typename TestBasisFactory::Object TestBasis;
-    typedef OrthonormalBasisFactory< dimension-1, Field > TestFaceBasisFactory;
+    typedef OrthonormalBasisFactory< dimension-1, Field, Field, Field > TestFaceBasisFactory;
     typedef typename TestFaceBasisFactory::Object TestFaceBasis;
     typedef FieldVector< Field, dimension > Normal;
 

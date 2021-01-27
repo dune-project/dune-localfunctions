@@ -44,7 +44,7 @@ bool test(unsigned int order)
   for (unsigned int o = 0; o <= order; ++o)
   {
     std::cout << "Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
-    typedef Dune::OrthonormalBasisFactory<Topology::dimension,StorageField,ComputeField> BasisFactory;
+    typedef Dune::OrthonormalBasisFactory<Topology::dimension,double,double,StorageField,ComputeField> BasisFactory;
     const typename BasisFactory::Object &basis = *BasisFactory::template create<Topology>(o);
 
     const unsigned int size = basis.size( );

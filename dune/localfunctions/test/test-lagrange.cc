@@ -75,7 +75,7 @@ bool test(const Basis &basis, const Points &points, bool verbose)
 template <class Topology>
 bool test(unsigned int order, bool verbose = false)
 {
-  typedef Dune::LagrangeBasisFactory<Dune::EquidistantPointSet,Topology::dimension,StorageField,ComputeField> BasisFactory;
+  typedef Dune::LagrangeBasisFactory<Dune::EquidistantPointSet,Topology::dimension,double,double,StorageField,ComputeField> BasisFactory;
   typedef Dune::LagrangeCoefficientsFactory< Dune::EquidistantPointSet,  Topology::dimension,double > LagrangeCoefficientsFactory;
 
   bool ret = true;

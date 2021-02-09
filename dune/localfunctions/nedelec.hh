@@ -8,5 +8,6 @@
 
 // Nedelec element implementations with compile-time order
 #include <dune/localfunctions/nedelec/nedelec1stkindsimplex.hh>
+#include <dune/localfunctions/nedelec/nedelec1stkindcube.hh>
 
 #endif // #ifndef DUNE_LOCALFUNCTIONS_NEDELEC_HH

@@ -55,7 +55,7 @@ void testLocalBasis(const LocalBasisVirtualInterface<T>* localBasis)
 {
   // call each method once to test that it's there
   syntax_check<unsigned int>( localBasis->order() );
-  unsigned int size DUNE_UNUSED = localBasis->size();
+  [[maybe_unused]] unsigned int size = localBasis->size();
 
   // evaluate the local basis at (0,...,0)
   typename T::DomainType in(0);

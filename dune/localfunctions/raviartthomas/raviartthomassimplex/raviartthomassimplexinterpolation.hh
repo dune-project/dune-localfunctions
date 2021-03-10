@@ -68,22 +68,22 @@ namespace Dune
     typedef std::size_t Key;
     typedef const LocalCoefficientsContainer Object;
 
-    template< class Topology >
+    template< GeometryType::Id geometryId >
     static Object *create( const Key &key )
     {
       typedef RaviartThomasL2InterpolationFactory< dim, double > InterpolationFactory;
-      if( !supports< Topology >( key ) )
+      if( !supports< geometryId >( key ) )
         return nullptr;
-      typename InterpolationFactory::Object *interpolation = InterpolationFactory::template create< Topology >( key );
+      typename InterpolationFactory::Object *interpolation = InterpolationFactory::template create< geometryId >( key );
       Object *localKeys = new Object( *interpolation );
       InterpolationFactory::release( interpolation );
       return localKeys;
     }
 
-    template< class Topology >
+    template< GeometryType::Id geometryId >
     static bool supports ( const Key &key )
     {
-      return Impl::IsSimplex< Topology >::value;
+      return GeometryType(geometryId).isSimplex();
     }
     static void release( Object *object ) { delete object; }
   };
@@ -145,13 +145,14 @@ namespace Dune
     // normal of face f
     const Normal &normal ( unsigned int f ) const { assert( f < faceSize() ); return *(faceStructure_[ f ].normal_); }
 
-    template< class Topology >
+    template< GeometryType::Id geometryId >
     void build ( std::size_t order )
     {
+      constexpr GeometryType geometry = geometryId;
       order_ = order;
-      topologyId_ = Topology::id;
+      topologyId_ = geometry.id();
 
-      testBasis_ = (order > 0 ? TestBasisFactory::template create< Topology >( order-1 ) : nullptr);
+      testBasis_ = (order > 0 ? TestBasisFactory::template create< geometry >( order-1 ) : nullptr);
 
       const auto &refElement = ReferenceElements< Field, dimension >::general( type() );
       faceSize_ = refElement.size( 1 );
@@ -169,7 +170,7 @@ namespace Dune
          * And depending on the dynamic face index a different face geometry is needed.
          *
          */
-        TestFaceBasis *faceBasis = Impl::IfTopology< CreateFaceBasis, dimension-1 >::apply( refElement.type( face, 1 ).id(), order );
+        TestFaceBasis *faceBasis = Impl::IfGeometryType< CreateFaceBasis, dimension-1 >::apply( refElement.type( face, 1 ).id(), order );
         faceStructure_.emplace_back( faceBasis, refElement.integrationOuterNormal( face ) );
       }
       assert( faceStructure_.size() == faceSize_ );
@@ -186,10 +187,10 @@ namespace Dune
       const Dune::FieldVector< Field, dimension > *normal_;
     };
 
-    template< class FaceTopology >
+    template< GeometryType::Id faceGeometryId >
     struct CreateFaceBasis
     {
-      static TestFaceBasis *apply ( std::size_t order ) { return TestFaceBasisFactory::template create< FaceTopology >( order ); }
+      static TestFaceBasis *apply ( std::size_t order ) { return TestFaceBasisFactory::template create< faceGeometryId >( order ); }
     };
 
     std::vector< FaceStructure > faceStructure_;
@@ -250,12 +251,12 @@ namespace Dune
     {
       return size_;
     }
-    template <class Topology>
+    template <GeometryType::Id geometryId>
     void build( std::size_t order )
     {
       size_ = 0;
       order_ = order;
-      builder_.template build<Topology>(order_);
+      builder_.template build<geometryId>(order_);
       if (builder_.testBasis())
         size_ += dimension*builder_.testBasis()->size();
       for ( unsigned int f=0; f<builder_.faceSize(); ++f )
@@ -424,19 +425,20 @@ namespace Dune
     typedef const RaviartThomasL2Interpolation<dim,Field> Object;
     typedef std::size_t Key;
     typedef typename std::remove_const<Object>::type NonConstObject;
-    template <class Topology>
+
+    template <GeometryType::Id geometryId>
     static Object *create( const Key &key )
     {
-      if ( !supports<Topology>(key) )
+      if ( !supports<geometryId>(key) )
         return 0;
       NonConstObject *interpol = new NonConstObject();
-      interpol->template build<Topology>(key);
+      interpol->template build<geometryId>(key);
       return interpol;
     }
-    template< class Topology >
+    template< GeometryType::Id geometryId >
     static bool supports ( const Key &key )
     {
-      return Impl::IsSimplex<Topology>::value;
+      return GeometryType(geometryId).isSimplex();
     }
     static void release( Object *object ) { delete object; }
   };

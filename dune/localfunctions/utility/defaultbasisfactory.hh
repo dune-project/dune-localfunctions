@@ -56,15 +56,15 @@ namespace Dune
       Type;
     };
 
-    template< class Topology >
+    template< GeometryType::Id geometryId >
     static Object *create ( const Key &key )
     {
       const typename PreBasisFactory::Key preBasisKey = PreBasisKeyExtractor::apply(key);
-      const PreBasis *preBasis = PreBasisFactory::template create<Topology>( preBasisKey );
-      const Interpolation *interpol = InterpolationFactory::template create<Topology>( key );
+      const PreBasis *preBasis = PreBasisFactory::template create<geometryId>( preBasisKey );
+      const Interpolation *interpol = InterpolationFactory::template create<geometryId>( key );
       BasisMatrix< PreBasis, Interpolation, ComputeField > matrix( *preBasis, *interpol );
 
-      const MonomialBasis *monomialBasis = MonomialBasisFactory::template create< Topology >( preBasis->order() );
+      const MonomialBasis *monomialBasis = MonomialBasisFactory::template create< geometryId >( preBasis->order() );
 
       Basis *basis = new Basis( *monomialBasis );
 

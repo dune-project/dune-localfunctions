@@ -12,7 +12,7 @@
 
 namespace Dune
 {
-  template < class Topology, class Field >
+  template < GeometryType::Id geometryId, class Field >
   struct RTVecMatrix;
 
   template <unsigned int dim, class Field>
@@ -31,11 +31,11 @@ namespace Dune
     {
       typedef MonomialBasisProvider<dd,FF> Type;
     };
-    template< class Topology >
+    template< GeometryType::Id geometryId >
     static Object *create ( const Key &order )
     {
       RTVecMatrix<Topology,Field> vecMatrix(order);
-      MBasis *mbasis = MBasisFactory::template create<Topology>(order+1);
+      MBasis *mbasis = MBasisFactory::template create<geometryId>(order+1);
       typename std::remove_const<Object>::type *tmBasis = new typename std::remove_const<Object>::type(*mbasis);
       tmBasis->fill(vecMatrix);
       return tmBasis;
@@ -43,12 +43,13 @@ namespace Dune
     static void release( Object *object ) { delete object; }
   };
 
-  template <class Topology, class Field>
+  template <GeometryType::Id geometryId, class Field>
   struct RTVecMatrix
   {
-    static const unsigned int dim = Topology::dimension;
+    static constexpr GeometryType geometry = geometryId;
+    static const unsigned int dim = geometry.dim();
     typedef MultiIndex<dim,Field> MI;
-    typedef MonomialBasis<Topology,MI> MIBasis;
+    typedef MonomialBasis<geometryId,MI> MIBasis;
     RTVecMatrix(std::size_t order)
     {
       /*

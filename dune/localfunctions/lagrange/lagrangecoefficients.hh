@@ -23,14 +23,14 @@ namespace Dune
     const typedef LP<F,dim> Object;
     typedef std::size_t Key;
 
-    template< class T >
+    template< GeometryType::Id geometryId >
     static Object *create ( const Key &order )
     {
-      if (order == 0 || !Object::template supports<T>(order))
+      if (order == 0 || !Object::template supports<geometryId>(order))
         return 0;
       typedef typename std::remove_const<Object>::type LagrangeCoefficients;
       LagrangeCoefficients *object = new LagrangeCoefficients(order);
-      if ( !object->template build<T>() )
+      if ( !object->template build<geometryId>() )
       {
         delete object;
         object = nullptr;

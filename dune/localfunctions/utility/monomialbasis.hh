@@ -8,9 +8,9 @@
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
 
-#include <dune/geometry/topologyfactory.hh>
 #include <dune/geometry/type.hh>
 
+#include <dune/localfunctions/utility/topologyfactory.hh>
 #include <dune/localfunctions/utility/field.hh>
 #include <dune/localfunctions/utility/multiindex.hh>
 #include <dune/localfunctions/utility/tensor.hh>
@@ -41,12 +41,12 @@ namespace Dune
   * build over a non simplex base geometry.
   *
   * Central classes:
-  * 1) template< class Topology, class F >
+  * 1) template< GeometryType::Id geometryId, class F >
   *    class MonomialBasisImpl;
   *    Implementation of the monomial evaluation for
   *    a given topology and field type.
   *    The method evaluate fills a F* vector
-  * 2) template< class Topology, class F >
+  * 2) template< GeometryType::Id geometryId, class F >
   *    class MonomialBasis
   *    The base class for the static monomial evaluation
   *    providing addiional evaluate methods including
@@ -66,10 +66,10 @@ namespace Dune
   // Internal Forward Declarations
   // -----------------------------
 
-  template< class Topology >
+  template< GeometryType::Id geometryId >
   class MonomialBasisSize;
 
-  template< class Topology, class F >
+  template< GeometryType::Id geometryId, class F >
   class MonomialBasis;
 
 
@@ -77,10 +77,10 @@ namespace Dune
   // MonomialBasisSize
   // -----------------
 
-  template< class TopologyType >
+  template< GeometryType::Id geometryId >
   class MonomialBasisSize
   {
-    typedef MonomialBasisSize< TopologyType > This;
+    typedef MonomialBasisSize< geometryId > This;
 
   public:
     static This &instance ()
@@ -133,7 +133,8 @@ namespace Dune
       sizes_            = new unsigned int[ order+1 ];
       numBaseFunctions_ = new unsigned int[ order+1 ];
 
-      constexpr auto dim = TopologyType::dimension;
+      constexpr GeometryType geometry = geometryId;
+      constexpr auto dim = geometry.dim();
 
       sizes_[ 0 ] = 1;
       for( unsigned int k = 1; k <= order; ++k )
@@ -143,7 +144,7 @@ namespace Dune
 
       for( int codim=dim-1; codim>=0; codim--)
       {
-        if (Impl::isPrism(TopologyType::id,dim,codim))
+        if (Impl::isPrism(geometry.id(),dim,codim))
         {
           for( unsigned int k = 1; k <= order; ++k )
           {
@@ -172,8 +173,8 @@ namespace Dune
   template< int mydim, int dim, class F >
   struct MonomialBasisHelper
   {
-    typedef MonomialBasisSize< typename Impl::SimplexTopology< mydim >::type > MySize;
-    typedef MonomialBasisSize< typename Impl::SimplexTopology< dim >::type > Size;
+    typedef MonomialBasisSize< GeometryTypes::simplex(mydim).toId() > MySize;
+    typedef MonomialBasisSize< GeometryTypes::simplex(dim).toId() > Size;
 
     static void copy ( const unsigned int deriv, F *&wit, F *&rit,
                        const unsigned int numBaseFunctions, const F &z )
@@ -226,26 +227,26 @@ namespace Dune
   // MonomialBasisImpl
   // -----------------
 
-  template< class Topology, class F >
+  template< GeometryType::Id geometryId, class F>
   class MonomialBasisImpl;
 
   template< class F >
-  class MonomialBasisImpl< Impl::Point, F >
+  class MonomialBasisImpl< GeometryTypes::vertex, F >
   {
-    typedef MonomialBasisImpl< Impl::Point, F > This;
+    typedef MonomialBasisImpl< GeometryTypes::vertex, F > This;
 
   public:
-    typedef Impl::Point Topology;
+    static constexpr GeometryType geometry = GeometryTypes::vertex;
     typedef F Field;
 
-    static const unsigned int dimDomain = Topology::dimension;
+    static const unsigned int dimDomain = geometry.dim();
 
     typedef FieldVector< Field, dimDomain > DomainVector;
 
   private:
-    friend class MonomialBasis< Topology, Field >;
-    friend class MonomialBasisImpl< Impl::Prism< Topology >, Field >;
-    friend class MonomialBasisImpl< Impl::Pyramid< Topology >, Field >;
+    friend class MonomialBasis< geometry.toId(), Field >;
+    friend class MonomialBasisImpl< geometry.addTensor().toId(), Field >;
+    friend class MonomialBasisImpl< geometry.addCone().toId(), Field >;
 
     template< int dimD >
     void evaluate ( const unsigned int deriv, const unsigned int order,
@@ -267,28 +268,28 @@ namespace Dune
     }
   };
 
-  template< class BaseTopology, class F >
-  class MonomialBasisImpl< Impl::Prism< BaseTopology >, F >
+  template< GeometryType::Id geometryId, class F>
+  class MonomialBasisImpl
   {
-    typedef MonomialBasisImpl< Impl::Prism< BaseTopology >, F > This;
-
   public:
-    typedef Impl::Prism< BaseTopology > Topology;
     typedef F Field;
 
-    static const unsigned int dimDomain = Topology::dimension;
+    static constexpr GeometryType geometry = geometryId;
+    static constexpr GeometryType baseGeometry = Impl::getBase(geometry);
+
+    static const unsigned int dimDomain = geometry.dim();
 
     typedef FieldVector< Field, dimDomain > DomainVector;
 
   private:
-    friend class MonomialBasis< Topology, Field >;
-    friend class MonomialBasisImpl< Impl::Prism< Topology >, Field >;
-    friend class MonomialBasisImpl< Impl::Pyramid< Topology >, Field >;
+    friend class MonomialBasis< geometryId, Field >;
+    friend class MonomialBasisImpl< geometry.addTensor().toId(), Field >;
+    friend class MonomialBasisImpl< geometry.addCone().toId(), Field >;
 
-    typedef MonomialBasisSize< BaseTopology > BaseSize;
-    typedef MonomialBasisSize< Topology > Size;
+    typedef MonomialBasisSize< baseGeometry.toId() > BaseSize;
+    typedef MonomialBasisSize< geometryId > Size;
 
-    MonomialBasisImpl< BaseTopology, Field > baseBasis_;
+    MonomialBasisImpl< baseGeometry.toId(), Field > baseBasis_;
 
     MonomialBasisImpl ()
     {}
@@ -298,6 +299,28 @@ namespace Dune
                     const FieldVector< Field, dimD > &x,
                     const unsigned int block, const unsigned int *const offsets,
                     Field *const values ) const
+    {
+      if constexpr ( Impl::isTensor(geometry))
+        evaluateTensor(deriv, order, x, block, offsets, values);
+      else
+        evaluateCone(deriv, order, x, block, offsets, values);
+    }
+
+    void integrate ( const unsigned int order,
+                     const unsigned int *const offsets,
+                     Field *const values ) const
+    {
+      if constexpr ( Impl::isTensor(geometry))
+        integrateTensor(order, offsets, values);
+      else
+        integrateCone(order, offsets, values);
+    }
+
+    template< int dimD >
+    void evaluateTensor ( const unsigned int deriv, const unsigned int order,
+                          const FieldVector< Field, dimD > &x,
+                          const unsigned int block, const unsigned int *const offsets,
+                          Field *const values ) const
     {
       typedef MonomialBasisHelper< dimDomain, dimD, Field > Helper;
       const BaseSize &size = BaseSize::instance();
@@ -319,9 +342,9 @@ namespace Dune
       }
     }
 
-    void integrate ( const unsigned int order,
-                     const unsigned int *const offsets,
-                     Field *const values ) const
+    void integrateTensor ( const unsigned int order,
+                           const unsigned int *const offsets,
+                           Field *const values ) const
     {
       const BaseSize &size = BaseSize::instance();
       const Size &mySize = Size::instance();
@@ -350,33 +373,6 @@ namespace Dune
         row0 = row1;
       }
     }
-  };
-
-  template< class BaseTopology, class F >
-  class MonomialBasisImpl< Impl::Pyramid< BaseTopology >, F >
-  {
-    typedef MonomialBasisImpl< Impl::Pyramid< BaseTopology >, F > This;
-
-  public:
-    typedef Impl::Pyramid< BaseTopology > Topology;
-    typedef F Field;
-
-    static const unsigned int dimDomain = Topology::dimension;
-
-    typedef FieldVector< Field, dimDomain > DomainVector;
-
-  private:
-    friend class MonomialBasis< Topology, Field >;
-    friend class MonomialBasisImpl< Impl::Prism< Topology >, Field >;
-    friend class MonomialBasisImpl< Impl::Pyramid< Topology >, Field >;
-
-    typedef MonomialBasisSize< BaseTopology > BaseSize;
-    typedef MonomialBasisSize< Topology > Size;
-
-    MonomialBasisImpl< BaseTopology, Field > baseBasis_;
-
-    MonomialBasisImpl ()
-    {}
 
     template< int dimD >
     void evaluateSimplexBase ( const unsigned int deriv, const unsigned int order,
@@ -432,16 +428,16 @@ namespace Dune
     }
 
     template< int dimD >
-    void evaluate ( const unsigned int deriv, const unsigned int order,
-                    const FieldVector< Field, dimD > &x,
-                    const unsigned int block, const unsigned int *const offsets,
-                    Field *const values ) const
+    void evaluateCone ( const unsigned int deriv, const unsigned int order,
+                        const FieldVector< Field, dimD > &x,
+                        const unsigned int block, const unsigned int *const offsets,
+                        Field *const values ) const
     {
       typedef MonomialBasisHelper< dimDomain, dimD, Field > Helper;
       const BaseSize &size = BaseSize::instance();
       const_cast<BaseSize&>(size).computeSizes(order);
 
-      if( Impl::IsSimplex< Topology >::value )
+      if( geometry.isSimplex() )
         evaluateSimplexBase( deriv, order, x, block, offsets, values, size );
       else
         evaluatePyramidBase( deriv, order, x, block, offsets, values, size );
@@ -456,9 +452,9 @@ namespace Dune
       }
     }
 
-    void integrate ( const unsigned int order,
-                     const unsigned int *const offsets,
-                     Field *const values ) const
+    void integrateCone ( const unsigned int order,
+                         const unsigned int *const offsets,
+                         Field *const values ) const
     {
       const BaseSize &size = BaseSize::instance();
 
@@ -496,16 +492,16 @@ namespace Dune
   };
 
 
-
   // MonomialBasis
   // -------------
 
-  template< class Topology, class F >
+  template< GeometryType::Id geometryId, class F >
   class MonomialBasis
-    : public MonomialBasisImpl< Topology, F >
+    : public MonomialBasisImpl< geometryId, F >
   {
-    typedef MonomialBasis< Topology, F > This;
-    typedef MonomialBasisImpl< Topology, F > Base;
+    static constexpr GeometryType geometry = geometryId;
+    typedef MonomialBasis< geometryId, F > This;
+    typedef MonomialBasisImpl< geometryId, F > Base;
 
   public:
     static const unsigned int dimension = Base::dimDomain;
@@ -517,7 +513,7 @@ namespace Dune
 
     typedef Dune::FieldVector<Field,dimRange> RangeVector;
 
-    typedef MonomialBasisSize<Topology> Size;
+    typedef MonomialBasisSize<geometryId> Size;
 
     MonomialBasis (unsigned int order)
       : Base(),
@@ -546,9 +542,8 @@ namespace Dune
 
     unsigned int derivSize ( const unsigned int deriv ) const
     {
-      typedef typename Impl::SimplexTopology< dimension >::type SimplexTopology;
-      MonomialBasisSize< SimplexTopology >::instance().computeSizes( deriv );
-      return MonomialBasisSize< SimplexTopology >::instance() ( deriv );
+      MonomialBasisSize< GeometryTypes::simplex(dimension).toId() >::instance().computeSizes( deriv );
+      return MonomialBasisSize< GeometryTypes::simplex(dimension).toId() >::instance() ( deriv );
     }
 
     unsigned int order () const
@@ -558,7 +553,7 @@ namespace Dune
 
     unsigned int topologyId ( ) const
     {
-      return Topology::id;
+      return geometry.id();
     }
 
     void evaluate ( const unsigned int deriv, const DomainVector &x,
@@ -633,13 +628,13 @@ namespace Dune
 
   template< int dim,class F >
   class StandardMonomialBasis
-    : public MonomialBasis< typename Impl::SimplexTopology< dim >::type, F >
+    : public MonomialBasis< GeometryTypes::simplex(dim).toId() , F >
   {
     typedef StandardMonomialBasis< dim, F > This;
-    typedef MonomialBasis< typename Impl::SimplexTopology< dim >::type, F > Base;
+    typedef MonomialBasis< GeometryTypes::simplex(dim).toId(), F > Base;
 
   public:
-    typedef typename Impl::SimplexTopology< dim >::type Topology;
+    static constexpr GeometryType geometry = GeometryTypes::simplex(dim);
     static const int dimension = dim;
 
     StandardMonomialBasis ( unsigned int order )
@@ -654,13 +649,13 @@ namespace Dune
 
   template< int dim, class F >
   class StandardBiMonomialBasis
-    : public MonomialBasis< typename Impl::CubeTopology< dim >::type, F >
+    : public MonomialBasis< GeometryTypes::cube(dim).toId() , F >
   {
     typedef StandardBiMonomialBasis< dim, F > This;
-    typedef MonomialBasis< typename Impl::CubeTopology< dim >::type, F > Base;
+    typedef MonomialBasis< GeometryTypes::cube(dim).toId() , F > Base;
 
   public:
-    typedef typename Impl::CubeTopology< dim >::type Topology;
+    static constexpr GeometryType geometry = GeometryTypes::cube(dim);
     static const int dimension = dim;
 
     StandardBiMonomialBasis ( unsigned int order )
@@ -772,19 +767,20 @@ namespace Dune
     unsigned int topologyId_;
   };
 
-  template< class Topology, class F >
+  template< GeometryType::Id geometryId, class F >
   class VirtualMonomialBasisImpl
-    : public VirtualMonomialBasis< Topology::dimension, F >
+    : public VirtualMonomialBasis< static_cast<GeometryType>(geometryId).dim(), F >
   {
-    typedef VirtualMonomialBasis< Topology::dimension, F > Base;
-    typedef VirtualMonomialBasisImpl< Topology, F > This;
+    static constexpr GeometryType geometry = geometryId;
+    typedef VirtualMonomialBasis< geometry.dim(), F > Base;
+    typedef VirtualMonomialBasisImpl< geometryId, F > This;
 
   public:
     typedef typename Base::Field Field;
     typedef typename Base::DomainVector DomainVector;
 
     VirtualMonomialBasisImpl(unsigned int order)
-      : Base(Topology::id,order), basis_(order)
+      : Base(geometry.id(),order), basis_(order)
     {}
 
     const unsigned int *sizes ( ) const
@@ -804,7 +800,7 @@ namespace Dune
     }
 
   private:
-    MonomialBasis<Topology,Field> basis_;
+    MonomialBasis<geometryId,Field> basis_;
     using Base::order_;
   };
 
@@ -826,10 +822,10 @@ namespace Dune
       typedef MonomialBasisFactory<dd,FF> Type;
     };
 
-    template< class Topology >
+    template< GeometryType::Id geometryId >
     static Object* create ( const Key &order )
     {
-      return new VirtualMonomialBasisImpl< Topology, StorageField >( order );
+      return new VirtualMonomialBasisImpl< geometryId, StorageField >( order );
     }
     static void release( Object *object ) { delete object; }
   };

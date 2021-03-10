@@ -17,7 +17,7 @@ namespace Dune {
   **********************************************/
   // default argument does not work for gcc 4.1.2
   // template <int deriv,class BasisFactory,class PrintField=typename BasisFactory::StorageField>
-  template <int deriv,class BasisFactory,class PrintField,class Topology>
+  template <int deriv,class BasisFactory,class PrintField,GeometryType::Id geometryId>
   void basisPrint(std::ostream &out,
                   typename BasisFactory::Object &basis)
   {
@@ -31,7 +31,7 @@ namespace Dune {
     typedef typename Basis::CoefficientMatrix CMatrix;
     typedef PolynomialBasis<StandardEvaluator<MIBasis>, CMatrix > PrintBasis;
 
-    MIBasis *miBasis = MIBasisFactory::template create<Topology>( basis.basis().order());
+    MIBasis *miBasis = MIBasisFactory::template create<geometryId>( basis.basis().order());
     PrintBasis printBasis(*miBasis,basis.matrix(),basis.size());
 
     unsigned int size = printBasis.size();

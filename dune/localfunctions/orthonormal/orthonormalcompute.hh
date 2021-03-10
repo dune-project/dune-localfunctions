@@ -35,64 +35,66 @@ namespace ONBCompute
   // Integral
   // --------
 
-  template< class Topology >
-  struct Integral;
-
-  template< class Base >
-  struct Integral< Dune::Impl::Pyramid< Base > >
+  template< Dune::GeometryType::Id geometryId >
+  struct Integral
   {
+    static constexpr Dune::GeometryType geometry = geometryId;
+    static constexpr int dimension = geometry.dim();
+
     template< int dim, class scalar_t >
     static int compute ( const Dune::MultiIndex< dim, scalar_t > &alpha,
                          scalar_t &p, scalar_t &q )
     {
-      const int dimension = Base::dimension+1;
-      int i = alpha.z( Base::dimension );
-      int ord = Integral< Base >::compute( alpha, p, q );
+      if constexpr (geometry.isVertex())
+      {
+        p = scalar_t( 1 );
+        q = scalar_t( 1 );
+        return 0;
+      }
+      else
+      {
+        if constexpr ( Dune::Impl::isTensor(geometry) )
+          return computeTensor(alpha,p,q);
+        else
+          return computeCone(alpha,p,q);
+      }
+    }
+
+    template< int dim, class scalar_t >
+    static int computeCone ( const Dune::MultiIndex< dim, scalar_t > &alpha,
+                                scalar_t &p, scalar_t &q )
+    {
+      int i = alpha.z( dimension-1 );
+      constexpr Dune::GeometryType::Id baseGeometryId = Dune::Impl::getBase(geometry);
+      int ord = Integral< baseGeometryId >::compute( alpha, p, q );
       p *= factorial< scalar_t >( 1, i );
       q *= factorial< scalar_t >( dimension + ord, dimension + ord + i );
       return ord + i;
     }
-  };
 
-  template< class Base >
-  struct Integral< Dune::Impl::Prism< Base > >
-  {
     template< int dim, class scalar_t >
-    static int compute ( const Dune::MultiIndex< dim, scalar_t > &alpha,
-                         scalar_t &p, scalar_t &q )
+    static int computeTensor ( const Dune::MultiIndex< dim, scalar_t > &alpha,
+                                  scalar_t &p, scalar_t &q )
     {
-      int i = alpha.z( Base::dimension );
-      int ord = Integral< Base >::compute( alpha, p, q );
-      //Integral< Base >::compute( alpha, p, q );
+      int i = alpha.z( dimension-1 );
+      constexpr Dune::GeometryType::Id baseGeometryId = Dune::Impl::getBase(geometry);
+      int ord = Integral< baseGeometryId >::compute( alpha, p, q );
       //p *= scalar_t( 1 );
       q *= scalar_t( i+1 );
       return ord + i;
     }
-  };
 
-  template<>
-  struct Integral< Dune::Impl::Point >
-  {
-    template< int dim, class scalar_t >
-    static int compute ( const Dune::MultiIndex< dim, scalar_t > &alpha,
-                         scalar_t &p, scalar_t &q )
-    {
-      p = scalar_t( 1 );
-      q = scalar_t( 1 );
-      return 0;
-    }
   };
-
 
 
   // ONBMatrix
   // ---------
 
-  template< class Topology, class scalar_t >
+  template< Dune::GeometryType::Id geometryId, class scalar_t >
   class ONBMatrix
     : public Dune::LFEMatrix< scalar_t >
   {
-    typedef ONBMatrix< Topology, scalar_t > This;
+    typedef ONBMatrix< geometryId, scalar_t > This;
     typedef Dune::LFEMatrix< scalar_t > Base;
 
   public:
@@ -102,7 +104,8 @@ namespace ONBCompute
     explicit ONBMatrix ( unsigned int order )
     {
       // get all multiindecies for monomial basis
-      const unsigned int dim = Topology::dimension;
+      constexpr Dune::GeometryType geometry = geometryId;
+      constexpr unsigned int dim = geometry.dim();
       typedef Dune::MultiIndex< dim, scalar_t > MI;
       Dune::StandardMonomialBasis< dim, MI > basis( order );
       const std::size_t size = basis.size();
@@ -123,7 +126,7 @@ namespace ONBCompute
       {
         for( std::size_t j = 0; j < size; ++j )
         {
-          Integral< Topology >::compute( y[ i ][ 0 ] * y[ j ][ 0 ], p, q );
+          Integral< geometryId >::compute( y[ i ][ 0 ] * y[ j ][ 0 ], p, q );
           S( i, j ) = p;
           S( i, j ) /= q;
         }

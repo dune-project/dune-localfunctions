@@ -172,23 +172,22 @@ namespace Dune
         p.weight_ = weight;
     }
 
-    template< class T >
+    template< GeometryType::Id geometryId >
     bool build ()
     {
-      build( GeometryType( T() ) );
+      build( GeometryType( geometryId ) );
       return true;
     }
 
     bool buildCube ()
     {
-      using namespace Impl;
-      return build< typename CubeTopology< dim >::type > ();
+      return build< GeometryTypes::cube(dim) > ();
     }
 
     static bool supports ( GeometryType gt, std::size_t order ) { return true; }
-    template< class T >
+    template< GeometryType::Id geometryId>
     static bool supports ( std::size_t order ) {
-      return supports( GeometryType( T() ), order );
+      return supports( GeometryType( geometryId ), order );
     }
 
   private:

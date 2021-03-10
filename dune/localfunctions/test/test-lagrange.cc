@@ -2,6 +2,8 @@
 // vi: set et ts=4 sw=2 sts=2:
 #include <config.h>
 
+#include <dune/geometry/type.hh>
+
 #include <dune/localfunctions/utility/field.hh>
 #include <dune/localfunctions/utility/basisprint.hh>
 
@@ -14,9 +16,9 @@
  *        shape functions on simplices.
  *
  * The topology can be chosen at compile time by setting TOPOLOGY
- * to a string like
+ * to a Dune::GeometryType like
  * \code
- * Pyramid<Pyramid<Point> > >
+ * GeometryTypes::simplex(2)
  * \endcode
  * which generates a 2d simplex. If TOPOLOGY is not set, all
  * topologies up to 4d are tested. Note, this may lead to prolonged
@@ -72,24 +74,25 @@ bool test(const Basis &basis, const Points &points, bool verbose)
   return ret;
 }
 
-template <class Topology>
+template <Dune::GeometryType::Id geometryId>
 bool test(unsigned int order, bool verbose = false)
 {
-  typedef Dune::LagrangeBasisFactory<Dune::EquidistantPointSet,Topology::dimension,StorageField,ComputeField> BasisFactory;
-  typedef Dune::LagrangeCoefficientsFactory< Dune::EquidistantPointSet,  Topology::dimension,double > LagrangeCoefficientsFactory;
+  constexpr Dune::GeometryType geometry = geometryId;
+  typedef Dune::LagrangeBasisFactory<Dune::EquidistantPointSet, geometry.dim(), StorageField, ComputeField> BasisFactory;
+  typedef Dune::LagrangeCoefficientsFactory< Dune::EquidistantPointSet, geometry.dim(), double > LagrangeCoefficientsFactory;
 
   bool ret = true;
 
   for (unsigned int o = 0; o <= order; ++o)
   {
-    const typename LagrangeCoefficientsFactory::Object *pointsPtr = LagrangeCoefficientsFactory::template create< Topology >( o );
+    const typename LagrangeCoefficientsFactory::Object *pointsPtr = LagrangeCoefficientsFactory::template create< geometry >( o );
 
     if ( pointsPtr == 0)
       continue;
 
-    std::cout << "# Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
+    std::cout << "Testing " << geometry << " with order " << o << std::endl;
 
-    typename BasisFactory::Object &basis = *BasisFactory::template create<Topology>(o);
+    typename BasisFactory::Object &basis = *BasisFactory::template create<geometry>(o);
 
     ret |= test(basis,*pointsPtr,verbose);
 
@@ -97,10 +100,10 @@ bool test(unsigned int order, bool verbose = false)
     // derivatives in a human readabible form (aka LaTeX source)
 #ifdef TEST_OUTPUT_FUNCTIONS
     std::stringstream name;
-    name << "lagrange_" << Topology::name() << "_p" << o << ".basis";
+    name << "lagrange_" << geometry << "_p" << o << ".basis";
     std::ofstream out(name.str().c_str());
-    Dune::basisPrint<0,BasisFactory,typename BasisFactory::StorageField,Topology>(out,basis);
-    Dune::basisPrint<1,BasisFactory,typename BasisFactory::StorageField,Topology>(out,basis);
+    Dune::basisPrint<0,BasisFactory,typename BasisFactory::StorageField,geometry>(out,basis);
+    Dune::basisPrint<1,BasisFactory,typename BasisFactory::StorageField,geometry>(out,basis);
 #endif // TEST_OUTPUT_FUNCTIONS
 
     LagrangeCoefficientsFactory::release( pointsPtr );
@@ -152,31 +155,29 @@ int main ( int argc, char **argv )
   bool tests = true;
 
 #ifdef CHECKDIM1
-  tests &= test<Prism<Point> > (order);
-  tests &= test<Pyramid<Point> > (order);
+  tests &= test<GeometryTypes::cube(1)> (order);
+  tests &= test<GeometryTypes::simplex(1)> (order);
 #endif
 
 #ifdef CHECKDIM2
-  tests &= test<Prism<Prism<Point> > > (order);
-  tests &= test<Pyramid<Pyramid<Point> > >(order);
+  tests &= test<GeometryTypes::cube(2)> (order);
+  tests &= test<GeometryTypes::simplex(2)> (order);
 #endif
 
 #ifdef CHECKDIM3
-  tests &= test<Prism<Prism<Prism<Point> > > >(order);
-  tests &= test<Prism<Pyramid<Pyramid<Point> > > >(order);
-  tests &= test<Pyramid<Pyramid<Pyramid<Point> > > >(order);
+  tests &= test<GeometryTypes::cube(3)> (order);
+  tests &= test<GeometryTypes::prism> (order);
+  tests &= test<GeometryTypes::pyramid> (order);
+  tests &= test<GeometryTypes::simplex(3)> (order);
 #endif
-
-  // tests &= test<Pyramid<Prism<Prism<Point> > > >(order);
-  std::cout << "NOT CHECKING PYRAMID!" << std::endl;
 
   // reduce tested order to 4 in 4d unless explicitly asked for more
   if (argc < 2)
     order = 4;
 
 #ifdef CHECKDIM4
-  tests &= test<Prism<Prism<Prism<Prism<Point> > > > >(order);
-  tests &= test<Pyramid<Pyramid<Pyramid<Pyramid<Point> > > > >(order);
+  tests &= test<GeometryTypes::cube(4)> (order);
+  tests &= test<GeometryTypes::simplex(4)> (order);
 #endif
 
   return (tests ? 0 : 1);

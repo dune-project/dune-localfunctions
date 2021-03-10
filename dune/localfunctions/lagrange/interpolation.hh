@@ -103,17 +103,17 @@ namespace Dune
     typedef typename LagrangePointSetFactory::Key Key;
     typedef const LocalLagrangeInterpolation< LP,dim,F > Object;
 
-    template< class Topology >
+    template< GeometryType::Id geometryId >
     static Object *create ( const Key &key )
     {
       const LagrangePointSet *lagrangeCoeff
-        = LagrangePointSetFactory::template create< Topology >( key );
+        = LagrangePointSetFactory::template create< geometryId >( key );
       if ( lagrangeCoeff == 0 )
         return 0;
       else
         return new Object( *lagrangeCoeff );
     }
-    template< class Topology >
+    template< GeometryType::Id geometryId >
     static bool supports ( const Key &key )
     {
       return true;

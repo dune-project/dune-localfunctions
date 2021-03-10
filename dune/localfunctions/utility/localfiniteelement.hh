@@ -43,7 +43,7 @@ namespace Dune
         key_( key ),
         finiteElement_()
     {
-      Impl::IfTopology< FiniteElement::template Maker, dimDomain >::apply( topologyId_, key_, finiteElement_ );
+      Impl::IfGeometryType< FiniteElement::template Maker, dimDomain >::apply( topologyId_, key_, finiteElement_ );
     }
 
     /** \todo Please doc me */
@@ -52,7 +52,7 @@ namespace Dune
         key_( other.key_ ),
         finiteElement_()
     {
-      Impl::IfTopology< FiniteElement::template Maker, dimDomain >::apply( topologyId_, key_, finiteElement_ );
+      Impl::IfGeometryType< FiniteElement::template Maker, dimDomain >::apply( topologyId_, key_, finiteElement_ );
     }
 
     ~GenericLocalFiniteElement()
@@ -97,13 +97,14 @@ namespace Dune
     struct FiniteElement
     {
       FiniteElement() : basis_(0), coeff_(0), interpol_(0) {}
-      template <class Topology>
+
+      template < GeometryType::Id geometryId >
       void create( const Key &key )
       {
         release();
-        basis_ = BasisF::template create<Topology>(key);
-        coeff_ = CoeffF::template create<Topology>(key);
-        interpol_ = InterpolF::template create<Topology>(key);
+        basis_ = BasisF::template create<geometryId>(key);
+        coeff_ = CoeffF::template create<geometryId>(key);
+        interpol_ = InterpolF::template create<geometryId>(key);
       }
       void release()
       {
@@ -117,12 +118,12 @@ namespace Dune
         coeff_=0;
         interpol_=0;
       }
-      template< class Topology >
+      template< GeometryType::Id geometryId >
       struct Maker
       {
         static void apply ( const Key &key, FiniteElement &finiteElement )
         {
-          finiteElement.template create<Topology>(key);
+          finiteElement.template create<geometryId>(key);
         };
       };
       typename Traits::LocalBasisType *basis_;

@@ -21,7 +21,7 @@ static void test(Dune::GeometryType type)
   FiniteElementCache cache;
 
   using FiniteElement = typename FiniteElementCache::FiniteElementType;
-  DUNE_UNUSED const FiniteElement& finiteElement = cache.get(type);
+  [[maybe_unused]] const FiniteElement& finiteElement = cache.get(type);
 }
 
 int main() {

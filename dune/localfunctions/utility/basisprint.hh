@@ -15,9 +15,7 @@ namespace Dune {
   * for computing the basisfunctions for given
   * orders or reference elements.
   **********************************************/
-  // default argument does not work for gcc 4.1.2
-  // template <int deriv,class BasisFactory,class PrintField=typename BasisFactory::StorageField>
-  template <int deriv,class BasisFactory,class PrintField,GeometryType::Id geometryId>
+  template <int deriv,class BasisFactory,class PrintField=typename BasisFactory::StorageField, GeometryType::Id geometryId>
   void basisPrint(std::ostream &out,
                   typename BasisFactory::Object &basis)
   {
@@ -39,11 +37,6 @@ namespace Dune {
     out << "% Number of base functions:  " << size << std::endl;
     out << "% Derivative order: " << deriv << std::endl;
 
-    /*
-        std::vector< FieldVector<
-           LFETensor<Field,dimension,deriv>,PrintBasis::dimRange> >
-          y( size );
-     */
     std::vector< FieldVector<
             FieldVector<Field,LFETensor<Field,dimension,deriv>::size>,
             PrintBasis::dimRange> > y( size );
@@ -62,8 +55,8 @@ namespace Dune {
     }
     MIBasisFactory::release(miBasis);
   }
-  // template <int deriv,class BasisFactory,class PrintField=typename BasisFactory::StorageField>
-  template <int deriv,class BasisFactory,class PrintField>
+
+  template <int deriv,class BasisFactory,class PrintField=typename BasisFactory::StorageField>
   void basisPrint(std::ostream &out,
                   typename BasisFactory::Key &key)
   {

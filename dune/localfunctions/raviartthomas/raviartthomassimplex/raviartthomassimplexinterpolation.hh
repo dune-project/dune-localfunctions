@@ -103,10 +103,16 @@ namespace Dune
   struct RTL2InterpolationBuilder
   {
     static const unsigned int dimension = dim;
+
+    // for the dofs associated to the element
     typedef OrthonormalBasisFactory< dimension, Field > TestBasisFactory;
     typedef typename TestBasisFactory::Object TestBasis;
+
+    // for the dofs associated to the faces
     typedef OrthonormalBasisFactory< dimension-1, Field > TestFaceBasisFactory;
     typedef typename TestFaceBasisFactory::Object TestFaceBasis;
+
+    // the normals of the faces
     typedef FieldVector< Field, dimension > Normal;
 
     RTL2InterpolationBuilder () = default;
@@ -127,11 +133,16 @@ namespace Dune
 
     std::size_t order () const { return order_; }
 
+    // number of faces
     unsigned int faceSize () const { return faceSize_; }
 
+    // basis associated to the element
     TestBasis *testBasis () const { return testBasis_; }
+
+    // basis associated to face f
     TestFaceBasis *testFaceBasis ( unsigned int f ) const { assert( f < faceSize() ); return faceStructure_[ f ].basis_; }
 
+    // normal of face f
     const Normal &normal ( unsigned int f ) const { assert( f < faceSize() ); return *(faceStructure_[ f ].normal_); }
 
     template< class Topology >
@@ -147,6 +158,17 @@ namespace Dune
       faceStructure_.reserve( faceSize_ );
       for( unsigned int face = 0; face < faceSize_; ++face )
       {
+        /* For simplices or cubes of arbitrary dimension you could just use
+         *
+         * ```
+         * GeometryType faceGeometry = Impl::getBase(geometry_);
+         * TestFaceBasis *faceBasis = TestFaceBasisFactory::template create< faceGeometry >( order );
+         * ```
+         *
+         * For i.e. Prisms and Pyramids in 3d this does not work because they contain squares and triangles as faces.
+         * And depending on the dynamic face index a different face geometry is needed.
+         *
+         */
         TestFaceBasis *faceBasis = Impl::IfTopology< CreateFaceBasis, dimension-1 >::apply( refElement.type( face, 1 ).id(), order );
         faceStructure_.emplace_back( faceBasis, refElement.integrationOuterNormal( face ) );
       }
@@ -327,7 +349,15 @@ namespace Dune
     }
 
   private:
-    /** /brief evaluate boundary functionals **/
+    /** \brief evaluate boundary functionals
+     *
+     *  \param startRow     row of matrix to start
+     *  \param mVal         value of the testBasis at a quadrature point on a face
+     *  \param rtVal        value of the RaviartThomasBasis at a quadrature point on a face
+     *  \param normal       the normal of the face
+     *  \param weight       quadrature weight
+     *  \param matrix       result gets written into matrix starting with row: row
+     */
     template <class MVal, class RTVal,class Matrix>
     void fillBnd (unsigned int startRow,
                   const MVal &mVal,
@@ -350,6 +380,14 @@ namespace Dune
         assert( miter == mVal.end() );
       }
     }
+    /** \brief evaluate interior functionals
+     *
+     *  \param startRow     row of matrix to start
+     *  \param mVal         value of the testBasis at a quadrature point in the interior of the ReferenceElement
+     *  \param rtVal        value of the RaviartThomasBasis at a quadrature point in the interior of the ReferenceElement
+     *  \param weight       quadrature weight
+     *  \param matrix       result gets written into matrix starting with row: row
+     */
     template <class MVal, class RTVal,class Matrix>
     void fillInterior (unsigned int startRow,
                        const MVal &mVal,

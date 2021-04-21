@@ -25,6 +25,8 @@
 * Remove deprecated `GenericLocalFiniteElement::topologyId()`, use
   `type().id()` instead.
 
+* Imported the Python bindings from the 2.7 branch of dune-python.
+
 # Release 2.7
 
 * The header `lagrange.hh` now includes all headers of all Lagrange implementations,

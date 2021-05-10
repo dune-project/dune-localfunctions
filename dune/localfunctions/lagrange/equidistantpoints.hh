@@ -18,25 +18,30 @@ namespace Dune
   // numLagrangePoints
   // -----------------
 
-  inline std::size_t numLagrangePoints ( unsigned int topologyId, int dim, std::size_t order )
+  inline std::size_t numLagrangePoints ( const GeometryType& gt, std::size_t order )
   {
-    assert( topologyId < Impl::numTopologies( dim ) );
-
+    const int dim = gt.dim();
     if( dim > 0 )
     {
-      const unsigned int baseId = Impl::baseTopologyId( topologyId, dim );
-      if( Impl::isPyramid( topologyId, dim ) )
+      const GeometryType baseGeometryType = Impl::getBase( gt );
+      if( gt.isConical() )
       {
         std::size_t size = 0;
         for( unsigned int o = 0; o <= order; ++o )
-          size += numLagrangePoints( baseId, dim-1, o );
+          size += numLagrangePoints( baseGeometryType, o );
         return size;
       }
       else
-        return numLagrangePoints( baseId, dim-1, order ) * (order+1);
+        return numLagrangePoints( baseGeometryType, order ) * (order+1);
     }
     else
       return 1;
+  }
+
+  [[deprecated("Use numLagrangePoints(const GeometryType& gt, std::size_t order ) instead.")]]
+  inline std::size_t numLagrangePoints (  unsigned int topologyId, unsigned int dim, std::size_t order )
+  {
+    return numLagrangePoints ( GeometryType(topologyId, dim), order);
   }
 
 
@@ -45,25 +50,25 @@ namespace Dune
   // -------------------------
 
   template< class ct, unsigned int cdim >
-  inline static unsigned int equidistantLagrangePoints ( unsigned int topologyId, unsigned int dim, unsigned int codim, std::size_t order, unsigned int *count, LagrangePoint< ct, cdim > *points )
+  inline static unsigned int equidistantLagrangePoints ( const GeometryType& gt, unsigned int codim, std::size_t order, unsigned int *count, LagrangePoint< ct, cdim > *points )
   {
+    const unsigned int dim = gt.dim();
     assert( (0 <= codim) && (codim <= dim) && (dim <= cdim) );
-    assert( topologyId < Impl::numTopologies( dim ) );
 
     if( dim > 0 )
     {
-      const unsigned int baseId = Impl::baseTopologyId( topologyId, dim );
-      const unsigned int numBaseN = (codim < dim ? Geo::Impl::size( baseId, dim-1, codim ) : 0);
-      const unsigned int numBaseM = (codim > 0 ? Geo::Impl::size( baseId, dim-1, codim-1 ) : 0);
+      const GeometryType baseGeometryType = Impl::getBase( gt );
+      const unsigned int numBaseN = (codim < dim ? Geo::Impl::size( baseGeometryType.id(), baseGeometryType.dim(), codim ) : 0);
+      const unsigned int numBaseM = (codim > 0 ? Geo::Impl::size( baseGeometryType.id(), baseGeometryType.dim(), codim-1 ) : 0);
 
-      if( Impl::isPrism( topologyId, dim ) )
+      if( gt.isPrismatic() )
       {
         unsigned int size = 0;
         if( codim < dim )
         {
           for( unsigned int i = 1; i < order; ++i )
           {
-            const unsigned int n = equidistantLagrangePoints( baseId, dim-1, codim, order, count, points );
+            const unsigned int n = equidistantLagrangePoints( baseGeometryType, codim, order, count, points );
             for( unsigned int j = 0; j < n; ++j )
             {
               LocalKey &key = points->localKey_;
@@ -77,7 +82,7 @@ namespace Dune
 
         if( codim > 0 )
         {
-          const unsigned int n = equidistantLagrangePoints( baseId, dim-1, codim-1, order, count+numBaseN, points );
+          const unsigned int n = equidistantLagrangePoints( baseGeometryType, codim-1, order, count+numBaseN, points );
           for( unsigned int j = 0; j < n; ++j )
           {
             LocalKey &key = points[ j ].localKey_;
@@ -95,7 +100,7 @@ namespace Dune
       }
       else
       {
-        unsigned int size = (codim > 0 ? equidistantLagrangePoints( baseId, dim-1, codim-1, order, count, points ) : 0);
+        unsigned int size = (codim > 0 ? equidistantLagrangePoints( baseGeometryType, codim-1, order, count, points ) : 0);
         LagrangePoint< ct, cdim > *const end = points + size;
         for( ; points != end; ++points )
           points->localKey_ = LocalKey( points->localKey_.subEntity(), codim, points->localKey_.index() );
@@ -104,7 +109,7 @@ namespace Dune
         {
           for( unsigned int i = order-1; i > 0; --i )
           {
-            const unsigned int n = equidistantLagrangePoints( baseId, dim-1, codim, i, count+numBaseM, points );
+            const unsigned int n = equidistantLagrangePoints( baseGeometryType, codim, i, count+numBaseM, points );
             LagrangePoint< ct, cdim > *const end = points + n;
             for( ; points != end; ++points )
             {
@@ -135,6 +140,13 @@ namespace Dune
     }
   }
 
+  template< class ct, unsigned int cdim >
+  [[deprecated("Use equidistantLagrangePoints ( GeometryType gt,  ... ) instead.")]]
+  inline static unsigned int equidistantLagrangePoints ( unsigned int topologyId, unsigned int dim, unsigned int codim, std::size_t order, unsigned int *count, LagrangePoint< ct, cdim > *points )
+  {
+    return equidistantLagrangePoints ( GeometryType(topologyId, dim), codim, order, *count, *points );
+  }
+
 
 
   // EquidistantPointSet
@@ -156,7 +168,7 @@ namespace Dune
     void build ( GeometryType gt )
     {
       assert( gt.dim() == dimension );
-      points_.resize( numLagrangePoints( gt.id(), dimension, order() ) );
+      points_.resize( numLagrangePoints( gt, order() ) );
 
       typename Base::LagrangePoint *p = points_.data();
       std::vector< unsigned int > count;
@@ -164,7 +176,7 @@ namespace Dune
       {
         count.resize( Geo::Impl::size( gt.id(), dimension, dimension-mydim ) );
         std::fill( count.begin(), count.end(), 0u );
-        p += equidistantLagrangePoints( gt.id(), dimension, dimension-mydim, order(), count.data(), p );
+        p += equidistantLagrangePoints( gt, dimension-mydim, order(), count.data(), p );
       }
       const auto &refElement = referenceElement<F,dimension>(gt);
       F weight = refElement.volume()/F(double(points_.size()));
@@ -172,23 +184,22 @@ namespace Dune
         p.weight_ = weight;
     }
 
-    template< class T >
+    template< GeometryType::Id geometryId >
     bool build ()
     {
-      build( GeometryType( T() ) );
+      build( GeometryType( geometryId ) );
       return true;
     }
 
     bool buildCube ()
     {
-      using namespace Impl;
-      return build< typename CubeTopology< dim >::type > ();
+      return build< GeometryTypes::cube(dim) > ();
     }
 
     static bool supports ( GeometryType gt, std::size_t order ) { return true; }
-    template< class T >
+    template< GeometryType::Id geometryId>
     static bool supports ( std::size_t order ) {
-      return supports( GeometryType( T() ), order );
+      return supports( GeometryType( geometryId ), order );
     }
 
   private:

@@ -59,11 +59,11 @@ namespace Dune
     typedef typename BasisFactory::Key Key;
     typedef const DGLocalCoefficients Object;
 
-    template< class Topology >
+    template< GeometryType::Id geometryId >
     static Object *create ( const Key &key )
     {
       const typename BasisFactory::Object *basis
-        = BasisFactory::template create< Topology >( key );
+        = BasisFactory::template create< geometryId >( key );
       Object *coefficients = new Object( basis->size() );
       BasisFactory::release( basis );
       return coefficients;

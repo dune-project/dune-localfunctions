@@ -15,9 +15,9 @@
  *        shape functions on simplices.
  *
  * The topology can be chosen at compile time by setting TOPOLOGY
- * to a string like
+ * to a Dune::GeometryType like
  * \code
- * Pyramid<Pyramid<Point> > >
+ * GeometryTypes::simplex(2)
  * \endcode
  * which generates a 2d simplex. If TOPOLOGY is not set, all
  * topologies up to 4d are tested. Note, this may lead to prolonged
@@ -36,16 +36,16 @@ typedef double StorageField;
 typedef double ComputeField;
 #endif
 
-template <class Topology>
+template< Dune::GeometryType::Id geometryId >
 bool test(unsigned int order)
 {
   bool ret = true;
-  Dune::GeometryType gt(Topology::id, Topology::dimension);
+  constexpr Dune::GeometryType geometry = geometryId;
   for (unsigned int o = 0; o <= order; ++o)
   {
-    std::cout << "Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
-    typedef Dune::OrthonormalBasisFactory<Topology::dimension,StorageField,ComputeField> BasisFactory;
-    const typename BasisFactory::Object &basis = *BasisFactory::template create<Topology>(o);
+    std::cout << "Testing " << geometry << " with order " << o << std::endl;
+    typedef Dune::OrthonormalBasisFactory<geometry.dim(),StorageField,ComputeField> BasisFactory;
+    const typename BasisFactory::Object &basis = *BasisFactory::template create<geometry>(o);
 
     const unsigned int size = basis.size( );
 
@@ -55,8 +55,8 @@ bool test(unsigned int order)
     for( unsigned int i = 0; i < size * size; ++i )
       m[ i ] = 0;
 
-    const Dune::QuadratureRule<double,Topology::dimension> &quadrature =
-      Dune::QuadratureRules<double,Topology::dimension>::rule(gt,2*order+1);
+    const Dune::QuadratureRule<double,geometry.dim()> &quadrature =
+      Dune::QuadratureRules<double,geometry.dim()>::rule(geometry,2*order+1);
     const unsigned int quadratureSize = quadrature.size();
     for( unsigned int qi = 0; qi < quadratureSize; ++qi )
     {
@@ -84,10 +84,10 @@ bool test(unsigned int order)
     // derivatives in a human readabible form (aka LaTeX source)
 #ifdef TEST_OUTPUT_FUNCTIONS
     std::stringstream name;
-    name << "orthonormal_" << Topology::name() << "_p" << o << ".basis";
+    name << "orthonormal_" << geometry << "_p" << o << ".basis";
     std::ofstream out(name.str().c_str());
-    Dune::basisPrint<0,BasisFactory,typename BasisFactory::StorageField,Topology>(out,basis);
-    Dune::basisPrint<1,BasisFactory,typename BasisFactory::StorageField,Topology>(out,basis);
+    Dune::basisPrint<0,BasisFactory,typename BasisFactory::StorageField,geometry>(out,basis);
+    Dune::basisPrint<1,BasisFactory,typename BasisFactory::StorageField,geometry>(out,basis);
 #endif // TEST_OUTPUT_FUNCTIONS
 
     BasisFactory::release(&basis);
@@ -136,25 +136,25 @@ int main ( int argc, char **argv )
   bool tests = true;
 
 #ifdef CHECKDIM1
-  tests &= test<Prism<Point> > (order);
-  tests &= test<Pyramid<Point> > (order);
+  tests &= test<GeometryTypes::cube(1)> (order);
+  tests &= test<GeometryTypes::simplex(1)> (order);
 #endif
 
 #ifdef CHECKDIM2
-  tests &= test<Prism<Prism<Point> > > (order);
-  tests &= test<Pyramid<Pyramid<Point> > >(order);
+  tests &= test<GeometryTypes::cube(2)> (order);
+  tests &= test<GeometryTypes::simplex(2)> (order);
 #endif
 
 #ifdef CHECKDIM3
-  tests &= test<Prism<Prism<Prism<Point> > > >(order);
-  tests &= test<Prism<Pyramid<Pyramid<Point> > > >(order);
-  tests &= test<Pyramid<Prism<Prism<Point> > > >(order);
-  tests &= test<Pyramid<Pyramid<Pyramid<Point> > > >(order);
+  tests &= test<GeometryTypes::cube(3)> (order);
+  tests &= test<GeometryTypes::prism> (order);
+  tests &= test<GeometryTypes::pyramid> (order);
+  tests &= test<GeometryTypes::simplex(3)> (order);
 #endif
 
 #ifdef CHECKDIM4
-  tests &= test<Prism<Prism<Prism<Prism<Point> > > > >(order);
-  tests &= test<Pyramid<Pyramid<Pyramid<Pyramid<Point> > > > >(order);
+  tests &= test<GeometryTypes::cube(4)> (order);
+  tests &= test<GeometryTypes::simplex(4)> (order);
 #endif
 
   return (tests ? 0 : 1);

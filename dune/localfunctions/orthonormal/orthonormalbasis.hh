@@ -36,17 +36,17 @@ namespace Dune
     typedef unsigned int Key;
     typedef const Basis Object;
 
-    typedef typename Impl::SimplexTopology< dim >::type SimplexTopology;
+    static constexpr GeometryType SimplexGeometry = GeometryTypes::simplex(dim);
 
-    template< class Topology >
+    template< GeometryType::Id geometryId >
     static Object *create ( const unsigned int order )
     {
-      const MonomialBasisType &monomialBasis = *MonomialBasisProviderType::template create< SimplexTopology >( order );
+      const MonomialBasisType &monomialBasis = *MonomialBasisProviderType::template create< SimplexGeometry >( order );
 
       static CoefficientMatrix _coeffs;
       if( _coeffs.size() <= monomialBasis.size() )
       {
-        ONBCompute::ONBMatrix< Topology, ComputeField > matrix( order );
+        ONBCompute::ONBMatrix< geometryId, ComputeField > matrix( order );
         _coeffs.fill( matrix );
       }
 

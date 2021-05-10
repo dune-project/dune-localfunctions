@@ -27,6 +27,10 @@
 
 * Imported the Python bindings from the 2.7 branch of dune-python.
 
+* Replaced the combination of function arguments `topologyId` and `dim` with a single `GeometryType` argument.
+  Tagged the old versions of: `numLagrangePoints`, `equidistantLagrangePoints`, `RTL2InterpolationBuilder::topologyId()`,
+  `VirtualMonomialBasis(topologyId)`, `VirtualMonomialBasis::topologyId()` as deprecated.
+
 # Release 2.7
 
 * The header `lagrange.hh` now includes all headers of all Lagrange implementations,

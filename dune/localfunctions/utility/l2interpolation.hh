@@ -204,12 +204,12 @@ namespace Dune
     typedef LocalL2Interpolation< Basis, Quadrature, onb > LocalInterpolation;
     typedef const LocalInterpolation Object;
 
-    template< class Topology >
+    template< GeometryType::Id geometryId >
     static Object *create ( const Key &key )
     {
-      Dune::GeometryType gt(Topology::id, Topology::dimension);
-      const Basis *basis = BasisFactory::template create< Topology >( key );
-      const Quadrature & quadrature = QuadratureProvider::rule(gt, 2*basis->order()+1);
+      constexpr Dune::GeometryType geometry = geometryId;
+      const Basis *basis = BasisFactory::template create< geometry >( key );
+      const Quadrature & quadrature = QuadratureProvider::rule(geometry, 2*basis->order()+1);
       return new Object( *basis, quadrature );
     }
     static void release ( Object *object )

@@ -39,20 +39,20 @@ namespace Dune
 
     /** \todo Please doc me */
     GenericLocalFiniteElement ( const GeometryType &gt, const Key &key )
-      : topologyId_( gt.id() ),
+      : geometry_( gt ),
         key_( key ),
         finiteElement_()
     {
-      Impl::IfTopology< FiniteElement::template Maker, dimDomain >::apply( topologyId_, key_, finiteElement_ );
+      Impl::IfGeometryType< FiniteElement::template Maker, dimDomain >::apply( type(), key_, finiteElement_ );
     }
 
     /** \todo Please doc me */
     GenericLocalFiniteElement ( const GenericLocalFiniteElement &other )
-      : topologyId_( other.topologyId_ ),
+      : geometry_( other.type() ),
         key_( other.key_ ),
         finiteElement_()
     {
-      Impl::IfTopology< FiniteElement::template Maker, dimDomain >::apply( topologyId_, key_, finiteElement_ );
+      Impl::IfGeometryType< FiniteElement::template Maker, dimDomain >::apply( type(), key_, finiteElement_ );
     }
 
     ~GenericLocalFiniteElement()
@@ -91,19 +91,20 @@ namespace Dune
      */
     GeometryType type () const
     {
-      return GeometryType(topologyId_,dimDomain);
+      return geometry_;
     }
   private:
     struct FiniteElement
     {
       FiniteElement() : basis_(0), coeff_(0), interpol_(0) {}
-      template <class Topology>
+
+      template < GeometryType::Id geometryId >
       void create( const Key &key )
       {
         release();
-        basis_ = BasisF::template create<Topology>(key);
-        coeff_ = CoeffF::template create<Topology>(key);
-        interpol_ = InterpolF::template create<Topology>(key);
+        basis_ = BasisF::template create<geometryId>(key);
+        coeff_ = CoeffF::template create<geometryId>(key);
+        interpol_ = InterpolF::template create<geometryId>(key);
       }
       void release()
       {
@@ -117,19 +118,19 @@ namespace Dune
         coeff_=0;
         interpol_=0;
       }
-      template< class Topology >
+      template< GeometryType::Id geometryId >
       struct Maker
       {
         static void apply ( const Key &key, FiniteElement &finiteElement )
         {
-          finiteElement.template create<Topology>(key);
+          finiteElement.template create<geometryId>(key);
         };
       };
       typename Traits::LocalBasisType *basis_;
       typename Traits::LocalCoefficientsType *coeff_;
       typename Traits::LocalInterpolationType *interpol_;
     };
-    unsigned int topologyId_;
+    GeometryType geometry_;
     Key key_;
     FiniteElement finiteElement_;
   };

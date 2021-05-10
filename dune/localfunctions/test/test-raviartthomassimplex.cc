@@ -11,9 +11,9 @@
  *        shape functions on simplices.
  *
  * The topology can be chosen at compile time by setting TOPOLOGY
- * to a string like
+ * to a Dune::GeometryType like
  * \code
- * Pyramid<Pyramid<Point> > >
+ * GeometryTypes::simplex(2)
  * \endcode
  * which generates a 2d simplex. If TOPOLOGY is not set, all
  * topologies up to 4d are tested. Note, this may lead to prolonged
@@ -32,30 +32,31 @@ typedef double StorageField;
 typedef double ComputeField;
 #endif
 
-template <class Topology>
+template< Dune::GeometryType::Id geometryId >
 bool test(unsigned int order)
 {
   bool ret = true;
 
+  constexpr Dune::GeometryType geometry = geometryId;
   for (unsigned int o = 0; o <= order; ++o)
   {
-    std::cout << "Testing " << Topology::name() << " in dimension " << Topology::dimension << " with order " << o << std::endl;
-    typedef Dune::RaviartThomasBasisFactory<Topology::dimension,StorageField,ComputeField> BasisFactory;
-    const typename BasisFactory::Object &basis = *BasisFactory::template create<Topology>(o);
+    std::cout << "Testing " << geometry << " with order " << o << std::endl;
+    typedef Dune::RaviartThomasBasisFactory<geometry.dim(),StorageField,ComputeField> BasisFactory;
+    const typename BasisFactory::Object &basis = *BasisFactory::template create<geometry>(o);
 
     // define the macro TEST_OUTPUT_FUNCTIONS to output files containing functions and
     // derivatives in a human readabible form (aka LaTeX source)
 #ifdef TEST_OUTPUT_FUNCTIONS
     std::stringstream name;
-    name << "rt_" << Topology::name() << "_p" << o << ".basis";
+    name << "rt_" << geometry << "_p" << o << ".basis";
     std::ofstream out(name.str().c_str());
-    Dune::basisPrint<0,BasisFactory,typename BasisFactory::StorageField,Topology>(out,basis);
-    Dune::basisPrint<1,BasisFactory,typename BasisFactory::StorageField,Topology>(out,basis);
+    Dune::basisPrint<0,BasisFactory,typename BasisFactory::StorageField,geometry>(out,basis);
+    Dune::basisPrint<1,BasisFactory,typename BasisFactory::StorageField,geometry>(out,basis);
 #endif // TEST_OUTPUT_FUNCTIONS
 
     // test interpolation
-    typedef Dune::RaviartThomasL2InterpolationFactory<Topology::dimension,StorageField> InterpolationFactory;
-    const typename InterpolationFactory::Object &interpol = *InterpolationFactory::template create<Topology>(o);
+    typedef Dune::RaviartThomasL2InterpolationFactory<geometry.dim(),StorageField> InterpolationFactory;
+    const typename InterpolationFactory::Object &interpol = *InterpolationFactory::template create<geometry>(o);
     Dune::LFEMatrix<StorageField> matrix;
     interpol.interpolate(basis,matrix);
     for (unsigned int i=0; i<matrix.rows(); ++i)
@@ -112,15 +113,15 @@ int main ( int argc, char **argv )
   bool tests = true;
 
 #ifdef CHECKDIM1
-  tests &= test<Pyramid<Point> > (order);
+  tests &= test<GeometryTypes::simplex(1)> (order);
 #endif
 
 #ifdef CHECKDIM2
-  tests &= test<Pyramid<Pyramid<Point> > >(order);
+  tests &= test<GeometryTypes::simplex(2)> (order);
 #endif
 
 #ifdef CHECKDIM3
-  tests &= test<Pyramid<Pyramid<Pyramid<Point> > > >(order);
+  tests &= test<GeometryTypes::simplex(3)> (order);
 #endif
 
   // reduce tested order to 4 in 4d unless explicitly asked for more
@@ -128,7 +129,7 @@ int main ( int argc, char **argv )
     order = 4;
 
 #ifdef CHECKDIM4
-  tests &= test<Pyramid<Pyramid<Pyramid<Pyramid<Point> > > > >(order);
+  tests &= test<GeometryTypes::simplex(4)> (order);
 #endif
 
   return (tests ? 0 : 1);

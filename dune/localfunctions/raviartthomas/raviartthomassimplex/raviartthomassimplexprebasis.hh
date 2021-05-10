@@ -34,7 +34,7 @@ namespace Dune
     template< GeometryType::Id geometryId >
     static Object *create ( const Key &order )
     {
-      RTVecMatrix<Topology,Field> vecMatrix(order);
+      RTVecMatrix<geometryId,Field> vecMatrix(order);
       MBasis *mbasis = MBasisFactory::template create<geometryId>(order+1);
       typename std::remove_const<Object>::type *tmBasis = new typename std::remove_const<Object>::type(*mbasis);
       tmBasis->fill(vecMatrix);

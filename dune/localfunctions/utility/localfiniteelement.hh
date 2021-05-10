@@ -39,20 +39,20 @@ namespace Dune
 
     /** \todo Please doc me */
     GenericLocalFiniteElement ( const GeometryType &gt, const Key &key )
-      : topologyId_( gt.id() ),
+      : geometry_( gt ),
         key_( key ),
         finiteElement_()
     {
-      Impl::IfGeometryType< FiniteElement::template Maker, dimDomain >::apply( topologyId_, key_, finiteElement_ );
+      Impl::IfGeometryType< FiniteElement::template Maker, dimDomain >::apply( type(), key_, finiteElement_ );
     }
 
     /** \todo Please doc me */
     GenericLocalFiniteElement ( const GenericLocalFiniteElement &other )
-      : topologyId_( other.topologyId_ ),
+      : geometry_( other.type() ),
         key_( other.key_ ),
         finiteElement_()
     {
-      Impl::IfGeometryType< FiniteElement::template Maker, dimDomain >::apply( topologyId_, key_, finiteElement_ );
+      Impl::IfGeometryType< FiniteElement::template Maker, dimDomain >::apply( type(), key_, finiteElement_ );
     }
 
     ~GenericLocalFiniteElement()
@@ -91,7 +91,7 @@ namespace Dune
      */
     GeometryType type () const
     {
-      return GeometryType(topologyId_,dimDomain);
+      return geometry_;
     }
   private:
     struct FiniteElement
@@ -130,7 +130,7 @@ namespace Dune
       typename Traits::LocalCoefficientsType *coeff_;
       typename Traits::LocalInterpolationType *interpol_;
     };
-    unsigned int topologyId_;
+    GeometryType geometry_;
     Key key_;
     FiniteElement finiteElement_;
   };

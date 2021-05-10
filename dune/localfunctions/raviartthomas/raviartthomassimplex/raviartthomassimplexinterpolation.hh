@@ -127,9 +127,10 @@ namespace Dune
         TestFaceBasisFactory::release( f.basis_ );
     }
 
-    unsigned int topologyId () const { return topologyId_; }
+    [[deprecated("Use type().id() instead.")]]
+    unsigned int topologyId () const { return type().id(); }
 
-    GeometryType type () const { return GeometryType( topologyId(), dimension ); }
+    GeometryType type () const { return geometry_; }
 
     std::size_t order () const { return order_; }
 
@@ -149,8 +150,8 @@ namespace Dune
     void build ( std::size_t order )
     {
       constexpr GeometryType geometry = geometryId;
+      geometry_ = geometry;
       order_ = order;
-      topologyId_ = geometry.id();
 
       testBasis_ = (order > 0 ? TestBasisFactory::template create< geometry >( order-1 ) : nullptr);
 
@@ -170,7 +171,7 @@ namespace Dune
          * And depending on the dynamic face index a different face geometry is needed.
          *
          */
-        TestFaceBasis *faceBasis = Impl::IfGeometryType< CreateFaceBasis, dimension-1 >::apply( refElement.type( face, 1 ).id(), order );
+        TestFaceBasis *faceBasis = Impl::IfGeometryType< CreateFaceBasis, dimension-1 >::apply( refElement.type( face, 1 ), order );
         faceStructure_.emplace_back( faceBasis, refElement.integrationOuterNormal( face ) );
       }
       assert( faceStructure_.size() == faceSize_ );
@@ -195,7 +196,8 @@ namespace Dune
 
     std::vector< FaceStructure > faceStructure_;
     TestBasis *testBasis_ = nullptr;
-    unsigned int topologyId_, faceSize_;
+    GeometryType geometry_;
+    unsigned int faceSize_;
     std::size_t order_;
   };
 
@@ -284,7 +286,7 @@ namespace Dune
     template< class Func, class Container, bool type >
     void interpolate ( typename Base::template Helper<Func,Container,type> &func ) const
     {
-      const Dune::GeometryType geoType( builder_.topologyId(), dimension );
+      const Dune::GeometryType geoType = builder_.type();
 
       std::vector< Field > testBasisVal;
 

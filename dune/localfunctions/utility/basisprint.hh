@@ -15,7 +15,9 @@ namespace Dune {
   * for computing the basisfunctions for given
   * orders or reference elements.
   **********************************************/
-  template <int deriv,class BasisFactory,class PrintField=typename BasisFactory::StorageField, GeometryType::Id geometryId>
+  // default argument does not work for gcc 4.1.2
+  // template <int deriv,class BasisFactory,class PrintField=typename BasisFactory::StorageField>
+  template <int deriv,class BasisFactory,class PrintField,GeometryType::Id geometryId>
   void basisPrint(std::ostream &out,
                   typename BasisFactory::Object &basis)
   {

@@ -9,8 +9,8 @@
 #include <dune/common/fmatrix.hh>
 
 #include <dune/geometry/type.hh>
+#include <dune/geometry/topologyfactory.hh>
 
-#include <dune/localfunctions/utility/topologyfactory.hh>
 #include <dune/localfunctions/utility/field.hh>
 #include <dune/localfunctions/utility/multiindex.hh>
 #include <dune/localfunctions/utility/tensor.hh>
@@ -245,8 +245,8 @@ namespace Dune
 
   private:
     friend class MonomialBasis< geometry.toId(), Field >;
-    friend class MonomialBasisImpl< geometry.addTensor().toId(), Field >;
-    friend class MonomialBasisImpl< geometry.addCone().toId(), Field >;
+    friend class MonomialBasisImpl< GeometryTypes::prismaticExtension(geometry).toId(), Field >;
+    friend class MonomialBasisImpl< GeometryTypes::conicalExtension(geometry).toId(), Field >;
 
     template< int dimD >
     void evaluate ( const unsigned int deriv, const unsigned int order,
@@ -283,8 +283,8 @@ namespace Dune
 
   private:
     friend class MonomialBasis< geometryId, Field >;
-    friend class MonomialBasisImpl< geometry.addTensor().toId(), Field >;
-    friend class MonomialBasisImpl< geometry.addCone().toId(), Field >;
+    friend class MonomialBasisImpl< GeometryTypes::prismaticExtension(geometry).toId(), Field >;
+    friend class MonomialBasisImpl< GeometryTypes::conicalExtension(geometry).toId(), Field >;
 
     typedef MonomialBasisSize< baseGeometry.toId() > BaseSize;
     typedef MonomialBasisSize< geometryId > Size;
@@ -300,27 +300,27 @@ namespace Dune
                     const unsigned int block, const unsigned int *const offsets,
                     Field *const values ) const
     {
-      if constexpr ( Impl::isTensor(geometry))
-        evaluateTensor(deriv, order, x, block, offsets, values);
+      if constexpr ( geometry.isPrismatic())
+        evaluatePrismatic(deriv, order, x, block, offsets, values);
       else
-        evaluateCone(deriv, order, x, block, offsets, values);
+        evaluateConical(deriv, order, x, block, offsets, values);
     }
 
     void integrate ( const unsigned int order,
                      const unsigned int *const offsets,
                      Field *const values ) const
     {
-      if constexpr ( Impl::isTensor(geometry))
-        integrateTensor(order, offsets, values);
+      if constexpr ( geometry.isPrismatic())
+        integratePrismatic(order, offsets, values);
       else
-        integrateCone(order, offsets, values);
+        integrateConical(order, offsets, values);
     }
 
     template< int dimD >
-    void evaluateTensor ( const unsigned int deriv, const unsigned int order,
-                          const FieldVector< Field, dimD > &x,
-                          const unsigned int block, const unsigned int *const offsets,
-                          Field *const values ) const
+    void evaluatePrismatic ( const unsigned int deriv, const unsigned int order,
+                             const FieldVector< Field, dimD > &x,
+                             const unsigned int block, const unsigned int *const offsets,
+                             Field *const values ) const
     {
       typedef MonomialBasisHelper< dimDomain, dimD, Field > Helper;
       const BaseSize &size = BaseSize::instance();
@@ -342,9 +342,9 @@ namespace Dune
       }
     }
 
-    void integrateTensor ( const unsigned int order,
-                           const unsigned int *const offsets,
-                           Field *const values ) const
+    void integratePrismatic ( const unsigned int order,
+                              const unsigned int *const offsets,
+                              Field *const values ) const
     {
       const BaseSize &size = BaseSize::instance();
       const Size &mySize = Size::instance();
@@ -428,10 +428,10 @@ namespace Dune
     }
 
     template< int dimD >
-    void evaluateCone ( const unsigned int deriv, const unsigned int order,
-                        const FieldVector< Field, dimD > &x,
-                        const unsigned int block, const unsigned int *const offsets,
-                        Field *const values ) const
+    void evaluateConical ( const unsigned int deriv, const unsigned int order,
+                           const FieldVector< Field, dimD > &x,
+                           const unsigned int block, const unsigned int *const offsets,
+                           Field *const values ) const
     {
       typedef MonomialBasisHelper< dimDomain, dimD, Field > Helper;
       const BaseSize &size = BaseSize::instance();
@@ -452,9 +452,9 @@ namespace Dune
       }
     }
 
-    void integrateCone ( const unsigned int order,
-                         const unsigned int *const offsets,
-                         Field *const values ) const
+    void integrateConical ( const unsigned int order,
+                            const unsigned int *const offsets,
+                            Field *const values ) const
     {
       const BaseSize &size = BaseSize::instance();
 
@@ -682,9 +682,14 @@ namespace Dune
     typedef FieldVector<Field,dimension> DomainVector;
     typedef FieldVector<Field,dimRange> RangeVector;
 
+    [[deprecated("Use VirtualMonomialBasis(GeometryType gt, unsigned int order) instead.")]]
     explicit VirtualMonomialBasis(unsigned int topologyId,
                                   unsigned int order)
-      : order_(order), topologyId_(topologyId) {}
+      : order_(order), geometry_(GeometryType(topologyId,dim)) {}
+
+    explicit VirtualMonomialBasis(const GeometryType& gt,
+                                  unsigned int order)
+      : order_(order), geometry_(gt) {}
 
     virtual ~VirtualMonomialBasis() {}
 
@@ -700,9 +705,15 @@ namespace Dune
       return order_;
     }
 
+    [[deprecated("Use type().id() instead.")]]
     unsigned int topologyId ( ) const
     {
-      return topologyId_;
+      return type().id();
+    }
+
+    GeometryType type() const
+    {
+      return geometry_;
     }
 
     virtual void evaluate ( const unsigned int deriv, const DomainVector &x,
@@ -764,7 +775,7 @@ namespace Dune
     }
   protected:
     unsigned int order_;
-    unsigned int topologyId_;
+    GeometryType geometry_;
   };
 
   template< GeometryType::Id geometryId, class F >
@@ -780,7 +791,7 @@ namespace Dune
     typedef typename Base::DomainVector DomainVector;
 
     VirtualMonomialBasisImpl(unsigned int order)
-      : Base(geometry.id(),order), basis_(order)
+      : Base(geometry,order), basis_(order)
     {}
 
     const unsigned int *sizes ( ) const

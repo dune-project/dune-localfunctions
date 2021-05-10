@@ -53,15 +53,15 @@ namespace ONBCompute
       }
       else
       {
-        if constexpr ( Dune::Impl::isTensor(geometry) )
-          return computeTensor(alpha,p,q);
+        if constexpr ( geometry.isPrismatic() )
+          return computePrismatic(alpha,p,q);
         else
-          return computeCone(alpha,p,q);
+          return computeConical(alpha,p,q);
       }
     }
 
     template< int dim, class scalar_t >
-    static int computeCone ( const Dune::MultiIndex< dim, scalar_t > &alpha,
+    static int computeConical ( const Dune::MultiIndex< dim, scalar_t > &alpha,
                                 scalar_t &p, scalar_t &q )
     {
       int i = alpha.z( dimension-1 );
@@ -73,7 +73,7 @@ namespace ONBCompute
     }
 
     template< int dim, class scalar_t >
-    static int computeTensor ( const Dune::MultiIndex< dim, scalar_t > &alpha,
+    static int computePrismatic ( const Dune::MultiIndex< dim, scalar_t > &alpha,
                                   scalar_t &p, scalar_t &q )
     {
       int i = alpha.z( dimension-1 );

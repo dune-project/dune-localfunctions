@@ -4,6 +4,7 @@
 #define DUNE_GENERIC_LOCALFINITEELEMENT_HH
 
 #include <dune/geometry/type.hh>
+#include <dune/geometry/typeindex.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include <dune/localfunctions/utility/l2interpolation.hh>
@@ -43,7 +44,9 @@ namespace Dune
         key_( key ),
         finiteElement_()
     {
-      Impl::IfGeometryType< FiniteElement::template Maker, dimDomain >::apply( type(), key_, finiteElement_ );
+      Impl::toGeometryTypeIdConstant<dimDomain>(type(), [&](auto geometryTypeId) {
+        finiteElement_.template create<decltype(geometryTypeId)::value>(key_);
+      });
     }
 
     /** \todo Please doc me */
@@ -52,7 +55,9 @@ namespace Dune
         key_( other.key_ ),
         finiteElement_()
     {
-      Impl::IfGeometryType< FiniteElement::template Maker, dimDomain >::apply( type(), key_, finiteElement_ );
+      Impl::toGeometryTypeIdConstant<dimDomain>(type(), [&](auto geometryTypeId) {
+        finiteElement_.template create<decltype(geometryTypeId)::value>(key_);
+      });
     }
 
     ~GenericLocalFiniteElement()
@@ -118,14 +123,6 @@ namespace Dune
         coeff_=0;
         interpol_=0;
       }
-      template< GeometryType::Id geometryId >
-      struct Maker
-      {
-        static void apply ( const Key &key, FiniteElement &finiteElement )
-        {
-          finiteElement.template create<geometryId>(key);
-        };
-      };
       typename Traits::LocalBasisType *basis_;
       typename Traits::LocalCoefficientsType *coeff_;
       typename Traits::LocalInterpolationType *interpol_;

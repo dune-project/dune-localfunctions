@@ -11,6 +11,7 @@
 #include <dune/geometry/quadraturerules.hh>
 #include <dune/geometry/referenceelements.hh>
 #include <dune/geometry/type.hh>
+#include <dune/geometry/typeindex.hh>
 
 #include <dune/localfunctions/common/localkey.hh>
 #include <dune/localfunctions/utility/interpolationhelper.hh>
@@ -171,7 +172,9 @@ namespace Dune
          * And depending on the dynamic face index a different face geometry is needed.
          *
          */
-        TestFaceBasis *faceBasis = Impl::IfGeometryType< CreateFaceBasis, dimension-1 >::apply( refElement.type( face, 1 ), order );
+        TestFaceBasis *faceBasis = Impl::toGeometryTypeIdConstant<dimension-1>(refElement.type( face, 1 ), [&](auto faceGeometryTypeId) {
+            return TestFaceBasisFactory::template create< decltype(faceGeometryTypeId)::value >( order );
+            });
         faceStructure_.emplace_back( faceBasis, refElement.integrationOuterNormal( face ) );
       }
       assert( faceStructure_.size() == faceSize_ );
@@ -186,12 +189,6 @@ namespace Dune
 
       TestFaceBasis *basis_;
       const Dune::FieldVector< Field, dimension > *normal_;
-    };
-
-    template< GeometryType::Id faceGeometryId >
-    struct CreateFaceBasis
-    {
-      static TestFaceBasis *apply ( std::size_t order ) { return TestFaceBasisFactory::template create< faceGeometryId >( order ); }
     };
 
     std::vector< FaceStructure > faceStructure_;

@@ -7,6 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <utility>
 #include <map>
 
 #include <dune/common/fmatrix.hh>
@@ -45,43 +46,39 @@ namespace ONBCompute
     static int compute ( const Dune::MultiIndex< dim, scalar_t > &alpha,
                          scalar_t &p, scalar_t &q )
     {
-      if constexpr (geometry.isVertex())
+      return compute(alpha, p, q, std::make_integer_sequence<int,dimension>{});
+    }
+
+    template< int dim, class scalar_t , int ...ints>
+    static int compute ( const Dune::MultiIndex< dim, scalar_t > &alpha,
+                         scalar_t &p, scalar_t &q, std::integer_sequence<int,ints...> intS)
+    {
+      p = scalar_t( 1 );
+      q = scalar_t( 1 );
+
+      int ord = 0;
+      ((computeIntegral<ints>(alpha,p,q,ord)),...);
+
+      return ord;
+    }
+
+    template< int step, int dim, class scalar_t >
+    static void computeIntegral ( const Dune::MultiIndex< dim, scalar_t > &alpha,
+                                 scalar_t &p, scalar_t &q, int& ord)
+    {
+      int i = alpha.z( step );
+
+      if constexpr ( geometry.isPrismatic(step))
       {
-        p = scalar_t( 1 );
-        q = scalar_t( 1 );
-        return 0;
+        //p *= scalar_t( 1 );
+        q *= scalar_t( i+1 );
       }
       else
       {
-        if constexpr ( geometry.isPrismatic() )
-          return computePrismatic(alpha,p,q);
-        else
-          return computeConical(alpha,p,q);
+        p *= factorial< scalar_t >( 1, i );
+        q *= factorial< scalar_t >( step+1 + ord, step+1 + ord + i );
       }
-    }
-
-    template< int dim, class scalar_t >
-    static int computeConical ( const Dune::MultiIndex< dim, scalar_t > &alpha,
-                                scalar_t &p, scalar_t &q )
-    {
-      int i = alpha.z( dimension-1 );
-      constexpr Dune::GeometryType::Id baseGeometryId = Dune::Impl::getBase(geometry);
-      int ord = Integral< baseGeometryId >::compute( alpha, p, q );
-      p *= factorial< scalar_t >( 1, i );
-      q *= factorial< scalar_t >( dimension + ord, dimension + ord + i );
-      return ord + i;
-    }
-
-    template< int dim, class scalar_t >
-    static int computePrismatic ( const Dune::MultiIndex< dim, scalar_t > &alpha,
-                                  scalar_t &p, scalar_t &q )
-    {
-      int i = alpha.z( dimension-1 );
-      constexpr Dune::GeometryType::Id baseGeometryId = Dune::Impl::getBase(geometry);
-      int ord = Integral< baseGeometryId >::compute( alpha, p, q );
-      //p *= scalar_t( 1 );
-      q *= scalar_t( i+1 );
-      return ord + i;
+      ord +=i;
     }
 
   };

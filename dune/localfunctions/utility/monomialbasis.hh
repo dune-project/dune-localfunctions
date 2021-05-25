@@ -228,54 +228,12 @@ namespace Dune
   // -----------------
 
   template< GeometryType::Id geometryId, class F>
-  class MonomialBasisImpl;
-
-  template< class F >
-  class MonomialBasisImpl< GeometryTypes::vertex, F >
-  {
-    typedef MonomialBasisImpl< GeometryTypes::vertex, F > This;
-
-  public:
-    static constexpr GeometryType geometry = GeometryTypes::vertex;
-    typedef F Field;
-
-    static const unsigned int dimDomain = geometry.dim();
-
-    typedef FieldVector< Field, dimDomain > DomainVector;
-
-  private:
-    friend class MonomialBasis< geometry.toId(), Field >;
-    friend class MonomialBasisImpl< GeometryTypes::prismaticExtension(geometry).toId(), Field >;
-    friend class MonomialBasisImpl< GeometryTypes::conicalExtension(geometry).toId(), Field >;
-
-    template< int dimD >
-    void evaluate ( const unsigned int deriv, const unsigned int order,
-                    const FieldVector< Field, dimD > &x,
-                    const unsigned int block, const unsigned int *const offsets,
-                    Field *const values ) const
-    {
-      *values = Unity< F >();
-      F *const end = values + block;
-      for( Field *it = values+1 ; it != end; ++it )
-        *it = Zero< F >();
-    }
-
-    void integrate ( const unsigned int order,
-                     const unsigned int *const offsets,
-                     Field *const values ) const
-    {
-      values[ 0 ] = Unity< Field >();
-    }
-  };
-
-  template< GeometryType::Id geometryId, class F>
   class MonomialBasisImpl
   {
   public:
     typedef F Field;
 
     static constexpr GeometryType geometry = geometryId;
-    static constexpr GeometryType baseGeometry = Impl::getBase(geometry);
 
     static const unsigned int dimDomain = geometry.dim();
 
@@ -283,13 +241,6 @@ namespace Dune
 
   private:
     friend class MonomialBasis< geometryId, Field >;
-    friend class MonomialBasisImpl< GeometryTypes::prismaticExtension(geometry).toId(), Field >;
-    friend class MonomialBasisImpl< GeometryTypes::conicalExtension(geometry).toId(), Field >;
-
-    typedef MonomialBasisSize< baseGeometry.toId() > BaseSize;
-    typedef MonomialBasisSize< geometryId > Size;
-
-    MonomialBasisImpl< baseGeometry.toId(), Field > baseBasis_;
 
     MonomialBasisImpl ()
     {}
@@ -300,57 +251,119 @@ namespace Dune
                     const unsigned int block, const unsigned int *const offsets,
                     Field *const values ) const
     {
-      if constexpr ( geometry.isPrismatic())
-        evaluatePrismatic(deriv, order, x, block, offsets, values);
+      //start with vertex
+      *values = Unity< F >();
+      F *const end = values + block;
+      for( Field *it = values+1 ; it != end; ++it )
+        *it = Zero< F >();
+
+      constexpr GeometryType gt = GeometryTypes::vertex;
+
+      if constexpr ( geometry == gt)
+        return;
       else
-        evaluateConical(deriv, order, x, block, offsets, values);
+        evaluate<gt,dimD>(deriv, order, x, block, offsets, values );
     }
 
-    void integrate ( const unsigned int order,
-                     const unsigned int *const offsets,
-                     Field *const values ) const
+    template<GeometryType::Id baseGeometryId, int dimD >
+    void evaluate ( const unsigned int deriv, const unsigned int order,
+                    const FieldVector< Field, dimD > &x,
+                    const unsigned int block, const unsigned int *const offsets,
+                    Field *const values ) const
     {
-      if constexpr ( geometry.isPrismatic())
-        integratePrismatic(order, offsets, values);
-      else
-        integrateConical(order, offsets, values);
-    }
 
-    template< int dimD >
-    void evaluatePrismatic ( const unsigned int deriv, const unsigned int order,
-                             const FieldVector< Field, dimD > &x,
-                             const unsigned int block, const unsigned int *const offsets,
-                             Field *const values ) const
-    {
-      typedef MonomialBasisHelper< dimDomain, dimD, Field > Helper;
+      static constexpr GeometryType baseGeometry = baseGeometryId;
+
+      auto constexpr isPrismatic = geometry.isPrismatic(baseGeometry.dim());
+
+      // compute
+      typedef MonomialBasisHelper< baseGeometry.dim() + 1, dimD, Field > Helper;
+      typedef MonomialBasisSize<baseGeometryId> BaseSize;
+
       const BaseSize &size = BaseSize::instance();
       const_cast<BaseSize&>(size).computeSizes(order);
 
-      const Field &z = x[ dimDomain-1 ];
-
-      // fill first column
-      baseBasis_.evaluate( deriv, order, x, block, offsets, values );
+      const Field &z = x[ baseGeometry.dim() ];
 
       Field *row0 = values;
       for( unsigned int k = 1; k <= order; ++k )
       {
         Field *row1 = values + block*offsets[ k-1 ];
         Field *wit = row1 + block*size.sizes_[ k ];
-        Helper::copy( deriv, wit, row1, k*size.sizes_[ k ], z );
+        if constexpr ( isPrismatic )
+          Helper::copy( deriv, wit, row1, k*size.sizes_[ k ], z );
         Helper::copy( deriv, wit, row0, size( k-1 ), z );
         row0 = row1;
       }
+
+      // stop if desired dimension is reached
+      if constexpr( baseGeometry.dim() == dimDomain-1)
+        return;
+      else
+      {
+        constexpr GeometryType nextGeometry = isPrismatic ? GeometryTypes::prismaticExtension(baseGeometry)
+                                                          : GeometryTypes::conicalExtension(baseGeometry);
+
+        evaluate<nextGeometry.toId(),dimD>(deriv, order, x, block, offsets, values );
+      }
     }
 
+    void integrate ( const unsigned int order,
+                     const unsigned int *const offsets,
+                     Field *const values ) const
+    {
+      //start with vertex
+      values[ 0 ] = Unity< Field >();
+      static constexpr GeometryType gt = GeometryTypes::vertex;
+
+      if constexpr ( geometry == gt)
+        return;
+      else
+        integrate<gt>(order, offsets, values);
+    }
+
+    template<GeometryType::Id baseGeometryId>
+    void integrate ( const unsigned int order,
+                     const unsigned int *const offsets,
+                     Field *const values) const
+    {
+      static constexpr GeometryType baseGeometry = baseGeometryId;
+
+      auto constexpr isPrismatic = geometry.isPrismatic(baseGeometry.dim());
+
+      // decide which kind of integration should be performed
+      if constexpr ( isPrismatic )
+        integratePrismatic<baseGeometry>(order, offsets, values);
+      else
+        integrateConical<baseGeometry>(order, offsets, values);
+
+      // stop if the desired dimension is reached
+      if constexpr( baseGeometry.dim() == dimDomain-1)
+        return;
+      else
+      {
+        static constexpr GeometryType nextGeometry = (isPrismatic ? GeometryTypes::prismaticExtension(baseGeometry)
+                                                                  : GeometryTypes::conicalExtension(baseGeometry));
+
+        integrate<nextGeometry.toId()>(order, offsets, values);
+      }
+
+    }
+
+    template<GeometryType::Id baseGeometryId>
     void integratePrismatic ( const unsigned int order,
                               const unsigned int *const offsets,
                               Field *const values ) const
     {
-      const BaseSize &size = BaseSize::instance();
-      const Size &mySize = Size::instance();
-      // fill first column
-      baseBasis_.integrate( order, offsets, values );
+      typedef MonomialBasisSize<baseGeometryId> BaseSize;
+      static const BaseSize &size = BaseSize::instance();
       const unsigned int *const baseSizes = size.sizes_;
+
+      static constexpr GeometryType baseGeometry = baseGeometryId;
+      static constexpr GeometryType nextGeometry = GeometryTypes::prismaticExtension(baseGeometry);
+
+      typedef MonomialBasisSize<nextGeometry.toId()> Size;
+      static const Size &mySize = Size::instance();
 
       Field *row0 = values;
       for( unsigned int k = 1; k <= order; ++k )
@@ -374,105 +387,28 @@ namespace Dune
       }
     }
 
-    template< int dimD >
-    void evaluateSimplexBase ( const unsigned int deriv, const unsigned int order,
-                               const FieldVector< Field, dimD > &x,
-                               const unsigned int block, const unsigned int *const offsets,
-                               Field *const values,
-                               const BaseSize &size ) const
-    {
-      baseBasis_.evaluate( deriv, order, x, block, offsets, values );
-    }
 
-    template< int dimD >
-    void evaluatePyramidBase ( const unsigned int deriv, const unsigned int order,
-                               const FieldVector< Field, dimD > &x,
-                               const unsigned int block, const unsigned int *const offsets,
-                               Field *const values,
-                               const BaseSize &size ) const
-    {
-      Field omz = Unity< Field >() - x[ dimDomain-1 ];
-
-      if( Zero< Field >() < omz )
-      {
-        const Field invomz = Unity< Field >() / omz;
-        FieldVector< Field, dimD > y;
-        for( unsigned int i = 0; i < dimDomain-1; ++i )
-          y[ i ] = x[ i ] * invomz;
-
-        // fill first column
-        baseBasis_.evaluate( deriv, order, y, block, offsets, values );
-
-        Field omzk = omz;
-        for( unsigned int k = 1; k <= order; ++k )
-        {
-          Field *it = values + block*offsets[ k-1 ];
-          Field *const end = it + block*size.sizes_[ k ];
-          for( ; it != end; ++it )
-            *it *= omzk;
-          omzk *= omz;
-        }
-      }
-      else
-      {
-        assert( deriv==0 );
-        *values = Unity< Field >();
-        for( unsigned int k = 1; k <= order; ++k )
-        {
-          Field *it = values + block*offsets[ k-1 ];
-          Field *const end = it + block*size.sizes_[ k ];
-          for( ; it != end; ++it )
-            *it = Zero< Field >();
-        }
-      }
-    }
-
-    template< int dimD >
-    void evaluateConical ( const unsigned int deriv, const unsigned int order,
-                           const FieldVector< Field, dimD > &x,
-                           const unsigned int block, const unsigned int *const offsets,
-                           Field *const values ) const
-    {
-      typedef MonomialBasisHelper< dimDomain, dimD, Field > Helper;
-      const BaseSize &size = BaseSize::instance();
-      const_cast<BaseSize&>(size).computeSizes(order);
-
-      if( geometry.isSimplex() )
-        evaluateSimplexBase( deriv, order, x, block, offsets, values, size );
-      else
-        evaluatePyramidBase( deriv, order, x, block, offsets, values, size );
-
-      Field *row0 = values;
-      for( unsigned int k = 1; k <= order; ++k )
-      {
-        Field *row1 = values + block*offsets[ k-1 ];
-        Field *wit = row1 + block*size.sizes_[ k ];
-        Helper::copy( deriv, wit, row0, size( k-1 ), x[ dimDomain-1 ] );
-        row0 = row1;
-      }
-    }
-
+    template<GeometryType::Id baseGeometryId>
     void integrateConical ( const unsigned int order,
                             const unsigned int *const offsets,
-                            Field *const values ) const
+                            Field *const values) const
     {
-      const BaseSize &size = BaseSize::instance();
-
-      // fill first column
-      baseBasis_.integrate( order, offsets, values );
-
+      typedef MonomialBasisSize<baseGeometryId> BaseSize;
+      static const BaseSize &size = BaseSize::instance();
       const unsigned int *const baseSizes = size.sizes_;
+
+      static constexpr GeometryType baseGeometry = baseGeometryId;
 
       {
         Field *const col0End = values + baseSizes[ 0 ];
         for( Field *it = values; it != col0End; ++it )
-          *it *= Field( 1 ) /  Field( int(dimDomain) );
+          *it *= Field( 1 ) /  Field( int(baseGeometry.dim()+1) );
       }
 
       Field *row0 = values;
       for( unsigned int k = 1; k <= order; ++k )
       {
-        const Field factor = (Field( 1 ) / Field( k + dimDomain ));
+        const Field factor = (Field( 1 ) / Field( k + baseGeometry.dim()+1));
 
         Field *const row1 = values+offsets[ k-1 ];
         Field *const col0End = row1 + baseSizes[ k ];
@@ -489,6 +425,7 @@ namespace Dune
         row0 = row1;
       }
     }
+
   };
 
 

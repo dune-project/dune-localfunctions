@@ -7,33 +7,38 @@ Copyright holders:
 2016          Lukas Böger
 2014          Andreas Buhr
 2014--2017    Ansgar Burchardt
-2009--2019    Andreas Dedner
+2009--2021    Andreas Dedner
+2020          Nils-Arne Dreier
 2010          Martin Drohmann
-2008--2018    Christian Engwer
-2008--2017    Jorrit Fahlke
+2008--2020    Christian Engwer
+2008--2020    Jorrit Fahlke
 2011--2013    Bernd Flemisch
 2015          Elisa Friebel
 2012          Christoph Gersbacher
 2019          Janick Gerstenberger
-2009--2019    Carsten Gräser
+2009--2021    Carsten Gräser
 2015--2018    Felix Gruber
-2011--2019    Christoph Grüninger
+2011--2021    Christoph Grüninger
+2020          René Heß
 2017          Patrick Jaap
 2013          Guillaume Jouvet
-2015--2019    Dominic Kempf
+2015--2020    Dominic Kempf
 2015          Angela Klewinghaus
+2020          Robert Klöfkorn
 2014          Arne Morten Kvarving
 2015          Jizhou Li
 2013--2017    Tobias Malkmus
 2009          Sven Marnach
 2013--2018    Steffen Müthing
+2020          Lisa Julia Nebel
 2012          Rebecca Neumann
 2008--2018    Martin Nolte
 2011--2016    Elias Pipping
-2016--2019    Simon Praetorius
+2016--2021    Simon Praetorius
 2012--2013    Human Rezaijafari
 2011--2012    Uli Sack
-2008--2019    Oliver Sander
+2008--2021    Oliver Sander
+2020--2021    Henrik Stolzmann
 2011--2012    Matthias Wohlmuth
 2010--2015    Jonathan Youett
 

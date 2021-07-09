@@ -88,3 +88,11 @@ dune_add_test(NAME test-raviartthomassimplex3
 dune_add_test(NAME test-raviartthomassimplex4
               SOURCES test-raviartthomassimplex.cc
               COMPILE_DEFINITIONS "CHECKDIM=4")
+
+dune_add_test(NAME test-nedelecsimplex2
+              SOURCES test-nedelecsimplex.cc
+              COMPILE_DEFINITIONS "CHECKDIM=2")
+
+dune_add_test(NAME test-nedelecsimplex3
+              SOURCES test-nedelecsimplex.cc
+              COMPILE_DEFINITIONS "CHECKDIM=3")

@@ -31,6 +31,8 @@
   Tagged the old versions of: `numLagrangePoints`, `equidistantLagrangePoints`, `RTL2InterpolationBuilder::topologyId()`,
   `VirtualMonomialBasis(topologyId)`, `VirtualMonomialBasis::topologyId()` as deprecated.
 
+* Add a construction algorithm for high order Nédélec elements on triangles and tetrahedra.
+
 # Release 2.7
 
 * The header `lagrange.hh` now includes all headers of all Lagrange implementations,

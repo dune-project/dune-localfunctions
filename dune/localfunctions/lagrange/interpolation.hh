@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include <dune/common/std/type_traits.hh>
 #include <dune/common/typeutilities.hh>
 
 #include <dune/localfunctions/common/localinterpolation.hh>
@@ -46,7 +45,7 @@ namespace Dune
 
     template< class Fn, class Vector >
     auto interpolate ( const Fn &fn, Vector &coefficients, PriorityTag< 1 > ) const
-      -> std::enable_if_t< Std::is_invocable< const Fn &, decltype( this->lagrangePoints_.begin()->point() ) >::value >
+      -> std::enable_if_t< std::is_invocable_v< const Fn &, decltype( this->lagrangePoints_.begin()->point() ) > >
     {
       unsigned int index = 0;
       for( const auto &lp : lagrangePoints_ )

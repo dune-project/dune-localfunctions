@@ -9,7 +9,7 @@
 #include <vector>
 
 #include <dune/common/fmatrix.hh>
-#include <dune/common/std/type_traits.hh>
+#include <dune/common/typetraits.hh>
 #include <dune/common/shared_ptr.hh>
 
 namespace Dune {
@@ -96,7 +96,7 @@ namespace Dune {
   template<class FiniteElement>
   struct FiniteElementInterfaceSwitch<
       FiniteElement,
-      typename std::enable_if<Std::to_true_type<typename FiniteElement::Traits::
+      typename std::enable_if<AlwaysTrue<typename FiniteElement::Traits::
               LocalBasisType>::value>::type
       >
   {
@@ -191,7 +191,7 @@ namespace Dune {
   template<class Basis>
   struct BasisInterfaceSwitch<Basis,
                               typename std::enable_if<
-                                Std::to_true_type<
+                                AlwaysTrue<
                                   std::integral_constant<
                                     std::size_t,
                                     Basis::Traits::dimDomain

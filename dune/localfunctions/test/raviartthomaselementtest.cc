@@ -139,6 +139,14 @@ int main(int argc, char** argv)
     TEST_FE(rt1cube3dlfemDedicated);
   }
 
+  Dune::RT0PyramidLocalFiniteElement<double,double> rt0pyramidlfemDedicated;
+  TEST_FE(rt0pyramidlfemDedicated);
+  for (unsigned int s = 0; s < 32; s++)
+  {
+    Dune::RT0PyramidLocalFiniteElement<double,double> rt0pyramidlfemDedicated(s);
+    TEST_FE(rt0pyramidlfemDedicated);
+  }
+
   // Test the RaviartThomasLocalFiniteElementCache
   Dune::RaviartThomasLocalFiniteElementCache<double,double,2,0> lagrangeLFECache;
   TEST_FE(lagrangeLFECache.get(Dune::GeometryTypes::simplex(2)));

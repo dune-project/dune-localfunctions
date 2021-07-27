@@ -32,7 +32,7 @@ namespace Dune
     typedef typename P0LocalFiniteElement<D,R,d>::Traits::LocalBasisType::Traits T;
 
     //! create finite element for given GeometryType
-    static LocalFiniteElementVirtualInterface<T>* create(const GeometryType& gt)
+    static LocalFiniteElementVirtualInterface<T>* create(const GeometryType&)
     {
       return nullptr;
     }

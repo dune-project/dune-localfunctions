@@ -38,7 +38,7 @@ namespace Dune
     }
 
     //! \brief Evaluate all shape functions
-    inline void evaluateFunction (const typename Traits::DomainType& in,
+    inline void evaluateFunction (const typename Traits::DomainType&,
                                   std::vector<typename Traits::RangeType>& out) const
     {
       out.resize(1);
@@ -47,7 +47,7 @@ namespace Dune
 
     //! \brief Evaluate Jacobian of all shape functions
     inline void
-    evaluateJacobian (const typename Traits::DomainType& in,         // position
+    evaluateJacobian (const typename Traits::DomainType&,         // position
                       std::vector<typename Traits::JacobianType>& out) const      // return value
     {
       out.resize(1);

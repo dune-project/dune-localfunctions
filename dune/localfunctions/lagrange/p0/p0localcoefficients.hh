@@ -32,7 +32,7 @@ namespace Dune
     }
 
     //! get i'th index
-    const LocalKey& localKey (std::size_t i) const
+    const LocalKey& localKey ([[maybe_unused]] std::size_t i) const
     {
       return index;
     }

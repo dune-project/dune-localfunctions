@@ -400,7 +400,7 @@ namespace Dune { namespace Impl
         // Helper method: Return the derivative of a single Lagrangian factor of l_ij evaluated at x
         // direction: Derive in x-direction if this is 0, otherwise derive in y direction
         auto lagrangianFactorDerivative = [&lagrangeNode]
-                                          (const int direction, const int no, const int i, const int j, const typename Traits::DomainType& x)
+                                          (const int direction, const int no, const int i, const int j, const typename Traits::DomainType&)
                                           -> typename Traits::RangeType
           {
             using T = typename Traits::RangeType;

@@ -1,4 +1,6 @@
-# Master (will become release 2.8)
+# Master (will become release 2.9)
+
+# Release 2.8
 
 * Passing functions that support `f.evaluate(x,y)` to `interpolate()`
   is deprecated. Instead the functions should now provide `operator()`.

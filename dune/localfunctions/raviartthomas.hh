@@ -18,5 +18,6 @@
 #include <dune/localfunctions/raviartthomas/raviartthomas0cube3d.hh>
 #include <dune/localfunctions/raviartthomas/raviartthomas1cube3d.hh>
 #include <dune/localfunctions/raviartthomas/raviartthomas0pyramid.hh>
+#include <dune/localfunctions/raviartthomas/raviartthomas0prism.hh>
 
 #endif // #ifndef DUNE_RAVIARTTHOMASFINITEELEMENT_HH

@@ -6,6 +6,8 @@
 
 #include <dune/localfunctions/lagrange/lagrangecube.hh>
 
+#warning This header is deprecated
+
 namespace Dune
 {
   /** \brief General Lagrange finite element for cubes with arbitrary dimension and polynomial order
@@ -19,7 +21,9 @@ namespace Dune
    * \deprecated This class is deprecated!  Please use LagrangeCubeLocalFiniteElement instead.
    */
   template<class D, class R, int d, int k>
-  using QkLocalFiniteElement = LagrangeCubeLocalFiniteElement<D,R,d,k>;
+  using QkLocalFiniteElement
+    [[deprecated("use LagrangeCubeLocalFiniteElement instead")]]
+    = LagrangeCubeLocalFiniteElement<D,R,d,k>;
 
 }
 

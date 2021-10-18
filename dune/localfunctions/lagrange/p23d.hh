@@ -5,6 +5,8 @@
 
 #include <dune/localfunctions/lagrange/lagrangesimplex.hh>
 
+#warning This header is deprecated
+
 namespace Dune
 {
 
@@ -16,7 +18,9 @@ namespace Dune
    * \deprecated This class is obsolete. Please use LagrangeSimplexLocalFiniteElement instead!
    */
   template<class D, class R>
-  using P23DLocalFiniteElement = LagrangeSimplexLocalFiniteElement<D,R,3,2>;
+  using P23DLocalFiniteElement
+    [[deprecated("use LagrangeSimplexLocalFiniteElement instead")]]
+    = LagrangeSimplexLocalFiniteElement<D,R,3,2>;
 
 }
 

@@ -5,6 +5,8 @@
 
 #include <dune/localfunctions/lagrange/lagrangeprism.hh>
 
+#warning This header is deprecated
+
 namespace Dune
 {
 
@@ -13,7 +15,9 @@ namespace Dune
    * \deprecated Please use LagrangePrismLocalFiniteElement<D,R,2> instead!
    */
   template<class D, class R>
-  using PrismP2LocalFiniteElement = LagrangePrismLocalFiniteElement<D,R,2>;
+  using PrismP2LocalFiniteElement
+    [[deprecated("use LagrangePrismLocalFiniteElement instead")]]
+    = LagrangePrismLocalFiniteElement<D,R,2>;
 
 }
 

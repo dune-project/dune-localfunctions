@@ -6,7 +6,7 @@
 #include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
-#include <dune/localfunctions/lagrange/pk.hh>
+#include <dune/localfunctions/lagrange/lagrangesimplex.hh>
 
 #include "hierarchicalp2/hierarchicalsimplexp2localbasis.hh"
 #include "hierarchicalp2/hierarchicalsimplexp2localinterpolation.hh"
@@ -28,7 +28,7 @@ namespace Dune
      */
     typedef LocalFiniteElementTraits<
         HierarchicalSimplexP2LocalBasis<D,R,dim>,
-        typename PkLocalFiniteElement<D,R,dim,2>::Traits::LocalCoefficientsType,
+        typename LagrangeSimplexLocalFiniteElement<D,R,dim,2>::Traits::LocalCoefficientsType,
         HierarchicalSimplexP2LocalInterpolation<HierarchicalSimplexP2LocalBasis<D,R,dim> > > Traits;
 
     /** \todo Please doc me !

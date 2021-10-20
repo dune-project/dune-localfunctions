@@ -10,8 +10,8 @@
 #include <dune/geometry/affinegeometry.hh>
 #include <dune/geometry/referenceelements.hh>
 
-#include <dune/localfunctions/lagrange/p1.hh>
-#include <dune/localfunctions/lagrange/q1.hh>
+#include <dune/localfunctions/lagrange/lagrangecube.hh>
+#include <dune/localfunctions/lagrange/lagrangesimplex.hh>
 
 #include <dune/localfunctions/dualmortarbasis/dualp1.hh>
 #include <dune/localfunctions/dualmortarbasis/dualq1.hh>
@@ -169,27 +169,27 @@ int main(int argc, char** argv)
 {
   bool success = true;
   Dune::DualP1LocalFiniteElement<double,double,1> dualP1lfem1D;
-  Dune::P1LocalFiniteElement<double,double,1> p1lfem1D;
+  Dune::LagrangeSimplexLocalFiniteElement<double,double,1,1> p1lfem1D;
   success = testBiorthogonality(dualP1lfem1D,p1lfem1D) and success;
 
   Dune::DualP1LocalFiniteElement<double,double,2> dualP1lfem2D;
-  Dune::P1LocalFiniteElement<double,double,2> p1lfem2D;
+  Dune::LagrangeSimplexLocalFiniteElement<double,double,2,1> p1lfem2D;
   success = testBiorthogonality(dualP1lfem2D,p1lfem2D) and success;
 
   Dune::DualP1LocalFiniteElement<double,double,3> dualP1lfem3D;
-  Dune::P1LocalFiniteElement<double,double,3> p1lfem3D;
+  Dune::LagrangeSimplexLocalFiniteElement<double,double,3,1> p1lfem3D;
   success = testBiorthogonality(dualP1lfem3D,p1lfem3D) and success;
 
   Dune::DualQ1LocalFiniteElement<double,double,1> dualQ1lfem1D;
-  Dune::Q1LocalFiniteElement<double,double,1> q1lfem1D;
+  Dune::LagrangeCubeLocalFiniteElement<double,double,1,1> q1lfem1D;
   success = testBiorthogonality(dualQ1lfem1D,q1lfem1D) and success;
 
   Dune::DualQ1LocalFiniteElement<double,double,2> dualQ1lfem2D;
-  Dune::Q1LocalFiniteElement<double,double,2> q1lfem2D;
+  Dune::LagrangeCubeLocalFiniteElement<double,double,2,1> q1lfem2D;
   success = testBiorthogonality(dualQ1lfem2D,q1lfem2D) and success;
 
   Dune::DualQ1LocalFiniteElement<double,double,3> dualQ1lfem3D;
-  Dune::Q1LocalFiniteElement<double,double,3> q1lfem3D;
+  Dune::LagrangeCubeLocalFiniteElement<double,double,3,1> q1lfem3D;
   success = testBiorthogonality(dualQ1lfem3D,q1lfem3D) and success;
 
   Dune::DualP1LocalFiniteElement<double,double,1,true> dualFaceP1lfem1D;

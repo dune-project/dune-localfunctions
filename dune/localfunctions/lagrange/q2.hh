@@ -8,8 +8,9 @@
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include <dune/localfunctions/common/localtoglobaladaptors.hh>
-#include "pk.hh"
-#include "qk.hh"
+
+#include <dune/localfunctions/lagrange/lagrangecube.hh>
+#include <dune/localfunctions/lagrange/lagrangesimplex.hh>
 
 namespace Dune
 {
@@ -23,13 +24,13 @@ namespace Dune
   class Q2FiniteElementFactory :
     public ScalarLocalToGlobalFiniteElementAdaptorFactory<
       typename std::conditional<Geometry::mydimension == 1,
-        PkLocalFiniteElement<typename Geometry::ctype, RF, 1, 2>,
-        QkLocalFiniteElement<typename Geometry::ctype, RF, Geometry::mydimension, 2> >::type,
+        LagrangeSimplexLocalFiniteElement<typename Geometry::ctype, RF, 1, 2>,
+        LagrangeCubeLocalFiniteElement<typename Geometry::ctype, RF, Geometry::mydimension, 2> >::type,
       Geometry>
   {
     typedef typename std::conditional<Geometry::mydimension == 1,
-      PkLocalFiniteElement<typename Geometry::ctype, RF, 1, 2>,
-      QkLocalFiniteElement<typename Geometry::ctype, RF, Geometry::mydimension, 2> >::type LFE;
+      LagrangeSimplexLocalFiniteElement<typename Geometry::ctype, RF, 1, 2>,
+      LagrangeCubeLocalFiniteElement<typename Geometry::ctype, RF, Geometry::mydimension, 2> >::type LFE;
     typedef ScalarLocalToGlobalFiniteElementAdaptorFactory<LFE, Geometry> Base;
 
     static const LFE lfe;

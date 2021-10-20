@@ -17,26 +17,11 @@
 
 // Headers for Lagrange elements with compile-time order
 #include <dune/localfunctions/lagrange/lagrangecube.hh>
+#include <dune/localfunctions/lagrange/lagrangepyramid.hh>
+#include <dune/localfunctions/lagrange/lagrangeprism.hh>
 #include <dune/localfunctions/lagrange/lagrangesimplex.hh>
 #include <dune/localfunctions/lagrange/p0.hh>
-#include <dune/localfunctions/lagrange/p1.hh>
-#include <dune/localfunctions/lagrange/p2.hh>
-#include <dune/localfunctions/lagrange/p23d.hh>
-#include <dune/localfunctions/lagrange/pk.hh>
-#include <dune/localfunctions/lagrange/pk1d.hh>
-#include <dune/localfunctions/lagrange/pk2d.hh>
-#include <dune/localfunctions/lagrange/pk3d.hh>
 #include <dune/localfunctions/lagrange/pq22d.hh>
-
-#include <dune/localfunctions/lagrange/q1.hh>
-#include <dune/localfunctions/lagrange/q2.hh>
-#include <dune/localfunctions/lagrange/qk.hh>
-
-#include <dune/localfunctions/lagrange/prismp1.hh>
-#include <dune/localfunctions/lagrange/prismp2.hh>
-#include <dune/localfunctions/lagrange/pyramidp1.hh>
-#include <dune/localfunctions/lagrange/pyramidp2.hh>
-
 
 namespace Dune
 {

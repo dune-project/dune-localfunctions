@@ -619,11 +619,6 @@ namespace Dune
     typedef FieldVector<Field,dimension> DomainVector;
     typedef FieldVector<Field,dimRange> RangeVector;
 
-    [[deprecated("Use VirtualMonomialBasis(GeometryType gt, unsigned int order) instead.")]]
-    explicit VirtualMonomialBasis(unsigned int topologyId,
-                                  unsigned int order)
-      : order_(order), geometry_(GeometryType(topologyId,dim)) {}
-
     explicit VirtualMonomialBasis(const GeometryType& gt,
                                   unsigned int order)
       : order_(order), geometry_(gt) {}
@@ -640,12 +635,6 @@ namespace Dune
     unsigned int order () const
     {
       return order_;
-    }
-
-    [[deprecated("Use type().id() instead.")]]
-    unsigned int topologyId ( ) const
-    {
-      return type().id();
     }
 
     GeometryType type() const

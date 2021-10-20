@@ -128,9 +128,6 @@ namespace Dune
         TestFaceBasisFactory::release( f.basis_ );
     }
 
-    [[deprecated("Use type().id() instead.")]]
-    unsigned int topologyId () const { return type().id(); }
-
     GeometryType type () const { return geometry_; }
 
     std::size_t order () const { return order_; }

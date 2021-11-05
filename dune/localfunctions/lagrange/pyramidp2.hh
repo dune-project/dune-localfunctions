@@ -5,6 +5,8 @@
 
 #include <dune/localfunctions/lagrange/lagrangepyramid.hh>
 
+#warning This header is deprecated
+
 namespace Dune
 {
 
@@ -13,7 +15,9 @@ namespace Dune
    * \deprecated Please use LagrangePyramidLocalFiniteElement<D,R,2> instead!
    */
   template<class D, class R>
-  using PyramidP2LocalFiniteElement = LagrangePyramidLocalFiniteElement<D,R,2>;
+  using PyramidP2LocalFiniteElement
+    [[deprecated("use LagrangePyramidLocalFiniteElement instead")]]
+    = LagrangePyramidLocalFiniteElement<D,R,2>;
 
 }
 

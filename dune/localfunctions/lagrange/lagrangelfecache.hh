@@ -9,13 +9,11 @@
 #include <dune/geometry/type.hh>
 #include <dune/geometry/typeindex.hh>
 
+#include <dune/localfunctions/lagrange/lagrangecube.hh>
+#include <dune/localfunctions/lagrange/lagrangeprism.hh>
+#include <dune/localfunctions/lagrange/lagrangepyramid.hh>
+#include <dune/localfunctions/lagrange/lagrangesimplex.hh>
 #include <dune/localfunctions/lagrange/p0.hh>
-#include <dune/localfunctions/lagrange/pk.hh>
-#include <dune/localfunctions/lagrange/qk.hh>
-#include <dune/localfunctions/lagrange/prismp1.hh>
-#include <dune/localfunctions/lagrange/prismp2.hh>
-#include <dune/localfunctions/lagrange/pyramidp1.hh>
-#include <dune/localfunctions/lagrange/pyramidp2.hh>
 #include <dune/localfunctions/common/localfiniteelementvariantcache.hh>
 
 
@@ -34,8 +32,8 @@ namespace Impl {
     static auto getImplementations()
     {
       return std::make_tuple(
-        std::make_pair(index(GeometryTypes::simplex(dim)), []() { return PkLocalFiniteElement<D,R,dim,order>(); }),
-        std::make_pair(index(GeometryTypes::cube(dim)),    []() { return QkLocalFiniteElement<D,R,dim,order>(); })
+        std::make_pair(index(GeometryTypes::simplex(dim)), []() { return LagrangeSimplexLocalFiniteElement<D,R,dim,order>(); }),
+        std::make_pair(index(GeometryTypes::cube(dim)),    []() { return LagrangeCubeLocalFiniteElement<D,R,dim,order>(); })
       );
     }
   };
@@ -76,10 +74,10 @@ namespace Impl {
     static auto getImplementations()
     {
       return std::make_tuple(
-        std::make_pair(index(GeometryTypes::tetrahedron), []() { return PkLocalFiniteElement<D,R,3,1>(); }),
-        std::make_pair(index(GeometryTypes::hexahedron),  []() { return QkLocalFiniteElement<D,R,3,1>(); }),
-        std::make_pair(index(GeometryTypes::prism),       []() { return PrismP1LocalFiniteElement<D,R>(); }),
-        std::make_pair(index(GeometryTypes::pyramid),     []() { return PyramidP1LocalFiniteElement<D,R>(); })
+        std::make_pair(index(GeometryTypes::tetrahedron), []() { return LagrangeSimplexLocalFiniteElement<D,R,3,1>(); }),
+        std::make_pair(index(GeometryTypes::hexahedron),  []() { return LagrangeCubeLocalFiniteElement<D,R,3,1>(); }),
+        std::make_pair(index(GeometryTypes::prism),       []() { return LagrangePrismLocalFiniteElement<D,R,1>(); }),
+        std::make_pair(index(GeometryTypes::pyramid),     []() { return LagrangePyramidLocalFiniteElement<D,R,1>(); })
       );
     }
   };
@@ -91,10 +89,10 @@ namespace Impl {
     static auto getImplementations()
     {
       return std::make_tuple(
-        std::make_pair(index(GeometryTypes::tetrahedron), []() { return PkLocalFiniteElement<D,R,3,2>(); }),
-        std::make_pair(index(GeometryTypes::hexahedron),  []() { return QkLocalFiniteElement<D,R,3,2>(); }),
-        std::make_pair(index(GeometryTypes::prism),       []() { return PrismP2LocalFiniteElement<D,R>(); }),
-        std::make_pair(index(GeometryTypes::pyramid),     []() { return PyramidP2LocalFiniteElement<D,R>(); })
+        std::make_pair(index(GeometryTypes::tetrahedron), []() { return LagrangeSimplexLocalFiniteElement<D,R,3,2>(); }),
+        std::make_pair(index(GeometryTypes::hexahedron),  []() { return LagrangeCubeLocalFiniteElement<D,R,3,2>(); }),
+        std::make_pair(index(GeometryTypes::prism),       []() { return LagrangePrismLocalFiniteElement<D,R,2>(); }),
+        std::make_pair(index(GeometryTypes::pyramid),     []() { return LagrangePyramidLocalFiniteElement<D,R,2>(); })
       );
     }
   };

@@ -13,7 +13,7 @@
 #include <dune/localfunctions/common/virtualwrappers.hh>
 
 #include <dune/localfunctions/lagrange/p0.hh>
-#include <dune/localfunctions/lagrange/p1.hh>
+#include <dune/localfunctions/lagrange/lagrangesimplex.hh>
 #include <dune/localfunctions/lagrange/pq22d.hh>
 #include <dune/localfunctions/monomial.hh>
 
@@ -152,7 +152,7 @@ void testLocalFiniteElement(const LocalFiniteElementVirtualInterface<T>* localFi
 int main (int argc, char *argv[])
 {
 
-  typedef Dune::P1LocalFiniteElement<double, double, 2>::Traits::LocalBasisType::Traits LBTraits;
+  typedef Dune::LagrangeSimplexLocalFiniteElement<double, double, 2, 1>::Traits::LocalBasisType::Traits LBTraits;
 
   const Dune::P0LocalFiniteElement<double, double, 2> p0FE(Dune::GeometryTypes::cube(2));
   const Dune::LocalFiniteElementVirtualImp<Dune::P0LocalFiniteElement<double, double, 2> > p0VFE(p0FE);
@@ -164,11 +164,11 @@ int main (int argc, char *argv[])
   const Dune::LocalFiniteElementVirtualImp<Dune::PQ22DLocalFiniteElement<double, double> > pq2VFE(pq2FE);
   testLocalFiniteElement<LBTraits>(&pq2VFE);
 
-  const Dune::LocalFiniteElementVirtualImp<Dune::P1LocalFiniteElement<double, double, 2> > p1VFE;
+  const Dune::LocalFiniteElementVirtualImp<Dune::LagrangeSimplexLocalFiniteElement<double, double, 2, 1>> p1VFE;
   testLocalFiniteElement<LBTraits>(&p1VFE);
 
-  const Dune::LocalFiniteElementVirtualImp<
-      Dune::LocalFiniteElementVirtualImp<Dune::P1LocalFiniteElement<double, double, 2> > > p1VVFE;
+  const Dune::LocalFiniteElementVirtualImp<Dune::LocalFiniteElementVirtualImp<
+    Dune::LagrangeSimplexLocalFiniteElement<double, double, 2, 1>>> p1VVFE;
   testLocalFiniteElement<LBTraits>(&p1VVFE);
 
   typedef Dune::MonomialLocalFiniteElement<double, double, 2, 7> Monom7;

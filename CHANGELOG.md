@@ -1,5 +1,10 @@
 # Master (will become release 2.9)
 
+## Deprecations and removals
+
+- Deprecated many of the Lagrange headers, use
+  `lagrange(cube|prism|pyramid|simplex).hh` instead.
+
 # Release 2.8
 
 * Passing functions that support `f.evaluate(x,y)` to `interpolate()`

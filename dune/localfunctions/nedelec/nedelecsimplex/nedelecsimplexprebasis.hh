@@ -82,7 +82,7 @@ namespace Dune
        * We construct $(\P_{n,k})^n$ and and only use the monomials contained in $Ned$.
        *
        */
-      if( dim!=2 && dim!=3 || !geometry.isSimplex())
+      if( (dim!=2 && dim!=3) || !geometry.isSimplex())
         DUNE_THROW(Dune::NotImplemented,"High order nedelec elements are only supported by simplices in 2d and 3d");
 
       MIBasis basis(order+1);

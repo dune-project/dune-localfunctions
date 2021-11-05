@@ -7,20 +7,12 @@
 #include <fenv.h>
 
 #include <dune/localfunctions/lagrange/p0.hh>
-#include <dune/localfunctions/lagrange/p1.hh>
-#include <dune/localfunctions/lagrange/p23d.hh>
-#include <dune/localfunctions/lagrange/pk1d.hh>
-#include <dune/localfunctions/lagrange/pk2d.hh>
-#include <dune/localfunctions/lagrange/pk3d.hh>
-#include <dune/localfunctions/lagrange/pk.hh>
-#include <dune/localfunctions/lagrange/q1.hh>
-#include <dune/localfunctions/lagrange/prismp1.hh>
-#include <dune/localfunctions/lagrange/prismp2.hh>
-#include <dune/localfunctions/lagrange/pyramidp1.hh>
-#include <dune/localfunctions/lagrange/pyramidp2.hh>
 #include <dune/localfunctions/lagrange/pq22d.hh>
 #include <dune/localfunctions/lagrange/lagrangelfecache.hh>
-
+#include <dune/localfunctions/lagrange/lagrangecube.hh>
+#include <dune/localfunctions/lagrange/lagrangeprism.hh>
+#include <dune/localfunctions/lagrange/lagrangepyramid.hh>
+#include <dune/localfunctions/lagrange/lagrangesimplex.hh>
 
 #include <dune/localfunctions/test/test-localfe.hh>
 
@@ -112,13 +104,13 @@ int main (int argc, char *argv[])
   //////////////////////////////////////////////////////////
   //   Test for the Lagrange property
   //////////////////////////////////////////////////////////
-  P1LocalFiniteElement<double,double,1> p11d;
+  LagrangeSimplexLocalFiniteElement<double,double,1,1> p11d;
   success &= testPk(p11d);
 
-  P1LocalFiniteElement<double,double,2> p12d;
+  LagrangeSimplexLocalFiniteElement<double,double,2,1> p12d;
   success &= testPk(p12d);
 
-  P1LocalFiniteElement<double,double,3> p13d;
+  LagrangeSimplexLocalFiniteElement<double,double,3,1> p13d;
   success &= testPk(p13d);
 
   //     P23DLocalFiniteElement does not fulfill above assumption on the
@@ -126,22 +118,22 @@ int main (int argc, char *argv[])
   //     P23DLocalFiniteElement<double,double> p23d;
   //     testPk(p23d);
 
-  Pk2DLocalFiniteElement<double,double,1> pk12d;
+  LagrangeSimplexLocalFiniteElement<double,double,2,1> pk12d;
   success &= testPk(pk12d);
-  Pk2DLocalFiniteElement<double,double,2> pk22d;
+  LagrangeSimplexLocalFiniteElement<double,double,2,2> pk22d;
   success &= testPk(pk22d);
-  Pk2DLocalFiniteElement<double,double,3> pk32d;
+  LagrangeSimplexLocalFiniteElement<double,double,2,3> pk32d;
   success &= testPk(pk32d);
-  Pk2DLocalFiniteElement<double,double,4> pk42d;
+  LagrangeSimplexLocalFiniteElement<double,double,2,4> pk42d;
   success &= testPk(pk42d);
 
-  Pk3DLocalFiniteElement<double,double,1> pk13d;
+  LagrangeSimplexLocalFiniteElement<double,double,3,1> pk13d;
   success &= testPk(pk13d);
-  Pk3DLocalFiniteElement<double,double,2> pk23d;
+  LagrangeSimplexLocalFiniteElement<double,double,3,2> pk23d;
   success &= testPk(pk23d);
-  Pk3DLocalFiniteElement<double,double,3> pk33d;
+  LagrangeSimplexLocalFiniteElement<double,double,3,3> pk33d;
   success &= testPk(pk33d);
-  Pk3DLocalFiniteElement<double,double,4> pk43d;
+  LagrangeSimplexLocalFiniteElement<double,double,3,4> pk43d;
   success &= testPk(pk43d);
 
   //////////////////////////////////////////////////////////
@@ -151,101 +143,101 @@ int main (int argc, char *argv[])
   GeometryTypes::simplex(2));
   TEST_FE(p0lfem);
 
-  P1LocalFiniteElement<double,double,1> p11dlfem;
+  LagrangeSimplexLocalFiniteElement<double,double,1,1> p11dlfem;
   TEST_FE3(p11dlfem,DisableNone,2);
 
-  P1LocalFiniteElement<double,double,2> p12dlfem;
+  LagrangeSimplexLocalFiniteElement<double,double,2,1> p12dlfem;
   TEST_FE3(p12dlfem,DisableNone,2);
 
-  P1LocalFiniteElement<double,double,3> p13dlfem;
+  LagrangeSimplexLocalFiniteElement<double,double,3,1> p13dlfem;
   TEST_FE3(p13dlfem,DisableNone,2);
 
-  Q1LocalFiniteElement<double,double,1> q11dlfem;
+  LagrangeSimplexLocalFiniteElement<double,double,1,1> q11dlfem;
   TEST_FE(q11dlfem);
 
-  Q1LocalFiniteElement<double,double,2> q12dlfem;
+  LagrangeSimplexLocalFiniteElement<double,double,2,1> q12dlfem;
   TEST_FE(q12dlfem);
 
-  Q1LocalFiniteElement<double,double,3> q13dlfem;
+  LagrangeSimplexLocalFiniteElement<double,double,3,1> q13dlfem;
   TEST_FE(q13dlfem);
 
-  Pk1DLocalFiniteElement<double,double,2> p11dfem;
+  LagrangeSimplexLocalFiniteElement<double,double,2,1> p11dfem;
   TEST_FE(p11dfem);
 
   PQ22DLocalFiniteElement<double,double> pq22dlfem(
     GeometryTypes::simplex(2));
   TEST_FE(pq22dlfem);
 
-  P23DLocalFiniteElement<double,double> p23dlfem;
+  LagrangeSimplexLocalFiniteElement<double,double,3,2> p23dlfem;
   TEST_FE(p23dlfem);
 
-  PrismP1LocalFiniteElement<double,double> prismp1fem;
+  LagrangePrismLocalFiniteElement<double,double,1> prismp1fem;
   TEST_FE3(prismp1fem, DisableNone, 2);
 
-  PrismP2LocalFiniteElement<double,double> prismp2fem;
+  LagrangePrismLocalFiniteElement<double,double,2> prismp2fem;
   TEST_FE3(prismp2fem, DisableNone, 1);
 
   // Pyramid shapefunctions are not differentiable on the plane where xi[0]=xi[1].
   // So let's skip test points on this plane
   auto xySkip = [](const FieldVector<double,3>& xi){return std::abs(xi[0]-xi[1]) < 1e-8;};
 
-  PyramidP1LocalFiniteElement<double,double> pyramidp1fem;
+  LagrangePyramidLocalFiniteElement<double,double,1> pyramidp1fem;
   TEST_FE4(pyramidp1fem, DisableNone, 1, xySkip);
 
-  PyramidP2LocalFiniteElement<double,double> pyramidp2fem;
+  LagrangePyramidLocalFiniteElement<double,double,2> pyramidp2fem;
   TEST_FE4(pyramidp2fem, DisableNone, 1, xySkip);
 
   Hybrid::forEach(std::make_index_sequence<4>{},[&success](auto i)
   {
-    PkLocalFiniteElement<double,double,1,i> pklfem;
+    LagrangeSimplexLocalFiniteElement<double,double,1,i> pklfem;
     TEST_FE(pklfem);
   });
 
   Hybrid::forEach(std::make_index_sequence<5>{},[&success](auto i)
   {
-    PkLocalFiniteElement<double,double,2,i> pklfem;
+    LagrangeSimplexLocalFiniteElement<double,double,2,i> pklfem;
     TEST_FE3(pklfem,DisableNone,2);
   });
 
   Hybrid::forEach(std::make_index_sequence<6>{},[&success](auto i)
   {
-    PkLocalFiniteElement<double,double,3,i> pklfem;
+    LagrangeSimplexLocalFiniteElement<double,double,3,i> pklfem;
     TEST_FE(pklfem);
   });
 
   // --------------------------------------------------------
-  //  Test some instantiations of QkLocalFiniteElement
+  //  Test some instantiations of LagrangeCubeLocalFiniteElement
   // --------------------------------------------------------
-  QkLocalFiniteElement<double,double,1,1> qk11dlfem;
+  LagrangeCubeLocalFiniteElement<double,double,1,1> qk11dlfem;
   TEST_FE3(qk11dlfem,DisableNone,2);
 
-  QkLocalFiniteElement<double,double,2,0> qk02dlfem;
+  LagrangeCubeLocalFiniteElement<double,double,2,0> qk02dlfem;
   TEST_FE3(qk02dlfem,DisableNone,2);
 
-  QkLocalFiniteElement<double,double,2,1> qk12dlfem;
+  LagrangeCubeLocalFiniteElement<double,double,2,1> qk12dlfem;
   TEST_FE3(qk12dlfem,DisableNone,2);
 
-  QkLocalFiniteElement<double,double,2,2> qk22dlfem;
+  LagrangeCubeLocalFiniteElement<double,double,2,2> qk22dlfem;
   TEST_FE3(qk22dlfem,DisableNone,2);
 
-  QkLocalFiniteElement<double,double,2,3> qk32dlfem;
+  LagrangeCubeLocalFiniteElement<double,double,2,3> qk32dlfem;
   TEST_FE3(qk32dlfem,DisableNone,2);
 
-  QkLocalFiniteElement<double,double,3,0> qk03dlfem;
+  LagrangeCubeLocalFiniteElement<double,double,3,0> qk03dlfem;
   TEST_FE3(qk03dlfem,DisableNone,2);
 
-  QkLocalFiniteElement<double,double,3,1> qk13dlfem;
+  LagrangeCubeLocalFiniteElement<double,double,3,1> qk13dlfem;
   TEST_FE3(qk13dlfem,DisableNone,2);
 
-  QkLocalFiniteElement<double,double,3,2> qk23dlfem;
+  LagrangeCubeLocalFiniteElement<double,double,3,2> qk23dlfem;
   TEST_FE3(qk23dlfem,DisableNone,2);
 
-  QkLocalFiniteElement<double,double,3,3> qk33dlfem;
+  LagrangeCubeLocalFiniteElement<double,double,3,3> qk33dlfem;
   TEST_FE3(qk33dlfem,DisableNone,2);
 
   // test virtualized FEs
   // notice that testFE add another level of virtualization
-  LocalFiniteElementVirtualImp< P1LocalFiniteElement<double,double, 2> >
+  LocalFiniteElementVirtualImp< LagrangeSimplexLocalFiniteElement<double,double,2,1> >
   p12dlfemVirtual(p12dlfem);
   TEST_FE(p12dlfemVirtual);
 
@@ -255,7 +247,7 @@ int main (int argc, char *argv[])
 
   LocalFiniteElementVirtualImp<
       LocalFiniteElementVirtualImp<
-          P1LocalFiniteElement<double,double, 2> > >
+          LagrangeSimplexLocalFiniteElement<double,double,2,1> > >
   p12dlfemVirtualVirtual(p12dlfemVirtual);
   TEST_FE(p12dlfemVirtualVirtual);
 
@@ -265,7 +257,7 @@ int main (int argc, char *argv[])
   pq22dlfemVirtualVirtual(pq22dlfemVirtual);
   TEST_FE(pq22dlfemVirtualVirtual);
 
-  typedef LocalFiniteElementVirtualInterface< P1LocalFiniteElement<double,double, 2>::Traits::LocalBasisType::Traits > Interface;
+  typedef LocalFiniteElementVirtualInterface< LagrangeSimplexLocalFiniteElement<double,double,2,1>::Traits::LocalBasisType::Traits > Interface;
   TEST_FE(static_cast<const Interface&>(p12dlfemVirtual));
 
   // Test the LagrangeLocalFiniteElementCache

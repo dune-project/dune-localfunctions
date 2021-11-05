@@ -10,14 +10,11 @@
 #include <dune/localfunctions/common/virtualinterface.hh>
 #include <dune/localfunctions/common/virtualwrappers.hh>
 
+#include <dune/localfunctions/lagrange/lagrangecube.hh>
+#include <dune/localfunctions/lagrange/lagrangeprism.hh>
+#include <dune/localfunctions/lagrange/lagrangepyramid.hh>
+#include <dune/localfunctions/lagrange/lagrangesimplex.hh>
 #include <dune/localfunctions/lagrange/p0.hh>
-#include <dune/localfunctions/lagrange/pk.hh>
-#include <dune/localfunctions/lagrange/q1.hh>
-#include <dune/localfunctions/lagrange/qk.hh>
-#include <dune/localfunctions/lagrange/prismp1.hh>
-#include <dune/localfunctions/lagrange/prismp2.hh>
-#include <dune/localfunctions/lagrange/pyramidp1.hh>
-#include <dune/localfunctions/lagrange/pyramidp2.hh>
 
 namespace Dune
 {
@@ -46,10 +43,10 @@ namespace Dune
   struct DimSpecificPQkLocalFiniteElementFactory<D,R,3,k>
   {
     typedef typename P0LocalFiniteElement<D,R,3>::Traits::LocalBasisType::Traits T;
-    typedef PrismP1LocalFiniteElement<D,R> PrismP1;
-    typedef PrismP2LocalFiniteElement<D,R> PrismP2;
-    typedef PyramidP1LocalFiniteElement<D,R> PyramidP1;
-    typedef PyramidP2LocalFiniteElement<D,R> PyramidP2;
+    using PrismP1 = LagrangePrismLocalFiniteElement<D,R,1>;
+    using PrismP2 = LagrangePrismLocalFiniteElement<D,R,2>;
+    using PyramidP1 = LagrangePyramidLocalFiniteElement<D,R,1>;
+    using PyramidP2 = LagrangePyramidLocalFiniteElement<D,R,2>;
 
     //! create finite element for given GeometryType
     static LocalFiniteElementVirtualInterface<T>* create(const GeometryType& gt)
@@ -75,9 +72,9 @@ namespace Dune
   {
     typedef typename P0LocalFiniteElement<D,R,dim>::Traits::LocalBasisType::Traits T;
     typedef LocalFiniteElementVirtualInterface<T> FiniteElementType;
-    typedef P0LocalFiniteElement<D,R,dim> P0;
-    typedef PkLocalFiniteElement<D,R,dim,k> Pk;
-    typedef QkLocalFiniteElement<D,R,dim,k> Qk;
+    using P0 = P0LocalFiniteElement<D,R,dim>;
+    using Pk = LagrangeSimplexLocalFiniteElement<D,R,dim,k>;
+    using Qk = LagrangeCubeLocalFiniteElement<D,R,dim,k>;
 
 
     //! create finite element for given GeometryType

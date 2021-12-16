@@ -48,7 +48,7 @@ namespace Dune
     //! map index i to local key
     const LocalKey &localKey ( std::size_t i ) const
     {
-      assert( 0 <= i && i < 2*d );
+      assert( i < 2*d );
       return localKeys_[ i ];
     }
 

@@ -138,7 +138,7 @@ bool testInterpolation(const FE& fe, double eps, int n=5)
     // Check if interpolation weights are equal to coefficients
     for(std::size_t j=0; j<coeff.size() && success; ++j) {
       if ( std::abs(coeff[j]-f.coeff[j]) >
-           eps*(std::max(std::abs(f.coeff[j]), 1.0)) )
+           (2*coeff.size()*eps)*(std::max(std::abs(f.coeff[j]), 1.0)) )
       {
         std::cout << std::setprecision(16);
         std::cout << "Bug in LocalInterpolation for finite element type "

@@ -840,7 +840,7 @@ namespace Dune
   {
     typedef Derivatives<F1,dimD,1,deriv,DerivativeLayoutNS::derivative> Vec1;
     typedef FieldVector<F2,1> Vec2;
-    static void apply(unsigned int r,const Vec1 &vec1,Vec2 &vec2)
+    static void apply(unsigned int /*r*/,const Vec1 &vec1,Vec2 &vec2)
     {
       field_cast(vec1[0].template tensor<0>()[0].block(),vec2);
     }

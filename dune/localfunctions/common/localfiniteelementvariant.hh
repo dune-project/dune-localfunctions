@@ -30,7 +30,7 @@ namespace Impl {
   template<class Visitor, class Variant>
   void visitIf(Visitor&& visitor, Variant&& variant)
   {
-    auto visitorWithFallback = overload([&](std::monostate& impl) {},  [&](const std::monostate& impl) {}, visitor);
+    auto visitorWithFallback = overload([&](std::monostate&) {},  [&](const std::monostate&) {}, visitor);
     std::visit(visitorWithFallback, variant);
   }
 
@@ -162,7 +162,7 @@ namespace Impl {
       // dummy LocalKey value.
       static const Dune::LocalKey dummyLocalKey;
       return std::visit(overload(
-          [&](const std::monostate& impl) -> decltype(auto) { return (dummyLocalKey);},
+          [&](const std::monostate&) -> decltype(auto) { return (dummyLocalKey);},
           [&](const auto* impl) -> decltype(auto) { return impl->localKey(i); }), impl_);
     }
 

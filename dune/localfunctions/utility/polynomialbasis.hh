@@ -142,6 +142,7 @@ namespace Dune
                   const typename Traits::DomainType& in,                   // position
                   std::vector<typename Traits::RangeType>& out) const      // return value
     {
+      out.resize(size());
       auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
       if (totalOrder == 0) {
         evaluateFunction(in, out);
@@ -160,7 +161,8 @@ namespace Dune
         std::vector<HessianType> hesss(out.size());
         int k=-1,l=-1;
         for (unsigned int i=0;i<order.size();++i) {
-          if (order[i]==1 && k==-1) k=i;
+          if (order[i] >= 1 && k == -1)
+            k = i;
           else if (order[i]==1) l=i;
         }
         if (l==-1) l=k;
@@ -276,18 +278,27 @@ namespace Dune
       // y[0] = FV< FV<Fy,d*(d+1)/2>, dimRange>
       const unsigned int hsize = LFETensor<Fy,dimension,2>::size;
       std::vector< FieldVector< FieldVector<Fy,hsize>, dimRange> > y( size() );
-      evaluateSingle<2>( x, y );
-      unsigned int q=0;
-      for (unsigned int i=0;i<size();++i)
-        for (unsigned int r=0;r<dimRange;++r)
-          for (unsigned int k=0;k<dimension;++k)
-            for (unsigned int l=k;l<dimension;++l)
+      evaluateSingle<2>(x, y);
+      unsigned int q = 0;
+      for (unsigned int i = 0; i < size(); ++i)
+        for (unsigned int r = 0; r < dimRange; ++r)
+        {
+          q = 0;
+          // tensor-based things follow unintuitive index sceme
+          // e.g. for dim = 3, the k-l index of y is 00,01,11,02,12,22, i.e. partial derivatives
+          // are ordered: xx,xy,yy,xz,yz,zz
+
+          // Fill values 'directionwise'
+          for (unsigned int k = 0; k < dimension; ++k)
+            for (unsigned int l = 0; l <= k; ++l)
             {
+
               values[i][r][k][l] = y[i][r][q];
               values[i][r][l][k] = y[i][r][q];
-              ++q;
               assert(q < hsize);
+              ++q;
             }
+        }
       // evaluateSingle<2>(x,reinterpret_cast<std::vector<FieldVector<Fy,dimRange*dimension*dimension> >&>(values));
     }
     template< class DVector, class HVector >
@@ -340,7 +351,7 @@ namespace Dune
     typedef Eval Evaluator;
 
     typedef PolynomialBasisWithMatrix< Evaluator, CM > This;
-    typedef PolynomialBasis<Evaluator,CM> Base;
+    typedef PolynomialBasis<Evaluator, CM, D, R> Base;
 
   public:
     typedef typename Base::Basis Basis;

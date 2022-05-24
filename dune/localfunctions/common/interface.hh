@@ -173,7 +173,7 @@ namespace Dune {
   class BasisInterface
   {
     struct ImplementationDefined;
-    enum { implementationDefined };
+    constexpr static int implementationDefined = 42;
 
   public:
     //! types of domain and range
@@ -189,11 +189,10 @@ namespace Dune {
 
       //! Field type of the domain
       typedef ImplementationDefined DomainFieldType;
-      //! \brief Enum for domain dimension
-      enum {
-        //! \brief dimension of the domain
-        dimDomain = implementationDefined
-      };
+
+      //! \brief dimension of the domain
+      constexpr static int dimDomain = implementationDefined;
+
       //! Type used for coordinate vectors in the domain
       typedef ImplementationDefined DomainType;
 
@@ -204,11 +203,10 @@ namespace Dune {
 
       //! Field type of the range
       typedef ImplementationDefined RangeFieldType;
-      //! \brief Enum for range dimension
-      enum {
-        //! \brief dimension of the range
-        dimRange = implementationDefined
-      };
+
+      //! \brief dimension of the range
+      constexpr static int dimRange = implementationDefined;
+
       //! Type used for range values
       typedef ImplementationDefined RangeType;
 

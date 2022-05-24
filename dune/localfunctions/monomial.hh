@@ -37,7 +37,7 @@ namespace Dune
   template<class D, class R, int d, int p>
   class MonomialLocalFiniteElement
   {
-    enum { static_size = MonomialLocalBasis<D,R,d,p>::size() };
+    constexpr static int static_size = MonomialLocalBasis<D,R,d,p>::size();
 
   public:
     /** Traits class

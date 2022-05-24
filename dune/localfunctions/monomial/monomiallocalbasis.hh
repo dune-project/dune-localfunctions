@@ -95,10 +95,9 @@ namespace Dune
     template <typename Traits, int c>
     struct Evaluate
     {
-      enum {
-        //! The next dimension to try for factors
-        d = Traits::dimDomain - c
-      };
+      //! The next dimension to try for factors
+      constexpr static int d = Traits::dimDomain - c;
+
       /** \todo
        *
        *  \tparam Access Wrapper around the result vector, so we don't have to
@@ -159,7 +158,7 @@ namespace Dune
     template <typename Traits>
     struct Evaluate<Traits, 1>
     {
-      enum { d = Traits::dimDomain-1 };
+      constexpr static int d = Traits::dimDomain-1;
       //! \copydoc Evaluate::eval
       template <typename Access>
       static void eval (const typename Traits::DomainType &in,

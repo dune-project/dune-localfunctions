@@ -33,11 +33,8 @@ namespace Dune
     //! \brief Export type for domain field
     typedef DF DomainFieldType;
 
-    //! \brief Enum for domain dimension
-    enum {
-      //! \brief dimension of the domain
-      dimDomain = n
-    };
+    //! \brief dimension of the domain
+    constexpr static int dimDomain = n;
 
     //! \brief domain type
     typedef D DomainType;
@@ -45,11 +42,8 @@ namespace Dune
     //! \brief Export type for range field
     typedef RF RangeFieldType;
 
-    //! \brief Enum for range dimension
-    enum {
-      //! \brief dimension of the range
-      dimRange = m
-    };
+    //! \brief dimension of the range
+    constexpr static int dimRange = m;
 
     //! \brief range type
     typedef R RangeType;

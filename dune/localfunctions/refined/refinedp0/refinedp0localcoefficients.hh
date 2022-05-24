@@ -22,7 +22,7 @@ namespace Dune
   class RefinedP0LocalCoefficients
   {
     // 2 to the k-th power
-    enum {N = 1<<k};
+    constexpr static int N = 1<<k;
 
   public:
     RefinedP0LocalCoefficients () :

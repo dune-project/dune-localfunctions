@@ -37,7 +37,7 @@ namespace Dune
     : public RefinedSimplexLocalBasis<D,dim>
   {
     // 2 to the k-th power
-    enum {N = 1<<dim};
+    constexpr static int N = 1<<dim;
   public:
     //! \brief export type traits for function signature
     typedef LocalBasisTraits<D,dim,Dune::FieldVector<D,dim>,R,1,Dune::FieldVector<R,1>, Dune::FieldMatrix<R,1,dim> > Traits;

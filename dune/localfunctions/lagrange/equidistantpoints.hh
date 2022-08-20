@@ -196,7 +196,7 @@ namespace Dune
       return build< GeometryTypes::cube(dim) > ();
     }
 
-    static bool supports ( GeometryType gt, std::size_t order ) { return true; }
+    static bool supports ( GeometryType, std::size_t /*order*/ ) { return true; }
     template< GeometryType::Id geometryId>
     static bool supports ( std::size_t order ) {
       return supports( GeometryType( geometryId ), order );

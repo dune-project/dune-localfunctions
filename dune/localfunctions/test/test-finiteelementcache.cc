@@ -21,6 +21,11 @@ template<class FiniteElementCache>
 static void test(Dune::GeometryType type)
 {
   FiniteElementCache cache;
+  FiniteElementCache copy = cache;
+  FiniteElementCache move = std::move(copy);
+  copy = move;
+  move = std::move(copy);
+
 
   using FiniteElement = typename FiniteElementCache::FiniteElementType;
   [[maybe_unused]] const FiniteElement& finiteElement = cache.get(type);

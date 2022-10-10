@@ -12,6 +12,8 @@ add_subdirectory(raviartthomas2cube2d)
 add_subdirectory(raviartthomas3cube2d)
 add_subdirectory(raviartthomas4cube2d)
 add_subdirectory(raviartthomassimplex)
+add_subdirectory(raviartthomas0pyramid)
+add_subdirectory(raviartthomas0prism)
 
 install(FILES
   raviartthomas02d.hh
@@ -27,4 +29,6 @@ install(FILES
   raviartthomascube.hh
   raviartthomaslfecache.hh
   raviartthomassimplex.hh
+  raviartthomas0pyramid.hh
+  raviartthomas0prism.hh
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions/raviartthomas)

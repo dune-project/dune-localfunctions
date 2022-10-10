@@ -13,6 +13,7 @@
 #include <dune/localfunctions/raviartthomas/raviartthomas03d.hh>
 #include <dune/localfunctions/raviartthomas/raviartthomaslfecache.hh>
 #include <dune/localfunctions/raviartthomas/raviartthomas12d.hh>
+#include <dune/localfunctions/raviartthomas.hh>
 
 #include <dune/localfunctions/test/test-localfe.hh>
 
@@ -140,6 +141,23 @@ int main(int argc, char** argv)
     Dune::RT1Cube3DLocalFiniteElement<double,double> rt1cube3dlfemDedicated(s);
     TEST_FE(rt1cube3dlfemDedicated);
   }
+
+  Dune::RT0PyramidLocalFiniteElement<double,double> rt0pyramidlfemDedicated;
+  TEST_FE(rt0pyramidlfemDedicated);
+  for (unsigned int s = 0; s < 32; s++)
+  {
+    Dune::RT0PyramidLocalFiniteElement<double,double> rt0pyramidlfemDedicated(s);
+    TEST_FE(rt0pyramidlfemDedicated);
+  }
+
+  Dune::RT0PrismLocalFiniteElement<double,double> rt0prismlfemDedicated;
+  TEST_FE(rt0prismlfemDedicated);
+  for (unsigned int s = 0; s < 32; s++)
+  {
+    Dune::RT0PrismLocalFiniteElement<double,double> rt0prismlfemDedicated(s);
+    TEST_FE(rt0prismlfemDedicated);
+  }
+
 
   // Test the RaviartThomasLocalFiniteElementCache
   Dune::RaviartThomasLocalFiniteElementCache<double,double,2,0> lagrangeLFECache;

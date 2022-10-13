@@ -113,6 +113,12 @@ public:
   /** \brief Move constructor */
   LocalFiniteElementVariantCache(LocalFiniteElementVariantCache&& other) = default;
 
+  /** \brief Copy assignment */
+  LocalFiniteElementVariantCache& operator= (const LocalFiniteElementVariantCache& other) = default;
+
+  /** \brief Move assignment */
+  LocalFiniteElementVariantCache& operator= (LocalFiniteElementVariantCache&& other) = default;
+
   /** \brief Get the LocalFiniteElement for the given key data
    *
    * \throws Dune::RangeError If the cache doesn't hold a value matching the requested type.

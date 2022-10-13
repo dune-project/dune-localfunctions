@@ -7,6 +7,8 @@ SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 
 * The implementation of the Raviart-Thomas element now also includes 0th order shape functions on prisms and pyramids.
 
+* FiniteElementCache is now copy and move assignable.
+
 ## Deprecations and removals
 
 - Deprecated many of the Lagrange headers, use

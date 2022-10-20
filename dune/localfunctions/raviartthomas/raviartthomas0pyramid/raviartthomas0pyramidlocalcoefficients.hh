@@ -27,7 +27,7 @@ namespace Dune
     //! \brief Standard constructor
     RT0PyramidLocalCoefficients () : li(size())
     {
-      for(int i=0; i< size(); i++)
+      for(std::size_t i=0; i< size(); i++)
         li[i] = LocalKey(i,1,0);
     }
 

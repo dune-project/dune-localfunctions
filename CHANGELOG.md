@@ -3,7 +3,7 @@ SPDX-FileCopyrightText: Copyright (C) DUNE Project contributors, see file LICENS
 SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 -->
 
-# Master (will become release 2.9)
+# Release 2.9
 
 * The implementation of the Raviart-Thomas element now also includes 0th order shape functions on prisms and pyramids.
 

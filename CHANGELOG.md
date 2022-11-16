@@ -3,7 +3,10 @@ SPDX-FileCopyrightText: Copyright © DUNE Project contributors, see file LICENSE
 SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 -->
 
-# Master (will become release 2.9)
+# Master (will become release 2.10)
+
+
+# Release 2.9
 
 * The implementation of the Raviart-Thomas element now also includes 0th order shape functions on prisms and pyramids.
 
@@ -13,6 +16,7 @@ SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 
 - Deprecated many of the Lagrange headers, use
   `lagrange(cube|prism|pyramid|simplex).hh` instead.
+
 
 # Release 2.8
 

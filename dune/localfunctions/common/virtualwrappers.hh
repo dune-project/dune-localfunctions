@@ -260,7 +260,7 @@ namespace Dune
         localInterpolationImp_(impl_->localInterpolation())
     {}
 
-    //! Copy contructor needed for deep copy
+    //! Copy constructor needed for deep copy
     LocalFiniteElementVirtualImp(const LocalFiniteElementVirtualImp& other)
       : impl_(LocalFiniteElementCloneFactory<Imp>::clone(*other.impl_)),
         localBasisImp_(impl_->localBasis()),

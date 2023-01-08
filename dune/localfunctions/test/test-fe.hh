@@ -75,7 +75,7 @@ public:
 // Check if interpolation is consistent with basis evaluation.
 /**
  * This test generates a local coefficient vector with random values from a
- * certain range (-100..100).  It then uses the basis to wrap this coeffient
+ * certain range (-100..100).  It then uses the basis to wrap this coefficient
  * vector into an element-local discrete function.  This is then interpolated
  * into another coefficient vector using the interpolation of the finite
  * element.  The two coefficient vectors are then compared.

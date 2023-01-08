@@ -475,7 +475,7 @@ namespace Dune
   {
     typedef MultiIndex< dim,F > Field;
 
-    // zero does not acutally exist
+    // zero does not actually exist
     operator Field ()
     {
       return Field(0);

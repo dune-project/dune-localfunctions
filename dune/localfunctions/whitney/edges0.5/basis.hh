@@ -75,7 +75,7 @@ namespace Dune {
   public:
     //! Construct an EdgeS0_5Basis
     /**
-     * \param geo         Geometry of the element to contruct a local basis
+     * \param geo         Geometry of the element to construct a local basis
      *                    for.
      * \param vertexOrder Vertex ordering information.  Only the vertex order
      *                    on the dim=1 sub-entities (edges) is required.

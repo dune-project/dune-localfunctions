@@ -26,7 +26,7 @@ namespace Dune
   * \end{equation}
   *
   * with linear functionals $N_j$ and basisfunctions $\phi_i$ gets assembled.
-  * Then the matrix gets inverted and is then used as a coefficent matrix for the standard monomial basis.
+  * Then the matrix gets inverted and is then used as a coefficient matrix for the standard monomial basis.
   *
   * For more details on the theory see the first chapter "Construction of Local Finite Element Spaces Using the Generic Reference Elements"
   * of the book "Advances in Dune" by Dedner, Flemisch and Klöfkorn published in 2012.

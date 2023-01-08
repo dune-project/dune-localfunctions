@@ -25,7 +25,7 @@ namespace Dune {
   public:
     //! Construct a PowerCoefficients object
     /**
-     * \param backend The backend coeficients object to raise to a power.
+     * \param backend The backend coefficients object to raise to a power.
      * \param power   Power to raise the backend object to.
      *
      * The LocalKeys of the backend coefficients are copied into internal

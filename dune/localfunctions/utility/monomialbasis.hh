@@ -51,7 +51,7 @@ namespace Dune
   * 2) template< GeometryType::Id geometryId, class F >
   *    class MonomialBasis
   *    The base class for the static monomial evaluation
-  *    providing addiional evaluate methods including
+  *    providing additional evaluate methods including
   *    one taking std::vector<F>.
   * 3) template< int dim, class F >
   *    class VirtualMonomialBasis
@@ -459,7 +459,7 @@ namespace Dune
         order_(order),
         size_(Size::instance())
     {
-      assert(order<=1024); // avoid wrapping of unsigned int (0-1) order=1024 is quite hight...)
+      assert(order<=1024); // avoid wrapping of unsigned int (0-1) order=1024 is quite high...)
     }
 
     const unsigned int *sizes ( unsigned int order ) const

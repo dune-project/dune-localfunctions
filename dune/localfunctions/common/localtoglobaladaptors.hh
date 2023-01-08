@@ -104,7 +104,7 @@ namespace Dune {
      * This is to determine the required quadrature order.  For an affine
      * geometry this is the same order as for the local basis.  For other
      * geometries this returns the order of the local basis plus the global
-     * dimension minus 1.  The assumtion for non-affine geometries is that
+     * dimension minus 1.  The assumption for non-affine geometries is that
      * they are still multi-linear.
      */
     std::size_t order() const {
@@ -174,7 +174,7 @@ namespace Dune {
   //! \brief Convert a simple scalar local finite element into a global finite
   //!        element
   /**
-   * The local finite elememt must be scalar,
+   * The local finite element must be scalar,
    * i.e. LocalBasis::Traits::dimRange must be 1.  It's values are not
    * transformed, but the Jacobian is (see ScalarLocalToGlobalBasisAdaptor).
    *

@@ -19,7 +19,7 @@ namespace Dune
   /**@ingroup LocalBasisImplementation
      \brief Uniformly refined constant shape functions on a unit simplex in R^dim
 
-     This shape function set mimicks the P0 shape functions that you would get on
+     This shape function set mimics the P0 shape functions that you would get on
      a uniformly refined grid.  Hence these shape functions are only piecewise
      constant!
 

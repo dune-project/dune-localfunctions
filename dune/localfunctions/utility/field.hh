@@ -147,7 +147,7 @@ namespace Dune
    * @brief a helper class to cast from one field
    *        to another
    *
-   * This cast can be used for assignement between
+   * This cast can be used for assignment between
    * different field types, including for example
    * between FieldVectors with different fields.
    * Specially the conversion from a special type

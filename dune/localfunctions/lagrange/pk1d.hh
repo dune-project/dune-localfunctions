@@ -77,7 +77,7 @@ namespace Dune
      *       results in undefined behaviour.  The exception is that the
      *       destructor of this class may still be called.  The information
      *       contained in the vertexOrder object is extracted and the object
-     *       is no longer needed after the contructor returns.
+     *       is no longer needed after the constructor returns.
      */
     template<class VertexOrder>
     Pk1DFiniteElement(const Geometry &geometry,

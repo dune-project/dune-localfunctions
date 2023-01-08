@@ -207,7 +207,7 @@ For every degree of freedom we thus have
 \item the codimension of the subentity \texttt{c},
 \item the index in the set of all shape functions associated to this subentity \texttt{t}.
 \end{enumerate} 
-These informations are stored in the \lstinline!LocalKey! class, which allows
+This information is stored in the \lstinline!LocalKey! class, which allows
 access to the entries by the methods \lstinline!subEntity()!, \lstinline!codim()!, and \lstinline!index()!.
 For the correct local numbering of the subentities see the documentation of the \lstinline!ReferenceElements!
 at \url{http://dune-project.org}.
@@ -472,7 +472,7 @@ public:
      localInterpolationImp_(impl_->localInterpolation())
  {}
 
- // Copy contructor needed for deep copy
+ // Copy constructor needed for deep copy
  LocalFiniteElementVirtualImp(const LocalFiniteElementVirtualImp& other)
    : impl_(LocalFiniteElementCloneFactory<Imp>::clone(*other.impl_)),
      localBasisImp_(impl_->localBasis()),

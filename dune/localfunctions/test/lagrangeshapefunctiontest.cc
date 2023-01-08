@@ -71,7 +71,7 @@ bool testPk(const FE& local_fe)
     FieldVector<double,dim> pos = test_points[n];
 
     //////////////////////////////////////////////////////////////////
-    //  Verfiy that shape functions fulfill \phi_i(x_j) = \delta_{ij}
+    //  Verify that shape functions fulfill \phi_i(x_j) = \delta_{ij}
     //  We assume that the shape functions are ordered corresponding
     //  to the test points returned by getPkTestPoints()
     //////////////////////////////////////////////////////////////////

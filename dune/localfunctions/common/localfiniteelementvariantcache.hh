@@ -56,10 +56,10 @@ namespace Impl {
  *
  * The constructor forwards all arguments to the base class.
  *
- * For performence reasons all LocalFiniteElement implementations are created
+ * For performance reasons all LocalFiniteElement implementations are created
  * during construction and stored in an std::vector according to the associated
- * indices. Hence densly packed indices should be prefered to avoid wasting space
- * for emplty LocalFiniteElementVariant's string no implementation.
+ * indices. Hence densely packed indices should be preferred to avoid wasting space
+ * for empty LocalFiniteElementVariant's string no implementation.
  *
  * \tparam Base Type of the base class providing getImplementations() and index().
  */

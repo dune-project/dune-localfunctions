@@ -51,7 +51,7 @@ namespace Dune
 
 
   /**
-   * \brief First order Brezzi-Douglas-Fortin-Marini shape functions on the refrence quadrialteral.
+   * \brief First order Brezzi-Douglas-Fortin-Marini shape functions on the reference quadrialteral.
    *
    * \nosubgrouping
    */
@@ -143,7 +143,7 @@ namespace Dune
 
 
   /**
-   * \brief Second order Brezzi-Douglas-Fortin-Marini shape functions on the refrence quadrialteral.
+   * \brief Second order Brezzi-Douglas-Fortin-Marini shape functions on the reference quadrialteral.
    *
    * \nosubgrouping
    */
@@ -267,7 +267,7 @@ namespace Dune
 
 
   /**
-   * \brief Third order Brezzi-Douglas-Fortin-Marini shape functions on the refrence quadrialteral.
+   * \brief Third order Brezzi-Douglas-Fortin-Marini shape functions on the reference quadrialteral.
    *
    * \nosubgrouping
    */

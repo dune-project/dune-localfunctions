@@ -48,7 +48,7 @@ namespace Dune
    *              int order
    *              DomainVector x
    *              Container val
-   * \tparam CM stroage for coefficience with
+   * \tparam CM storage for coefficience with
    *           typedef Field -> field of coefficience
    *           static const int dimRange -> coeficience are of type
    *                                        FieldMatrix<Field,dimRange,dimRange>
@@ -286,7 +286,7 @@ namespace Dune
         for (unsigned int r = 0; r < dimRange; ++r)
         {
           q = 0;
-          // tensor-based things follow unintuitive index sceme
+          // tensor-based things follow unintuitive index scheme
           // e.g. for dim = 3, the k-l index of y is 00,01,11,02,12,22, i.e. partial derivatives
           // are ordered: xx,xy,yy,xz,yz,zz
 

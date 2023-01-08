@@ -24,7 +24,7 @@ namespace Dune
    * functions or on the order of the derivative).
    * Conversions are supplied between the two storage
    * structures and simple operations, which make the
-   * code difficult to use and requires rewritting...
+   * code difficult to use and requires rewriting...
    ***************************************************/
 
   // Structure for scalar tensor of order deriv

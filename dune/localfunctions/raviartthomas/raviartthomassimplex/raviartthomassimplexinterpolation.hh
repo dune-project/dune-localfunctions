@@ -144,7 +144,7 @@ namespace Dune
     TestFaceBasis *testFaceBasis ( unsigned int f ) const { assert( f < faceSize() ); return faceStructure_[ f ].basis_; }
 
     // normal of face f
-    const Normal &normal ( unsigned int f ) const { assert( f < faceSize() ); return *(faceStructure_[ f ].normal_); }
+    const Normal normal ( unsigned int f ) const { assert( f < faceSize() ); return faceStructure_[ f ].normal_; }
 
     template< GeometryType::Id geometryId >
     void build ( std::size_t order )
@@ -182,12 +182,12 @@ namespace Dune
   private:
     struct FaceStructure
     {
-      FaceStructure( TestFaceBasis *tfb, const Normal &n )
-        : basis_( tfb ), normal_( &n )
+      FaceStructure( TestFaceBasis *tfb, const Normal n )
+        : basis_( tfb ), normal_( n )
       {}
 
       TestFaceBasis *basis_;
-      const Dune::FieldVector< Field, dimension > *normal_;
+      const Dune::FieldVector< Field, dimension > normal_;
     };
 
     std::vector< FaceStructure > faceStructure_;

@@ -108,7 +108,9 @@ namespace Dune
    * \tparam k Element order
    */
   template<class D, class R, int dim, int k>
-  class PQkLocalFiniteElementCache
+  class
+  [[deprecated("Use LagrangeLocalFiniteElementCache<D,R,dim,k> from lagrangelfecache.hh. This will be removed after release 2.10.")]]
+  PQkLocalFiniteElementCache
   {
   protected:
     typedef typename P0LocalFiniteElement<D,R,dim>::Traits::LocalBasisType::Traits T;

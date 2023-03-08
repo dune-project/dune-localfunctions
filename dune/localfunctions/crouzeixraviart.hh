@@ -125,7 +125,7 @@ namespace Dune { namespace Impl
     : localKeys_(size())
     {
       for (std::size_t i=0; i<size(); i++)
-        localKeys_[i] = LocalKey(i,dim-1,0);
+        localKeys_[i] = LocalKey(i,1,0);
     }
 
     //! Number of coefficients

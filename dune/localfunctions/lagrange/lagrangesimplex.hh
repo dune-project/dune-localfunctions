@@ -330,7 +330,7 @@ namespace Dune { namespace Impl
                 {
                   if (m == p)
                     for (unsigned int l = 0; l < i[p]; ++l)
-                      prod *= (j==l) ? R(k) / (i[p]-l) : (kx[p]-l) / (i[p]-l);
+                      prod *= (j==l) ? R(k) / (i[p]-l) : R(kx[p]-l) / (i[p]-l);
                   else
                     prod *= factor[p];
                 }

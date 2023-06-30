@@ -23,6 +23,11 @@ include(DuneMacros)
 # start a dune project with information from dune.module
 dune_project()
 
+# create library target and export it as Dune::LocalFunctions
+dune_add_library(dunelocalfunctions INTERFACE
+  EXPORT_NAME LocalFunctions
+  LINK_LIBRARIES Dune::Geometry)
+
 add_subdirectory(doc)
 add_subdirectory(dune)
 

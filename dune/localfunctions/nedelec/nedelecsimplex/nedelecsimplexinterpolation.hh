@@ -291,7 +291,7 @@ namespace Dune
         // to the vertex with the larger index.
         if (v0>v1)
           std::swap(v0,v1);
-        auto tangent = std::move(refElement.position(v1,dim) - refElement.position(v0,dim));
+        auto tangent = refElement.position(v1,dim) - refElement.position(v0,dim);
 
         TestEdgeBasis *edgeBasis = Impl::IfGeometryType< CreateEdgeBasis, 1 >::apply( refElement.type( i, dim-1 ), order );
         edgeStructure_.emplace_back( edgeBasis, tangent );

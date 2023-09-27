@@ -15,25 +15,6 @@ before_script:
   - duneci-install-module https://gitlab.dune-project.org/core/dune-common.git
   - duneci-install-module https://gitlab.dune-project.org/core/dune-geometry.git
 
-# no numpy version available for this image on the gitlab registry
-# disable python bindings for now
-ubuntu:18.04 clang-6-17:
-  image: registry.dune-project.org/docker/ci/ubuntu:18.04
-  script: duneci-standard-test
-  stage: test
-  variables:
-    DUNECI_TOOLCHAIN: clang-6-17
-    DUNECI_CMAKE_FLAGS: "-DDUNE_ENABLE_PYTHONBINDINGS=OFF"
-  tags: [duneci]
-ubuntu:18.04 clang-5-17:
-  image: registry.dune-project.org/docker/ci/ubuntu:18.04
-  script: duneci-standard-test
-  stage: test
-  variables:
-    DUNECI_TOOLCHAIN: clang-5-17
-    DUNECI_CMAKE_FLAGS: "-DDUNE_ENABLE_PYTHONBINDINGS=OFF"
-  tags: [duneci]
-
 # Check for spelling mistakes in text
 code-spelling-check:
   stage: .pre

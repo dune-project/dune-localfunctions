@@ -20,6 +20,7 @@ namespace Dune {
    * \tparam Backend     Type of the scalar interpolation.
    * \tparam BasisTraits Traits type of the corresponding PowerBasis.
    *
+   * \ingroup LocalFunctionsImpl
    * \nosubgrouping
    */
   template<class Backend, class BasisTraits>

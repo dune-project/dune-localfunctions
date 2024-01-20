@@ -14,10 +14,11 @@
 namespace Dune
 {
 
-  /**@ingroup LocalLayoutImplementation
+  /**
      \brief Layout map for RefinedP0 elements
 
      \nosubgrouping
+   * \ingroup LocalFunctionsImpl
      \implements Dune::LocalCoefficientsVirtualImp
    */
   template<unsigned int k>

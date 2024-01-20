@@ -28,7 +28,7 @@ namespace Dune
     }
   };
 
-  /**@ingroup LocalBasisImplementation
+  /**
      \brief Uniformly refined linear Lagrange shape functions in 1D.
 
      This shape function set mimics the P1 shape functions that you would get on
@@ -48,6 +48,7 @@ namespace Dune
      \tparam R Type to represent the field in the range.
 
      \nosubgrouping
+   * \ingroup LocalFunctionsImpl
    */
   template<class D, class R>
   class RefinedP1LocalBasis<D,R,1>
@@ -166,7 +167,7 @@ namespace Dune
 
   };
 
-  /**@ingroup LocalBasisImplementation
+  /**
      \brief Uniformly refined linear Lagrange shape functions on the triangle.
 
      This shape function set mimics the P1 shape functions that you would get on
@@ -189,6 +190,7 @@ namespace Dune
      \tparam R Type to represent the field in the range.
 
      \nosubgrouping
+   * \ingroup LocalFunctionsImpl
    */
   template<class D, class R>
   class RefinedP1LocalBasis<D,R,2>
@@ -391,7 +393,7 @@ namespace Dune
 
   };
 
-  /**@ingroup LocalBasisImplementation
+  /**
      \brief Uniformly refined linear Lagrange shape functions on the 3D-simplex (tetrahedron).
 
      This shape function set mimics the P1 shape functions that you would get on
@@ -418,6 +420,7 @@ namespace Dune
      \tparam R Type to represent the field in the range.
 
      \nosubgrouping
+   * \ingroup LocalFunctionsImpl
    */
   template<class D, class R>
   class RefinedP1LocalBasis<D,R,3>

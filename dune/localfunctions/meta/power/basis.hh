@@ -17,7 +17,7 @@ namespace Dune {
 
   //! Meta-basis turning a scalar basis into vector-valued basis
   /**
-   * @ingroup BasisImplementation
+   * \ingroup LocalFunctionsImpl
    *
    * \tparam Backend Type of basis to take the power of.
    * \tparam dimR    Power to raise the basis to.

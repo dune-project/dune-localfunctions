@@ -25,12 +25,13 @@ namespace Dune
     }
   };
 
-  /**@ingroup LocalBasisImplementation
+  /**
      \brief Base class for LocalBasis classes based on uniform refinement in 1D; provides numbering and local coordinates of subelements
 
      \tparam D Type to represent the field in the domain.
 
      \nosubgrouping
+   * \ingroup LocalFunctionsImpl
    */
   template<class D>
   class RefinedSimplexLocalBasis<D,1>
@@ -83,7 +84,7 @@ namespace Dune
   };
 
 
-  /**@ingroup LocalBasisImplementation
+  /**
      \brief Base class for LocalBasis classes based on uniform refinement in 2D; provides numbering and local coordinates of subelements
 
      Shape functions like these are necessary for hierarchical error estimators
@@ -92,6 +93,7 @@ namespace Dune
      \tparam D Type to represent the field in the domain.
 
      \nosubgrouping
+   * \ingroup LocalFunctionsImpl
    */
   template<class D>
   class RefinedSimplexLocalBasis<D,2>
@@ -164,7 +166,7 @@ namespace Dune
 
   };
 
-  /**@ingroup LocalBasisImplementation
+  /**
      \brief Base class for LocalBasis classes based on uniform refinement in 3D; provides numbering and local coordinates of subelements
 
      Shape functions like these are necessary for hierarchical error estimators
@@ -173,6 +175,7 @@ namespace Dune
      \tparam D Type to represent the field in the domain.
 
      \nosubgrouping
+   * \ingroup LocalFunctionsImpl
    */
   template<class D>
   class RefinedSimplexLocalBasis<D,3>

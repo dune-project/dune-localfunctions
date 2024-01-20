@@ -64,3 +64,12 @@
  * \defgroup Whitney Whitney elements
  * \ingroup LocalFunctions
  */
+
+//////////////////
+// Implementations
+//////////////////
+
+/**
+ * \defgroup LocalFunctionsImpl Implementation of local function elements
+ * \ingroup LocalFunctions
+ */

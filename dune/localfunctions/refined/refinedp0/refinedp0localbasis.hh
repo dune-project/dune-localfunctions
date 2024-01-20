@@ -16,7 +16,7 @@
 namespace Dune
 {
 
-  /**@ingroup LocalBasisImplementation
+  /**
      \brief Uniformly refined constant shape functions on a unit simplex in R^dim
 
      This shape function set mimics the P0 shape functions that you would get on
@@ -33,6 +33,7 @@ namespace Dune
      \tparam dim Dimension of domain space
 
      \nosubgrouping
+   * \ingroup LocalFunctionsImpl
    */
   template<class D, class R, int dim>
   class RefinedP0LocalBasis

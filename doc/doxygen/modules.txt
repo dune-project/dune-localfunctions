@@ -6,6 +6,11 @@
  */
 
 /**
+ * \defgroup LocalInterface Interface to be implemented by elements
+ * \ingroup LocalFunctions
+ */
+
+/**
  * \defgroup BrezziDouglasFortinMarini Brezzi-Douglas-Fortin-Marini elements
  * \ingroup LocalFunctions
  */

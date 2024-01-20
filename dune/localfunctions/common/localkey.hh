@@ -11,7 +11,8 @@
 
 namespace Dune
 {
-  /**@ingroup LocalLayoutInterface
+  /**
+   * \ingroup LocalInterface
          \brief Describe position of one degree of freedom
 
          A LocalKey associates a degree of freedom with an index

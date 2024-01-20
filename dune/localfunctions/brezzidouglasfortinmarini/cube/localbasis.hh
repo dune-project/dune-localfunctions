@@ -30,7 +30,7 @@ namespace Dune
    * \tparam dim    dimension of the reference element, must be >= 2.
    * \tparam order  order of the element, must be >= 1.
    *
-   * \nosubgroup
+   * \nosubgrouping
    */
   template<class D, class R, unsigned int dim, unsigned int order>
   class BDFMCubeLocalBasis

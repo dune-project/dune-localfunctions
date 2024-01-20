@@ -221,8 +221,8 @@ namespace Dune
      * \tparam F  Function type for function which should be interpolated
      * \tparam C  Coefficient vector type
      *
-     * \param ff   function which should be interpolated
-     * \param out  return value, vector of coefficients
+     * \param f   function which should be interpolated
+     * \param out return value, vector of coefficients
      */
     template<class F, class C>
     void interior (const F& f, C& out) const

@@ -14,6 +14,7 @@ namespace Dune
 {
 
   /** \brief Local coefficients for dual simplex P1 elements
+   * \ingroup DualMortarImpl
 
      \nosubgrouping
      \implements Dune::LocalCoefficientsVirtualImp

@@ -15,13 +15,13 @@
 namespace Dune
 {
   /**
-   * \ingroup LocalBasisImplementation
    * \brief First order Raviart-Thomas shape functions on the reference pyramid.
    *
    * \tparam D Type to represent the field in the domain.
    * \tparam R Type to represent the field in the range.
    *
    * \nosubgrouping
+   * \ingroup RaviartThomasImpl
    */
   template<class D, class R>
   class RT0PyramidLocalBasis

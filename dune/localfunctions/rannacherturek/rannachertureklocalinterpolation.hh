@@ -24,6 +24,8 @@ namespace Dune
      \tparam D type to represent the field in the domain.
      \tparam R type to represent the field in the range.
      \tparam d domain dimension
+   *
+   * \ingroup RannacherTurekImpl
    */
   template< class D, class R, unsigned int d >
   class RannacherTurekLocalInterpolation

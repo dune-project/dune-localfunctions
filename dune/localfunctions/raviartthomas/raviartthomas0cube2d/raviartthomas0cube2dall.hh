@@ -17,13 +17,14 @@
 
 namespace Dune
 {
-  /**@ingroup LocalBasisImplementation
+  /**
          \brief Lowest order Raviart-Thomas shape functions on the reference quadrilateral.
 
          \tparam D Type to represent the field in the domain.
          \tparam R Type to represent the field in the range.
 
          \nosubgrouping
+   * \ingroup RaviartThomasImpl
    */
   template<class D, class R>
   class RT0Cube2DLocalBasis
@@ -122,12 +123,13 @@ namespace Dune
   };
 
 
-  /**@ingroup LocalInterpolationImplementation
+  /**
          \brief Lowest order Raviart-Thomas shape functions on the reference quadrilateral.
 
          \tparam LB corresponding LocalBasis giving traits
 
          \nosubgrouping
+   * \ingroup RaviartThomasImpl
    */
   template<class LB>
   class RT0Cube2DLocalInterpolation
@@ -176,10 +178,11 @@ namespace Dune
     typename LB::Traits::DomainType n0,n1,n2,n3;
   };
 
-  /**@ingroup LocalLayoutImplementation
+  /**
          \brief Layout map for RT0 elements on quadrilaterals
 
          \nosubgrouping
+   * \ingroup RaviartThomasImpl
      \implements Dune::LocalCoefficientsVirtualImp
    */
   class RT0Cube2DLocalCoefficients

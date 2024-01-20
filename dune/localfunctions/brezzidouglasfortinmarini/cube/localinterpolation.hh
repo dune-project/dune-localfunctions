@@ -23,7 +23,7 @@ namespace Dune
 {
 
   /**
-   * \ingroup LocalInterpolationImplementation
+   * \ingroup BrezziDouglasFortinMariniImpl
    * \brief Interpolation for Brezzi-Douglas-Fortin-Marini shape functions on cubes.
    *
    * \tparam D      Type of represent the field in the domain.

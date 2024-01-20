@@ -16,7 +16,7 @@ namespace Dune
   /**
    * \brief Layout map for Brezzi-Douglas-Marini-2 elements on triangles.
    *
-   * \ingroup LocalLayoutImplementation
+   * \ingroup BrezziDouglasMariniImpl
    * \nosubgrouping
    * \implements Dune::LocalCoefficientsVirtualImp
    */

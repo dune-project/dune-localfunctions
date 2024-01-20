@@ -14,10 +14,11 @@
 namespace Dune
 {
 
-  /**@ingroup LocalLayoutImplementation
+  /**
          \brief Layout map for RT0 elements
 
          \nosubgrouping
+   * \ingroup RaviartThomasImpl
      \implements Dune::LocalCoefficientsVirtualImp
    */
   class RT02DLocalCoefficients

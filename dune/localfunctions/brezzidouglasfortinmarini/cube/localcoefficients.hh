@@ -16,7 +16,7 @@ namespace Dune
 {
 
   /**
-   * \ingroup LocalLayoutImplementation
+   * \ingroup BrezziDouglasFortinMariniImpl
    *
    * \brief Layout map for Brezzi-Douglas-Fortin-Marini elements on cubes.
    *

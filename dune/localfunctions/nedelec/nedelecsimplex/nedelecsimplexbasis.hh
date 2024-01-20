@@ -31,6 +31,8 @@ namespace Dune
    *
    * For more details on the theory see the first chapter "Construction of Local Finite Element Spaces Using the Generic Reference Elements"
    * of the book "Advances in Dune" by Dedner, Flemisch and Klöfkorn published in 2012.
+   *
+   * \ingroup NedelecImpl
    */
 
   template< unsigned int dim, class SF, class CF >

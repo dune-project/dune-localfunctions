@@ -12,11 +12,11 @@
 namespace Dune
 {
   /**
-   * \ingroup LocalInterpolationImplementation
    * \brief First order Raviart-Thomas shape functions on the reference prism.
    *
    * \tparam LB corresponding LocalBasis giving traits
    *
+   * \ingroup RaviartThomasImpl
    * \nosubgrouping
    */
   template<class LB>

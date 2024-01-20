@@ -22,7 +22,7 @@
 namespace Dune
 {
   /**
-   * \ingroup LocalBasisImplementation
+   * \ingroup BrezziDouglasFortinMariniImpl
    * \brief Brezzi-Douglas-Fortin-Marini shape functions on a reference cube.
    *
    * \tparam D      Type to represent the field in the domain.

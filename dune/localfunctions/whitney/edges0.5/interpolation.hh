@@ -25,6 +25,7 @@ namespace Dune {
    * \tparam RF       Type to represent the field in the range.
    *
    * \nosubgrouping
+   * \ingroup WhitneyImpl
    */
   template<class Geometry, class Traits_>
   class EdgeS0_5Interpolation :

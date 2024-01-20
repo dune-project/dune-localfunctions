@@ -14,7 +14,8 @@
 namespace Dune
 {
 
-  /**@ingroup LocalLayoutImplementation
+  /**
+   * \ingroup DualMortarImpl
          \brief Layout map for dual Q1 elements
 
          \nosubgrouping

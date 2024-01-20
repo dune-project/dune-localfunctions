@@ -13,6 +13,9 @@
 namespace Dune
 {
 
+  /**
+   * \ingroup LagrangeImpl
+   */
   template<class LB>
   class P0LocalInterpolation
   {

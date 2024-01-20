@@ -16,6 +16,9 @@
 namespace Dune
 {
 
+  /**
+   * \ingroup RannacherTurekImpl
+   */
   template< class D, class R >
   class RannacherTurek3DLocalBasis
   {

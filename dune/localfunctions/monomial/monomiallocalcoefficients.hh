@@ -13,10 +13,11 @@
 namespace Dune
 {
 
-  /**@ingroup LocalLayoutImplementation
+  /**
          \brief Layout map for monomial finite elements
 
          \nosubgrouping
+   * \ingroup MonomialImpl
      \implements Dune::LocalCoefficientsVirtualImp
    */
   template<int static_size>

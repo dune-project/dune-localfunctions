@@ -14,10 +14,10 @@ namespace Dune
 {
 
   /**
-   * \ingroup LocalLayoutImplementation
    * \brief Layout map for Raviart-Thomas-1 elements on pyramids.
    *
    * \nosubgrouping
+   * \ingroup RaviartThomasImpl
    * \implements Dune::LocalCoefficientsVirtualImp
    */
   class RT0PyramidLocalCoefficients

@@ -12,12 +12,12 @@
 namespace Dune
 {
   /**
-   * \ingroup LocalInterpolationImplementation
    * \brief First order Raviart-Thomas shape functions on the reference hexahedron.
    *
    * \tparam LB corresponding LocalBasis giving traits
    *
    * \nosubgrouping
+   * \ingroup RaviartThomasImpl
    */
   template<class LB>
   class RT0PyramidLocalInterpolation

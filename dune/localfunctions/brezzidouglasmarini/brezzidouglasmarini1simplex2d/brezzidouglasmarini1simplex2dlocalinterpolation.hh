@@ -13,7 +13,7 @@
 namespace Dune
 {
   /**
-   * \ingroup LocalInterpolationImplementation
+   * \ingroup BrezziDouglasMariniImpl
    * \brief First order Brezzi-Douglas-Marini shape functions on the reference triangle.
    *
    * \tparam LB corresponding LocalBasis giving traits

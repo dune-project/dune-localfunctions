@@ -15,7 +15,8 @@
 
 namespace Dune
 {
-  /**@ingroup LocalBasisImplementation
+  /**
+   * \ingroup DualMortarImpl
          \brief Dual Lagrange shape functions of order 1 on the reference cube.
 
          \tparam D Type to represent the field in the domain.

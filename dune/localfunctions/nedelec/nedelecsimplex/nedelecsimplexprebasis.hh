@@ -17,6 +17,9 @@ namespace Dune
   template < GeometryType::Id geometryId, class Field >
   struct NedelecVecMatrix;
 
+  /**
+   * \ingroup NedelecImpl
+   */
   template <unsigned int dim, class Field>
   struct NedelecPreBasisFactory
   {

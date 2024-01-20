@@ -22,6 +22,7 @@ namespace Dune {
   //! Coefficients for lowest order edge elements on simplices
   /**
    * \nosubgrouping
+   * \ingroup WhitneyImpl
    * \implements CoefficientsInterface
    *
    * \tparam dim Dimension of both domain and range.

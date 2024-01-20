@@ -14,12 +14,12 @@ namespace Dune
 {
 
   /**
-   * \ingroup LocalInterpolationImplementation
    * \brief Second order Raviart-Thomas shape functions on the reference triangle.
    *
    * \tparam LB corresponding LocalBasis giving traits
    *
    * \nosubgrouping
+   * \ingroup RaviartThomasImpl
    */
   template<class LB>
   class RT4Cube2DLocalInterpolation

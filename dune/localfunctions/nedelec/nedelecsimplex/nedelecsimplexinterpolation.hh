@@ -26,6 +26,9 @@ namespace Dune
   // Internal Forward Declarations
   // -----------------------------
 
+  /**
+   * \ingroup NedelecImpl
+   */
   template < unsigned int dim, class Field >
   struct NedelecL2InterpolationFactory;
 

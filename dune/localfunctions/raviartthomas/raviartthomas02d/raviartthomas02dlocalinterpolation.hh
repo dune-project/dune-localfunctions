@@ -13,6 +13,9 @@
 
 namespace Dune
 {
+  /**
+   * \ingroup RaviartThomasImpl
+   */
   template<class LB>
   class RT02DLocalInterpolation
   {

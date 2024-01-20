@@ -14,10 +14,10 @@ namespace Dune
 {
 
   /**
-   * @ingroup LocalLayoutImplementation
    * \brief Layout map for Raviart-Thomas-1 elements on the reference triangle.
    *
    * \nosubgrouping
+   * \ingroup RaviartThomasImpl
    */
   class RT12DLocalCoefficients
   {

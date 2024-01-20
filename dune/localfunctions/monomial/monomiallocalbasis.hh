@@ -183,7 +183,7 @@ namespace Dune
 
   } //namespace MonomImp
 
-  /**@ingroup LocalBasisImplementation
+  /**
          \brief Constant shape function
 
          Defines the constant scalar shape function in d dimensions. Is
@@ -194,6 +194,7 @@ namespace Dune
          \tparam d Domain dimension
      \tparam p polynomial order of the shapefunctions
 
+   * \ingroup MonomialImpl
          \nosubgrouping
    */
   template<class D, class R, unsigned int d, unsigned int p>

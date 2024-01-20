@@ -41,6 +41,11 @@
  */
 
 /**
+ * \defgroup Nedelec Nedelec elements
+ * \ingroup LocalFunctions
+ */
+
+/**
  * \defgroup Orthonormal Orthonormal elements
  * \ingroup LocalFunctions
  */

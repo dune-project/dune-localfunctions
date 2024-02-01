@@ -18,7 +18,11 @@ namespace Dune
   {
   public:
 
-    //! \brief Constructor with given set of face orientations
+    /**
+     * \brief Constructor with given set of face orientations
+     *
+     * \ingroup RaviartThomasImpl
+     */
     RT03DLocalInterpolation (std::bitset<4> s = 0)
     {
       using std::sqrt;

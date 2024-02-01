@@ -10,6 +10,9 @@
 
 namespace Dune
 {
+  /**
+   * \ingroup DualMortarImpl
+   */
   template<int dim, class LB>
   class DualP1LocalInterpolation
   {

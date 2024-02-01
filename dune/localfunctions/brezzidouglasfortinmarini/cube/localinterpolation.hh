@@ -23,7 +23,7 @@ namespace Dune
 {
 
   /**
-   * \ingroup LocalInterpolationImplementation
+   * \ingroup BrezziDouglasFortinMariniImpl
    * \brief Interpolation for Brezzi-Douglas-Fortin-Marini shape functions on cubes.
    *
    * \tparam D      Type of represent the field in the domain.
@@ -221,8 +221,8 @@ namespace Dune
      * \tparam F  Function type for function which should be interpolated
      * \tparam C  Coefficient vector type
      *
-     * \param ff   function which should be interpolated
-     * \param out  return value, vector of coefficients
+     * \param f   function which should be interpolated
+     * \param out return value, vector of coefficients
      */
     template<class F, class C>
     void interior (const F& f, C& out) const

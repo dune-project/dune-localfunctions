@@ -8,7 +8,8 @@
 namespace Dune
 {
 
-  /**@ingroup LocalBasisInterface
+  /**
+   * \ingroup LocalInterface
          \brief Type traits for LocalBasisVirtualInterface
 
          A shape function is a function

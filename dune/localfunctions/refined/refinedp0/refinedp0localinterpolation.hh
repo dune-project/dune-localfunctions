@@ -10,10 +10,16 @@
 
 namespace Dune
 {
+  /**
+   * \ingroup LocalFunctionsImpl
+   */
   template<class LB>
   class RefinedP0LocalInterpolation
   {};
 
+  /**
+   * \ingroup LocalFunctionsImpl
+   */
   template<class D, class R>
   class RefinedP0LocalInterpolation<RefinedP0LocalBasis<D,R,1> >
   {
@@ -47,6 +53,9 @@ namespace Dune
     std::vector<DT> interpolationPoints_;
   };
 
+  /**
+   * \ingroup LocalFunctionsImpl
+   */
   template<class D, class R>
   class RefinedP0LocalInterpolation<RefinedP0LocalBasis<D,R,2> >
   {
@@ -88,6 +97,9 @@ namespace Dune
     std::vector<DT> interpolationPoints_;
   };
 
+  /**
+   * \ingroup LocalFunctionsImpl
+   */
   template<class D, class R>
   class RefinedP0LocalInterpolation<RefinedP0LocalBasis<D,R,3> >
   {

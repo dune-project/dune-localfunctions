@@ -13,12 +13,13 @@
 
 namespace Dune
 {
-  /**@ingroup LocalBasisImplementation
+  /**
          \brief Lowest order Raviart-Thomas shape functions on the reference tetrahedron.
 
          \tparam D Type to represent the field in the domain.
          \tparam R Type to represent the field in the range.
 
+   * \ingroup RaviartThomasImpl
          \nosubgrouping
    */
   template<class D, class R>

@@ -11,7 +11,8 @@
 namespace Dune
 {
 
-  /**@ingroup LocalBasisImplementation
+  /**
+   * \ingroup RannacherTurekImpl
      \brief Rannacher-Turek shape functions
 
      \tparam D type to represent the field in the domain.

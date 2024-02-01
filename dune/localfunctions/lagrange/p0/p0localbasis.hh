@@ -13,7 +13,7 @@
 
 namespace Dune
 {
-  /**@ingroup LocalBasisImplementation
+  /**
          \brief Constant shape function
 
          Defines the constant scalar shape function in d dimensions. Is
@@ -23,6 +23,7 @@ namespace Dune
          \tparam R Type to represent the field in the range.
          \tparam d Domain dimension
 
+   * \ingroup LagrangeImpl
          \nosubgrouping
    */
   template<class D, class R, int d>

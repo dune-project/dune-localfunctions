@@ -21,6 +21,8 @@ namespace Dune
    * \tparam D Number type used for domain coordinates
    * \tparam R Number type used for shape function values
    * \tparam dim Dimension of the domain
+   *
+   * \ingroup LocalFunctions
    */
   template<class D, class R, int dim>
   class RefinedP1LocalFiniteElement

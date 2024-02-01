@@ -13,11 +13,11 @@
 namespace Dune
 {
   /**
-   * \ingroup LocalLayoutImplementation
    * \brief Layout map for Raviart-Thomas-4 elements on quadrilaterals
    *
    * \nosubgrouping
    * \implements Dune::LocalCoefficientsVirtualImp
+   * \ingroup RaviartThomasImpl
    */
   class RT4Cube2DLocalCoefficients
   {

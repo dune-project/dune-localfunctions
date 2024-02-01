@@ -13,7 +13,8 @@
 
 namespace Dune
 {
-  /**@ingroup LocalBasisImplementation
+  /**
+   * \ingroup DualMortarImpl
          \brief Dual Lagrange shape functions on the simplex.
 
          Defines the linear dual shape functions on the simplex.

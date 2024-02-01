@@ -32,6 +32,8 @@ namespace Impl
    * \tparam R Number type used for function values
    * \tparam dim Dimension of the reference element
    * \tparam k Order of the Nedelec element
+   *
+   * \ingroup Nedelec
    */
   template<class D, class R, int dim, int k>
   class Nedelec1stKindCubeLocalBasis

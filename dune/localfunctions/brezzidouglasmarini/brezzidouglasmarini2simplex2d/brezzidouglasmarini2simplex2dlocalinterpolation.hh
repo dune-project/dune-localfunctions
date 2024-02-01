@@ -18,7 +18,7 @@ namespace Dune
    *
    * \tparam LB corresponding LocalBasis giving traits
    *
-   * \ingroup LocalInterpolationImplementation
+   * \ingroup BrezziDouglasMariniImpl
    * \nosubgrouping
    */
   template<class LB>

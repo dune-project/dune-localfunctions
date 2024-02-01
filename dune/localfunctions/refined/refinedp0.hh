@@ -21,6 +21,8 @@ namespace Dune
 {
 
   /** \brief Local finite element that is piecewise P0 on a once uniformly refined reference geometry
+   *
+   * \ingroup LocalFunctions
    */
   template<class D, class R, int dim>
   class RefinedP0LocalFiniteElement
@@ -34,6 +36,8 @@ namespace Dune
   };
 
   /** \brief Local finite element that is piecewise P0 on a once uniformly refined reference geometry
+   *
+   * \ingroup LocalFunctions
    */
   template<class D, class R>
   class RefinedP0LocalFiniteElement<D,R,1>
@@ -92,6 +96,8 @@ namespace Dune
   };
 
   /** \brief Local finite element that is piecewise P0 on a once uniformly refined reference geometry
+   *
+   * \ingroup LocalFunctions
    */
   template<class D, class R>
   class RefinedP0LocalFiniteElement<D,R,2>
@@ -150,6 +156,8 @@ namespace Dune
   };
 
   /** \brief Local finite element that is piecewise P0 on a once uniformly refined reference geometry
+   *
+   * \ingroup LocalFunctions
    */
   template<class D, class R>
   class RefinedP0LocalFiniteElement<D,R,3>

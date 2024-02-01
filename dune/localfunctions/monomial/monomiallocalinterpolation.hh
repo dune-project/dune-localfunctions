@@ -17,6 +17,9 @@
 namespace Dune
 {
 
+  /**
+   * \ingroup MonomialImpl
+   */
   template<class LB, unsigned int size>
   class MonomialLocalInterpolation
   {

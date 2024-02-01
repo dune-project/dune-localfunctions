@@ -31,7 +31,7 @@ namespace Dune
     }
   };
 
-  /**@ingroup LocalBasisImplementation
+  /**
      \brief Hierarchical P2 basis in 1d.
 
      The shape functions are associated to the following points:
@@ -42,7 +42,7 @@ namespace Dune
 
      \tparam D Type to represent the field in the domain.
      \tparam R Type to represent the field in the range.
-
+   * \ingroup LocalFunctionsImpl
      \nosubgrouping
    */
   template<class D, class R>
@@ -115,7 +115,7 @@ namespace Dune
 
   };
 
-  /**@ingroup LocalBasisImplementation
+  /**
      \brief Hierarchical P2 basis in 1d.
 
      The shape functions are associated to the following points:
@@ -133,6 +133,7 @@ namespace Dune
      \tparam D Type to represent the field in the domain.
      \tparam R Type to represent the field in the range.
 
+   * \ingroup LocalFunctionsImpl
      \nosubgrouping
    */
   template<class D, class R>
@@ -233,7 +234,7 @@ namespace Dune
 
   };
 
-  /**@ingroup LocalBasisImplementation
+  /**
      \brief Hierarchical P2 basis in 1d.
 
      The shape functions are associated to the following points:
@@ -255,6 +256,7 @@ namespace Dune
      \tparam D Type to represent the field in the domain.
      \tparam R Type to represent the field in the range.
 
+   * \ingroup LocalFunctionsImpl
      \nosubgrouping
    */
   template<class D, class R>
@@ -384,7 +386,7 @@ namespace Dune
   };
 
 
-  /**@ingroup LocalBasisImplementation
+  /**
      \brief The local finite element needed for the Zou-Kornhuber estimator for Signorini problems
 
      This shape function set consists of three parts:
@@ -407,6 +409,7 @@ namespace Dune
      \tparam D Type to represent the field in the domain.
      \tparam R Type to represent the field in the range.
 
+   * \ingroup LocalFunctionsImpl
      \nosubgrouping
    */
   template <int dim>
@@ -451,6 +454,9 @@ namespace Dune
     std::vector<Dune::LocalKey> li;
   };
 
+  /**
+   * \ingroup LocalFunctionsImpl
+   */
   template<class LB>
   class HierarchicalSimplexP2WithElementBubbleLocalInterpolation
   {

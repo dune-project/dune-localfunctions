@@ -14,7 +14,11 @@
 
 namespace Dune {
 
-  //! Common base class for edge elements
+  /**
+   * \brief Common base class for edge elements
+   *
+   * \ingroup WhitneyImpl
+   */
   template<std::size_t dim, class DF = double>
   struct EdgeS0_5Common {
     //! The type of the referenceElement

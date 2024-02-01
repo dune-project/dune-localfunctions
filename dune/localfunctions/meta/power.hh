@@ -20,7 +20,7 @@ namespace Dune {
   //! \brief Meta-finite element turning a scalar finite element into
   //!        vector-valued one
   /**
-   * @ingroup FiniteElementImplementation
+   * \ingroup LocalFunctions
    *
    * \tparam Backend Type of finite element to take the power of.
    * \tparam dimR    Power to raise the finite element to.
@@ -97,7 +97,7 @@ namespace Dune {
   //!        into vector-valued ones
   /**
    * \implements FiniteElementFactory
-   * \ingroup FiniteElementFactoryImplementation
+   * \ingroup LocalFunctionsImpl
    *
    * \tparam BackendFiniteElement Type of finite element to take the power of.
    * \tparam dimR                 Power to raise the finite element to.

@@ -6,6 +6,11 @@
  */
 
 /**
+ * \defgroup LocalInterface Interface to be implemented by elements
+ * \ingroup LocalFunctions
+ */
+
+/**
  * \defgroup BrezziDouglasFortinMarini Brezzi-Douglas-Fortin-Marini elements
  * \ingroup LocalFunctions
  */
@@ -36,6 +41,11 @@
  */
 
 /**
+ * \defgroup Nedelec Nedelec elements
+ * \ingroup LocalFunctions
+ */
+
+/**
  * \defgroup Orthonormal Orthonormal elements
  * \ingroup LocalFunctions
  */
@@ -53,4 +63,58 @@
 /**
  * \defgroup Whitney Whitney elements
  * \ingroup LocalFunctions
+ */
+
+//////////////////
+// Implementations
+//////////////////
+
+/**
+ * \defgroup LocalFunctionsImpl Implementation of local function elements
+ * \ingroup LocalFunctions
+ */
+
+/**
+ * \defgroup BrezziDouglasFortinMariniImpl Implementation of Brezzi-Douglas-Fortin-Marini elements
+ * \ingroup LocalFunctionsImpl
+ */
+
+/**
+ * \defgroup BrezziDouglasMariniImpl Implementation of Brezzi-Douglas-Marini elements
+ * \ingroup LocalFunctionsImpl
+ */
+
+/**
+ * \defgroup LagrangeImpl Implementation of Lagrange elements
+ * \ingroup LocalFunctionsImpl
+ */
+
+/**
+ * \defgroup NedelecImpl Implementation of Nedelec elements
+ * \ingroup LocalFunctionsImpl
+ */
+
+/**
+ * \defgroup DualMortarImpl Implementation of Dual Mortar basis elements
+ * \ingroup LocalFunctionsImpl
+ */
+
+/**
+ * \defgroup MonomialImpl Implementation of Monomial elements
+ * \ingroup LocalFunctionsImpl
+ */
+
+/**
+ * \defgroup RannacherTurekImpl Implementation of Rannacher-Turek elements
+ * \ingroup LocalFunctionsImpl
+ */
+
+/**
+ * \defgroup RaviartThomasImpl Implementation of Raviart-Thomas elements
+ * \ingroup LocalFunctionsImpl
+ */
+
+/**
+ * \defgroup WhitneyImpl Implementation of Whitney elements
+ * \ingroup LocalFunctionsImpl
  */

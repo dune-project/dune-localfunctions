@@ -14,10 +14,11 @@
 namespace Dune
 {
 
-  /**@ingroup LocalLayoutImplementation
+  /**
          \brief Layout map for P0 elements
 
          \nosubgrouping
+   * \ingroup LagrangeImpl
      \implements Dune::LocalCoefficientsVirtualImp
    */
   class P0LocalCoefficients

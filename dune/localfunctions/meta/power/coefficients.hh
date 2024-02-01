@@ -16,6 +16,7 @@ namespace Dune {
   //! \brief Meta-coefficients turning a scalar coefficients into
   //!        vector-valued coefficients
   /**
+   * \ingroup LocalFunctionsImpl
    * \nosubgrouping
    * \implements CoefficientsInterface
    */

@@ -14,7 +14,8 @@
 
 namespace Dune
 {
-  /**@ingroup LocalLayoutImplementation
+  /**
+   * \ingroup RannacherTurekImpl
      \brief layout for Rannacher-Turek elements
 
      \tparam d Domain dimension

@@ -15,7 +15,9 @@
 namespace Dune
 {
 
-  /** \todo Please doc me! */
+  /** \todo Please doc me!
+   * \ingroup DualMortarImpl
+   */
   template<int dim, class LB>
   class DualQ1LocalInterpolation
   {

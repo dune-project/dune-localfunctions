@@ -17,7 +17,7 @@
 namespace Dune
 {
   /**
-   * \ingroup LocalBasisImplementation
+   * \ingroup BrezziDouglasMariniImpl
    * \brief First order Brezzi-Douglas-Marini shape functions on the reference triangle.
    *
    * \tparam D Type to represent the field in the domain.

@@ -14,7 +14,7 @@ namespace Dune
 {
 
   /**
-   * \ingroup LocalLayoutImplementation
+   * \ingroup BrezziDouglasMariniImpl
    * \brief Layout map for Brezzi-Douglas-Marini-1 elements on hexahedra
    *
    * \nosubgrouping

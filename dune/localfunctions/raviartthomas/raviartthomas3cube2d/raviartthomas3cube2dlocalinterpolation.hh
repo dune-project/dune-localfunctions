@@ -14,11 +14,11 @@ namespace Dune
 {
 
   /**
-   * \ingroup LocalInterpolationImplementation
    * \brief Second order Raviart-Thomas shape functions on the reference quadrilateral.
    *
    * \tparam LB corresponding LocalBasis giving traits
    *
+   * \ingroup RaviartThomasImpl
    * \nosubgrouping
    */
   template<class LB>

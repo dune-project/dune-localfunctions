@@ -7,7 +7,13 @@ SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 
 * Fixed LocalKey codim for the Crouzeix-Raviart element
 
+## Deprecations and removals
+
 * `PQkLocalFiniteElementCache` is deprecated. `LagrangeLocalFiniteElementCache` is the recommended replacement. The latter implements a thread-safe get(gt) while the former does not.
+
+* The deprecated support for passing functions providing
+  only the old `f.evaluate(x,y)` interface has been removed.
+  This interface is also no longer tested.
 
 # Release 2.9
 

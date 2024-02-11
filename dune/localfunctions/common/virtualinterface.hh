@@ -23,62 +23,6 @@ namespace Dune
   template<class DomainType, class RangeType>
   class LocalInterpolationVirtualInterface;
 
-  // -----------------------------------------------------------------
-  // Helper traits classes
-  // -----------------------------------------------------------------
-
-  /**
-   * @brief Return a proper base class for functions to use with LocalInterpolation.
-   *
-   * @tparam FE A FiniteElement type
-   *
-   * \deprecated
-   * This class is deprecated.
-   * To keep this traits class working it exports a simple
-   * look-a-like of the old Dune::Function base class.
-   * However, you should stop using this and pass functions with
-   * plain operator() interface to interpolate() from now on.
-   */
-  template<class FE>
-  class
-  [[deprecated("Dune::LocalFiniteElementFunctionBase is deprecated after Dune 2.7. You can now pass functions providing operator() to interpolate.")]]
-  LocalFiniteElementFunctionBase
-  {
-    typedef typename FE::Traits::LocalBasisType::Traits::DomainType Domain;
-    typedef typename FE::Traits::LocalBasisType::Traits::RangeType Range;
-
-    // Hack: Keep a copy of Dune::Function here. This allows to avoid depending
-    // on the deprecated dune-common header while still keeping the LocalFiniteElementFunctionBase
-    // mechanism working during its deprecation period.
-    class FunctionBaseDummy
-    {
-    public:
-
-      using RangeType = Range;
-      using DomainType = Domain;
-
-      struct Traits
-      {
-        using RangeType = Range;
-        using DomainType = Domain;
-      };
-
-      void evaluate(const DomainType& x, RangeType& y) const;
-    };
-
-  public:
-
-    using VirtualFunctionBase = FunctionBaseDummy;
-    using FunctionBase = FunctionBaseDummy;
-
-    /** \brief Base class type for functions to use with LocalInterpolation
-     *
-     * This is just a dummy providing the old typedefs.
-     * interface and Function base class otherwise.
-     */
-    using type = FunctionBaseDummy;
-  };
-
 
 
   // -----------------------------------------------------------------

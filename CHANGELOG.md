@@ -22,6 +22,9 @@ SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
   Calling this function in downstream modules is no
   longer needed because only one function interface is supported.
 
+* The deprecated base class `LocalFiniteElementFunctionBase` has been removed.
+
+
 # Release 2.9
 
 * The implementation of the Raviart-Thomas element now also includes 0th order shape functions on prisms and pyramids.

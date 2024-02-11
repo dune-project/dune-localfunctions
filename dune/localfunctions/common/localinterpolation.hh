@@ -36,29 +36,14 @@ namespace Dune {
     };
 
     // Create function supporting Range = f(Domain)
-    // If the argument already does this, just forward it.
+    // This functions returns the passed in reference.
     template<class Domain, class F,
       std::enable_if_t<models<FunctionWithCallOperator<Domain>, F>(), int> = 0>
+    [[deprecated( "The utility function makeFunctionWithCallOperator() is deprecated and will be removed after 2.10."
+                  "Downstream modules no longer need to call this function since interpolate() no-longer supports non-callable functions.")]]
     decltype(auto) makeFunctionWithCallOperator(const F& f)
     {
       return f;
-    }
-
-    // Create function supporting Range = f(Domain)
-    // If the argument does not support this, wrap it in a lambda
-    template<class Domain, class F,
-      std::enable_if_t<not models<FunctionWithCallOperator<std::decay_t<Domain> >, F>(), int> = 0>
-#ifndef DUNE_DEPRECATED_INTERPOLATE_CHECK
-    [[deprecated( "Passing functions only supporting 'f.evaluate(x,y)' to interpolate() is deprecated."
-                  "Use functions supporting operator(), i.e. f(x) instead!")]]
-#endif
-    decltype(auto) makeFunctionWithCallOperator(const F& f)
-    {
-      return [&](auto&& x) {
-        typename std::decay_t<F>::Traits::RangeType y;
-        f.evaluate(x,y);
-        return y;
-      };
     }
 
   } // namespace Impl

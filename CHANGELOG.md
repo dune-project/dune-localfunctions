@@ -15,6 +15,13 @@ SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
   only the old `f.evaluate(x,y)` interface has been removed.
   This interface is also no longer tested.
 
+* The deprecated overload of the helper function
+  `Impl::makeFunctionWithCallOperator(f)` for support
+  of the `f.evaluate(x,y)` interface has been removed.
+  The overload for the `operator()` is deprecated.
+  Calling this function in downstream modules is no
+  longer needed because only one function interface is supported.
+
 # Release 2.9
 
 * The implementation of the Raviart-Thomas element now also includes 0th order shape functions on prisms and pyramids.

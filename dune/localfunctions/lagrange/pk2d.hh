@@ -18,15 +18,6 @@
 namespace Dune
 {
 
-  /** \todo Please doc me !
-
-      \deprecated This class is obsolete. Please use LagrangeSimplexLocalFiniteElement instead!
-   */
-  template<class D, class R, unsigned int k>
-  using Pk2DLocalFiniteElement
-    [[deprecated("use LagrangeSimplexLocalFiniteElement instead")]]
-    = LagrangeSimplexLocalFiniteElement<D,R,2,k>;
-
 
   //! Langrange finite element of arbitrary order on triangles
   /**

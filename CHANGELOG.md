@@ -27,8 +27,10 @@ SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 * The deprecated headers
   `p1.hh`, `p2.hh`, `p23d.hh`, `pk.hh`, `pk3d`, `qk.hh`,
   `prismp1.hh`, `prismp2.hh`, `pyramidp1.hh`, `pyramidp2.hh`
+  and the deprecated classed `(PK1D|PK2D|Q1)LocalFiniteElement`
   in `langrange/` have been removed.
-  Use `lagrange(cube|prism|pyramid|simplex).hh` instead.
+  Use `lagrange(cube|prism|pyramid|simplex).hh` and the corresponding
+  classes instead.
 
 
 # Release 2.9

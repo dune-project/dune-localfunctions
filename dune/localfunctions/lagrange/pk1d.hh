@@ -18,15 +18,6 @@
 namespace Dune
 {
 
-  /** \brief Lagrange finite element on the unit interval with arbitrary compile-time order
-
-      \deprecated This class is obsolete. Please use LagrangeSimplexLocalFiniteElement instead!
-   */
-  template<class D, class R, unsigned int k>
-  using Pk1DLocalFiniteElement
-    [[deprecated("use LagrangeSimplexLocalFiniteElement instead")]]
-    = LagrangeSimplexLocalFiniteElement<D,R,1,k>;
-
 
   //! Langrange finite element of arbitrary order on triangles
   /**

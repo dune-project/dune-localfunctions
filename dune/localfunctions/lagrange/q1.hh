@@ -17,19 +17,6 @@
 namespace Dune
 {
 
-  /** \brief The local Q1 finite element on cubes
-      \tparam D Domain data type
-      \tparam R Range data type
-      \tparam dim Dimension of the cube
-
-      \deprecated This class is deprecated!  Please use LagrangeCubeLocalFiniteElement instead.
-   */
-  template<class D, class R, int dim>
-  using Q1LocalFiniteElement
-    [[deprecated("use LagrangeCubeLocalFiniteElement instead")]]
-    = LagrangeCubeLocalFiniteElement<D,R,dim,1>;
-
-
   //! Factory for global-valued Q1 elements
   /**
    * \tparam Geometry Type of the geometry.  Used to extract the domain field

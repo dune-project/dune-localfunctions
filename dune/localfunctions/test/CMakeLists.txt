@@ -1,8 +1,6 @@
 # SPDX-FileCopyrightText: Copyright © DUNE Project contributors, see file LICENSE.md in module root
 # SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 
-add_definitions(-DDUNE_DEPRECATED_INTERPOLATE_CHECK=1)
-
 dune_add_test(SOURCES bdfmelementtest.cc)
 
 dune_add_test(SOURCES brezzidouglasmarinielementtest.cc)

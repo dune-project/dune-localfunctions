@@ -10,7 +10,6 @@
 #include <cassert>
 #include <cstddef>
 #include <vector>
-#include <dune/localfunctions/common/localinterpolation.hh>
 
 namespace Dune {
 
@@ -67,20 +66,16 @@ namespace Dune {
   public:
     //! Determine coefficients interpolating a given function
     /**
-     * \param ff  An object supporting the expression \c ff.evaluate(x,y),
+     * \param f   An object supporting the expression \c y = f(x),
      *            where \c x is of type \c Traits::DomainLocal and \c y of the
-     *            type \c Traits::Range.  When \c f.evaluate(x,y) is
+     *            type \c Traits::Range.  When \c y = f(x) is
      *            evaluated, \c x will be a local coordinate, and the
      *            expression should set \c y to the function value at that
      *            position.  The initial value of \c y should not be used.
      * \param out Vector where to store the interpolated coefficients.
      */
     template<typename F, typename C>
-    void interpolate(const F& ff, std::vector<C>& out) const {
-
-      auto&& f = Impl::makeFunctionWithCallOperator<typename Backend::Traits::DomainLocal>(ff);
-
-
+    void interpolate(const F& f, std::vector<C>& out) const {
       out.clear();
       std::vector<C> cout;
       for(std::size_t d = 0; d < Traits::dimRange; ++d) {

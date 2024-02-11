@@ -17,7 +17,6 @@
 
 #include <dune/localfunctions/common/localbasis.hh>
 #include <dune/localfunctions/common/localkey.hh>
-#include <dune/localfunctions/common/localinterpolation.hh>
 
 namespace Dune
 {
@@ -464,14 +463,12 @@ namespace Dune
 
     //! \brief Local interpolation of a function
     template<typename F, typename C>
-    void interpolate (const F& ff, std::vector<C>& out) const
+    void interpolate (const F& f, std::vector<C>& out) const
     {
       typename LB::Traits::DomainType x;
       typename LB::Traits::RangeType y;
 
       out.resize(7);
-
-      auto&& f = Impl::makeFunctionWithCallOperator<decltype(x)>(ff);
 
       // vertices
       x[0] = 0.0; x[1] = 0.0; out[0] = f(x);

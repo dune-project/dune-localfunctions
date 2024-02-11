@@ -6,7 +6,6 @@
 #define DUNE_HIERARCHICAL_PRISM_P2_LOCALINTERPOLATION_HH
 
 #include <vector>
-#include <dune/localfunctions/common/localinterpolation.hh>
 
 namespace Dune
 {
@@ -19,13 +18,11 @@ namespace Dune
   public:
 
     template<typename F, typename C>
-    void interpolate (const F& ff, std::vector<C>& out) const
+    void interpolate (const F& f, std::vector<C>& out) const
     {
       typename LB::Traits::DomainType x;
       typename LB::Traits::RangeType y;
       out.resize(18);
-
-      auto&& f = Impl::makeFunctionWithCallOperator<decltype(x)>(ff);
 
       //First the  vertex dofs
       x[0] = 0.0;    x[1] = 0.0;     x[2] = 0.0;    out[0] = f(x);

@@ -7,8 +7,6 @@
 
 #include <vector>
 
-#include <dune/localfunctions/common/localinterpolation.hh>
-
 namespace Dune
 {
   /**
@@ -63,14 +61,12 @@ namespace Dune
      *
      * \tparam F Function type for function which should be interpolated
      * \tparam C Coefficient type
-     * \param ff function which should be interpolated
+     * \param f function which should be interpolated
      * \param out return value, vector of coefficients
      */
     template<class F, class C>
-    void interpolate (const F& ff, std::vector<C>& out) const
+    void interpolate (const F& f, std::vector<C>& out) const
     {
-      auto&& f = Impl::makeFunctionWithCallOperator<typename LB::Traits::DomainType>(ff);
-
       out.resize(5);
       for(int i=0; i<5; i++)
         out[i] = f(m[i]).dot(n[i]) * c[i] * sign[i];

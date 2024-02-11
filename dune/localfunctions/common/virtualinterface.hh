@@ -13,7 +13,6 @@
 #include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
-#include <dune/localfunctions/common/localinterpolation.hh>
 #include <dune/localfunctions/common/localkey.hh>
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 
@@ -212,29 +211,25 @@ namespace Dune
 
     /** \brief determine coefficients interpolating a given function
      *
-     * \param[in]  ff   Function instance used to interpolate.
+     * \param[in]  f   Function instance used to interpolate.
      * \param[out] out Resulting coefficients vector.
      */
     template<class F,
       std::enable_if_t<not std::is_base_of<FunctionType, F>::value, int> = 0>
-    void interpolate (const F& ff, std::vector<CoefficientType>& out) const
+    void interpolate (const F& f, std::vector<CoefficientType>& out) const
     {
-      const auto& f = Impl::makeFunctionWithCallOperator<DomainType>(ff);
-
       const LocalInterpolationVirtualInterfaceBase<DomainType, RangeType>& asBase = *this;
       asBase.interpolate(FunctionType(std::cref(f)),out);
     }
 
     /** \brief determine coefficients interpolating a given function
      *
-     * \param[in]  ff   Function instance used to interpolate.
+     * \param[in]  f   Function instance used to interpolate.
      * \param[out] out Resulting coefficients vector.
      */
     template<class F, class C>
-    void interpolate (const F& ff, std::vector<C>& out) const
+    void interpolate (const F& f, std::vector<C>& out) const
     {
-      const auto& f = Impl::makeFunctionWithCallOperator<DomainType>(ff);
-
       std::vector<CoefficientType> outDummy;
       const LocalInterpolationVirtualInterfaceBase<DomainType, RangeType>& asBase = *this;
       asBase.interpolate(FunctionType(std::cref(f)),outDummy);

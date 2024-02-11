@@ -10,7 +10,6 @@
 #include <vector>
 
 #include <dune/localfunctions/whitney/edges0.5/common.hh>
-#include <dune/localfunctions/common/localinterpolation.hh>
 
 namespace Dune {
 
@@ -73,10 +72,8 @@ namespace Dune {
 
     //! Interpolation of a function
     template<typename F, typename C>
-    void interpolate(const F& ff, std::vector<C>& out) const {
+    void interpolate(const F& f, std::vector<C>& out) const {
       typename Traits::Range y;
-
-      auto&& f = Impl::makeFunctionWithCallOperator<std::decay_t<decltype(refelem.position(0,dim-1))>>(ff);
 
       out.resize(s);
 

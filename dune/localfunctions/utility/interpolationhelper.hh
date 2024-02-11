@@ -10,7 +10,6 @@
 #include <dune/common/fvector.hh>
 #include <dune/common/concept.hh>
 #include <dune/localfunctions/utility/field.hh>
-#include <dune/localfunctions/common/localinterpolation.hh>
 
 namespace Dune
 {
@@ -54,22 +53,10 @@ namespace Dune
       assert(row<vec_.size());
       vec_[row] += field_cast<typename Vector::value_type>(val);
     }
-    template <class DomainVector,
-              std::enable_if_t<models<Impl::FunctionWithCallOperator<DomainVector>, Func>(), int> = 0>
+    template <class DomainVector>
     const Result &evaluate(const DomainVector &x) const
     {
       field_cast(func_(x), tmp_[0] );
-      return tmp_;
-    }
-    template <class DomainVector,
-              std::enable_if_t<not models<Impl::FunctionWithCallOperator<DomainVector>, Func>(), int> = 0>
-    const Result &evaluate(const DomainVector &x) const
-    {
-      typename Func::DomainType xx ;
-      typename Func::RangeType ff ;
-      field_cast(x,xx);
-      func_.evaluate(xx,ff);
-      field_cast(ff, tmp_[0] );
       return tmp_;
     }
     unsigned int size() const

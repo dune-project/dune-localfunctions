@@ -12,7 +12,6 @@
 
 #include <dune/geometry/type.hh>
 #include <dune/geometry/quadraturerules.hh>
-#include <dune/localfunctions/common/localinterpolation.hh>
 
 namespace Dune
 {
@@ -63,11 +62,9 @@ namespace Dune
      * unstable for higher polynomial degrees.
      */
     template<typename F, typename C>
-    void interpolate (const F& ff, std::vector<C>& out) const
+    void interpolate (const F& f, std::vector<C>& out) const
     {
       using DomainType = std::decay_t<decltype(qr.begin()->position())>;
-
-      auto&& f = Impl::makeFunctionWithCallOperator<DomainType>(ff);
 
       out.clear();
       out.resize(size, 0);

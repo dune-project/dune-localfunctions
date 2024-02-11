@@ -16,7 +16,6 @@
 
 #include <dune/localfunctions/common/localbasis.hh>
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
-#include <dune/localfunctions/common/localinterpolation.hh>
 #include <dune/localfunctions/common/localkey.hh>
 
 namespace Dune { namespace Impl
@@ -642,18 +641,17 @@ namespace Dune { namespace Impl
      *
      * \tparam F Type of function to evaluate
      * \tparam C Type used for the values of the function
-     * \param[in] ff Function to evaluate
+     * \param[in] f Function to evaluate
      * \param[out] out Array of function values
      */
     template<typename F, typename C>
-    void interpolate (const F& ff, std::vector<C>& out) const
+    void interpolate (const F& f, std::vector<C>& out) const
     {
       constexpr auto dim = LocalBasis::Traits::dimDomain;
       constexpr auto k = LocalBasis::order();
       using D = typename LocalBasis::Traits::DomainFieldType;
 
       typename LocalBasis::Traits::DomainType x;
-      auto&& f = Impl::makeFunctionWithCallOperator<typename LocalBasis::Traits::DomainType>(ff);
 
       out.resize(LocalBasis::size());
 

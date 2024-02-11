@@ -6,7 +6,6 @@
 #define DUNE_HIERARCHICAL_SIMPLEX_P2_LOCALINTERPOLATION_HH
 
 #include <vector>
-#include <dune/localfunctions/common/localinterpolation.hh>
 
 namespace Dune
 {
@@ -19,12 +18,10 @@ namespace Dune
   public:
 
     template<typename F, typename C>
-    void interpolate (const F& ff, std::vector<C>& out) const
+    void interpolate (const F& f, std::vector<C>& out) const
     {
       typename LB::Traits::DomainType x;
       typename LB::Traits::RangeType y;
-
-      auto&& f = Impl::makeFunctionWithCallOperator<decltype(x)>(ff);
 
       static_assert(LB::Traits::dimDomain <= 3,
                     "LocalInterpolation for HierarchicalSimplexP2 finite elements"

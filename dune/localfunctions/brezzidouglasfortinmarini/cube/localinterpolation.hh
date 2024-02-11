@@ -16,8 +16,6 @@
 
 #include <dune/geometry/quadraturerules.hh>
 
-#include <dune/localfunctions/common/localinterpolation.hh>
-
 
 namespace Dune
 {
@@ -157,16 +155,14 @@ namespace Dune
      * \tparam F  Function type for function which should be interpolated
      * \tparam C  Coefficient vector type
      *
-     * \param ff   function which should be interpolated
+     * \param f   function which should be interpolated
      * \param out  return value, vector of coefficients
      */
     template<class F, class C>
-    void interpolate (const F& ff, C& out) const
+    void interpolate (const F& f, C& out) const
     {
       out.resize(numFaces*faceDofs + interiorDofs);
       std::fill(out.begin(),out.end(), 0.0);
-
-      auto&& f = Impl::makeFunctionWithCallOperator<DomainType>(ff);
 
       for(auto i : range(numFaces))
         trace(i, f, out);

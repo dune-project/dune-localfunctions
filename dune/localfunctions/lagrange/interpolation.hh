@@ -11,7 +11,6 @@
 
 #include <dune/common/typeutilities.hh>
 
-#include <dune/localfunctions/common/localinterpolation.hh>
 #include <dune/localfunctions/lagrange/lagrangecoefficients.hh>
 
 namespace Dune
@@ -52,18 +51,6 @@ namespace Dune
       unsigned int index = 0;
       for( const auto &lp : lagrangePoints_ )
         field_cast( fn( lp.point() ), coefficients[ index++ ] );
-    }
-    template< class Fn, class Vector >
-    auto interpolate ( const Fn &fn, Vector &coefficients, PriorityTag< 0 > ) const
-       -> std::enable_if_t< models<Impl::FunctionWithEvaluate< typename Fn::DomainType, typename Fn::RangeType >, Fn>(), void>
-    {
-      unsigned int index = 0;
-      for( const auto &lp : lagrangePoints_ )
-      {
-        typename Fn::RangeType val;
-        fn.evaluate( field_cast< typename Fn::DomainType::field_type >( lp.point() ), val );
-        field_cast( val, coefficients[ index++ ] );
-      }
     }
 
   public:

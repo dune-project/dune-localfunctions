@@ -8,7 +8,6 @@
 #include <vector>
 
 #include <dune/geometry/quadraturerules.hh>
-#include <dune/localfunctions/common/localinterpolation.hh>
 
 namespace Dune
 {
@@ -72,17 +71,15 @@ namespace Dune
      *
      * \tparam F Function type for function which should be interpolated
      * \tparam C Coefficient type
-     * \param ff function which should be interpolated
+     * \param f function which should be interpolated
      * \param out return value, vector of coefficients
      */
     template<typename F, typename C>
-    void interpolate (const F& ff, std::vector<C>& out) const
+    void interpolate (const F& f, std::vector<C>& out) const
     {
       // f gives v*outer normal at a point on the edge!
       typedef typename LB::Traits::RangeFieldType Scalar;
       //typedef typename LB::Traits::DomainFieldType Vector;
-
-      auto&& f = Impl::makeFunctionWithCallOperator<typename LB::Traits::DomainType>(ff);
 
       out.resize(8);
       fill(out.begin(), out.end(), 0.0);

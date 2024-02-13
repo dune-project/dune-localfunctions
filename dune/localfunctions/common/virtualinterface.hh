@@ -13,7 +13,6 @@
 #include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
-#include <dune/localfunctions/common/localinterpolation.hh>
 #include <dune/localfunctions/common/localkey.hh>
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 
@@ -23,62 +22,6 @@ namespace Dune
   // forward declaration needed by the helper traits
   template<class DomainType, class RangeType>
   class LocalInterpolationVirtualInterface;
-
-  // -----------------------------------------------------------------
-  // Helper traits classes
-  // -----------------------------------------------------------------
-
-  /**
-   * @brief Return a proper base class for functions to use with LocalInterpolation.
-   *
-   * @tparam FE A FiniteElement type
-   *
-   * \deprecated
-   * This class is deprecated.
-   * To keep this traits class working it exports a simple
-   * look-a-like of the old Dune::Function base class.
-   * However, you should stop using this and pass functions with
-   * plain operator() interface to interpolate() from now on.
-   */
-  template<class FE>
-  class
-  [[deprecated("Dune::LocalFiniteElementFunctionBase is deprecated after Dune 2.7. You can now pass functions providing operator() to interpolate.")]]
-  LocalFiniteElementFunctionBase
-  {
-    typedef typename FE::Traits::LocalBasisType::Traits::DomainType Domain;
-    typedef typename FE::Traits::LocalBasisType::Traits::RangeType Range;
-
-    // Hack: Keep a copy of Dune::Function here. This allows to avoid depending
-    // on the deprecated dune-common header while still keeping the LocalFiniteElementFunctionBase
-    // mechanism working during its deprecation period.
-    class FunctionBaseDummy
-    {
-    public:
-
-      using RangeType = Range;
-      using DomainType = Domain;
-
-      struct Traits
-      {
-        using RangeType = Range;
-        using DomainType = Domain;
-      };
-
-      void evaluate(const DomainType& x, RangeType& y) const;
-    };
-
-  public:
-
-    using VirtualFunctionBase = FunctionBaseDummy;
-    using FunctionBase = FunctionBaseDummy;
-
-    /** \brief Base class type for functions to use with LocalInterpolation
-     *
-     * This is just a dummy providing the old typedefs.
-     * interface and Function base class otherwise.
-     */
-    using type = FunctionBaseDummy;
-  };
 
 
 
@@ -212,29 +155,25 @@ namespace Dune
 
     /** \brief determine coefficients interpolating a given function
      *
-     * \param[in]  ff   Function instance used to interpolate.
+     * \param[in]  f   Function instance used to interpolate.
      * \param[out] out Resulting coefficients vector.
      */
     template<class F,
       std::enable_if_t<not std::is_base_of<FunctionType, F>::value, int> = 0>
-    void interpolate (const F& ff, std::vector<CoefficientType>& out) const
+    void interpolate (const F& f, std::vector<CoefficientType>& out) const
     {
-      const auto& f = Impl::makeFunctionWithCallOperator<DomainType>(ff);
-
       const LocalInterpolationVirtualInterfaceBase<DomainType, RangeType>& asBase = *this;
       asBase.interpolate(FunctionType(std::cref(f)),out);
     }
 
     /** \brief determine coefficients interpolating a given function
      *
-     * \param[in]  ff   Function instance used to interpolate.
+     * \param[in]  f   Function instance used to interpolate.
      * \param[out] out Resulting coefficients vector.
      */
     template<class F, class C>
-    void interpolate (const F& ff, std::vector<C>& out) const
+    void interpolate (const F& f, std::vector<C>& out) const
     {
-      const auto& f = Impl::makeFunctionWithCallOperator<DomainType>(ff);
-
       std::vector<CoefficientType> outDummy;
       const LocalInterpolationVirtualInterfaceBase<DomainType, RangeType>& asBase = *this;
       asBase.interpolate(FunctionType(std::cref(f)),outDummy);

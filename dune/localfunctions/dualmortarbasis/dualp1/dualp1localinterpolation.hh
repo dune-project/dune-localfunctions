@@ -6,7 +6,6 @@
 #define DUNE_DUAL_P1_LOCALINTERPOLATION_HH
 
 #include <vector>
-#include <dune/localfunctions/common/localinterpolation.hh>
 
 namespace Dune
 {
@@ -19,14 +18,12 @@ namespace Dune
   public:
     //! \brief Local interpolation of a function
     template<typename F, typename C>
-    void interpolate (const F& ff, std::vector<C>& out) const
+    void interpolate (const F& f, std::vector<C>& out) const
     {
       typename LB::Traits::DomainType x;
       // If the dual functions are dual on the faces,
       // then adjust the interpolation weights
       const int faceDual(LB::faceDual);
-
-      auto&& f = Impl::makeFunctionWithCallOperator<decltype(x)>(ff);
 
       // compute P1 interpolation coefficients
       std::vector<C> p1Interpolation(dim+1);

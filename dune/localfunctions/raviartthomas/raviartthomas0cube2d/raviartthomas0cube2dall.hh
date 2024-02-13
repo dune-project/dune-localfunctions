@@ -13,7 +13,6 @@
 
 #include <dune/localfunctions/common/localbasis.hh>
 #include <dune/localfunctions/common/localkey.hh>
-#include <dune/localfunctions/common/localinterpolation.hh>
 
 namespace Dune
 {
@@ -154,10 +153,9 @@ namespace Dune
     }
 
     template<typename F, typename C>
-    void interpolate (const F& ff, std::vector<C>& out) const
+    void interpolate (const F& f, std::vector<C>& out) const
     {
       // f gives v*outer normal at a point on the edge!
-      auto&& f = Impl::makeFunctionWithCallOperator<typename LB::Traits::DomainType>(ff);
 
       out.resize(4);
 

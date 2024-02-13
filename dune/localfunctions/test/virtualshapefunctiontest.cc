@@ -40,14 +40,11 @@ struct TestFunction
   using DomainType = D;
   using RangeType = R;
 
-  struct Traits {
-    using DomainType = D;
-    using RangeType = R;
-  };
-
-  void evaluate(const DomainType& in, RangeType& out) const {
+  RangeType operator()(const DomainType& in) const {
     // May not be flexible enough to compile for all range types
+    RangeType out;
     out = 1;
+    return out;
   }
 };
 
@@ -97,22 +94,9 @@ void testLocalInterpolation(const LocalInterpolationVirtualInterface<DomainType,
   std::vector<typename RangeType::field_type> coefficients;
 
   //////////////////////////////////////////////////////////////////////////////
-  //  Part A: Feed the function to the 'interpolate' method in form of
-  //    a class providing an evaluate() method.
-  //    This way is deprecated since dune-localfunctions 2.7.
+  //  Feed the function to the 'interpolate' method in form of a callable.
   //////////////////////////////////////////////////////////////////////////////
   localInterpolation->interpolate(testFunction, coefficients);
-
-  //////////////////////////////////////////////////////////////////////////////
-  //  Part B: Redo the same test, but feed the function to the
-  //    'interpolate' method in form of a callable.
-  //////////////////////////////////////////////////////////////////////////////
-  auto callableTestFunction = [&](const auto& x) {
-    RangeType y(0);
-    testFunction.evaluate(x,y);
-    return y;
-  };
-  localInterpolation->interpolate(callableTestFunction, coefficients);
 }
 
 // Test all methods of a local finite element given as a pointer to the abstract base class

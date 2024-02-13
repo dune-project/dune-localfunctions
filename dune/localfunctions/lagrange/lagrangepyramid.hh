@@ -16,7 +16,6 @@
 
 #include <dune/localfunctions/common/localbasis.hh>
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
-#include <dune/localfunctions/common/localinterpolation.hh>
 #include <dune/localfunctions/common/localkey.hh>
 
 namespace Dune { namespace Impl
@@ -714,17 +713,15 @@ namespace Dune { namespace Impl
      *
      * \tparam F Type of function to evaluate
      * \tparam C Type used for the values of the function
-     * \param[in] ff Function to evaluate
+     * \param[in] f Function to evaluate
      * \param[out] out Array of function values
      */
     template<typename F, typename C>
-    void interpolate (const F& ff, std::vector<C>& out) const
+    void interpolate (const F& f, std::vector<C>& out) const
     {
       constexpr auto k = LocalBasis::order();
       using D = typename LocalBasis::Traits::DomainType;
       using DF = typename LocalBasis::Traits::DomainFieldType;
-
-      auto&& f = Impl::makeFunctionWithCallOperator<D>(ff);
 
       out.resize(LocalBasis::size());
 
@@ -816,13 +813,6 @@ namespace Dune
     using Traits = LocalFiniteElementTraits<Impl::LagrangePyramidLocalBasis<D,R,k>,
                                             Impl::LagrangePyramidLocalCoefficients<k>,
                                             Impl::LagrangePyramidLocalInterpolation<Impl::LagrangePyramidLocalBasis<D,R,k> > >;
-
-    /** \brief Default constructor
-     *
-     * \deprecated This explicit implementation only exists to work around a bug in clang 3.8
-     *   which disappeared in clang 6
-     */
-    LagrangePyramidLocalFiniteElement() {}
 
     /** \brief Returns the local basis, i.e., the set of shape functions
      */

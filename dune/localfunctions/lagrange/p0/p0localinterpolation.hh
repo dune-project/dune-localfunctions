@@ -7,7 +7,6 @@
 
 #include <vector>
 #include <dune/geometry/referenceelements.hh>
-#include <dune/localfunctions/common/localinterpolation.hh>
 
 
 namespace Dune
@@ -25,13 +24,11 @@ namespace Dune
 
     //! determine coefficients interpolating a given function
     template<typename F, typename C>
-    void interpolate (const F& ff, std::vector<C>& out) const
+    void interpolate (const F& f, std::vector<C>& out) const
     {
       typedef typename LB::Traits::DomainType DomainType;
       typedef typename LB::Traits::DomainFieldType DF;
       const int dim=LB::Traits::dimDomain;
-
-      auto&& f = Impl::makeFunctionWithCallOperator<typename LB::Traits::DomainType>(ff);
 
       DomainType x = Dune::ReferenceElements<DF,dim>::general(gt_).position(0,0);
 

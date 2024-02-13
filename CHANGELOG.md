@@ -7,7 +7,34 @@ SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 
 * Fixed LocalKey codim for the Crouzeix-Raviart element
 
+## Deprecations and removals
+
 * `PQkLocalFiniteElementCache` is deprecated. `LagrangeLocalFiniteElementCache` is the recommended replacement. The latter implements a thread-safe get(gt) while the former does not.
+
+* The deprecated support for passing functions providing
+  only the old `f.evaluate(x,y)` interface has been removed.
+  This interface is also no longer tested.
+
+* The deprecated overload of the helper function
+  `Impl::makeFunctionWithCallOperator(f)` for support
+  of the `f.evaluate(x,y)` interface has been removed.
+  The overload for the `operator()` is deprecated.
+  Calling this function in downstream modules is no
+  longer needed because only one function interface is supported.
+
+* The deprecated base class `LocalFiniteElementFunctionBase` has been removed.
+
+* The deprecated headers
+  `p1.hh`, `p2.hh`, `p23d.hh`, `pk.hh`, `pk3d`, `qk.hh`,
+  `prismp1.hh`, `prismp2.hh`, `pyramidp1.hh`, `pyramidp2.hh`
+  and the deprecated classed `(PK1D|PK2D|Q1)LocalFiniteElement`
+  in `langrange/` have been removed.
+  Use `lagrange(cube|prism|pyramid|simplex).hh` and the corresponding
+  classes instead.
+
+* The deprecated functions `numLagrangePoints(topologyId,...)`
+  `equidistantLagrangePoints(topologyId,...)` have been removed.
+
 
 # Release 2.9
 

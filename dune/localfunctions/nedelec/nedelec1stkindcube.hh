@@ -16,7 +16,6 @@
 
 #include <dune/localfunctions/common/localbasis.hh>
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
-#include <dune/localfunctions/common/localinterpolation.hh>   // For deprecated makeFunctionWithCallOperator
 #include <dune/localfunctions/common/localkey.hh>
 
 namespace Dune
@@ -446,10 +445,9 @@ namespace Impl
      * \param[out] out The coefficients of the projection
      */
     template<typename F, typename C>
-    void interpolate (const F& ff, std::vector<C>& out) const
+    void interpolate (const F& f, std::vector<C>& out) const
     {
       out.resize(size);
-      auto&& f = Impl::makeFunctionWithCallOperator<typename LB::Traits::DomainType>(ff);
 
       for (std::size_t i=0; i<size; i++)
       {

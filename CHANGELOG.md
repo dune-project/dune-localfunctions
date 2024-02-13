@@ -7,6 +7,9 @@ SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 
 * Fixed LocalKey codim for the Crouzeix-Raviart element
 
+* Add new local finite element representing P1 basis functions enriched by
+  a single element bubble functions on simplex elements.
+
 ## Deprecations and removals
 
 * `PQkLocalFiniteElementCache` is deprecated. `LagrangeLocalFiniteElementCache` is the recommended replacement. The latter implements a thread-safe get(gt) while the former does not.

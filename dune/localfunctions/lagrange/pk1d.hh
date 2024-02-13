@@ -13,8 +13,6 @@
 #include <dune/localfunctions/common/localtoglobaladaptors.hh>
 #include <dune/localfunctions/lagrange/lagrangesimplex.hh>
 
-#warning This header is deprecated
-
 namespace Dune
 {
 

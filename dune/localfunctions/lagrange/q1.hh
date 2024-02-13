@@ -12,8 +12,6 @@
 #include <dune/localfunctions/common/localtoglobaladaptors.hh>
 #include <dune/localfunctions/lagrange/lagrangecube.hh>
 
-#warning This header is deprecated
-
 namespace Dune
 {
 

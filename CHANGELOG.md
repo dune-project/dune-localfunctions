@@ -32,6 +32,9 @@ SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
   Use `lagrange(cube|prism|pyramid|simplex).hh` and the corresponding
   classes instead.
 
+* The deprecated functions `numLagrangePoints(topologyId,...)`
+  `equidistantLagrangePoints(topologyId,...)` have been removed.
+
 
 # Release 2.9
 

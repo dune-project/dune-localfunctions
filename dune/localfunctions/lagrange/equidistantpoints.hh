@@ -40,12 +40,6 @@ namespace Dune
       return 1;
   }
 
-  [[deprecated("Use numLagrangePoints(const GeometryType& gt, std::size_t order ) instead.")]]
-  inline std::size_t numLagrangePoints (  unsigned int topologyId, unsigned int dim, std::size_t order )
-  {
-    return numLagrangePoints ( GeometryType(topologyId, dim), order);
-  }
-
 
 
   // equidistantLagrangePoints
@@ -140,13 +134,6 @@ namespace Dune
       points->point_ = 0;
       return 1;
     }
-  }
-
-  template< class ct, unsigned int cdim >
-  [[deprecated("Use equidistantLagrangePoints ( GeometryType gt,  ... ) instead.")]]
-  inline static unsigned int equidistantLagrangePoints ( unsigned int topologyId, unsigned int dim, unsigned int codim, std::size_t order, unsigned int *count, LagrangePoint< ct, cdim > *points )
-  {
-    return equidistantLagrangePoints ( GeometryType(topologyId, dim), codim, order, *count, *points );
   }
 
 

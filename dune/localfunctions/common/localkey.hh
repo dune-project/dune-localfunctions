@@ -38,7 +38,8 @@ namespace Dune
     };
 
     //! \brief Standard constructor for uninitialized local index
-    LocalKey ()
+    constexpr LocalKey () noexcept
+      : values_{}
     {}
 
     /** \brief Initialize all components
@@ -46,39 +47,40 @@ namespace Dune
         \param c Codimension of the associated subentity
         \param i Index in the set of all functions associated to this subentity
      */
-    LocalKey (unsigned int s, unsigned int c, unsigned int i)
-    {
-      values_[0] = s;
-      values_[1] = c;
-      values_[2] = i;
-    }
+    constexpr LocalKey (unsigned int s, unsigned int c, unsigned int i) noexcept
+      : values_{s,c,i}
+    {}
 
     //! \brief Return number of associated subentity
-    inline unsigned int subEntity () const
+    [[nodiscard]]
+    constexpr unsigned int subEntity () const noexcept
     {
       return values_[0];
     }
 
     //! \brief Return codim of associated entity
-    inline unsigned int codim () const
+    [[nodiscard]]
+    constexpr unsigned int codim () const noexcept
     {
       return values_[1];
     }
 
     //! \brief Return offset within subentity
-    inline unsigned int index () const
+    [[nodiscard]]
+    constexpr unsigned int index () const noexcept
     {
       return values_[2];
     }
 
     //! \brief Set index component
-    void index (unsigned int i)
+    constexpr void index (unsigned int i) noexcept
     {
       values_[2] = i;
     }
 
     /** \brief Less-than operator so we can use this class as a key type in stl containers */
-    bool operator< (const LocalKey& other) const
+    [[nodiscard]]
+    bool operator< (const LocalKey& other) const noexcept
     {
       return values_ < other.values_;
     }

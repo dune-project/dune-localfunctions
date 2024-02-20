@@ -6,10 +6,11 @@
 #define DUNE_L2INTERPOLATION_HH
 
 #include <dune/common/concept.hh>
+#include <dune/common/dynmatrix.hh>
 
 #include <dune/geometry/quadraturerules.hh>
 
-#include <dune/localfunctions/utility/lfematrix.hh>
+#include <dune/localfunctions/utility/field.hh>
 
 namespace Dune
 {
@@ -121,7 +122,7 @@ namespace Dune
         coefficients[i] = 0;
         for (unsigned int j=0; j<size; ++j)
         {
-          coefficients[i] += field_cast<DofField>(massMatrix_(i,j)*val_[j]);
+          coefficients[i] += field_cast<DofField>(massMatrix_[i][j]*val_[j]);
         }
       }
     }
@@ -129,34 +130,26 @@ namespace Dune
     LocalL2Interpolation ( const typename Base::Basis &basis, const typename Base::Quadrature &quadrature )
       : Base(basis,quadrature),
         val_(basis.size()),
-        massMatrix_()
+        massMatrix_(basis.size(),basis.size(),Field(0))
     {
       typedef FieldVector< Field, Base::Basis::dimRange > RangeVector;
       typedef typename Base::Quadrature::iterator Iterator;
       const unsigned size = basis.size();
       std::vector< RangeVector > basisValues( size );
 
-      massMatrix_.resize( size,size );
-      for (unsigned int i=0; i<size; ++i)
-        for (unsigned int j=0; j<size; ++j)
-          massMatrix_(i,j) = 0;
       const Iterator end = Base::quadrature().end();
       for( Iterator it = Base::quadrature().begin(); it != end; ++it )
       {
         Base::basis().evaluate( it->position(), basisValues );
         for (unsigned int i=0; i<size; ++i)
           for (unsigned int j=0; j<size; ++j)
-            massMatrix_(i,j) += (basisValues[i]*basisValues[j])*it->weight();
+            massMatrix_[i][j] += (basisValues[i]*basisValues[j])*it->weight();
       }
-      if ( !massMatrix_.invert() )
-      {
-        DUNE_THROW(MathError, "Mass matrix singular in LocalL2Interpolation");
-      }
-
+      massMatrix_.invert();
     }
     typedef typename Base::Basis::StorageField Field;
     typedef FieldVector< Field, Base::Basis::dimRange > RangeVector;
-    typedef LFEMatrix<Field> MassMatrix;
+    typedef DynamicMatrix<Field> MassMatrix;
     mutable std::vector<Field> val_;
     MassMatrix massMatrix_;
   };

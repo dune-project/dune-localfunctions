@@ -3,6 +3,7 @@
 // SPDX-FileCopyrightInfo: Copyright © DUNE Project contributors, see file LICENSE.md in module root
 // SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 #include <config.h>
+#include <dune/common/dynmatrix.hh>
 #include <dune/localfunctions/nedelec/nedelecsimplex/nedelecsimplexbasis.hh>
 #include <dune/localfunctions/utility/field.hh>
 #include <dune/localfunctions/utility/basisprint.hh>
@@ -58,15 +59,15 @@ bool test(unsigned int order)
     // test interpolation
     typedef Dune::NedelecL2InterpolationFactory<geometry.dim(), StorageField> InterpolationFactory;
     const typename InterpolationFactory::Object &interpol = *InterpolationFactory::template create<geometry>(o);
-    Dune::LFEMatrix<StorageField> matrix;
+    Dune::DynamicMatrix<StorageField> matrix;
     interpol.interpolate(basis,matrix);
     for (unsigned int i=0; i<matrix.rows(); ++i)
-      matrix(i,i)-=1;
+      matrix[i][i]-=1;
     for (unsigned int i=0; i<matrix.rows(); ++i)
       for (unsigned int j=0; j<matrix.cols(); ++j)
-        if ( std::abs( matrix(i,j) ) > 1000.*Dune::Zero<double>::epsilon() )
+        if ( std::abs( matrix[i][j] ) > 1000.*Dune::Zero<double>::epsilon() )
           std::cout << "  non-zero entry in interpolation matrix: "
-                    << "(" << i << "," << j << ") = " << Dune::field_cast<double>(matrix(i,j))
+                    << "(" << i << "," << j << ") = " << Dune::field_cast<double>(matrix[i][j])
                     << std::endl;
 
     BasisFactory::release(&basis);

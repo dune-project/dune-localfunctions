@@ -6,9 +6,9 @@
 #define DUNE_BASISMATRIX_HH
 
 #include <fstream>
+#include <dune/common/dynmatrix.hh>
 #include <dune/common/exceptions.hh>
 
-#include <dune/localfunctions/utility/lfematrix.hh>
 #include <dune/localfunctions/utility/monomialbasis.hh>
 #include <dune/localfunctions/utility/polynomialbasis.hh>
 
@@ -28,20 +28,16 @@ namespace Dune
 
   template< class PreBasis, class Interpolation,
       class Field >
-  struct BasisMatrixBase : public LFEMatrix<Field>
+  struct BasisMatrixBase : public DynamicMatrix<Field>
   {
-    typedef LFEMatrix<Field> Matrix;
+    typedef DynamicMatrix<Field> Matrix;
 
     BasisMatrixBase( const PreBasis& preBasis,
                      const Interpolation& localInterpolation )
       : cols_(preBasis.size())
     {
       localInterpolation.interpolate( preBasis, *this );
-
-      if ( !Matrix::invert() )
-      {
-        DUNE_THROW(MathError, "While computing basis a singular matrix was constructed!");
-      }
+      this->invert();
     }
     unsigned int cols () const
     {
@@ -77,7 +73,7 @@ namespace Dune
       // note: that the transposed matrix is computed,
       //       and is square
       for (unsigned int i=0; i<N; ++i)
-        field_cast(Matrix::operator()(i,row),vec[i]);
+        field_cast((*this)[i][row],vec[i]);
     }
   };
   template< int dim, class F,
@@ -102,7 +98,7 @@ namespace Dune
       // note: that the transposed matrix is computed,
       //       and is square
       for (unsigned int i=0; i<N; ++i)
-        field_cast(Matrix::operator()(i,row),vec[i]);
+        field_cast((*this)[i][row],vec[i]);
     }
   };
   template< class Eval, class CM, class D, class R,
@@ -134,7 +130,7 @@ namespace Dune
         vec[j] = 0;
       for (unsigned int i=0; i<Matrix::rows(); ++i)
         preBasis_.matrix().
-        addRow(i,Base::Matrix::operator()(i,row),vec);
+        addRow(i,(*this)[i][row],vec);
     }
   private:
     const PreBasis& preBasis_;
@@ -175,7 +171,7 @@ namespace Dune
         vec[j] = 0;
       for (unsigned int i=0; i<Matrix::rows(); ++i)
         preBasis_.matrix().
-        addRow(i*CM::blockSize+row%CM::blockSize,Base::Matrix::operator()(i,r),vec);
+        addRow(i*CM::blockSize+row%CM::blockSize,(*this)[i][r],vec);
     }
   private:
     const PreBasis& preBasis_;

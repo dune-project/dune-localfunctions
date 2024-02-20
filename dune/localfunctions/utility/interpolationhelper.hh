@@ -79,11 +79,11 @@ namespace Dune
         tmp_(basis.size()) {}
     const F &operator()(unsigned int row,unsigned int col) const
     {
-      return matrix_(row,col);
+      return matrix_[row][col];
     }
     F &operator()(unsigned int row,unsigned int col)
     {
-      return matrix_(row,col);
+      return matrix_[row][col];
     }
     template <class Fy>
     void set(unsigned int row,unsigned int col,
@@ -91,7 +91,7 @@ namespace Dune
     {
       assert(col<matrix_.cols());
       assert(row<matrix_.rows());
-      field_cast(val,matrix_(row,col));
+      field_cast(val,matrix_[row][col]);
     }
     template <class Fy>
     void add(unsigned int row,unsigned int col,
@@ -99,7 +99,7 @@ namespace Dune
     {
       assert(col<matrix_.cols());
       assert(row<matrix_.rows());
-      matrix_(row,col) += val;
+      matrix_[row][col] += val;
     }
     template <class DomainVector>
     const Result &evaluate(const DomainVector &x) const

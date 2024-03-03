@@ -5,6 +5,7 @@ add_subdirectory(brezzidouglasfortinmarini)
 add_subdirectory(brezzidouglasmarini)
 add_subdirectory(common)
 add_subdirectory(dualmortarbasis)
+add_subdirectory(enrichted)
 add_subdirectory(hierarchical)
 add_subdirectory(lagrange)
 add_subdirectory(meta)
@@ -23,6 +24,7 @@ install(FILES
   brezzidouglasmarini.hh
   crouzeixraviart.hh
   dualmortarbasis.hh
+  enrichted.hh
   hierarchical.hh
   lagrange.hh
   mimetic.hh

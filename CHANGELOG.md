@@ -10,6 +10,8 @@ SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 * Add new local finite element representing P1 basis functions enriched by
   a single element bubble functions on simplex elements.
 
+* Make the class `LocalKey` usable in `constexpr` and mark all pure functions `[[nodiscard]]`.
+
 ## Deprecations and removals
 
 * `PQkLocalFiniteElementCache` is deprecated. `LagrangeLocalFiniteElementCache` is the recommended replacement. The latter implements a thread-safe get(gt) while the former does not.

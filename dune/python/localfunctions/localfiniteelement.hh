@@ -63,6 +63,7 @@ DUNE_EXPORT auto registerLocalFiniteElement(pybind11::handle scope, const char* 
   // cls.def_property_readonly("localCoefficients", &LocalFiniteElement::localCoefficients);
   // cls.def_property_readonly("localInterpolation", &LocalFiniteElement::localInterpolation);
   cls.def("__len__", &LocalFiniteElement::size);
+  cls.def("size", &LocalFiniteElement::size);
   cls.def_property_readonly("type", &LocalFiniteElement::type);
 
   return cls;

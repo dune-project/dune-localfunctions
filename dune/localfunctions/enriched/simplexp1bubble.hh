@@ -2,15 +2,15 @@
 // vi: set et ts=4 sw=2 sts=2:
 // SPDX-FileCopyrightInfo: Copyright © DUNE Project contributors, see file LICENSE.md in module root
 // SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
-#ifndef DUNE_LOCALFUNCTIONS_BUBBLE_SIMPLEXP1BUBBLE_HH
-#define DUNE_LOCALFUNCTIONS_BUBBLE_SIMPLEXP1BUBBLE_HH
+#ifndef DUNE_LOCALFUNCTIONS_ENRICHED_SIMPLEXP1BUBBLE_HH
+#define DUNE_LOCALFUNCTIONS_ENRICHED_SIMPLEXP1BUBBLE_HH
 
 #include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
-#include <dune/localfunctions/enrichted/simplexp1bubble/localbasis.hh>
-#include <dune/localfunctions/enrichted/simplexp1bubble/localcoefficients.hh>
-#include <dune/localfunctions/enrichted/simplexp1bubble/localinterpolation.hh>
+#include <dune/localfunctions/enriched/simplexp1bubble/localbasis.hh>
+#include <dune/localfunctions/enriched/simplexp1bubble/localcoefficients.hh>
+#include <dune/localfunctions/enriched/simplexp1bubble/localinterpolation.hh>
 
 
 namespace Dune
@@ -95,4 +95,4 @@ namespace Dune
 
 } // end namespace Dune
 
-#endif // DUNE_LOCALFUNCTIONS_BUBBLE_SIMPLEXP1BUBBLE_HH
+#endif // DUNE_LOCALFUNCTIONS_ENRICHED_SIMPLEXP1BUBBLE_HH

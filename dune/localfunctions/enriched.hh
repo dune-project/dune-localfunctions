@@ -5,6 +5,6 @@
 #ifndef DUNE_LOCALFUNCTIONS_ENRICHED_HH
 #define DUNE_LOCALFUNCTIONS_ENRICHED_HH
 
-#include <dune/localfunctions/enrichted/simplexp1bubble.hh>
+#include <dune/localfunctions/enriched/simplexp1bubble.hh>
 
 #endif // DUNE_LOCALFUNCTIONS_ENRICHED_HH

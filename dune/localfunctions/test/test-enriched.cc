@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 #include <config.h>
 
-#include <dune/localfunctions/enrichted.hh>
+#include <dune/localfunctions/enriched.hh>
 
 #include <dune/localfunctions/test/test-localfe.hh>
 

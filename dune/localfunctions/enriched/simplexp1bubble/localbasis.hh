@@ -2,8 +2,8 @@
 // vi: set et ts=4 sw=2 sts=2:
 // SPDX-FileCopyrightInfo: Copyright © DUNE Project contributors, see file LICENSE.md in module root
 // SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
-#ifndef DUNE_LOCALFUNCTIONS_BUBBLE_SIMPLEXP1BUBBLE_LOCALBASIS_HH
-#define DUNE_LOCALFUNCTIONS_BUBBLE_SIMPLEXP1BUBBLE_LOCALBASIS_HH
+#ifndef DUNE_LOCALFUNCTIONS_ENRICHED_SIMPLEXP1BUBBLE_LOCALBASIS_HH
+#define DUNE_LOCALFUNCTIONS_ENRICHED_SIMPLEXP1BUBBLE_LOCALBASIS_HH
 
 #include <numeric>
 #include <stdexcept>
@@ -19,7 +19,7 @@ namespace Dune
 {
   /**
    * \ingroup LocalBasisImplementation
-   * \brief P1 basis in dim-d enrichted by an (order dim+1) element bubble function.
+   * \brief P1 basis in dim-d enriched by an (order dim+1) element bubble function.
    *
    * The shape functions are associated to the vertices and to the barycenter. The
    * bubble function is the product of the linear vertex basis functions scaled by
@@ -135,4 +135,4 @@ namespace Dune
 
 } // end namespace Dune
 
-#endif // DUNE_LOCALFUNCTIONS_BUBBLE_SIMPLEXP1BUBBLE_LOCALBASIS_HH
+#endif // DUNE_LOCALFUNCTIONS_ENRICHED_SIMPLEXP1BUBBLE_LOCALBASIS_HH

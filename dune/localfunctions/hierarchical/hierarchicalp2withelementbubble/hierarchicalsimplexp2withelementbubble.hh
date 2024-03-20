@@ -9,498 +9,322 @@
     \brief Hierarchical p2 shape functions for the simplex
  */
 
+#include <array>
+#include <cassert>
 #include <numeric>
+#include <stdexcept>
 #include <vector>
 
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
+#include <dune/common/math.hh>
+
+#include <dune/geometry/referenceelement.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
 #include <dune/localfunctions/common/localkey.hh>
 
 namespace Dune
 {
+  /**
+   * \ingroup LocalBasisImplementation
+   * \brief P1 basis in dim-d enriched by quadratic edge bubble functions and an
+   *        element bubble function of order dim+1.
+   *
+   * The shape functions are associated to the vertices, the edges centers, and to the element barycenter.
+   * The bubble function is the product of the linear vertex basis functions. On the edges the basis
+   * functions are scaled by the factor 4 and inside the element by the factor (dim+1)^(dim+1).
+   *
+   * \tparam D    Type to represent the field in the domain.
+   * \tparam R    Type to represent the field in the range.
+   * \tparam dim  Dimension of the domain.
+   *
+   * \nosubgrouping
+   **/
   template<class D, class R, int dim>
   class HierarchicalSimplexP2WithElementBubbleLocalBasis
   {
-  public:
-    HierarchicalSimplexP2WithElementBubbleLocalBasis()
+    template<class,int> friend class HierarchicalSimplexP2WithElementBubbleLocalInterpolation;
+
+    //! Type of the local coordinates in the domain
+    using DomainType = FieldVector<D,dim>;
+
+    //! Range type of the basis functions
+    using RangeType = FieldVector<R,1>;
+
+    //! Type of the jacobians of the basis functions
+    using JacobianType = FieldMatrix<R,1,dim>;
+
+    // Number of vertices
+    static constexpr int numVertices = dim+1;
+
+    // Number of edges (or zero for dim==1)
+    static constexpr int numEdges = (dim > 1 ? ((dim+1)*dim / 2) : 0);
+
+    // helper function to evaluate the vertex basis functions
+    template <class It>
+    static constexpr It evaluateVertexFunctions (const DomainType& in, It outIt)
     {
-      DUNE_THROW(Dune::NotImplemented,"HierarchicalSimplexP2LocalBasis not implemented for dim > 3.");
-    }
-  };
-
-  /**
-     \brief Hierarchical P2 basis in 1d.
-
-     The shape functions are associated to the following points:
-
-     f_0 ~ (0.0)   // linear function
-     f_1 ~ (1.0)   // linear function
-     f_2 ~ (0.5)   // quadratic bubble
-
-     \tparam D Type to represent the field in the domain.
-     \tparam R Type to represent the field in the range.
-   * \ingroup LocalFunctionsImpl
-     \nosubgrouping
-   */
-  template<class D, class R>
-  class HierarchicalSimplexP2WithElementBubbleLocalBasis<D,R,1>
-  {
-  public:
-    //! \brief export type traits for function signature
-    typedef LocalBasisTraits<D,1,Dune::FieldVector<D,1>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldMatrix<R,1,1> > Traits;
-
-    //! \brief number of shape functions
-    unsigned int size () const
-    {
-      return 3;
+      *outIt = 1;
+      for (int i = 0; i < dim; ++i)
+        *outIt -= in[i];
+      ++outIt;
+      for (int i = 0; i < dim; ++i)
+        *outIt++ = in[i];
+      return outIt;
     }
 
-    //! \brief Evaluate all shape functions
-    inline void evaluateFunction (const typename Traits::DomainType& in,
-                                  std::vector<typename Traits::RangeType>& out) const
+    // helper function to evaluate the basis functions
+    template <class It>
+    static constexpr It evaluateAllFunctions (const DomainType& in, It outIt)
     {
-      out.resize(3);
+      It vertexValues = outIt;
+      outIt = evaluateVertexFunctions(in, outIt);
 
-      out[0] = 1-in[0];
-      out[1] = in[0];
-      out[2] = 1-4*(in[0]-0.5)*(in[0]-0.5);
-    }
-
-    //! \brief Evaluate Jacobian of all shape functions
-    inline void
-    evaluateJacobian (const typename Traits::DomainType& in,         // position
-                      std::vector<typename Traits::JacobianType>& out) const      // return value
-    {
-      out.resize(3);
-
-      out[0][0][0] = -1;
-      out[1][0][0] =  1;
-      out[2][0][0] = 4-8*in[0];
-    }
-
-    //! \brief Evaluate partial derivatives of all shape functions
-    void partial (const std::array<unsigned int, 1>& order,
-                  const typename Traits::DomainType& in,         // position
-                  std::vector<typename Traits::RangeType>& out) const      // return value
-    {
-      auto totalOrder = order[0];
-      if (totalOrder == 0) {
-        evaluateFunction(in, out);
-      } else if (totalOrder == 1) {
-        out.resize(size());
-        out[0] = -1;
-        out[1] =  1;
-        out[2] = 4-8*in[0];
-      } else if (totalOrder == 2) {
-        out.resize(size());
-        out[0] = 0;
-        out[1] = 0;
-        out[2] =-8;
-      } else {
-        out.resize(size());
-        out[0] = out[1] = out[2] = 0;
-      }
-    }
-
-    /** \brief Polynomial order of the shape functions  (2, in this case)
-     */
-    unsigned int order () const
-    {
-      return 2;
-    }
-
-  };
-
-  /**
-     \brief Hierarchical P2 basis in 1d.
-
-     The shape functions are associated to the following points:
-
-     The functions are associated to points by:
-
-     f_0 ~ (0.0, 0.0)
-     f_1 ~ (0.5, 0.0)
-     f_2 ~ (1.0, 0.0)
-     f_3 ~ (0.0, 0.5)
-     f_4 ~ (0.5, 0.5)
-     f_5 ~ (0.0, 1.0)
-     f_6 ~ (1/3, 1/3)
-
-     \tparam D Type to represent the field in the domain.
-     \tparam R Type to represent the field in the range.
-
-   * \ingroup LocalFunctionsImpl
-     \nosubgrouping
-   */
-  template<class D, class R>
-  class HierarchicalSimplexP2WithElementBubbleLocalBasis<D,R,2>
-  {
-  public:
-    //! \brief export type traits for function signature
-    typedef LocalBasisTraits<D,2,Dune::FieldVector<D,2>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldMatrix<R,1,2> > Traits;
-
-    //! \brief number of shape functions
-    unsigned int size () const
-    {
-      return 7;
-    }
-
-    //! \brief Evaluate all shape functions
-    inline void evaluateFunction (const typename Traits::DomainType& in,
-                                  std::vector<typename Traits::RangeType>& out) const
-    {
-      out.resize(7);
-
-      out[0] = 1 - in[0] - in[1];
-      out[1] = 4*in[0]*(1-in[0]-in[1]);
-      out[2] = in[0];
-      out[3] = 4*in[1]*(1-in[0]-in[1]);
-      out[4] = 4*in[0]*in[1];
-      out[5] = in[1];
-      out[6] = 27*in[0]*in[1]*(1-in[0]-in[1]);
-
-    }
-
-    //! \brief Evaluate Jacobian of all shape functions
-    inline void
-    evaluateJacobian (const typename Traits::DomainType& in,         // position
-                      std::vector<typename Traits::JacobianType>& out) const      // return value
-    {
-      out.resize(7);
-
-      out[0][0][0] = -1;                    out[0][0][1] = -1;
-      out[1][0][0] =  4-8*in[0]-4*in[1];    out[1][0][1] = -4*in[0];
-      out[2][0][0] =  1;                    out[2][0][1] =  0;
-      out[3][0][0] = -4*in[1];              out[3][0][1] =  4-4*in[0]-8*in[1];
-      out[4][0][0] =  4*in[1];              out[4][0][1] =  4*in[0];
-      out[5][0][0] =  0;                    out[5][0][1] =  1;
-
-      // Cubic bubble
-      out[6][0][0] = 27 * in[1] * (1 - 2*in[0] - in[1]);
-      out[6][0][1] = 27 * in[0] * (1 - 2*in[1] - in[0]);
-
-    }
-
-    //! \brief Evaluate partial derivatives of all shape functions
-    void partial (const std::array<unsigned int, 2>& order,
-                  const typename Traits::DomainType& in,         // position
-                  std::vector<typename Traits::RangeType>& out) const      // return value
-    {
-      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
-      if (totalOrder == 0) {
-        evaluateFunction(in, out);
-      } else if (totalOrder == 1) {
-        out.resize(size());
-        auto const direction = std::distance(order.begin(), std::find(order.begin(), order.end(), 1));
-
-        switch (direction) {
-        case 0:
-          out[0] = -1;
-          out[1] =  4-8*in[0]-4*in[1];
-          out[2] =  1;
-          out[3] = -4*in[1];
-          out[4] =  4*in[1];
-          out[5] =  0;
-          out[6] = 27 * in[1] * (1 - 2*in[0] - in[1]);
-          break;
-        case 1:
-          out[0] = -1;
-          out[1] = -4*in[0];
-          out[2] =  0;
-          out[3] =  4-4*in[0]-8*in[1];
-          out[4] =  4*in[0];
-          out[5] =  1;
-          out[6] = 27 * in[0] * (1 - 2*in[1] - in[0]);
-          break;
-        default:
-          DUNE_THROW(RangeError, "Component out of range.");
+      if constexpr(dim > 1) {
+        auto refElem = referenceElement<D,dim>(GeometryTypes::simplex(dim));
+        for (int i = 0; i < numEdges; ++i) {
+          const int v0 = refElem.subEntity(i,dim-1,0,dim);
+          const int v1 = refElem.subEntity(i,dim-1,1,dim);
+          *outIt++ = 4 * vertexValues[v0] * vertexValues[v1];
         }
-      } else {
-        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
       }
+
+      // element bubble function
+      *outIt = power(dim+1, dim+1);
+      for (int i = 0; i < numVertices; ++i)
+        *outIt *= vertexValues[i];
+      return outIt;
     }
 
-    /** \brief Polynomial order of the shape functions  (3 in this case)
-     */
-    unsigned int order () const
-    {
-      return 3;
-    }
-
-  };
-
-  /**
-     \brief Hierarchical P2 basis in 1d.
-
-     The shape functions are associated to the following points:
-
-     The functions are associated to points by:
-
-     f_0 ~ (0.0, 0.0, 0.0)
-     f_1 ~ (0.5, 0.0, 0.0)
-     f_2 ~ (1.0, 0.0, 0.0)
-     f_3 ~ (0.0, 0.5, 0.0)
-     f_4 ~ (0.5, 0.5, 0.0)
-     f_5 ~ (0.0, 1.0, 0.0)
-     f_6 ~ (0.0, 0.0, 0.5)
-     f_7 ~ (0.5, 0.0, 0.5)
-     f_8 ~ (0.0, 0.5, 0.5)
-     f_9 ~ (0.0, 0.0, 1.0)
-     f_10 ~ (1/3, 1/3, 1/3)
-
-     \tparam D Type to represent the field in the domain.
-     \tparam R Type to represent the field in the range.
-
-   * \ingroup LocalFunctionsImpl
-     \nosubgrouping
-   */
-  template<class D, class R>
-  class HierarchicalSimplexP2WithElementBubbleLocalBasis<D,R,3>
-  {
   public:
-    //! \brief export type traits for function signature
-    typedef LocalBasisTraits<D,3,Dune::FieldVector<D,3>,R,1,Dune::FieldVector<R,1>,
-        Dune::FieldMatrix<R,1,3> > Traits;
+    //! Type traits for function signature
+    using Traits = LocalBasisTraits<D,dim,DomainType,R,1,RangeType,JacobianType>;
 
-    //! \brief number of shape functions
-    unsigned int size () const
+    //! Returns number of shape functions
+    static constexpr std::size_t size () noexcept
     {
-      return 11;
+      return numVertices + numEdges + 1;
     }
 
-    //! \brief Evaluate all shape functions
-    void evaluateFunction (const typename Traits::DomainType& in,
-                           std::vector<typename Traits::RangeType>& out) const
+    //! Evaluate all shape functions
+    static constexpr void evaluateFunction (const DomainType& in,
+                                            std::vector<RangeType>& out)
     {
-      out.resize(10);
-
-      out[0] = 1 - in[0] - in[1] - in[2];
-      out[1] = 4 * in[0] * (1 - in[0] - in[1] - in[2]);
-      out[2] = in[0];
-      out[3] = 4 * in[1] * (1 - in[0] - in[1] - in[2]);
-      out[4] = 4 * in[0] * in[1];
-      out[5] = in[1];
-      out[6] = 4 * in[2] * (1 - in[0] - in[1] - in[2]);
-      out[7] = 4 * in[0] * in[2];
-      out[8] = 4 * in[1] * in[2];
-      out[9] = in[2];
-
-      // quartic element bubble
-      out[10] = 81*in[0]*in[1]*in[2]*(1-in[0]-in[1]-in[2]);
+      out.resize(size());
+      evaluateAllFunctions(in,out.begin());
     }
 
-    //! \brief Evaluate Jacobian of all shape functions
-    void evaluateJacobian (const typename Traits::DomainType& in,         // position
-                           std::vector<typename Traits::JacobianType>& out) const      // return value
+    //! Evaluate Jacobian of all shape functions
+    static constexpr void evaluateJacobian (const DomainType& in,
+                                            std::vector<JacobianType>& out)
     {
-      out.resize(10);
+      out.resize(size());
 
-      out[0][0][0] = -1;                           out[0][0][1] = -1;                            out[0][0][2] = -1;
-      out[1][0][0] =  4-8*in[0]-4*in[1]-4*in[2];   out[1][0][1] = -4*in[0];                      out[1][0][2] = -4*in[0];
-      out[2][0][0] =  1;                           out[2][0][1] =  0;                            out[2][0][2] =  0;
-      out[3][0][0] = -4*in[1];                     out[3][0][1] =  4-4*in[0]-8*in[1]-4*in[2];    out[3][0][2] = -4*in[1];
-      out[4][0][0] =  4*in[1];                     out[4][0][1] =  4*in[0];                      out[4][0][2] =  0;
-      out[5][0][0] =  0;                           out[5][0][1] =  1;                            out[5][0][2] =  0;
-      out[6][0][0] = -4*in[2];                     out[6][0][1] = -4*in[2];                      out[6][0][2] =  4-4*in[0]-4*in[1]-8*in[2];
-      out[7][0][0] =  4*in[2];                     out[7][0][1] =  0;                            out[7][0][2] =  4*in[0];
-      out[8][0][0] =  0;                           out[8][0][1] =  4*in[2];                      out[8][0][2] =  4*in[1];
-      out[9][0][0] =  0;                           out[9][0][1] =  0;                            out[9][0][2] =  1;
+      // vertex basis functions
+      RangeType tmp = 1;
+      for (int i = 0; i < dim; ++i) {
+        out[0][0][i] = -1;
+        for (int j = 0; j < dim; ++j)
+          out[j+1][0][i] = (i == j);
+        tmp -= in[i];
+      }
 
-      out[10][0][0] = 81 * in[1] * in[2] * (1 - 2*in[0] -   in[1] -   in[2]);
-      out[10][0][1] = 81 * in[0] * in[2] * (1 -   in[0] - 2*in[1] -   in[2]);
-      out[10][0][2] = 81 * in[0] * in[1] * (1 -   in[0] -   in[1] - 2*in[2]);
-    }
+      int n = numVertices;
+      std::array<RangeType,numVertices> shapeValues;
+      evaluateVertexFunctions(in, shapeValues.begin());
 
-    //! \brief Evaluate partial derivatives of all shape functions
-    void partial (const std::array<unsigned int, 3>& order,
-                  const typename Traits::DomainType& in,         // position
-                  std::vector<typename Traits::RangeType>& out) const      // return value
-    {
-      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
-      if (totalOrder == 0) {
-        evaluateFunction(in, out);
-      } else if (totalOrder == 1) {
-        out.resize(size());
-        auto const direction = std::distance(order.begin(), std::find(order.begin(), order.end(), 1));
-
-        switch (direction) {
-        case 0:
-          out[0] = -1;
-          out[1] =  4-8*in[0]-4*in[1]-4*in[2];
-          out[2] =  1;
-          out[3] = -4*in[1];
-          out[4] =  4*in[1];
-          out[5] =  0;
-          out[6] = -4*in[2];
-          out[7] =  4*in[2];
-          out[8] =  0;
-          out[9] =  0;
-          out[10] = 81 * in[1] * in[2] * (1 - 2*in[0] -   in[1] -   in[2]);
-          break;
-        case 1:
-          out[0] = -1;
-          out[1] = -4*in[0];
-          out[2] =  0;
-          out[3] =  4-4*in[0]-8*in[1]-4*in[2];
-          out[4] =  4*in[0];
-          out[5] =  1;
-          out[6] = -4*in[2];
-          out[7] =  0;
-          out[8] =  4*in[2];
-          out[9] =  0;
-          out[10] = 81 * in[0] * in[2] * (1 -   in[0] - 2*in[1] -   in[2]);
-          break;
-        case 2:
-          out[0] = -1;
-          out[1] = -4*in[0];
-          out[2] =  0;
-          out[3] = -4*in[1];
-          out[4] =  0;
-          out[5] =  0;
-          out[6] =  4-4*in[0]-4*in[1]-8*in[2];
-          out[7] =  4*in[0];
-          out[8] =  4*in[1];
-          out[9] =  1;
-          out[10] = 81 * in[0] * in[1] * (1 -   in[0] -   in[1] - 2*in[2]);
-          break;
-        default:
-          DUNE_THROW(RangeError, "Component out of range.");
+      // edge basis functions
+      if constexpr(dim > 1) {
+        auto refElem = referenceElement<D,dim>(GeometryTypes::simplex(dim));
+        for (int i = 0; i < numEdges; ++i,++n) {
+          const int v0 = refElem.subEntity(i,dim-1,0,dim);
+          const int v1 = refElem.subEntity(i,dim-1,1,dim);
+          for (int j = 0; j < dim; ++j)
+            out[n][0][j] = 4 * (out[v0][0][j] * shapeValues[v1] + shapeValues[v0] * out[v1][0][j]);
         }
-      } else {
-        DUNE_THROW(NotImplemented, "Desired derivative order is not implemented");
+      }
+
+      // element bubble function
+      for (int i = 0; i < dim; ++i) {
+        out[n][0][i] = power(dim+1, dim+1) * (tmp - in[i]);
+        for (int j = i+1; j < dim+i; ++j)
+          out[n][0][i] *= in[j % dim];
       }
     }
 
-    /** \brief Polynomial order of the shape functions (4 in this case)
-     */
-    unsigned int order () const
+    //! Evaluate partial derivatives of all shape functions
+    static constexpr void partial (const std::array<unsigned int, dim>& order,
+                                   const DomainType& in,
+                                   std::vector<RangeType>& out)
     {
-      return 4;
+      unsigned int totalOrder = 0;
+      for (int i = 0; i < dim; ++i)
+        totalOrder += order[i];
+
+      switch (totalOrder) {
+      case 0:
+        evaluateFunction(in,out);
+        break;
+      case 1: {
+        out.resize(size());
+        int d = 0; // the direction of differentiation
+        for (int i = 0; i < dim; ++i)
+          d += i * order[i];
+
+        // vertex basis functions
+        RangeType tmp = 1;
+        for (int i = 0; i < dim; ++i) {
+          out[0] = -1;
+          for (int j = 0; j < dim; ++j)
+            out[j+1] = (dim == j);
+          tmp -= in[i];
+        }
+
+        int n = numVertices;
+        std::array<RangeType,numVertices> shapeValues;
+        evaluateVertexFunctions(in, shapeValues.begin());
+
+        // edge basis functions
+        if constexpr(dim > 1) {
+          auto refElem = referenceElement<D,dim>(GeometryTypes::simplex(dim));
+          for (int i = 0; i < numEdges; ++i,++n) {
+            const int v0 = refElem.subEntity(i,dim-1,0,dim);
+            const int v1 = refElem.subEntity(i,dim-1,1,dim);
+            out[n] = 4 * (out[v0] * shapeValues[v1] + shapeValues[v0] * out[v1]);
+          }
+        }
+
+        // element bubble function
+        out[n] = power(dim+1, dim+1) * (tmp - in[d]);
+        for (int j = d+1; j < dim+d; ++j)
+          out[n] *= in[j % dim];
+      } break;
+      default:
+        throw std::runtime_error("Desired derivative order is not implemented");
+      }
     }
 
+    //! Polynomial order of the shape functions (4 in this case)
+    static constexpr unsigned int order () noexcept
+    {
+      return dim+1;
+    }
   };
 
 
   /**
-     \brief The local finite element needed for the Zou-Kornhuber estimator for Signorini problems
-
-     This shape function set consists of three parts:
-     - Linear shape functions associated to the element vertices
-     - Piecewise linear edge bubbles
-     - A cubic element bubble
-
-     Currently this element exists only for triangles!
-
-     The functions are associated to points by:
-
-     f_0 ~ (0.0, 0.0)
-     f_1 ~ (1.0, 0.0)
-     f_2 ~ (0.0, 1.0)
-     f_3 ~ (0.5, 0.0)
-     f_4 ~ (0.0, 0.5)
-     f_5 ~ (0.5, 0.5)
-     f_6 ~ (1/3, 1/3)
-
-     \tparam D Type to represent the field in the domain.
-     \tparam R Type to represent the field in the range.
-
-   * \ingroup LocalFunctionsImpl
-     \nosubgrouping
-   */
+   * \ingroup LocalBasisImplementation
+   * \brief The local keys of the hierarchical basis functions with element bubble.
+   *
+   * This shape function set consists of three parts:
+   * - Linear shape functions associated to the element vertices
+   * - Quadratic edge bubbles
+   * - An element bubble of order dim+1
+   *
+   * \nosubgrouping
+   **/
   template <int dim>
   class HierarchicalSimplexP2WithElementBubbleLocalCoefficients
   {
-    // The binomial coefficient: dim+1 over 1
-    static const int numVertices = dim+1;
+    // Number of vertices
+    static constexpr int numVertices = dim+1;
 
-    // The binomial coefficient: dim+1 over 2
-    static const int numEdges    = (dim+1)*dim / 2;
+    // Number of edges (or zero for dim==1)
+    static constexpr int numEdges = (dim > 1 ? ((dim+1)*dim / 2) : 0);
 
   public:
-    //! \brief Standard constructor
-    HierarchicalSimplexP2WithElementBubbleLocalCoefficients ()
-      : li(numVertices+numEdges + 1)
+    //! Default constructor, initializes the local keys
+    HierarchicalSimplexP2WithElementBubbleLocalCoefficients () noexcept
     {
-      if (dim!=2)
-        DUNE_THROW(NotImplemented, "only for 2d");
-
-      li[0] = Dune::LocalKey(0,2,0);    // Vertex (0,0)
-      li[1] = Dune::LocalKey(0,1,0);    // Edge   (0.5, 0)
-      li[2] = Dune::LocalKey(1,2,0);    // Vertex (1,0)
-      li[3] = Dune::LocalKey(1,1,0);    // Edge   (0, 0.5)
-      li[4] = Dune::LocalKey(2,1,0);    // Edge   (0.5, 0.5)
-      li[5] = Dune::LocalKey(2,2,0);    // Vertex (0,1)
-      li[6] = Dune::LocalKey(0,0,0);    // Element (1/3, 1/3)
+      int n = 0;
+      for (int i = 0; i < numVertices; ++i)
+        li_[n++] = LocalKey(i,dim,0);       // Vertex
+      if constexpr(dim > 1) {
+        for (int i = 0; i < numEdges; ++i)
+          li_[n++] = LocalKey(i,dim-1,0);   // Edges
+      }
+      li_[n++] = LocalKey(0,0,0);           // Element
     }
 
-    //! number of coefficients
-    size_t size () const
+    //! Returns number of coefficients
+    static constexpr std::size_t size () noexcept
     {
-      return numVertices+numEdges + 1;
+      return numVertices + numEdges + 1;
     }
 
-    //! get i'th index
-    const Dune::LocalKey& localKey (size_t i) const
+    //! Returns the i'th local key
+    const LocalKey& localKey (std::size_t i) const noexcept
     {
-      return li[i];
+      return li_[i];
     }
 
   private:
-    std::vector<Dune::LocalKey> li;
+    std::array<LocalKey, numVertices+numEdges+1> li_;
   };
 
   /**
    * \ingroup LocalFunctionsImpl
    */
-  template<class LB>
+  template<class LB, int dim>
   class HierarchicalSimplexP2WithElementBubbleLocalInterpolation
   {
+    using LocalBasis = LB;
+    using DomainType = typename LB::Traits::DomainType;
+    using RangeType = typename LB::Traits::RangeType;
+
+    // Number of vertices
+    static constexpr int numVertices = dim+1;
+
+    // Number of edges (or zero for dim==1)
+    static constexpr int numEdges = (dim > 1 ? ((dim+1)*dim / 2) : 0);
+
   public:
-
-    //! \brief Local interpolation of a function
-    template<typename F, typename C>
-    void interpolate (const F& f, std::vector<C>& out) const
+    /**
+     * \brief Local interpolation of the function `f`.
+     * \param[in] f  A callable `f:D -> R` with domain `D=DomainType` and range
+     *               `R` convertible into the coefficient type `C`.
+     * \param[out] out  The interpolation coefficients `{f_i...,f_b}` are stored
+     *                  in this output vector.
+     **/
+    template<class F, class C,
+      class R = std::invoke_result_t<F, DomainType>,
+      std::enable_if_t<std::is_convertible_v<R, C>, int> = 0>
+    static constexpr void interpolate (const F& f, std::vector<C>& out)
     {
-      typename LB::Traits::DomainType x;
-      typename LB::Traits::RangeType y;
+      auto refElem = referenceElement<typename LB::Traits::DomainFieldType,dim>(GeometryTypes::simplex(dim));
 
-      out.resize(7);
+      out.resize(LB::size());
+      int n = 0;
 
       // vertices
-      x[0] = 0.0; x[1] = 0.0; out[0] = f(x);
-      x[0] = 1.0; x[1] = 0.0; out[2] = f(x);
-      x[0] = 0.0; x[1] = 1.0; out[5] = f(x);
+      assert(numVertices == refElem.size(dim));
+      for (int i = 0; i < numVertices; ++i)
+        out[n++] = f(refElem.position(i,dim));
+
+      std::array<RangeType,LB::size()> shapeValues;
 
       // edge bubbles
-      x[0] = 0.5; x[1] = 0.0; y = f(x);
-      out[1] = y - out[0]*(1-x[0]) - out[2]*x[0];
-
-      x[0] = 0.0; x[1] = 0.5; y = f(x);
-      out[3] = y - out[0]*(1-x[1]) - out[5]*x[1];
-
-      x[0] = 0.5; x[1] = 0.5; y = f(x);
-      out[4] = y - out[2]*x[0] - out[5]*x[1];
+      if constexpr(dim > 1) {
+        assert(numEdges == refElem.size(dim-1));
+        for (int i = 0; i < numEdges; ++i) {
+          R y = f(refElem.position(i,dim-1));
+          LB::evaluateVertexFunctions(refElem.position(i,dim-1), shapeValues.begin());
+          for (int j = 0; j < numVertices; ++j)
+            y -= out[j]*shapeValues[j];
+          out[n++] = y;
+        }
+      }
 
       // element bubble
-      x[0] = 1.0/3; x[1] = 1.0/3; y = f(x);
-
-      /** \todo Hack: extract the proper types */
-      HierarchicalSimplexP2WithElementBubbleLocalBasis<double,double,2> shapeFunctions;
-      std::vector<typename LB::Traits::RangeType> sfValues;
-      shapeFunctions.evaluateFunction(x, sfValues);
-
-      out[6] = y;
-      for (int i=0; i<6; i++)
-        out[6] -= out[i]*sfValues[i];
-
+      R y = f(refElem.position(0,0));
+      LB::evaluateAllFunctions(refElem.position(0,0), shapeValues.begin());
+      for (int j = 0; j < numVertices+numEdges; ++j)
+        y -= out[j]*shapeValues[j];
+      out[n++] = y;
     }
-
   };
 
+} // end namespace Dune
 
-}
-#endif
+#endif // DUNE_HIERARCHICAL_SIMPLEX_P2_WITH_ELEMENT_BUBBLE_LOCALBASIS_HH

@@ -6,6 +6,7 @@ add_subdirectory(hierarchicalp2withelementbubble)
 add_subdirectory(hierarchicalprismp2)
 
 install(FILES
+  hierarchicalp1withelementbubble.hh
   hierarchicalp2.hh
   hierarchicalp2withelementbubble.hh
   hierarchicalprismp2.hh

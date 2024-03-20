@@ -12,6 +12,9 @@ SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 
 * Make the class `LocalKey` usable in `constexpr` and mark all pure functions `[[nodiscard]]`.
 
+* Extend the implementation of `HierarchicalP2WithElementBubble` basis to all dimensions. Note that
+  the order of the basis functions is changed.
+
 ## Deprecations and removals
 
 * `PQkLocalFiniteElementCache` is deprecated. `LagrangeLocalFiniteElementCache` is the recommended replacement. The latter implements a thread-safe get(gt) while the former does not.

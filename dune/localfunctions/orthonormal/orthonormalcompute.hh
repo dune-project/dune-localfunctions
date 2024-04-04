@@ -12,12 +12,12 @@
 #include <utility>
 #include <map>
 
+#include <dune/common/dynmatrix.hh>
 #include <dune/common/fmatrix.hh>
 
 #include <dune/geometry/type.hh>
 
 #include <dune/localfunctions/utility/field.hh>
-#include <dune/localfunctions/utility/lfematrix.hh>
 #include <dune/localfunctions/utility/monomialbasis.hh>
 #include <dune/localfunctions/utility/multiindex.hh>
 
@@ -91,14 +91,14 @@ namespace ONBCompute
 
   template< Dune::GeometryType::Id geometryId, class scalar_t >
   class ONBMatrix
-    : public Dune::LFEMatrix< scalar_t >
+    : public Dune::DynamicMatrix< scalar_t >
   {
     typedef ONBMatrix< geometryId, scalar_t > This;
-    typedef Dune::LFEMatrix< scalar_t > Base;
+    typedef Dune::DynamicMatrix< scalar_t > Base;
 
   public:
     typedef std::vector< scalar_t > vec_t;
-    typedef Dune::LFEMatrix< scalar_t > mat_t;
+    typedef Dune::DynamicMatrix< scalar_t > mat_t;
 
     explicit ONBMatrix ( unsigned int order )
     {
@@ -126,8 +126,8 @@ namespace ONBCompute
         for( std::size_t j = 0; j < size; ++j )
         {
           Integral< geometryId >::compute( y[ i ][ 0 ] * y[ j ][ 0 ], p, q );
-          S( i, j ) = p;
-          S( i, j ) /= q;
+          S[i][j] = p;
+          S[i][j] /= q;
         }
       }
 
@@ -141,7 +141,7 @@ namespace ONBCompute
       // transposed matrix is required
       assert( row < Base::cols() );
       for( std::size_t i = 0; i < Base::rows(); ++i )
-        Dune::field_cast( Base::operator()( i, row ), vec[ i ] );
+        Dune::field_cast( (*this)[i][row], vec[ i ] );
     }
 
   private:
@@ -151,20 +151,20 @@ namespace ONBCompute
       for( int k = 0; k <= col1; ++k )
       {
         for( int l = 0; l <=col2; ++l )
-          ret += Base::operator()( l, col2 ) * S( l, k ) * Base::operator()( k, col1 );
+          ret += (*this)[l][col2] * S[l][k] * (*this)[k][col1];
       }
     }
 
     void vmul ( std::size_t col, std::size_t rowEnd, const scalar_t &s )
     {
       for( std::size_t i = 0; i <= rowEnd; ++i )
-        Base::operator()( i, col ) *= s;
+        (*this)[i][col] *= s;
     }
 
     void vsub ( std::size_t coldest, std::size_t colsrc, std::size_t rowEnd, const scalar_t &s )
     {
       for( std::size_t i = 0; i <= rowEnd; ++i )
-        Base::operator()( i, coldest ) -= s * Base::operator()( i, colsrc );
+        (*this)[i][coldest] -= s * (*this)[i][colsrc];
     }
 
     void gramSchmidt ()
@@ -175,7 +175,7 @@ namespace ONBCompute
       for( std::size_t i = 0; i < N; ++i )
       {
         for( std::size_t j = 0; j < N; ++j )
-          Base::operator()( i, j ) = scalar_t( i == j ? 1 : 0 );
+          (*this)[i][j] = scalar_t( i == j ? 1 : 0 );
       }
 
       // perform Gram-Schmidt procedure

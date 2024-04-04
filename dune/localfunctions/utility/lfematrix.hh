@@ -14,9 +14,8 @@ namespace Dune
 {
 
   template< class F >
-  class LFEMatrix
+  class [[deprecated("The usage of LFEMatrix is discouraged. Use DynamicMatrix instead")]] LFEMatrix
   {
-    typedef LFEMatrix< F > This;
     typedef std::vector< F > Row;
     typedef std::vector<Row> RealMatrix;
 

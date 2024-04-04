@@ -40,6 +40,8 @@ SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 * The deprecated functions `numLagrangePoints(topologyId,...)`
   `equidistantLagrangePoints(topologyId,...)` have been removed.
 
+* The class `LFEMatrix` is deprecated and should be replaced by `DynamicMatrix`
+  from dune-common with a few interface changes.
 
 # Release 2.9
 

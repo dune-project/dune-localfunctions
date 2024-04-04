@@ -54,24 +54,26 @@ namespace Dune
     }
 
   public:
-    template< class Fn, class Vector >
-    auto interpolate ( const Fn &fn, Vector &coefficients ) const
-    -> std::enable_if_t< std::is_same< decltype(std::declval<Vector>().resize(1) ),void >::value,void>
+    template< class Fn, class Vector,
+      decltype(std::declval<Vector>().size(),bool{}) = true,
+      decltype(std::declval<Vector>().resize(0u),bool{}) = true>
+    void interpolate ( const Fn &fn, Vector &coefficients ) const
     {
       coefficients.resize( lagrangePoints_.size() );
       interpolate( fn, coefficients, PriorityTag< 42 >() );
     }
 
-    template< class Basis, class Matrix >
-    auto interpolate ( const Basis &basis, Matrix &coefficients ) const
-    -> std::enable_if_t< std::is_same<
-           decltype(std::declval<Matrix>().rowPtr(0)), typename Matrix::Field* >::value,void>
+    template< class Basis, class Matrix,
+      decltype(std::declval<Matrix>().rows(),bool{}) = true,
+      decltype(std::declval<Matrix>().cols(),bool{}) = true,
+      decltype(std::declval<Matrix>().resize(0u,0u),bool{}) = true>
+    void interpolate ( const Basis &basis, Matrix &coefficients ) const
     {
       coefficients.resize( lagrangePoints_.size(), basis.size( ) );
 
       unsigned int index = 0;
       for( const auto &lp : lagrangePoints_ )
-        basis.template evaluate< 0 >( lp.point(), coefficients.rowPtr( index++ ) );
+        basis.template evaluate< 0 >( lp.point(), coefficients[index++] );
     }
 
     const LagrangePointSet &lagrangePoints () const { return lagrangePoints_; }

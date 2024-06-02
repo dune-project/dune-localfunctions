@@ -8,6 +8,7 @@
 #include <vector>
 #include <ostream>
 
+#include <dune/common/ftraits.hh>
 #include <dune/common/fvector.hh>
 
 #include <dune/localfunctions/utility/field.hh>
@@ -306,6 +307,14 @@ namespace Dune
     Field factor_;
 
     This *next_;
+  };
+
+
+  template< int dim,class Field >
+  struct FieldTraits<MultiIndex<dim,Field>>
+  {
+    using field_type = Field;
+    using real_type = typename FieldTraits<field_type>::real_type;
   };
 
   template <int dim, class Field, class F>

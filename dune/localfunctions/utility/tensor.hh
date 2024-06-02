@@ -89,6 +89,14 @@ namespace Dune
     Block block_;
   };
 
+
+  template <class F,int dimD,unsigned int deriv>
+  struct FieldTraits<LFETensor<F,dimD,deriv>>
+  {
+    using field_type = F;
+    using real_type = typename FieldTraits<field_type>::real_type;
+  };
+
   // ******************************************
   template <class F,unsigned int deriv>
   struct LFETensor<F,0,deriv>
@@ -170,6 +178,14 @@ namespace Dune
   template <class F,int dimD,int dimR,unsigned int deriv,
       DerivativeLayoutNS::DerivativeLayout layout>
   struct Derivatives;
+
+  template <class F,int dimD,int dimR,unsigned int deriv,
+      DerivativeLayoutNS::DerivativeLayout layout>
+  struct FieldTraits<Derivatives<F,dimD,dimR,deriv,layout>>
+  {
+    using field_type = F;
+    using real_type = typename FieldTraits<field_type>::real_type;
+  };
 
   // Implemnetation for valued based layout
   template <class F,int dimD,int dimR,unsigned int deriv>

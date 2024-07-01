@@ -3,8 +3,6 @@
 // SPDX-FileCopyrightInfo: Copyright © DUNE Project contributors, see file LICENSE.md in module root
 // SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 
-#include "config.h"
-
 #include <dune/localfunctions/nedelec/nedelec1stkindsimplex.hh>
 #include <dune/localfunctions/nedelec/nedelec1stkindcube.hh>
 

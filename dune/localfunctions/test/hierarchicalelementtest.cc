@@ -25,8 +25,14 @@ int main(int argc, char** argv)
   Dune::HierarchicalPrismP2LocalFiniteElement<double,double> hierarchicalprismp2lfem;
   TEST_FE(hierarchicalprismp2lfem);
 
+  Dune::HierarchicalP2WithElementBubbleLocalFiniteElement<double,double,1> hierarchicalp2bubble1dlfem;
+  TEST_FE(hierarchicalp2bubble1dlfem);
+
   Dune::HierarchicalP2WithElementBubbleLocalFiniteElement<double,double,2> hierarchicalp2bubble2dlfem;
   TEST_FE(hierarchicalp2bubble2dlfem);
+
+  Dune::HierarchicalP2WithElementBubbleLocalFiniteElement<double,double,3> hierarchicalp2bubble3dlfem;
+  TEST_FE(hierarchicalp2bubble3dlfem);
 
   return success ? 0 : 1;
 }

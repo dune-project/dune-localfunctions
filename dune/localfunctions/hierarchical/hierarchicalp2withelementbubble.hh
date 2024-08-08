@@ -13,67 +13,73 @@
 
 namespace Dune
 {
-
-  /** \todo Please doc me !
-   */
+  /**
+   * \brief Linear Lagrange functions enriched with quadratic edge bubble functions
+   *        and an element bubble function.
+   *
+   * The set of basis functions contains the classical Lagrange basis functions
+   * of order 1, i.e., the barycentric coordinates, edge bubble functions as the
+   * product of two linear functions, and a single element bubble function that
+   * vanishes on all faces of the element. The element bubble function is the
+   * product of all linear basis functions and thus has polynomial order `dim+1`.
+   *
+   * \note The implementation here is restricted to simplex elements.
+   *
+   * \tparam D    Type to represent the field in the domain.
+   * \tparam R    Type to represent the field in the range.
+   * \tparam dim  Dimension of the domain.
+   **/
   template<class D, class R, int dim>
   class HierarchicalP2WithElementBubbleLocalFiniteElement
   {
-
-    static_assert(dim==2, "HierarchicalP2WithElementBubbleLocalFiniteElement only implemented for dim==2.");
-
   public:
-    /** \todo Please doc me !
-     */
-    typedef LocalFiniteElementTraits<HierarchicalSimplexP2WithElementBubbleLocalBasis<D,R,dim>,
-        HierarchicalSimplexP2WithElementBubbleLocalCoefficients<dim>,
-        HierarchicalSimplexP2WithElementBubbleLocalInterpolation<HierarchicalSimplexP2WithElementBubbleLocalBasis<D,R,dim> > > Traits;
+    //! Type of the local basis
+    using LocalBasisType = HierarchicalSimplexP2WithElementBubbleLocalBasis<D,R,dim>;
 
-    /** \todo Please doc me !
-     */
-    HierarchicalP2WithElementBubbleLocalFiniteElement ()
-    {}
+    //! Type of the local coefficients
+    using LocalCoefficientsType = HierarchicalSimplexP2WithElementBubbleLocalCoefficients<dim>;
 
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalBasisType& localBasis () const
+    //! Type of the local interpolation
+    using LocalInterpolationType = HierarchicalSimplexP2WithElementBubbleLocalInterpolation<LocalBasisType,dim>;
+
+    //! Traits type that specifies the local basis, coefficients, and interpolation type.
+    using Traits = LocalFiniteElementTraits<LocalBasisType,LocalCoefficientsType,LocalInterpolationType>;
+
+
+    //! Returns the local basis, i.e., the set of shape functions
+    const LocalBasisType& localBasis () const
     {
       return basis_;
     }
 
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalCoefficientsType& localCoefficients () const
+    //! Returns the assignment of the degrees of freedom to the element subentities
+    const LocalCoefficientsType& localCoefficients () const
     {
       return coefficients_;
     }
 
-    /** \todo Please doc me !
-     */
-    const typename Traits::LocalInterpolationType& localInterpolation () const
+    //! Returns object that evaluates degrees of freedom
+    const LocalInterpolationType& localInterpolation () const
     {
       return interpolation_;
     }
 
-    /** \brief Number of shape functions in this finite element */
-    unsigned int size () const
+    //! Returns the number of shape functions in this finite-element
+    static constexpr std::size_t size () noexcept
     {
-      return basis_.size();
+      return LocalBasisType::size();
     }
 
-    /** \todo Please doc me !
-     */
-    static constexpr GeometryType type ()
+    //! Returns the type of the geometry the finite-element is attached to
+    static constexpr GeometryType type () noexcept
     {
-      return GeometryTypes::triangle;
+      return GeometryTypes::simplex(dim);
     }
 
   private:
-    HierarchicalSimplexP2WithElementBubbleLocalBasis<D,R,dim> basis_;
-
-    HierarchicalSimplexP2WithElementBubbleLocalCoefficients<dim> coefficients_;
-
-    HierarchicalSimplexP2WithElementBubbleLocalInterpolation<HierarchicalSimplexP2WithElementBubbleLocalBasis<D,R,dim> > interpolation_;
+    LocalCoefficientsType coefficients_{};
+    [[no_unique_address]] LocalBasisType basis_{};
+    [[no_unique_address]] LocalInterpolationType interpolation_{};
   };
 
 }

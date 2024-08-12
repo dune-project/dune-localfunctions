@@ -5,9 +5,10 @@ Copyright holders:
 2015          Timo Betcke
 2009--2021    Markus Blatt
 2014          Andreas Buhr
-2014--2022    Ansgar Burchardt
+2022          Samuel Burbulla
+2014--2023    Ansgar Burchardt
 2016          Lukas Böger
-2009--2021    Andreas Dedner
+2009--2022    Andreas Dedner
 2020--2022    Nils-Arne Dreier
 2010          Martin Drohmann
 2008--2022    Christian Engwer
@@ -17,19 +18,18 @@ Copyright holders:
 2012          Christoph Gersbacher
 2018--2019    Janick Gerstenberger
 2015--2018    Felix Gruber
-2009--2021    Carsten Gräser
-2011--2021    Christoph Grüninger
+2009--2024    Carsten Gräser
+2011--2024    Christoph Grüninger
 2020          René Heß
 2017          Patrick Jaap
 2013          Guillaume Jouvet
 2015--2020    Dominic Kempf
 2015          Angela Klewinghaus
 2020--2022    Robert Klöfkorn
-2021          Timo Koch
+2021--2023    Timo Koch
 2014          Arne Morten Kvarving
 2015          Jizhou Li
 2009          Stefan Lang
-2022          Porrmann, Maik
 2013--2017    Tobias Malkmus
 2009          Sven Marnach
 2013--2018    Steffen Müthing
@@ -37,11 +37,12 @@ Copyright holders:
 2012          Rebecca Neumann
 2008--2018    Martin Nolte
 2011--2016    Elias Pipping
-2016--2022    Simon Praetorius
+2022          Maik Porrmann
+2016--2024    Simon Praetorius
 2012--2013    Human Rezaijafari
 2011--2012    Uli Sack
-2008--2022    Oliver Sander
-2020--2021    Henrik Stolzmann
+2008--2024    Oliver Sander
+2020--2022    Henrik Stolzmann
 2011--2012    Matthias Wohlmuth
 2010--2015    Jonathan Youett
 

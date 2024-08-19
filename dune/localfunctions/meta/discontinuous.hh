@@ -91,7 +91,7 @@ namespace Dune {
       return lfe_->size();
     }
 
-    //! Return the prismatic-product of the lfe's geometry types
+    //! Return the geometry type the finite element can be bound to
     const GeometryType type () const
     {
       return lfe_->type();

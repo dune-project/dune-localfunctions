@@ -12,6 +12,7 @@
 #include <dune/localfunctions/lagrange/pqkfactory.hh>
 #include <dune/localfunctions/dualmortarbasis/dualpq1factory.hh>
 #include <dune/localfunctions/raviartthomas/raviartthomaslfecache.hh>
+#include <dune/localfunctions/lagrange/lagrangelfecache.hh>
 
 template<class FiniteElementCache>
 static void test(Dune::GeometryType type)
@@ -33,7 +34,7 @@ int main() {
           {
             constexpr int dim = 2;
             using FiniteElementCache = typename
-                Dune::PQkLocalFiniteElementCache<double, double, dim, k>;
+                Dune::LagrangeLocalFiniteElementCache<double, double, dim, k>;
             test<FiniteElementCache>(Dune::GeometryTypes::simplex(dim));
             test<FiniteElementCache>(Dune::GeometryTypes::cube(dim));
           });

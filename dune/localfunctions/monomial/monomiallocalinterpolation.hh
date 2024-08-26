@@ -64,8 +64,6 @@ namespace Dune
     template<typename F, typename C>
     void interpolate (const F& f, std::vector<C>& out) const
     {
-      using DomainType = std::decay_t<decltype(qr.begin()->position())>;
-
       out.clear();
       out.resize(size, 0);
 

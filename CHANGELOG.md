@@ -10,6 +10,9 @@ SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 * Add new local finite element representing P1 basis functions enriched by
   a single element bubble functions on simplex elements.
 
+* Add alias `HierarchicalP1WithElementBubbleLocalFiniteElement` for the
+  `SimplexP1BubbleLocalFiniteElement` local finite-element.
+
 * Make the class `LocalKey` usable in `constexpr` and mark all pure functions `[[nodiscard]]`.
 
 * Extend the implementation of `HierarchicalP2WithElementBubble` basis to all dimensions. Note that

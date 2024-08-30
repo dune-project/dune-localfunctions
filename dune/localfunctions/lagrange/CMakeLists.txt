@@ -4,6 +4,7 @@
 add_subdirectory(p0)
 
 install(FILES
+  cache.hh
   emptypoints.hh
   equidistantpoints.hh
   interpolation.hh

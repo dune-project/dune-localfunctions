@@ -1,10 +1,8 @@
 # SPDX-FileCopyrightText: Copyright © DUNE Project contributors, see file LICENSE.md in module root
 # SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 
-add_subdirectory(cubeq1bubble)
-add_subdirectory(simplexp1bubble)
-
 install(FILES
-  cubeq1bubble.hh
-  simplexp1bubble.hh
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions/enriched)
+  localbasis.hh
+  localcoefficients.hh
+  localinterpolation.hh
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions/enriched/cubeq1bubble)

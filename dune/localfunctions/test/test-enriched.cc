@@ -11,6 +11,15 @@ int main(int argc, char** argv)
 {
   bool success = true;
 
+  Dune::CubeQ1BubbleLocalFiniteElement<double,double,1> cubeq1b_dim1;
+  TEST_FE(cubeq1b_dim1);
+
+  Dune::CubeQ1BubbleLocalFiniteElement<double,double,2> cubeq1b_dim2;
+  TEST_FE(cubeq1b_dim2);
+
+  Dune::CubeQ1BubbleLocalFiniteElement<double,double,3> cubeq1b_dim3;
+  TEST_FE(cubeq1b_dim3);
+
   Dune::SimplexP1BubbleLocalFiniteElement<double,double,1> simplexp1b_dim1;
   TEST_FE(simplexp1b_dim1);
 

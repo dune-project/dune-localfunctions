@@ -6,10 +6,10 @@
 #ifndef DUNE_LOCALFUNCTIONS_META_DISCONTINUOUS_HH
 #define DUNE_LOCALFUNCTIONS_META_DISCONTINUOUS_HH
 
-#include <memory>
+#include <utility>
 
+#include <dune/common/referencehelper.hh>
 #include <dune/geometry/type.hh>
-
 #include <dune/localfunctions/utility/dglocalcoefficients.hh>
 
 namespace Dune {
@@ -19,14 +19,16 @@ namespace Dune {
   /**
    * \ingroup LocalFunctions
    *
-   * \tparam LFE  Type of the local finite-element
+   * \tparam LFE  Type of the local finite-element, can be a raw type or a reference_wrapper.
    */
   template<class LFE>
   class DiscontinuousLocalFiniteElement
   {
-    using LB = typename LFE::Traits::LocalBasisType;
-    using LC = typename LFE::Traits::LocalCoefficientsType;
-    using LI = typename LFE::Traits::LocalInterpolationType;
+    using LFERaw = ResolveRef_t<LFE>;
+
+    using LB = typename LFERaw::Traits::LocalBasisType;
+    using LC = typename LFERaw::Traits::LocalCoefficientsType;
+    using LI = typename LFERaw::Traits::LocalInterpolationType;
 
   public:
     //! types of component objects
@@ -40,19 +42,15 @@ namespace Dune {
     };
 
   private:
-    std::shared_ptr<const LFE> lfe_;
+    LFE lfe_;
     typename Traits::LocalCoefficientsType lc_;
 
   public:
     //! Construct a finite element
-    DiscontinuousLocalFiniteElement (const LFE& lfe)
-      : DiscontinuousLocalFiniteElement(std::make_shared<const LFE>(lfe))
-    {}
-
-    //! Construct a finite element
-    DiscontinuousLocalFiniteElement (std::shared_ptr<const LFE> lfe)
-      : lfe_(std::move(lfe))
-      , lc_(lfe_->localCoefficients().size())
+    template <class LFE_>
+    explicit DiscontinuousLocalFiniteElement (LFE_&& lfe)
+      : lfe_(std::forward<LFE_>(lfe))
+      , lc_(resolveRef(lfe_).localCoefficients().size())
     {}
 
     //! Extract basis of this finite element
@@ -62,7 +60,7 @@ namespace Dune {
      */
     const typename Traits::LocalBasisType& localBasis () const
     {
-      return lfe_->localBasis();
+      return resolveRef(lfe_).localBasis();
     }
 
     //! Extract coefficients of this finite element
@@ -82,21 +80,26 @@ namespace Dune {
      */
     const typename Traits::LocalInterpolationType& localInterpolation() const
     {
-      return lfe_->localInterpolation();
+      return resolveRef(lfe_).localInterpolation();
     }
 
     //! Return the number of basis functions
     unsigned int size () const
     {
-      return lfe_->size();
+      return resolveRef(lfe_).size();
     }
 
     //! Return the geometry type the finite element can be bound to
     const GeometryType type () const
     {
-      return lfe_->type();
+      return resolveRef(lfe_).type();
     }
   };
+
+  // deduction guide
+  template <class LFE>
+  DiscontinuousLocalFiniteElement (LFE lfe)
+    -> DiscontinuousLocalFiniteElement<LFE>;
 
 } // namespace Dune
 

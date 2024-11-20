@@ -27,7 +27,7 @@ template<class ctype>
 class TestGeometries<ctype, 0> :
   public std::vector<Dune::MultiLinearGeometry<ctype, 0, 0> >
 {
-  static const std::size_t dim = 0;
+  static constexpr std::size_t dim = 0;
 
 public:
   typedef Dune::MultiLinearGeometry<ctype, dim, dim> Geometry;
@@ -53,7 +53,7 @@ template<class ctype>
 class TestGeometries<ctype, 1> :
   public std::vector<Dune::MultiLinearGeometry<ctype, 1, 1> >
 {
-  static const std::size_t dim = 1;
+  static constexpr std::size_t dim = 1;
 
 public:
   typedef Dune::MultiLinearGeometry<ctype, dim, dim> Geometry;
@@ -81,7 +81,7 @@ template<class ctype>
 class TestGeometries<ctype, 2> :
   public std::vector<Dune::MultiLinearGeometry<ctype, 2, 2> >
 {
-  static const std::size_t dim = 2;
+  static constexpr std::size_t dim = 2;
 
 public:
   typedef Dune::MultiLinearGeometry<ctype, dim, dim> Geometry;
@@ -118,7 +118,7 @@ template<class ctype>
 class TestGeometries<ctype, 3> :
   public std::vector<Dune::MultiLinearGeometry<ctype, 3, 3> >
 {
-  static const std::size_t dim = 3;
+  static constexpr std::size_t dim = 3;
 
 public:
   typedef Dune::MultiLinearGeometry<ctype, dim, dim> Geometry;

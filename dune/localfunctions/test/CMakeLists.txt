@@ -1,6 +1,9 @@
 # SPDX-FileCopyrightText: Copyright © DUNE Project contributors, see file LICENSE.md in module root
 # SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 
+# Link all test targets in this directory against Dune::LocalFunctions
+link_libraries(Dune::LocalFunctions)
+
 dune_add_test(SOURCES bdfmelementtest.cc)
 
 dune_add_test(SOURCES brezzidouglasmarinielementtest.cc)

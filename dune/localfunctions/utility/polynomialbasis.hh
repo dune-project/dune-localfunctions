@@ -317,7 +317,7 @@ namespace Dune
     void integrate ( std::vector<Fy> &values ) const
     {
       assert(values.size()>=size());
-      coeffMatrix_->mult( eval_.template integrate(), values );
+      coeffMatrix_->mult( eval_.integrate(), values );
     }
 
   protected:

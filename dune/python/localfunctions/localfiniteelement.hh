@@ -62,8 +62,8 @@ DUNE_EXPORT auto registerLocalFiniteElement(pybind11::handle scope, const char* 
   cls.def_property_readonly("localBasis", &LocalFiniteElement::localBasis, pybind11::return_value_policy::reference_internal);
   // cls.def_property_readonly("localCoefficients", &LocalFiniteElement::localCoefficients);
   // cls.def_property_readonly("localInterpolation", &LocalFiniteElement::localInterpolation);
-  cls.def("__len__", &LocalFiniteElement::size);
-  cls.def("size", &LocalFiniteElement::size);
+  cls.def("__len__", [](const LocalFiniteElement& lf) { return lf.size(); });
+  cls.def("size", [](const LocalFiniteElement& lf) { return lf.size(); });
   cls.def_property_readonly("type", &LocalFiniteElement::type);
 
   return cls;

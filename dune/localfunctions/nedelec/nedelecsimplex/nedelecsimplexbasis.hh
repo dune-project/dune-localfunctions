@@ -35,11 +35,12 @@ namespace Dune
    * \ingroup NedelecImpl
    */
 
-  template< unsigned int dim, class SF, class CF >
+  template< unsigned int dim, class D, class R,
+    class SF=R, class CF=SF >
   struct NedelecBasisFactory
     : public DefaultBasisFactory< NedelecPreBasisFactory<dim,CF>,
           NedelecL2InterpolationFactory<dim,CF>,
-          dim,dim,SF,CF >
+          dim,dim,D,R,SF,CF >
   {};
 }
 

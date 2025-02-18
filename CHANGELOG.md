@@ -5,6 +5,10 @@ SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 
 # Master (will become release 2.11)
 
+* Add a meta local-finite-element `DiscontinuousLocalFiniteElement` that associates
+  all basis functions with the element interior by changing its local coefficients.
+
+
 # Release 2.10
 
 * Fixed LocalKey codim for the Crouzeix-Raviart element

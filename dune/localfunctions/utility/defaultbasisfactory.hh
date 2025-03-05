@@ -32,12 +32,15 @@ namespace Dune
   template< class PreBFactory,
       class InterpolFactory,
       unsigned int dim, unsigned int dimR,
+      class D, class R,
       class SF, class CF,
       class PreBasisKeyExtractor = Identity >
   struct DefaultBasisFactory
   {
     static const unsigned int dimension = dim;
     static const unsigned int dimRange  = dimR;
+    typedef D  Domain;
+    typedef R  Range;
     typedef SF StorageField;
     typedef CF ComputeField;
     typedef PreBFactory PreBasisFactory;
@@ -47,7 +50,7 @@ namespace Dune
     typedef typename PreBasisFactory::template EvaluationBasisFactory<dim,SF>::Type MonomialBasisFactory;
     typedef typename MonomialBasisFactory::Object MonomialBasis;
     typedef StandardEvaluator< MonomialBasis > Evaluator;
-    typedef PolynomialBasisWithMatrix< Evaluator, SparseCoeffMatrix< SF, dimRange > > Basis;
+    typedef PolynomialBasisWithMatrix< Evaluator, SparseCoeffMatrix< SF, dimRange >, D, R > Basis;
 
     typedef const Basis Object;
     typedef typename InterpolationFactory::Key Key;

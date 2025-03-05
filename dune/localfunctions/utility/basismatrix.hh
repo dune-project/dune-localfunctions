@@ -135,13 +135,13 @@ namespace Dune
   private:
     const PreBasis& preBasis_;
   };
-  template< class Eval, class CM,
+  template< class Eval, class CM, class D, class R,
       class Interpolation,
       class Field >
-  struct BasisMatrix< const PolynomialBasisWithMatrix<Eval,CM>, Interpolation, Field >
-    : public BasisMatrixBase< const PolynomialBasisWithMatrix<Eval,CM>, Interpolation, Field >
+  struct BasisMatrix< const PolynomialBasisWithMatrix<Eval,CM,D,R>, Interpolation, Field >
+    : public BasisMatrixBase< const PolynomialBasisWithMatrix<Eval,CM,D,R>, Interpolation, Field >
   {
-    typedef const PolynomialBasisWithMatrix<Eval,CM> PreBasis;
+    typedef const PolynomialBasisWithMatrix<Eval,CM,D,R> PreBasis;
     typedef BasisMatrixBase<PreBasis,Interpolation,Field> Base;
     typedef typename Base::Matrix Matrix;
 

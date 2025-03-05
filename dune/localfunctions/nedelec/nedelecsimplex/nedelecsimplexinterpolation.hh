@@ -115,15 +115,15 @@ namespace Dune
     static const unsigned int dimension = dim;
 
     // for the dofs associated to the element
-    typedef OrthonormalBasisFactory< dimension, Field > TestBasisFactory;
+    typedef OrthonormalBasisFactory< dimension, Field, Field, Field > TestBasisFactory;
     typedef typename TestBasisFactory::Object TestBasis;
 
     // for the dofs associated to the faces
-    typedef OrthonormalBasisFactory< dimension-1, Field > TestFaceBasisFactory;
+    typedef OrthonormalBasisFactory< dimension-1, Field, Field, Field > TestFaceBasisFactory;
     typedef typename TestFaceBasisFactory::Object TestFaceBasis;
 
     // for the dofs associated to the edges
-    typedef OrthonormalBasisFactory< 1, Field > TestEdgeBasisFactory;
+    typedef OrthonormalBasisFactory< 1, Field, Field, Field > TestEdgeBasisFactory;
     typedef typename TestEdgeBasisFactory::Object TestEdgeBasis;
 
     // the tangent of the edges

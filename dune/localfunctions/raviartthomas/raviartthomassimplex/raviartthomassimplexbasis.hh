@@ -32,11 +32,12 @@ namespace Dune
   * of the book "Advances in Dune" by Dedner, Flemisch and Klöfkorn published in 2012.
   */
 
-  template< unsigned int dim, class SF, class CF >
+  template< unsigned int dim, class D, class R,
+      class SF=R, class CF=SF >
   struct RaviartThomasBasisFactory
     : public DefaultBasisFactory< RTPreBasisFactory<dim,CF>,
           RaviartThomasL2InterpolationFactory<dim,CF>,
-          dim,dim,SF,CF >
+          dim,dim,D,R,SF,CF >
   {};
 }
 

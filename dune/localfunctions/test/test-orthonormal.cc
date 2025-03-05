@@ -45,7 +45,7 @@ bool test(unsigned int order)
   for (unsigned int o = 0; o <= order; ++o)
   {
     std::cout << "Testing " << geometry << " with order " << o << std::endl;
-    typedef Dune::OrthonormalBasisFactory<geometry.dim(),StorageField,ComputeField> BasisFactory;
+    typedef Dune::OrthonormalBasisFactory<geometry.dim(),double,double,StorageField,ComputeField> BasisFactory;
     const typename BasisFactory::Object &basis = *BasisFactory::template create<geometry>(o);
 
     const unsigned int size = basis.size( );

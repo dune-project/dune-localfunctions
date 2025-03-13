@@ -23,9 +23,97 @@
 
 #include "test-localfe.hh"
 
+
+
+// Check if the traces of the basis functions on all
+// faces have the desired polynomial order by comparing
+// them to the interpolation into an appropriate trace
+// FE space at a set of sample points.
+template<class FE>
+bool checkTraceOrder(const FE& fe, int order, double tol)
+{
+  bool success = true;
+
+  using namespace Dune::Indices;
+  using T = typename FE::Traits::LocalBasisType::Traits::RangeFieldType;
+  using Range = typename FE::Traits::LocalBasisType::Traits::RangeType;
+  constexpr auto dim = FE::Traits::LocalBasisType::Traits::dimDomain;
+
+  auto evaluationBuffer = std::vector<Range>();
+  auto coefficients = std::vector<Range>();
+
+  // Loop over all faces with 1<=codim<dim
+  const auto& re = Dune::referenceElement<T, dim>(fe.type());
+  Dune::Hybrid::forEach(Dune::range(_1, Dune::index_constant<dim>{}), [&](auto codim) {
+    for(auto face : Dune::range(re.size(codim)))
+    {
+      // Check if the trace on the face is in the appropriate
+      // polynomial space by interpolating each basis function
+      // into a corresponding polynomial trace space and comparing
+      // the results.
+      using TraceFE = typename Dune::LagrangeLocalFiniteElement<Dune::EquidistantPointSet, dim-codim, T, T>;
+      using std::fabs;
+      auto faceGeometry = re.template geometry<codim>(face);
+      auto traceFE = TraceFE(re.type(face, codim), order);
+      const auto& sampleRule = Dune::QuadratureRules<T, dim-codim>::rule(re.type(face, codim), 2*order);
+
+      for(auto i : Dune::range(fe.size()))
+      {
+        auto fe_i = [&](auto x) {
+          fe.localBasis().evaluateFunction(faceGeometry.global(x), evaluationBuffer);
+          return evaluationBuffer[i];
+        };
+
+        traceFE.localInterpolation().interpolate(fe_i, coefficients);
+        auto fe_i_interpolated = [&](auto x) {
+          traceFE.localBasis().evaluateFunction(x, evaluationBuffer);
+          auto y = Range(0);
+          for(auto j : Dune::range(traceFE.size()))
+            y += evaluationBuffer[j]*coefficients[j];
+          return y;
+        };
+        double mismatch = 0;
+        for(auto [x, dummy] : sampleRule)
+          mismatch = std::max(mismatch, double(fabs(fe_i(x) - fe_i_interpolated(x))));
+        if (mismatch > tol)
+        {
+          std::cout
+            << "The trace of basis function " << i
+            << " on face " << face
+            << " with codim " << codim
+            << " of " << fe.type()
+            << " is not in the desired polynomial space."
+            << " Maximal mismatch to interpolation is " << mismatch
+            << std::endl;
+          success = false;
+        }
+      }
+    }
+  });
+  return success;
+}
+
+
+
 int main(int argc, char** argv) try
 {
   bool success = true;
+
+  {
+    double tol = 1e-7;
+    using FE2D = Dune::LagrangeLocalFiniteElement<Dune::EquidistantPointSet, 2, double, double>;
+    using FE3D = Dune::LagrangeLocalFiniteElement<Dune::EquidistantPointSet, 3, double, double>;
+    for(auto order : {1,2,3,4})
+    {
+      std::cout << "Checking traces for Lagrange bases of order " << order << std::endl;
+      success &= checkTraceOrder(FE2D(Dune::GeometryTypes::triangle, order), order, tol);
+      success &= checkTraceOrder(FE2D(Dune::GeometryTypes::quadrilateral, order), order, tol);
+      success &= checkTraceOrder(FE3D(Dune::GeometryTypes::tetrahedron, order), order, tol);
+      success &= checkTraceOrder(FE3D(Dune::GeometryTypes::hexahedron, order), order, tol);
+      success &= checkTraceOrder(FE3D(Dune::GeometryTypes::prism, order), order, tol);
+      success &= checkTraceOrder(FE3D(Dune::GeometryTypes::pyramid, order), order, tol);
+    }
+  }
 
   std::cout << "Testing LagrangeLocalFiniteElement<EquidistantPointSet> on 3d"
             << " simplex elements with double precision" << std::endl;

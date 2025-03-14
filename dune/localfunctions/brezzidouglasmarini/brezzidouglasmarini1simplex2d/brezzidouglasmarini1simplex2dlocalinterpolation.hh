@@ -78,7 +78,7 @@ namespace Dune
       typedef typename LB::Traits::RangeFieldType Scalar;
 
       out.resize(6);
-      fill(out.begin(), out.end(), 0.0);
+      std::fill(out.begin(), out.end(), 0.0);
 
       const int qOrder = 4;
       const Dune::QuadratureRule<Scalar,1>& rule = Dune::QuadratureRules<Scalar,1>::rule(Dune::GeometryTypes::simplex(1), qOrder);

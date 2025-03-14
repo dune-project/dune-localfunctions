@@ -5,6 +5,7 @@
 #ifndef DUNE_LOCALFUNCTIONS_UTILITY_FIELD_HH
 #define DUNE_LOCALFUNCTIONS_UTILITY_FIELD_HH
 
+#include <dune/common/deprecated.hh>
 #include <dune/common/gmpfield.hh>
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
@@ -261,7 +262,9 @@ namespace Dune
   // ---------
 
   template <class Field>
-  struct Precision;
+  struct [[deprecated("Use std::numeric_limits<>::digits instead")]] Precision;
+
+DUNE_NO_DEPRECATED_BEGIN
 
   template<>
   struct Precision< double >
@@ -288,6 +291,8 @@ namespace Dune
     static const unsigned int value = precision;
   };
 #endif
+
+DUNE_NO_DEPRECATED_END
 
   // ComputeField
   // ------------

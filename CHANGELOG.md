@@ -8,6 +8,9 @@ SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 * Add a meta local-finite-element `DiscontinuousLocalFiniteElement` that associates
   all basis functions with the element interior by changing its local coefficients.
 
+## Deprecations and removals
+
+* Deprecate `Dune::Precision` as the definition is not clear.
 
 # Release 2.10
 

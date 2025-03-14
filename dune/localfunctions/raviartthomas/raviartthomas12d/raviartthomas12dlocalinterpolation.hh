@@ -62,7 +62,7 @@ namespace Dune
       typedef typename LB::Traits::DomainFieldType Vector;
 
       out.resize(8);
-      fill(out.begin(), out.end(), 0.0);
+      std::fill(out.begin(), out.end(), 0.0);
 
       const int qOrder1 = 4;
       const auto& rule1 = Dune::QuadratureRules<Scalar,1>::rule(Dune::GeometryTypes::simplex(1), qOrder1);

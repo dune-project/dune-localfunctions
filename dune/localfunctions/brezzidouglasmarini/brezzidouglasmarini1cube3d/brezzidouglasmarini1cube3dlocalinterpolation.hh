@@ -103,7 +103,7 @@ namespace Dune
       DUNE_THROW( NotImplemented, "Interpolation for BDM1Cube3D finite elements is not implemented." );
 
       out.resize(18);
-      fill(out.begin(), out.end(), 0.0);
+      std::fill(out.begin(), out.end(), 0.0);
 
       const int qOrder = 4;
       const QuadratureRule<Scalar,1>& rule = QuadratureRules<Scalar,1>::rule(GeometryTypes::cube(1), qOrder);

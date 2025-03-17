@@ -7,6 +7,7 @@ install(FILES
   localbasis.hh
   localinterpolation.hh
   localkey.hh
+  localfiniteelement.hh
   localfiniteelementtraits.hh
   localfiniteelementvariant.hh
   localfiniteelementvariantcache.hh

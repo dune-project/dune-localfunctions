@@ -23,6 +23,7 @@
 
 #include <dune/localfunctions/common/virtualinterface.hh>
 #include <dune/localfunctions/common/virtualwrappers.hh>
+#include <dune/localfunctions/common/localfiniteelement.hh>
 
 double TOL = 1e-9;
 // The FD approximation used for checking the Jacobian uses half of the
@@ -721,6 +722,7 @@ bool testFE(const FE& fe,
     typedef typename FE::Traits::LocalBasisType::Traits ImplementationLBTraits;
     typedef typename Dune::LocalFiniteElementVirtualInterface<ImplementationLBTraits> VirtualFEInterface;
     typedef typename Dune::LocalFiniteElementVirtualImp<FE> VirtualFEImp;
+    typedef typename Dune::LocalFiniteElement<ImplementationLBTraits> TypeErasedLFE;
 
     const VirtualFEImp virtualFE(fe);
     if (not (disabledTests & DisableLocalInterpolation))
@@ -734,6 +736,13 @@ bool testFE(const FE& fe,
       // make sure diffOrder is 0
       success = (diffOrder == 0) and success;
     }
+
+    const TypeErasedLFE typeErasedLFE(fe);
+    if (not (disabledTests & DisableLocalInterpolation))
+      success = testLocalInterpolation<TypeErasedLFE>(typeErasedLFE) and success;
+    if (not (disabledTests & DisableJacobian))
+      success = testJacobian<TypeErasedLFE>(typeErasedLFE, quadOrder, derivativePointSkip) and success;
+
   }
 
   return success;

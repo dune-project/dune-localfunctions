@@ -33,6 +33,65 @@ namespace Dune { namespace Impl
   template<class D, class R, unsigned int dim, unsigned int k>
   class LagrangeSimplexLocalBasis
   {
+
+    // Compute the rescaled barycentric coordinates of x.
+    // We rescale the simplex by k and then compute the
+    // barycentric coordinates with respect to the points
+    // p_i = e_i (for i=0,...,dim-1) and p_dim=0.
+    // Notice that then the Lagrange points have the barycentric
+    // coordinates (i_0,...,i_d) where i_j are all non-negative
+    // integers satisfying the constraint sum i_j = k.
+    constexpr auto barycentric(const auto& x) const
+    {
+      auto b = std::array<R,dim+1>{};
+      b[dim] = k;
+      for(auto i : Dune::range(dim))
+      {
+        b[i] = k*x[i];
+        b[dim] -= b[i];
+      }
+      return b;
+    }
+
+    // Evaluate univariate Lagrange factor Li(t) = (t-0)/(i-0) * ... * (t-(i-1))/(i-(i-1))
+    static constexpr R lagrangeFactor(unsigned int i, const R& t)
+    {
+      auto y = R(1);
+      for (unsigned int j = 0; j < i; ++j)
+        y *= (t-j) / (i-j);
+      return y;
+    }
+
+    // Evaluate univariate Lagrange factor Li(t) = (t-0)/(i-0) * ... * (t-(i-1))/(i-(i-1))
+    // and its derivatives up to given order. Currently only maxDerivativeOrder 0 and 1
+    // are supported.
+    static constexpr auto lagrangeFactor(unsigned int i, const R& t, unsigned int maxDerivativeOrder)
+    {
+      auto y = std::array<R, 2>{R(1), R(0)};
+      if (i==0)
+        return y;
+
+      // Split of the zero-th factor, since we can reuse it for the derivative.
+      auto tmp = R(1);
+      for (unsigned int j = 1; j < i; ++j)
+        tmp *= (t-j) / (i-j);
+      y[0] = (t/i) * tmp;
+
+      if (maxDerivativeOrder>0)
+      {
+        y[1] = R(1)/i * tmp;
+        for (unsigned int l = 1; l < i; ++l)
+        {
+          auto yl = R(1)/(i-l);
+          for (unsigned int j = 0; j < i; ++j)
+            if (j!=l)
+              yl *= (t-j) / (i-j);
+          y[1] += yl;
+        }
+      }
+      return y;
+    }
+
   public:
     using Traits = LocalBasisTraits<D,dim,FieldVector<D,dim>,R,1,FieldVector<R,1>,FieldMatrix<R,1,dim> >;
 
@@ -70,74 +129,65 @@ namespace Dune { namespace Impl
         return;
       }
 
-      assert(k>=2);
+      // Compute rescaled barycentric coordinates of x
+      auto z = barycentric(x);
 
-      auto lagrangeNode = [](unsigned int i) { return ((D)i)/k; };
+      // To improve code readability we introduce a short cut
+      constexpr auto d = dim;
 
       if (dim==1)
       {
-        for (unsigned int i=0; i<size(); i++)
+        unsigned int n = 0;
+        for (auto i0 : Dune::range(k + 1))
         {
-          out[i] = 1.0;
-          for (unsigned int alpha=0; alpha<i; alpha++)
-            out[i] *= (x[0]-lagrangeNode(alpha))/(lagrangeNode(i)-lagrangeNode(alpha));
-          for (unsigned int gamma=i+1; gamma<=k; gamma++)
-            out[i] *= (x[0]-lagrangeNode(gamma))/(lagrangeNode(i)-lagrangeNode(gamma));
+          auto id = k - i0;
+          auto Lz0 = lagrangeFactor(i0, z[0]);
+          auto Lzd = lagrangeFactor(id, z[d]);
+          out[n] = Lz0 * Lzd;
+          ++n;
         }
         return;
       }
-
       if (dim==2)
       {
-        int n=0;
-        for (unsigned int j=0; j<=k; j++)
-          for (unsigned int i=0; i<=k-j; i++)
+        unsigned int n=0;
+        for (auto i1 : Dune::range(k + 1))
+        {
+          auto Lz1 = lagrangeFactor(i1, z[1]);
+          for (auto i0 : Dune::range(k - i1 + 1))
           {
-            out[n] = 1.0;
-            for (unsigned int alpha=0; alpha<i; alpha++)
-              out[n] *= (x[0]-lagrangeNode(alpha))/(lagrangeNode(i)-lagrangeNode(alpha));
-            for (unsigned int beta=0; beta<j; beta++)
-              out[n] *= (x[1]-lagrangeNode(beta))/(lagrangeNode(j)-lagrangeNode(beta));
-            for (unsigned int gamma=i+j+1; gamma<=k; gamma++)
-              out[n] *= (lagrangeNode(gamma)-x[0]-x[1])/(lagrangeNode(gamma)-lagrangeNode(i)-lagrangeNode(j));
-            n++;
+            auto id = k - i0 - i1;
+            auto Lz0 = lagrangeFactor(i0, z[0]);
+            auto Lzd = lagrangeFactor(id, z[d]);
+            out[n] = Lz0 * Lz1 * Lzd;
+            ++n;
           }
-
+        }
+        return;
+      }
+      if (dim==3)
+      {
+        unsigned int n = 0;
+        for (auto i2 : Dune::range(k + 1))
+        {
+          auto Lz2 = lagrangeFactor(i2, z[2]);
+          for (auto i1 : Dune::range(k - i2 + 1))
+          {
+            auto Lz1 = lagrangeFactor(i1, z[1]);
+            for (auto i0 : Dune::range(k - i2 - i1 + 1))
+            {
+              auto id = k - i0 - i1 -i2;
+              auto Lz0 = lagrangeFactor(i0, z[0]);
+              auto Lzd = lagrangeFactor(id, z[d]);
+              out[n] = Lz0 * Lz1 * Lz2 * Lzd;
+              ++n;
+            }
+          }
+        }
         return;
       }
 
-      if (dim!=3)
-        DUNE_THROW(NotImplemented, "LagrangeSimplexLocalBasis for k>=2 only implemented for dim==1 or dim==3");
-
-      typename Traits::DomainType kx = x;
-      kx *= k;
-      unsigned int n = 0;
-      unsigned int i[4];
-      R factor[4];
-      for (i[2] = 0; i[2] <= k; ++i[2])
-      {
-        factor[2] = 1.0;
-        for (unsigned int j = 0; j < i[2]; ++j)
-          factor[2] *= (kx[2]-j) / (i[2]-j);
-        for (i[1] = 0; i[1] <= k - i[2]; ++i[1])
-        {
-          factor[1] = 1.0;
-          for (unsigned int j = 0; j < i[1]; ++j)
-            factor[1] *= (kx[1]-j) / (i[1]-j);
-          for (i[0] = 0; i[0] <= k - i[1] - i[2]; ++i[0])
-          {
-            factor[0] = 1.0;
-            for (unsigned int j = 0; j < i[0]; ++j)
-              factor[0] *= (kx[0]-j) / (i[0]-j);
-            i[3] = k - i[0] - i[1] - i[2];
-            D kx3 = k - kx[0] - kx[1] - kx[2];
-            factor[3] = 1.0;
-            for (unsigned int j = 0; j < i[3]; ++j)
-              factor[3] *= (kx3-j) / (i[3]-j);
-            out[n++] = factor[0] * factor[1] * factor[2] * factor[3];
-          }
-        }
-      }
+      DUNE_THROW(NotImplemented, "LagrangeSimplexLocalBasis for k>=2 only implemented for dim<=3");
     }
 
     /** \brief Evaluate Jacobian of all shape functions
@@ -169,176 +219,68 @@ namespace Dune { namespace Impl
         return;
       }
 
-      auto lagrangeNode = [](unsigned int i) { return ((D)i)/k; };
+      // Compute rescaled barycentric coordinates of x
+      auto z = barycentric(x);
 
-      // Specialization for dim==1
+      // To improve code readability we introduce a short cut
+      constexpr auto d = dim;
+
       if (dim==1)
       {
-        for (unsigned int i=0; i<=k; i++)
+        unsigned int n = 0;
+        for (auto i0 : Dune::range(k + 1))
         {
-          // x_0 derivative
-          out[i][0][0] = 0.0;
-          R factor=1.0;
-          for (unsigned int a=0; a<i; a++)
-          {
-            R product=factor;
-            for (unsigned int alpha=0; alpha<i; alpha++)
-              product *= (alpha==a) ? 1.0/(lagrangeNode(i)-lagrangeNode(alpha))
-                                    : (x[0]-lagrangeNode(alpha))/(lagrangeNode(i)-lagrangeNode(alpha));
-            for (unsigned int gamma=i+1; gamma<=k; gamma++)
-              product *= (lagrangeNode(gamma)-x[0])/(lagrangeNode(gamma)-lagrangeNode(i));
-            out[i][0][0] += product;
-          }
-          for (unsigned int c=i+1; c<=k; c++)
-          {
-            R product=factor;
-            for (unsigned int alpha=0; alpha<i; alpha++)
-              product *= (x[0]-lagrangeNode(alpha))/(lagrangeNode(i)-lagrangeNode(alpha));
-            for (unsigned int gamma=i+1; gamma<=k; gamma++)
-              product *= (gamma==c) ? -1.0/(lagrangeNode(gamma)-lagrangeNode(i))
-                                    : (lagrangeNode(gamma)-x[0])/(lagrangeNode(gamma)-lagrangeNode(i));
-            out[i][0][0] += product;
-          }
+          auto id = k - i0;
+          auto Lz0  = lagrangeFactor(i0, z[0], 1);
+          auto Lzd  = lagrangeFactor(id, z[d], 1);
+          out[n][0][0] = (Lz0[1] * Lzd[0] - Lz0[0] * Lzd[1])*k;
+          ++n;
         }
         return;
       }
-
       if (dim==2)
       {
-        int n=0;
-        for (unsigned int j=0; j<=k; j++)
-          for (unsigned int i=0; i<=k-j; i++)
+        unsigned int n=0;
+        for (auto i1 : Dune::range(k + 1))
+        {
+          auto Lz1  = lagrangeFactor(i1, z[1], 1);
+          for (auto i0 : Dune::range(k - i1 + 1))
           {
-            // x_0 derivative
-            out[n][0][0] = 0.0;
-            R factor=1.0;
-            for (unsigned int beta=0; beta<j; beta++)
-              factor *= (x[1]-lagrangeNode(beta))/(lagrangeNode(j)-lagrangeNode(beta));
-            for (unsigned int a=0; a<i; a++)
-            {
-              R product=factor;
-              for (unsigned int alpha=0; alpha<i; alpha++)
-                if (alpha==a)
-                  product *= D(1)/(lagrangeNode(i)-lagrangeNode(alpha));
-                else
-                  product *= (x[0]-lagrangeNode(alpha))/(lagrangeNode(i)-lagrangeNode(alpha));
-              for (unsigned int gamma=i+j+1; gamma<=k; gamma++)
-                product *= (lagrangeNode(gamma)-x[0]-x[1])/(lagrangeNode(gamma)-lagrangeNode(i)-lagrangeNode(j));
-              out[n][0][0] += product;
-            }
-            for (unsigned int c=i+j+1; c<=k; c++)
-            {
-              R product=factor;
-              for (unsigned int alpha=0; alpha<i; alpha++)
-                product *= (x[0]-lagrangeNode(alpha))/(lagrangeNode(i)-lagrangeNode(alpha));
-              for (unsigned int gamma=i+j+1; gamma<=k; gamma++)
-                if (gamma==c)
-                  product *= -D(1)/(lagrangeNode(gamma)-lagrangeNode(i)-lagrangeNode(j));
-                else
-                  product *= (lagrangeNode(gamma)-x[0]-x[1])/(lagrangeNode(gamma)-lagrangeNode(i)-lagrangeNode(j));
-              out[n][0][0] += product;
-            }
-
-            // x_1 derivative
-            out[n][0][1] = 0.0;
-            factor = 1.0;
-            for (unsigned int alpha=0; alpha<i; alpha++)
-              factor *= (x[0]-lagrangeNode(alpha))/(lagrangeNode(i)-lagrangeNode(alpha));
-            for (unsigned int b=0; b<j; b++)
-            {
-              R product=factor;
-              for (unsigned int beta=0; beta<j; beta++)
-                if (beta==b)
-                  product *= D(1)/(lagrangeNode(j)-lagrangeNode(beta));
-                else
-                  product *= (x[1]-lagrangeNode(beta))/(lagrangeNode(j)-lagrangeNode(beta));
-              for (unsigned int gamma=i+j+1; gamma<=k; gamma++)
-                product *= (lagrangeNode(gamma)-x[0]-x[1])/(lagrangeNode(gamma)-lagrangeNode(i)-lagrangeNode(j));
-              out[n][0][1] += product;
-            }
-            for (unsigned int c=i+j+1; c<=k; c++)
-            {
-              R product=factor;
-              for (unsigned int beta=0; beta<j; beta++)
-                product *= (x[1]-lagrangeNode(beta))/(lagrangeNode(j)-lagrangeNode(beta));
-              for (unsigned int gamma=i+j+1; gamma<=k; gamma++)
-                if (gamma==c)
-                  product *= -D(1)/(lagrangeNode(gamma)-lagrangeNode(i)-lagrangeNode(j));
-                else
-                  product *= (lagrangeNode(gamma)-x[0]-x[1])/(lagrangeNode(gamma)-lagrangeNode(i)-lagrangeNode(j));
-              out[n][0][1] += product;
-            }
-
-            n++;
+            auto id = k - i0 - i1;
+            auto Lz0  = lagrangeFactor(i0, z[0], 1);
+            auto Lzd  = lagrangeFactor(id, z[d], 1);
+            out[n][0][0] = (Lz0[1] * Lz1[0] * Lzd[0] - Lz0[0] * Lz1[0] * Lzd[1])*k;
+            out[n][0][1] = (Lz0[0] * Lz1[1] * Lzd[0] - Lz0[0] * Lz1[0] * Lzd[1])*k;
+            ++n;
           }
-
+        }
+        return;
+      }
+      if (dim==3)
+      {
+        unsigned int n = 0;
+        for (auto i2 : Dune::range(k + 1))
+        {
+          auto Lz2  = lagrangeFactor(i2, z[2], 1);
+          for (auto i1 : Dune::range(k - i2 + 1))
+          {
+            auto Lz1  = lagrangeFactor(i1, z[1], 1);
+            for (auto i0 : Dune::range(k - i2 - i1 + 1))
+            {
+              auto id = k - i0 - i1 -i2;
+              auto Lz0  = lagrangeFactor(i0, z[0], 1);
+              auto Lzd  = lagrangeFactor(id, z[d], 1);
+              out[n][0][0] = (Lz0[1] * Lz1[0] * Lz2[0] * Lzd[0] - Lz0[0] * Lz1[0] * Lz2[0] * Lzd[1])*k;
+              out[n][0][1] = (Lz0[0] * Lz1[1] * Lz2[0] * Lzd[0] - Lz0[0] * Lz1[0] * Lz2[0] * Lzd[1])*k;
+              out[n][0][2] = (Lz0[0] * Lz1[0] * Lz2[1] * Lzd[0] - Lz0[0] * Lz1[0] * Lz2[0] * Lzd[1])*k;
+              ++n;
+            }
+          }
+        }
         return;
       }
 
-      if (dim!=3)
-        DUNE_THROW(NotImplemented, "LagrangeSimplexLocalBasis only implemented for dim==3!");
-
-      // Specialization for arbitrary order and dim==3
-      typename Traits::DomainType kx = x;
-      kx *= k;
-      unsigned int n = 0;
-      unsigned int i[4];
-      R factor[4];
-      for (i[2] = 0; i[2] <= k; ++i[2])
-      {
-        factor[2] = 1.0;
-        for (unsigned int j = 0; j < i[2]; ++j)
-          factor[2] *= (kx[2]-j) / (i[2]-j);
-        for (i[1] = 0; i[1] <= k - i[2]; ++i[1])
-        {
-          factor[1] = 1.0;
-          for (unsigned int j = 0; j < i[1]; ++j)
-            factor[1] *= (kx[1]-j) / (i[1]-j);
-          for (i[0] = 0; i[0] <= k - i[1] - i[2]; ++i[0])
-          {
-            factor[0] = 1.0;
-            for (unsigned int j = 0; j < i[0]; ++j)
-              factor[0] *= (kx[0]-j) / (i[0]-j);
-            i[3] = k - i[0] - i[1] - i[2];
-            D kx3 = k - kx[0] - kx[1] - kx[2];
-            R sum3 = 0.0;
-            factor[3] = 1.0;
-            for (unsigned int j = 0; j < i[3]; ++j)
-              factor[3] /= i[3] - j;
-            R prod_all = factor[0] * factor[1] * factor[2] * factor[3];
-            for (unsigned int j = 0; j < i[3]; ++j)
-            {
-              R prod = prod_all;
-              for (unsigned int l = 0; l < i[3]; ++l)
-                if (j == l)
-                  prod *= -R(k);
-                else
-                  prod *= kx3 - l;
-              sum3 += prod;
-            }
-            for (unsigned int j = 0; j < i[3]; ++j)
-              factor[3] *= kx3 - j;
-            for (unsigned int m = 0; m < 3; ++m)
-            {
-              out[n][0][m] = sum3;
-              for (unsigned int j = 0; j < i[m]; ++j)
-              {
-                R prod = factor[3];
-                for (unsigned int p = 0; p < 3; ++p)
-                {
-                  if (m == p)
-                    for (unsigned int l = 0; l < i[p]; ++l)
-                      prod *= (j==l) ? R(k) / (i[p]-l) : R(kx[p]-l) / (i[p]-l);
-                  else
-                    prod *= factor[p];
-                }
-                out[n][0][m] += prod;
-              }
-            }
-            n++;
-          }
-        }
-      }
+      DUNE_THROW(NotImplemented, "LagrangeSimplexLocalBasis for k>=2 only implemented for dim<=3");
     }
 
     /** \brief Evaluate partial derivatives of any order of all shape functions
@@ -381,6 +323,67 @@ namespace Dune { namespace Impl
         return;
       }
 
+      if (totalOrder==1)
+      {
+        // Compute rescaled barycentric coordinates of x
+        auto z = barycentric(in);
+
+        // To improve code readability we introduce a short cut
+        constexpr auto d = dim;
+
+        if (dim==1)
+        {
+          unsigned int n = 0;
+          for (auto i0 : Dune::range(k + 1))
+          {
+            auto id = k - i0;
+            auto Lz0  = lagrangeFactor(i0, z[0], 1);
+            auto Lzd  = lagrangeFactor(id, z[d], 1);
+            out[n] = (Lz0[1] * Lzd[0] - Lz0[0] * Lzd[1])*k;
+            ++n;
+          }
+          return;
+        }
+        if (dim==2)
+        {
+          unsigned int n=0;
+          for (auto i1 : Dune::range(k + 1))
+          {
+            auto Lz1  = lagrangeFactor(i1, z[1], order[1]);
+            for (auto i0 : Dune::range(k - i1 + 1))
+            {
+              auto id = k - i0 - i1;
+              auto Lz0  = lagrangeFactor(i0, z[0], order[0]);
+              auto Lzd  = lagrangeFactor(id, z[d], 1);
+              out[n] = (Lz0[order[0]] * Lz1[order[1]] * Lzd[0] - Lz0[0] * Lz1[0] * Lzd[1])*k;
+              ++n;
+            }
+          }
+          return;
+        }
+        if (dim==3)
+        {
+          unsigned int n = 0;
+          for (auto i2 : Dune::range(k + 1))
+          {
+            auto Lz2  = lagrangeFactor(i2, z[2], order[2]);
+            for (auto i1 : Dune::range(k - i2 + 1))
+            {
+              auto Lz1   = lagrangeFactor(i1, z[1], order[1]);
+              for (auto i0 : Dune::range(k - i2 - i1 + 1))
+              {
+                auto id = k - i0 - i1 -i2;
+                auto Lz0  = lagrangeFactor(i0, z[0], order[0]);
+                auto Lzd  = lagrangeFactor(id, z[d], 1);
+                out[n] = (Lz0[order[0]] * Lz1[order[1]] * Lz2[order[2]] * Lzd[0] - Lz0[0] * Lz1[0] * Lz2[0] * Lzd[1])*k;
+                ++n;
+              }
+            }
+          }
+          return;
+        }
+      }
+
       if (dim==2)
       {
         auto lagrangeNode = [](unsigned int i) { return ((D)i)/k; };
@@ -412,30 +415,6 @@ namespace Dune { namespace Impl
 
             return -1.0/(lagrangeNode(no+1)-lagrangeNode(i)-lagrangeNode(j));
           };
-
-        if (totalOrder==1)
-        {
-          int direction = std::find(order.begin(), order.end(), 1)-order.begin();
-
-          int n=0;
-          for (unsigned int j=0; j<=k; j++)
-          {
-            for (unsigned int i=0; i<=k-j; i++, n++)
-            {
-              out[n] = 0.0;
-              for (unsigned int no1=0; no1 < k; no1++)
-              {
-                R factor = lagrangianFactorDerivative(direction, no1, i, j, in);
-                for (unsigned int no2=0; no2 < k; no2++)
-                  if (no1 != no2)
-                    factor *= lagrangianFactor(no2, i, j, in);
-
-                out[n] += factor;
-              }
-            }
-          }
-          return;
-        }
 
         if (totalOrder==2)
         {

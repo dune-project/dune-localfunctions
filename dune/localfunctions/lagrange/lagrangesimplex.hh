@@ -8,7 +8,6 @@
 #include <array>
 #include <numeric>
 
-#include <dune/common/deprecated.hh>
 #include <dune/common/fmatrix.hh>
 #include <dune/common/fvector.hh>
 #include <dune/common/math.hh>
@@ -843,15 +842,6 @@ namespace Dune
 
     /** Default-construct the finite element */
     LagrangeSimplexLocalFiniteElement() {}
-
-    /** Constructs a finite element given a vertex reordering
-     *
-     *  This version is deprecated - use the std::array variant instead.
-     * */
-    template<typename VertexMap>
-    LagrangeSimplexLocalFiniteElement(const VertexMap& vertexmap)
-      : coefficients_(vertexmap)
-    {}
 
     /** \brief Returns the local basis, i.e., the set of shape functions
      */

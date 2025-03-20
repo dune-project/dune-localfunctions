@@ -262,7 +262,7 @@ namespace Dune
   // ---------
 
   template <class Field>
-  struct [[deprecated("Use std::numeric_limits<>::digits instead")]] Precision;
+  struct [[deprecated("This class is deprecated and will be removed after 2.11. Use std::numeric_limits<>::digits instead")]] Precision;
 
 DUNE_NO_DEPRECATED_BEGIN
 

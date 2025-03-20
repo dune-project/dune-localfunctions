@@ -5,48 +5,6 @@
 #ifndef DUNE_LOCALFUNCTIONS_COMMON_LOCALINTERPOLATION_HH
 #define DUNE_LOCALFUNCTIONS_COMMON_LOCALINTERPOLATION_HH
 
-#include <functional>
+#warning This header is empty and deprecated and will be removed after 2.11.
 
-#include <dune/common/concept.hh>
-
-
-
-namespace Dune {
-
-  namespace Impl {
-
-    // Concept for function supporting f.evaluate(Domain, Range&)
-    template<class Domain, class Range>
-    struct FunctionWithEvaluate
-    {
-      template<class F>
-      auto require(F&& f) -> decltype(
-        f.evaluate(std::declval<Domain>(), std::declval<Range&>())
-      );
-    };
-
-    // Concept for function supporting f(Domain)
-    template<class Domain>
-    struct FunctionWithCallOperator
-    {
-      template<class F>
-      auto require(F&& f) -> decltype(
-        f(std::declval<Domain>())
-      );
-    };
-
-    // Create function supporting Range = f(Domain)
-    // This functions returns the passed in reference.
-    template<class Domain, class F,
-      std::enable_if_t<models<FunctionWithCallOperator<Domain>, F>(), int> = 0>
-    [[deprecated( "The utility function makeFunctionWithCallOperator() is deprecated and will be removed after 2.10."
-                  "Downstream modules no longer need to call this function since interpolate() no-longer supports non-callable functions.")]]
-    decltype(auto) makeFunctionWithCallOperator(const F& f)
-    {
-      return f;
-    }
-
-  } // namespace Impl
-
-} // namespace Dune
 #endif

@@ -16,9 +16,6 @@ SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 
 * The deprecated utility function `Impl::makeFunctionWithCallOperator()` has been removed.
 
-* The deprecated constructor of `LagrangeSimplexLocalFiniteElement` that was
-  templated wrt a `VertexMap` has been removed.
-
 * The deprecated class `PQkLocalFiniteElementCache` has been removed.
 
 # Release 2.10

@@ -23,7 +23,7 @@ namespace Dune { namespace Impl
    /** \brief Lagrange shape functions of arbitrary order on the reference simplex
 
      Lagrange shape functions of arbitrary order have the property that
-     \f$\hat\phi^i(x_j) = \delta_{i,j}\f$ for certain points \f$x_j\f$.
+     \f$\hat\phi^i(x^{(j)}) = \delta_{i,j}\f$ for certain points \f$x^{(j)}\f$.
 
      \tparam D Type to represent the field in the domain
      \tparam R Type to represent the field in the range
@@ -53,43 +53,32 @@ namespace Dune { namespace Impl
       return b;
     }
 
-    // Evaluate univariate Lagrange factor Li(t) = (t-0)/(i-0) * ... * (t-(i-1))/(i-(i-1))
-    static constexpr R lagrangeFactor(unsigned int i, const R& t)
+    // Evaluate the univariate Lagrange polynomials L_i(t) for i=0,...,k where
+    //
+    // L_i(t) = (t-0)/(i-0) * ... * (t-(i-1))/(i-(i-1))
+    //        = (t-0)*...*(t-(i-1))/(i!);
+    static constexpr void evaluateLagrangePolynomials(const R& t, auto& L)
     {
-      auto y = R(1);
-      for (unsigned int j = 0; j < i; ++j)
-        y *= (t-j) / (i-j);
-      return y;
+      L[0] = 1;
+      for (auto i : Dune::range(k))
+        L[i+1] = L[i] * (t - i) / (i+1);
     }
 
-    // Evaluate univariate Lagrange factor Li(t) = (t-0)/(i-0) * ... * (t-(i-1))/(i-(i-1))
-    // and its derivatives up to given order. Currently only maxDerivativeOrder 0 and 1
-    // are supported.
-    static constexpr auto lagrangeFactor(unsigned int i, const R& t, unsigned int maxDerivativeOrder)
+    // Evaluate the univariate Lagrange polynomial derivatives L_i(t) for i=0,...,k
+    // up to given maxDerivativeOrder. Currently only maxDerivativeOrder 0 and 1 are supported.
+    static constexpr void evaluateLagrangePolynomialDerivative(const R& t, auto& LL, unsigned int maxDerivativeOrder)
     {
-      auto y = std::array<R, 2>{R(1), R(0)};
-      if (i==0)
-        return y;
-
-      // Split of the zero-th factor, since we can reuse it for the derivative.
-      auto tmp = R(1);
-      for (unsigned int j = 1; j < i; ++j)
-        tmp *= (t-j) / (i-j);
-      y[0] = (t/i) * tmp;
-
+      auto& L = LL[0];
+      L[0] = 1;
+      for (auto i : Dune::range(k))
+        L[i+1] = L[i] * (t - i) / (i+1);
+      auto& DL = LL[1];
       if (maxDerivativeOrder>0)
       {
-        y[1] = R(1)/i * tmp;
-        for (unsigned int l = 1; l < i; ++l)
-        {
-          auto yl = R(1)/(i-l);
-          for (unsigned int j = 0; j < i; ++j)
-            if (j!=l)
-              yl *= (t-j) / (i-j);
-          y[1] += yl;
-        }
+        DL[0] = 0;
+        for (auto i : Dune::range(k))
+          DL[i+1] = (DL[i] * (t - i) + L[i]) / (i+1);
       }
-      return y;
     }
 
   public:
@@ -132,58 +121,35 @@ namespace Dune { namespace Impl
       // Compute rescaled barycentric coordinates of x
       auto z = barycentric(x);
 
-      // To improve code readability we introduce a short cut
-      constexpr auto d = dim;
+      auto L = std::array<std::array<R,k+1>, dim+1>();
+      for (auto j : Dune::range(dim+1))
+        evaluateLagrangePolynomials(z[j], L[j]);
 
       if (dim==1)
       {
         unsigned int n = 0;
         for (auto i0 : Dune::range(k + 1))
-        {
-          auto id = k - i0;
-          auto Lz0 = lagrangeFactor(i0, z[0]);
-          auto Lzd = lagrangeFactor(id, z[d]);
-          out[n] = Lz0 * Lzd;
-          ++n;
-        }
+          for (auto i1 : std::array{k - i0})
+            out[n++] = L[0][i0] * L[1][i1];
         return;
       }
       if (dim==2)
       {
         unsigned int n=0;
         for (auto i1 : Dune::range(k + 1))
-        {
-          auto Lz1 = lagrangeFactor(i1, z[1]);
           for (auto i0 : Dune::range(k - i1 + 1))
-          {
-            auto id = k - i0 - i1;
-            auto Lz0 = lagrangeFactor(i0, z[0]);
-            auto Lzd = lagrangeFactor(id, z[d]);
-            out[n] = Lz0 * Lz1 * Lzd;
-            ++n;
-          }
-        }
+            for (auto i2 : std::array{k - i1 - i0})
+              out[n++] = L[0][i0] * L[1][i1] * L[2][i2];
         return;
       }
       if (dim==3)
       {
         unsigned int n = 0;
         for (auto i2 : Dune::range(k + 1))
-        {
-          auto Lz2 = lagrangeFactor(i2, z[2]);
           for (auto i1 : Dune::range(k - i2 + 1))
-          {
-            auto Lz1 = lagrangeFactor(i1, z[1]);
             for (auto i0 : Dune::range(k - i2 - i1 + 1))
-            {
-              auto id = k - i0 - i1 -i2;
-              auto Lz0 = lagrangeFactor(i0, z[0]);
-              auto Lzd = lagrangeFactor(id, z[d]);
-              out[n] = Lz0 * Lz1 * Lz2 * Lzd;
-              ++n;
-            }
-          }
-        }
+              for (auto i3 : std::array{k - i2 - i1 - i0})
+                out[n++] = L[0][i0] * L[1][i1]  * L[2][i2] * L[3][i3];
         return;
       }
 
@@ -222,19 +188,21 @@ namespace Dune { namespace Impl
       // Compute rescaled barycentric coordinates of x
       auto z = barycentric(x);
 
-      // To improve code readability we introduce a short cut
-      constexpr auto d = dim;
+      // L[j][m][i] is the m-th derivative of the i-th Lagrange polynomial at z[j]
+      auto L = std::array<std::array<std::array<R,k+1>, 2>, dim+1>();
+      for (auto j : Dune::range(dim+1))
+        evaluateLagrangePolynomialDerivative(z[j], L[j], 1);
 
       if (dim==1)
       {
         unsigned int n = 0;
         for (auto i0 : Dune::range(k + 1))
         {
-          auto id = k - i0;
-          auto Lz0  = lagrangeFactor(i0, z[0], 1);
-          auto Lzd  = lagrangeFactor(id, z[d], 1);
-          out[n][0][0] = (Lz0[1] * Lzd[0] - Lz0[0] * Lzd[1])*k;
-          ++n;
+          for (auto i1 : std::array{k-i0})
+          {
+            out[n][0][0] = (L[0][1][i0] * L[1][0][i1] - L[0][0][i0] * L[1][1][i1])*k;
+            ++n;
+          }
         }
         return;
       }
@@ -243,15 +211,14 @@ namespace Dune { namespace Impl
         unsigned int n=0;
         for (auto i1 : Dune::range(k + 1))
         {
-          auto Lz1  = lagrangeFactor(i1, z[1], 1);
           for (auto i0 : Dune::range(k - i1 + 1))
           {
-            auto id = k - i0 - i1;
-            auto Lz0  = lagrangeFactor(i0, z[0], 1);
-            auto Lzd  = lagrangeFactor(id, z[d], 1);
-            out[n][0][0] = (Lz0[1] * Lz1[0] * Lzd[0] - Lz0[0] * Lz1[0] * Lzd[1])*k;
-            out[n][0][1] = (Lz0[0] * Lz1[1] * Lzd[0] - Lz0[0] * Lz1[0] * Lzd[1])*k;
-            ++n;
+            for (auto i2 : std::array{k - i1 - i0})
+            {
+              out[n][0][0] = (L[0][1][i0] * L[1][0][i1] * L[2][0][i2] - L[0][0][i0] * L[1][0][i1] * L[2][1][i2])*k;
+              out[n][0][1] = (L[0][0][i0] * L[1][1][i1] * L[2][0][i2] - L[0][0][i0] * L[1][0][i1] * L[2][1][i2])*k;
+              ++n;
+            }
           }
         }
         return;
@@ -261,22 +228,21 @@ namespace Dune { namespace Impl
         unsigned int n = 0;
         for (auto i2 : Dune::range(k + 1))
         {
-          auto Lz2  = lagrangeFactor(i2, z[2], 1);
           for (auto i1 : Dune::range(k - i2 + 1))
           {
-            auto Lz1  = lagrangeFactor(i1, z[1], 1);
             for (auto i0 : Dune::range(k - i2 - i1 + 1))
             {
-              auto id = k - i0 - i1 -i2;
-              auto Lz0  = lagrangeFactor(i0, z[0], 1);
-              auto Lzd  = lagrangeFactor(id, z[d], 1);
-              out[n][0][0] = (Lz0[1] * Lz1[0] * Lz2[0] * Lzd[0] - Lz0[0] * Lz1[0] * Lz2[0] * Lzd[1])*k;
-              out[n][0][1] = (Lz0[0] * Lz1[1] * Lz2[0] * Lzd[0] - Lz0[0] * Lz1[0] * Lz2[0] * Lzd[1])*k;
-              out[n][0][2] = (Lz0[0] * Lz1[0] * Lz2[1] * Lzd[0] - Lz0[0] * Lz1[0] * Lz2[0] * Lzd[1])*k;
-              ++n;
+              for (auto i3 : std::array{k - i2 - i1 - i0})
+              {
+                out[n][0][0] = (L[0][1][i0] * L[1][0][i1] * L[2][0][i2] * L[3][0][i3] - L[0][0][i0] * L[1][0][i1] * L[2][0][i2] * L[3][1][i3])*k;
+                out[n][0][1] = (L[0][0][i0] * L[1][1][i1] * L[2][0][i2] * L[3][0][i3] - L[0][0][i0] * L[1][0][i1] * L[2][0][i2] * L[3][1][i3])*k;
+                out[n][0][2] = (L[0][0][i0] * L[1][0][i1] * L[2][1][i2] * L[3][0][i3] - L[0][0][i0] * L[1][0][i1] * L[2][0][i2] * L[3][1][i3])*k;
+                ++n;
+              }
             }
           }
         }
+
         return;
       }
 
@@ -328,58 +294,37 @@ namespace Dune { namespace Impl
         // Compute rescaled barycentric coordinates of x
         auto z = barycentric(in);
 
-        // To improve code readability we introduce a short cut
-        constexpr auto d = dim;
+        // L[j][m][i] is the m-th derivative of the i-th Lagrange polynomial at z[j]
+        auto L = std::array<std::array<std::array<R,k+1>, 2>, dim+1>();
+        for (auto j : Dune::range(dim))
+          evaluateLagrangePolynomialDerivative(z[j], L[j], order[j]);
+        evaluateLagrangePolynomialDerivative(z[dim], L[dim], 1);
 
         if (dim==1)
         {
           unsigned int n = 0;
           for (auto i0 : Dune::range(k + 1))
-          {
-            auto id = k - i0;
-            auto Lz0  = lagrangeFactor(i0, z[0], 1);
-            auto Lzd  = lagrangeFactor(id, z[d], 1);
-            out[n] = (Lz0[1] * Lzd[0] - Lz0[0] * Lzd[1])*k;
-            ++n;
-          }
+            for (auto i1 : std::array{k - i0})
+              out[n++] = (L[0][1][i0] * L[1][0][i1] - L[0][0][i0] * L[1][1][i1])*k;
           return;
         }
         if (dim==2)
         {
           unsigned int n=0;
           for (auto i1 : Dune::range(k + 1))
-          {
-            auto Lz1  = lagrangeFactor(i1, z[1], order[1]);
             for (auto i0 : Dune::range(k - i1 + 1))
-            {
-              auto id = k - i0 - i1;
-              auto Lz0  = lagrangeFactor(i0, z[0], order[0]);
-              auto Lzd  = lagrangeFactor(id, z[d], 1);
-              out[n] = (Lz0[order[0]] * Lz1[order[1]] * Lzd[0] - Lz0[0] * Lz1[0] * Lzd[1])*k;
-              ++n;
-            }
-          }
+              for (auto i2 : std::array{k - i1 - i0})
+                out[n++] = (L[0][order[0]][i0] * L[1][order[1]][i1] * L[2][0][i2] - L[0][0][i0] * L[1][0][i1] * L[2][1][i2])*k;
           return;
         }
         if (dim==3)
         {
           unsigned int n = 0;
           for (auto i2 : Dune::range(k + 1))
-          {
-            auto Lz2  = lagrangeFactor(i2, z[2], order[2]);
             for (auto i1 : Dune::range(k - i2 + 1))
-            {
-              auto Lz1   = lagrangeFactor(i1, z[1], order[1]);
               for (auto i0 : Dune::range(k - i2 - i1 + 1))
-              {
-                auto id = k - i0 - i1 -i2;
-                auto Lz0  = lagrangeFactor(i0, z[0], order[0]);
-                auto Lzd  = lagrangeFactor(id, z[d], 1);
-                out[n] = (Lz0[order[0]] * Lz1[order[1]] * Lz2[order[2]] * Lzd[0] - Lz0[0] * Lz1[0] * Lz2[0] * Lzd[1])*k;
-                ++n;
-              }
-            }
-          }
+                for (auto i3 : std::array{k - i2 - i1 - i0})
+                  out[n++] = (L[0][order[0]][i0] * L[1][order[1]][i1] * L[2][order[2]][i2] * L[3][0][i3] - L[0][0][i0] * L[1][0][i1] * L[2][0][i2] * L[3][1][i3])*k;
           return;
         }
       }
@@ -808,6 +753,52 @@ namespace Dune
    * \tparam R type used for function values
    * \tparam d dimension of the reference element
    * \tparam k polynomial order
+   *
+   * The Lagrange basis functions \f$\phi_i\f$ of order \f$k>1\f$ on the unit simplex
+   * \f$G = \{ x \in [0,1]^{d} \,|\, \sum_{j=1}^d x_j \leq 1\}\f$ are implemented as
+   * \f$\phi_i(x) = \hat{\phi}_i(kx)\f$ where \f$\hat{\phi}_i\f$ is the \f$i\f$-th
+   * basis function on the scaled simplex
+   * \f$\hat{G} = kG = \{ x \in [0,k]^{d} \,|\, \sum_{j=1}^d x_i \leq k\}\f$.
+   * On \f$\hat{G}\f$ the uniform Lagrange points of order \f$k\f$ are
+   * exactly the points \f$(i_1,\dots,i_d) \in \mathbb{N}_0^d \cap \hat{G}\f$
+   * with non-negative integer coordinates in \f$\hat{G}\f$.
+   * Using the lexicographic enumeration
+   * of those points we can identify each \f$i=(i_1,...,i_d)\f$ with the
+   * flat index \f$i\f$ of the Lagrange node and associated basis function.
+
+   * Since we can map any point \f$\hat{x} \in \hat{G}\f$ to its barycentric coordinates
+   * \f$(\hat{x}_1, \dots, \hat{x}_d, k-\sum_{j=1}^d \hat{x}_j)\f$ we define for any such point
+   * its auxiliary \f$(d+1)\f$-th coordinate \f$\hat{x}_{d+1} = k-\sum_{j=1}^d \hat{x}_j\f$
+   * and use this in particular for Lagrange points \f$i=(i_1,...,i_d)\f$.
+   * Then the Lagrange basis function on \f$\hat{G}\f$ associated to the
+   * Lagrange point \f$i=(i_1,\dots,i_d)\f$ is given by
+   * \f[
+   *   \hat{\phi}_i(\hat{x}) = \prod_{j=1}^{d+1} L_{i_j}(\hat{x}_j)
+   * \f]
+   * where we used the barycentric coordinates of \f$\hat{x}\f$ and \f$i\f$ and the
+   * univariate Lagrange polynomials
+   * \f[
+   *   L_n(t) = \prod_{m=0}^{n-1} \frac{t-m}{n-m} = \frac{1}{n!}\prod_{m=0}^{n-1}(t-m).
+   * \f]
+   * This factorization can be interpreted geometrically. To this end note that
+   * any component \f$1,\dots,d+1\f$ of the barycentric coordinates is associated
+   * to a vertex of the simplex and thus to the opposite facet. Furthermore the Lagrange
+   * nodes are all located on hyperplanes parallel to those facets. In the factorized
+   * form the term \f$L_{i_j}(\hat{x}_j)\f$ guarantees that \f$\hat{\phi}_i\f$ is zero
+   * on any of these hyperplane that is parallel to the facet associated with \f$j\f$
+   * and lying between the Lagrange node \f$i\f$ and this facet
+   * (excluding \f$i\f$ and including the facet).
+   *
+   * Using the factorized form, evaluating all basis functions \f$\hat{\phi}_i\f$ at a point \f$\hat{x}\f$
+   * requires to first evaluate \f$\alpha_{m,j}=L_m(\hat{x}_j)\f$ for all \f$j\in \{1,\dots,d+1\}\f$
+   * and \f$m \in \{0,\dots,k\}\f$ and then computing the products
+   * \f$\hat{\phi}_i(\hat{x})=\prod_{j=1}^{d+1} \alpha_{i_j,j}\f$ for all admissible multi indices
+   * (or, equivalently, Lagrange nodes in barycentric coordinates)
+   * \f$(i_1,\dots,i_{d+1})\f$ with \f$\sum_{j=1}^{d+1} i_j = k\f$.
+   * The evaluation of the univariate Lagrange polynomials can be done efficiently using the recursion
+   * \f[
+   *   L_0(t) = 1, \qquad L_{n+1}(t) = L_n(t)\frac{t-n}{n+1} \qquad n\geq 0.
+   * \f]
    */
   template<class D, class R, int d, int k>
   class LagrangeSimplexLocalFiniteElement

@@ -843,6 +843,13 @@ namespace Dune
     /** Default-construct the finite element */
     LagrangeSimplexLocalFiniteElement() {}
 
+    /** \brief Constructs a finite element given a vertex reordering
+     * */
+    template<typename VertexMap>
+    LagrangeSimplexLocalFiniteElement(const VertexMap& vertexmap)
+      : coefficients_(vertexmap)
+    {}
+
     /** \brief Returns the local basis, i.e., the set of shape functions
      */
     const typename Traits::LocalBasisType& localBasis () const

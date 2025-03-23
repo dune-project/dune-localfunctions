@@ -743,6 +743,13 @@ bool testFE(const FE& fe,
     if (not (disabledTests & DisableJacobian))
       success = testJacobian<TypeErasedLFE>(typeErasedLFE, quadOrder, derivativePointSkip) and success;
 
+    // Check for assignment of empty type erased wrapper
+    {
+      TypeErasedLFE typeErasedLFE;
+      typeErasedLFE = fe;
+      typeErasedLFE = fe;
+    }
+
   }
 
   return success;

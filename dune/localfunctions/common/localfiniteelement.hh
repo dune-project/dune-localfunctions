@@ -201,7 +201,7 @@ namespace Dune
     }
 
   private:
-    const std::unique_ptr<VirtualLFE> lfe_;
+    std::unique_ptr<VirtualLFE> lfe_;
     unsigned int size_ = 0;
     Dune::GeometryType type_;
   };

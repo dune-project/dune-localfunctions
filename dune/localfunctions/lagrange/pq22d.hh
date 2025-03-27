@@ -5,6 +5,8 @@
 #ifndef DUNE_PQ22DLOCALFINITEELEMENT_HH
 #define DUNE_PQ22DLOCALFINITEELEMENT_HH
 
+#warning This header is empty and deprecated and will be removed after 2.11.
+
 #include <dune/common/fmatrix.hh>
 
 #include <dune/localfunctions/common/localfiniteelementvariant.hh>
@@ -15,7 +17,9 @@
 namespace Dune
 {
   template<class D, class R>
-  class PQ22DLocalFiniteElement
+  class
+  [[deprecated("Use LocalFiniteElementVariant or the virtual interface directly. This will be removed after release 2.11.")]]
+  PQ22DLocalFiniteElement
   {
     using LFEVariant = LocalFiniteElementVariant<LagrangeSimplexLocalFiniteElement<D,R,2,2>,
                                                  LagrangeCubeLocalFiniteElement<D,R,2,2> >;

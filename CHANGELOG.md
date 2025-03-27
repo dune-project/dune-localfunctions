@@ -10,6 +10,10 @@ SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 
 ## Deprecations and removals
 
+* `Dune::PQ22DLocalFiniteElement` is deprecated. The recommended replacement for mixed 2d grids
+  is to use `Dune::LocalFiniteElementVariant` directly or to use the virtual interface provided
+  by `Dune::LocalFiniteElementVirtualInterface`.
+
 * Deprecate `Dune::Precision` as the definition is not clear.
 
 * The deprecated class `LFEMatrix` has been removed.

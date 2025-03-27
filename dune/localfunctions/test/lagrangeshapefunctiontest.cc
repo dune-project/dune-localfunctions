@@ -7,6 +7,9 @@
 #include <typeinfo>
 #include <fenv.h>
 
+#include <dune/common/classname.hh>
+#include <dune/common/test/testsuite.hh>
+
 #include <dune/localfunctions/lagrange/p0.hh>
 #include <dune/localfunctions/lagrange/pq22d.hh>
 #include <dune/localfunctions/lagrange/lagrangelfecache.hh>
@@ -100,181 +103,103 @@ int main (int argc, char *argv[])
   feenableexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW);
 #endif
 
-  bool success = true;
+  auto testSuite = Dune::TestSuite();
 
   //////////////////////////////////////////////////////////
   //   Test for the Lagrange property
   //////////////////////////////////////////////////////////
-  LagrangeSimplexLocalFiniteElement<double,double,1,1> p11d;
-  success &= testPk(p11d);
 
-  LagrangeSimplexLocalFiniteElement<double,double,2,1> p12d;
-  success &= testPk(p12d);
-
-  LagrangeSimplexLocalFiniteElement<double,double,3,1> p13d;
-  success &= testPk(p13d);
-
-  //     P23DLocalFiniteElement does not fulfill above assumption on the
-  //     ordering of the shape functions
-  //     P23DLocalFiniteElement<double,double> p23d;
-  //     testPk(p23d);
-
-  LagrangeSimplexLocalFiniteElement<double,double,2,1> pk12d;
-  success &= testPk(pk12d);
-  LagrangeSimplexLocalFiniteElement<double,double,2,2> pk22d;
-  success &= testPk(pk22d);
-  LagrangeSimplexLocalFiniteElement<double,double,2,3> pk32d;
-  success &= testPk(pk32d);
-  LagrangeSimplexLocalFiniteElement<double,double,2,4> pk42d;
-  success &= testPk(pk42d);
-
-  LagrangeSimplexLocalFiniteElement<double,double,3,1> pk13d;
-  success &= testPk(pk13d);
-  LagrangeSimplexLocalFiniteElement<double,double,3,2> pk23d;
-  success &= testPk(pk23d);
-  LagrangeSimplexLocalFiniteElement<double,double,3,3> pk33d;
-  success &= testPk(pk33d);
-  LagrangeSimplexLocalFiniteElement<double,double,3,4> pk43d;
-  success &= testPk(pk43d);
+  Dune::Hybrid::forEach(std::index_sequence<1,2,3>{},[&](auto dim)
+  {
+    Dune::Hybrid::forEach(std::index_sequence<1,2,3,4>{},[&](auto order)
+    {
+      auto lfe = LagrangeSimplexLocalFiniteElement<double,double,dim,order>();
+      testSuite.check(testPk(lfe))
+        << "Lagrange property not satisfied for " << Dune::className(lfe);
+    });
+  });
 
   //////////////////////////////////////////////////////////
   //   Run the standard tests
   //////////////////////////////////////////////////////////
-  P0LocalFiniteElement<double,double,2> p0lfem(
-  GeometryTypes::simplex(2));
-  TEST_FE(p0lfem);
 
-  LagrangeSimplexLocalFiniteElement<double,double,1,1> p11dlfem;
-  TEST_FE3(p11dlfem,DisableNone,2);
+  // This check extends the generic testFE() by additionally
+  // wrapping the LFE into the virtual interface twice
+  // Check local finite element and its virtualized variants
+  // Notice that testFE add another level of virtualization
+  auto testVirtualLFE = [&](const auto& lfe, auto... args)
+  {
+    auto testSuite = Dune::TestSuite(Dune::className(lfe));
+    using LFE = std::decay_t<decltype(lfe)>;
+    using LocalBasisTraits = typename LFE::Traits::LocalBasisType::Traits;
+    using Interface = Dune::LocalFiniteElementVirtualInterface<LocalBasisTraits>;
+    auto vlfe = Dune::LocalFiniteElementVirtualImp<LFE>(lfe);
+    auto vvlfe = Dune::LocalFiniteElementVirtualImp<decltype(vlfe)>(vlfe);
+    const auto& ilfe = static_cast<const Interface&>(vlfe);
+    testSuite.check(testFE(lfe, args...)) << "Check of raw local finite element";
+    testSuite.check(testFE(vlfe, args...)) << "Check of virtualized local finite element";
+    testSuite.check(testFE(vvlfe, args...)) << "Check of double virtualized local finite element";
+    testSuite.check(testFE(ilfe, args...)) << "Check of virtualized local finite element via interface";
+    return testSuite;
+  };
 
-  LagrangeSimplexLocalFiniteElement<double,double,2,1> p12dlfem;
-  TEST_FE3(p12dlfem,DisableNone,2);
+  // Special implementations
 
-  LagrangeSimplexLocalFiniteElement<double,double,3,1> p13dlfem;
-  TEST_FE3(p13dlfem,DisableNone,2);
+  auto p0LFE = Dune::P0LocalFiniteElement<double,double,2>(GeometryTypes::simplex(2));
+  testSuite.subTest(testVirtualLFE(p0LFE, DisableNone, 0));
 
-  LagrangeSimplexLocalFiniteElement<double,double,1,1> q11dlfem;
-  TEST_FE(q11dlfem);
+  auto mixedPQ22DLFE = Dune::PQ22DLocalFiniteElement<double,double>(GeometryTypes::simplex(2));
+  testSuite.subTest(testVirtualLFE(mixedPQ22DLFE, DisableNone, 0));
 
-  LagrangeSimplexLocalFiniteElement<double,double,2,1> q12dlfem;
-  TEST_FE(q12dlfem);
+  auto prismP1LFE = LagrangePrismLocalFiniteElement<double,double,1>();
+  testSuite.subTest(testVirtualLFE(prismP1LFE, DisableNone, 2));
 
-  LagrangeSimplexLocalFiniteElement<double,double,3,1> q13dlfem;
-  TEST_FE(q13dlfem);
-
-  LagrangeSimplexLocalFiniteElement<double,double,2,1> p11dfem;
-  TEST_FE(p11dfem);
-
-  PQ22DLocalFiniteElement<double,double> pq22dlfem(
-    GeometryTypes::simplex(2));
-  TEST_FE(pq22dlfem);
-
-  LagrangeSimplexLocalFiniteElement<double,double,3,2> p23dlfem;
-  TEST_FE(p23dlfem);
-
-  LagrangePrismLocalFiniteElement<double,double,1> prismp1fem;
-  TEST_FE3(prismp1fem, DisableNone, 2);
-
-  LagrangePrismLocalFiniteElement<double,double,2> prismp2fem;
-  TEST_FE3(prismp2fem, DisableNone, 1);
+  auto prismP2LFE = LagrangePrismLocalFiniteElement<double,double,2>();
+  testSuite.subTest(testVirtualLFE(prismP2LFE, DisableNone, 1));
 
   // Pyramid shapefunctions are not differentiable on the plane where xi[0]=xi[1].
   // So let's skip test points on this plane
   auto xySkip = [](const FieldVector<double,3>& xi){return std::abs(xi[0]-xi[1]) < 1e-8;};
 
-  LagrangePyramidLocalFiniteElement<double,double,1> pyramidp1fem;
-  TEST_FE4(pyramidp1fem, DisableNone, 1, xySkip);
+  auto pyramidP1LFE = LagrangePyramidLocalFiniteElement<double,double,1>();
+  testSuite.subTest(testVirtualLFE(pyramidP1LFE, DisableNone, 1, xySkip));
 
-  LagrangePyramidLocalFiniteElement<double,double,2> pyramidp2fem;
-  TEST_FE4(pyramidp2fem, DisableNone, 1, xySkip);
+  auto pyramidP2LFE = LagrangePyramidLocalFiniteElement<double,double,2>();
+  testSuite.subTest(testVirtualLFE(pyramidP2LFE, DisableNone, 1, xySkip));
 
-  Hybrid::forEach(std::make_index_sequence<4>{},[&success](auto i)
+  // Simplex implementations
+  Dune::Hybrid::forEach(std::index_sequence<1,2,3>{},[&](auto dim)
   {
-    LagrangeSimplexLocalFiniteElement<double,double,1,i> pklfem;
-    TEST_FE(pklfem);
+    Dune::Hybrid::forEach(std::make_index_sequence<5>{},[&](auto order)
+    {
+      // In general we implement partial derivatives up to order 1
+      // For some special cases, we also have 2nd order partial derivatives
+      auto diffOrder = (dim==2 or order<2) ? 2 : 0;
+      auto lfe = LagrangeSimplexLocalFiniteElement<double,double,dim,order>();
+      testSuite.subTest(testVirtualLFE(lfe, DisableNone, diffOrder));
+    });
   });
 
-  Hybrid::forEach(std::make_index_sequence<5>{},[&success](auto i)
+  // Cube implementations
+  Dune::Hybrid::forEach(std::index_sequence<1,2,3>{},[&](auto dim)
   {
-    LagrangeSimplexLocalFiniteElement<double,double,2,i> pklfem;
-    TEST_FE3(pklfem,DisableNone,2);
+    Dune::Hybrid::forEach(std::make_index_sequence<5>{},[&](auto order)
+    {
+      auto diffOrder = 2;
+      auto lfe = LagrangeCubeLocalFiniteElement<double,double,dim,order>();
+      testSuite.subTest(testVirtualLFE(lfe, DisableNone, diffOrder));
+    });
   });
-
-  Hybrid::forEach(std::make_index_sequence<6>{},[&success](auto i)
-  {
-    LagrangeSimplexLocalFiniteElement<double,double,3,i> pklfem;
-    TEST_FE(pklfem);
-  });
-
-  // --------------------------------------------------------
-  //  Test some instantiations of LagrangeCubeLocalFiniteElement
-  // --------------------------------------------------------
-  LagrangeCubeLocalFiniteElement<double,double,1,1> qk11dlfem;
-  TEST_FE3(qk11dlfem,DisableNone,2);
-
-  LagrangeCubeLocalFiniteElement<double,double,2,0> qk02dlfem;
-  TEST_FE3(qk02dlfem,DisableNone,2);
-
-  LagrangeCubeLocalFiniteElement<double,double,2,1> qk12dlfem;
-  TEST_FE3(qk12dlfem,DisableNone,2);
-
-  LagrangeCubeLocalFiniteElement<double,double,2,2> qk22dlfem;
-  TEST_FE3(qk22dlfem,DisableNone,2);
-
-  LagrangeCubeLocalFiniteElement<double,double,2,3> qk32dlfem;
-  TEST_FE3(qk32dlfem,DisableNone,2);
-
-  LagrangeCubeLocalFiniteElement<double,double,3,0> qk03dlfem;
-  TEST_FE3(qk03dlfem,DisableNone,2);
-
-  LagrangeCubeLocalFiniteElement<double,double,3,1> qk13dlfem;
-  TEST_FE3(qk13dlfem,DisableNone,2);
-
-  LagrangeCubeLocalFiniteElement<double,double,3,2> qk23dlfem;
-  TEST_FE3(qk23dlfem,DisableNone,2);
-
-  LagrangeCubeLocalFiniteElement<double,double,3,3> qk33dlfem;
-  TEST_FE3(qk33dlfem,DisableNone,2);
-
-  // test virtualized FEs
-  // notice that testFE add another level of virtualization
-  LocalFiniteElementVirtualImp< LagrangeSimplexLocalFiniteElement<double,double,2,1> >
-  p12dlfemVirtual(p12dlfem);
-  TEST_FE(p12dlfemVirtual);
-
-  LocalFiniteElementVirtualImp< PQ22DLocalFiniteElement<double,double> >
-  pq22dlfemVirtual(pq22dlfem);
-  TEST_FE(pq22dlfemVirtual);
-
-  LocalFiniteElementVirtualImp<
-      LocalFiniteElementVirtualImp<
-          LagrangeSimplexLocalFiniteElement<double,double,2,1> > >
-  p12dlfemVirtualVirtual(p12dlfemVirtual);
-  TEST_FE(p12dlfemVirtualVirtual);
-
-  LocalFiniteElementVirtualImp<
-      LocalFiniteElementVirtualImp<
-          PQ22DLocalFiniteElement<double,double> > >
-  pq22dlfemVirtualVirtual(pq22dlfemVirtual);
-  TEST_FE(pq22dlfemVirtualVirtual);
-
-  typedef LocalFiniteElementVirtualInterface< LagrangeSimplexLocalFiniteElement<double,double,2,1>::Traits::LocalBasisType::Traits > Interface;
-  TEST_FE(static_cast<const Interface&>(p12dlfemVirtual));
 
   // Test the LagrangeLocalFiniteElementCache
-  LagrangeLocalFiniteElementCache<double,double,2,2> lagrangeLFECache;
-  TEST_FE(lagrangeLFECache.get(GeometryTypes::simplex(2)));
-  TEST_FE(lagrangeLFECache.get(GeometryTypes::cube(2)));
+  auto lagrangeLFECache = LagrangeLocalFiniteElementCache<double,double,2,2>();
+  testSuite.subTest(testVirtualLFE(lagrangeLFECache.get(GeometryTypes::simplex(2))));
+  testSuite.subTest(testVirtualLFE(lagrangeLFECache.get(GeometryTypes::cube(2))));
 
   // Test whether asking the cache for an element of the wrong dimension throws an exception
-  bool lagrangeLFESuccess = false;
-  try {
-    auto doesntExist = lagrangeLFECache.get(GeometryTypes::simplex(1));
-  } catch (Dune::Exception& e)
-  {
-    lagrangeLFESuccess = true;
-  }
-  success &= lagrangeLFESuccess;
+  testSuite.checkThrow([&]{
+    lagrangeLFECache.get(GeometryTypes::simplex(1));
+  }) << "LagrangeLocalFiniteElementCache does not throw for non-existing element";
 
-  return success ? 0 : 1;
+  return testSuite.exit();
 }

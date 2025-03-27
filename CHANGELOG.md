@@ -5,6 +5,10 @@ SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 
 # Master (will become release 2.11)
 
+* The new class template `LocalFiniteElement<LocalBasisTraits>` provides
+  a type erased wrapper for finite element implementations with value
+  semantics similar to `std::function`.
+
 * Add a meta local-finite-element `DiscontinuousLocalFiniteElement` that associates
   all basis functions with the element interior by changing its local coefficients.
 

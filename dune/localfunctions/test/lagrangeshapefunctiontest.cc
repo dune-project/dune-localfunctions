@@ -8,15 +8,19 @@
 #include <fenv.h>
 
 #include <dune/common/classname.hh>
+#include <dune/common/deprecated.hh>
 #include <dune/common/test/testsuite.hh>
 
 #include <dune/localfunctions/lagrange/p0.hh>
-#include <dune/localfunctions/lagrange/pq22d.hh>
 #include <dune/localfunctions/lagrange/lagrangelfecache.hh>
 #include <dune/localfunctions/lagrange/lagrangecube.hh>
 #include <dune/localfunctions/lagrange/lagrangeprism.hh>
 #include <dune/localfunctions/lagrange/lagrangepyramid.hh>
 #include <dune/localfunctions/lagrange/lagrangesimplex.hh>
+
+#define DUNE_DISABLE_DEPRECATION_WARNING_PQ22D
+#include <dune/localfunctions/lagrange/pq22d.hh>
+#undef DUNE_DISABLE_DEPRECATION_WARNING_PQ22D
 
 #include <dune/localfunctions/test/test-localfe.hh>
 
@@ -148,8 +152,10 @@ int main (int argc, char *argv[])
   auto p0LFE = Dune::P0LocalFiniteElement<double,double,2>(GeometryTypes::simplex(2));
   testSuite.subTest(testVirtualLFE(p0LFE, DisableNone, 0));
 
+DUNE_NO_DEPRECATED_BEGIN
   auto mixedPQ22DLFE = Dune::PQ22DLocalFiniteElement<double,double>(GeometryTypes::simplex(2));
   testSuite.subTest(testVirtualLFE(mixedPQ22DLFE, DisableNone, 0));
+DUNE_NO_DEPRECATED_END
 
   auto prismP1LFE = LagrangePrismLocalFiniteElement<double,double,1>();
   testSuite.subTest(testVirtualLFE(prismP1LFE, DisableNone, 2));

@@ -23,7 +23,10 @@
 #include <dune/localfunctions/lagrange/lagrangeprism.hh>
 #include <dune/localfunctions/lagrange/lagrangesimplex.hh>
 #include <dune/localfunctions/lagrange/p0.hh>
+
+#define DUNE_DISABLE_DEPRECATION_WARNING_PQ22D
 #include <dune/localfunctions/lagrange/pq22d.hh>
+#undef DUNE_DISABLE_DEPRECATION_WARNING_PQ22D
 
 namespace Dune
 {

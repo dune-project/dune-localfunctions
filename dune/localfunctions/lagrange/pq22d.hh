@@ -2,10 +2,12 @@
 // vi: set et ts=4 sw=2 sts=2:
 // SPDX-FileCopyrightInfo: Copyright © DUNE Project contributors, see file LICENSE.md in module root
 // SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
+#ifndef DUNE_DISABLE_DEPRECATION_WARNING_PQ22D
+#warning This header is deprecated and will be removed after 2.11.
+#endif
+
 #ifndef DUNE_PQ22DLOCALFINITEELEMENT_HH
 #define DUNE_PQ22DLOCALFINITEELEMENT_HH
-
-#warning This header is empty and deprecated and will be removed after 2.11.
 
 #include <dune/common/fmatrix.hh>
 

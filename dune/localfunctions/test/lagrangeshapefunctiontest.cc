@@ -178,9 +178,7 @@ DUNE_NO_DEPRECATED_END
   {
     Dune::Hybrid::forEach(std::make_index_sequence<5>{},[&](auto order)
     {
-      // In general we implement partial derivatives up to order 1
-      // For some special cases, we also have 2nd order partial derivatives
-      auto diffOrder = (dim==2 or order<2) ? 2 : 0;
+      auto diffOrder = 2;
       auto lfe = LagrangeSimplexLocalFiniteElement<double,double,dim,order>();
       testSuite.subTest(testVirtualLFE(lfe, DisableNone, diffOrder));
     });

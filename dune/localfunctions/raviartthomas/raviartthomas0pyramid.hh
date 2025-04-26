@@ -17,6 +17,16 @@ namespace Dune
   /**
    * \brief First order Raviart-Thomas shape functions on pyramids.
    *
+   * This implements the composite element proposed by Ainsworth/Fu in
+   * "A lowest-order composite finite element exact sequence on pyramids"
+   * Computer Methods in Applied Mechanics and Engineering,
+   * Volume 324, 1 September 2017, Pages 110-127.
+   * https://arxiv.org/abs/1705.00064
+   *
+   * Notice that this is a composite element with a discontinuity across
+   * the plane with x[0]==x[1]. It contains on DOF per face and one internal
+   * DOF located at the center of the intersections of the two sub-elements.
+   *
    * \ingroup RaviartThomas
    *
    * \tparam D Type to represent the field in the domain.

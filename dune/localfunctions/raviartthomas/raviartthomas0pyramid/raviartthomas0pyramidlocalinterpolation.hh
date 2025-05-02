@@ -76,15 +76,6 @@ namespace Dune
       out.resize(6);
       for(int i=0; i<6; i++)
         out[i] = f(facetCenter_[i]).dot(facetNormal_[i]) * facetArea_[i] * sign_[i];
-
-      // Adjust the scaling for the triangular faces functions.
-      // The tetrahedral RT-basis is scaled rather strange:
-      // The dual basis does not evaluate the face integral
-      // of the normal component, but sqrt(2) times this integral.
-      // In order to match the basis functions, we need to rescale
-      // the triangular face functions here, too.
-      for(std::size_t i=1; i<5; ++i)
-        out[i] *= std::sqrt(2.0);
     }
 
   private:

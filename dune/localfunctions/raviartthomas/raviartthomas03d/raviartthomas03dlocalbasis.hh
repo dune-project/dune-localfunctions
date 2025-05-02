@@ -47,11 +47,10 @@ namespace Dune
                                   std::vector<typename Traits::RangeType>& out) const
     {
       out.resize(4);
-      auto c = std::sqrt(2.0);
-      out[0] = {sign_[0]*c* in[0],       sign_[0]*c* in[1],       sign_[0]*c*(in[2]-D(1))};
-      out[1] = {sign_[1]*c* in[0],       sign_[1]*c*(in[1]-D(1)), sign_[1]*c* in[2]      };
-      out[2] = {sign_[2]*c*(in[0]-D(1)), sign_[2]*c* in[1],       sign_[2]*c* in[2]      };
-      out[3] = {sign_[3]*c* in[0],       sign_[3]*c* in[1],       sign_[3]*c* in[2]      };
+      out[0] = {sign_[0]*2.0* in[0],       sign_[0]*2.0* in[1],       sign_[0]*2.0*(in[2]-D(1))};
+      out[1] = {sign_[1]*2.0* in[0],       sign_[1]*2.0*(in[1]-D(1)), sign_[1]*2.0* in[2]      };
+      out[2] = {sign_[2]*2.0*(in[0]-D(1)), sign_[2]*2.0* in[1],       sign_[2]*2.0* in[2]      };
+      out[3] = {sign_[3]*2.0* in[0],       sign_[3]*2.0* in[1],       sign_[3]*2.0* in[2]      };
     }
 
     //! \brief Evaluate Jacobian of all shape functions
@@ -62,10 +61,9 @@ namespace Dune
       out.resize(4);
       for (int i=0; i<4; i++)
       {
-        auto c = std::sqrt(2.0);
-        out[i][0] = {c*sign_[i],         0,         0};
-        out[i][1] = {         0,c*sign_[i],         0};
-        out[i][2] = {         0,         0,c*sign_[i]};
+        out[i][0] = {2.0*sign_[i],         0,         0};
+        out[i][1] = {         0,2.0*sign_[i],         0};
+        out[i][2] = {         0,         0,2.0*sign_[i]};
       }
     }
 
@@ -83,7 +81,7 @@ namespace Dune
 
         for (int i=0; i<size(); i++)
         {
-          out[i][direction] = sign_[i]* std::sqrt(2.0) ;
+          out[i][direction] = sign_[i]*2.0;
           out[i][(direction+1)%3] = 0;
           out[i][(direction+2)%3] = 0;
         }

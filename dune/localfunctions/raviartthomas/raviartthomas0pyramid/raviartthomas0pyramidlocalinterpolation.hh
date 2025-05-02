@@ -33,27 +33,33 @@ namespace Dune
       typedef typename LB::Traits::RangeFieldType Scalar;
 
       for (size_t i=0; i<5; i++)
-        sign[i] = (s[i]) ? -1.0 : 1.0;
+        sign_[i] = (s[i]) ? -1.0 : 1.0;
+
+      // No need to flip the sign for the interior basis function
+      sign_[5] = 1.0;
 
       Scalar r = 1/std::sqrt(2);
 
-      n[0] = { 0.0,  0.0, -1.0};
-      n[1] = {-1.0,  0.0,  0.0};
-      n[2] = {   r,  0.0,    r};
-      n[3] = { 0.0, -1.0,  0.0};
-      n[4] = { 0.0,    r,    r};
+      facetNormal_[0] = { 0.0,  0.0, -1.0};
+      facetNormal_[1] = {-1.0,  0.0,  0.0};
+      facetNormal_[2] = {   r,  0.0,    r};
+      facetNormal_[3] = { 0.0, -1.0,  0.0};
+      facetNormal_[4] = { 0.0,    r,    r};
+      facetNormal_[5] = {   r,   -r,  0.0};
 
-      c[0] = 1.0;
-      c[1] = 1/2.0;
-      c[2] = 1/2.0 * std::sqrt(2);
-      c[3] = 1/2.0;
-      c[4] = 1/2.0 * std::sqrt(2);
+      facetArea_[0] = 1.0;
+      facetArea_[1] = 1/2.0;
+      facetArea_[2] = 1/2.0 * std::sqrt(2);
+      facetArea_[3] = 1/2.0;
+      facetArea_[4] = 1/2.0 * std::sqrt(2);
+      facetArea_[5] = 1/2.0 * std::sqrt(2);
 
-      m[0] = {   0.5,   0.5,   0.0};
-      m[1] = {   0.0, 1/3.0, 1/3.0};
-      m[2] = { 2/3.0, 1/3.0, 1/3.0};
-      m[3] = { 1/3.0,   0.0, 1/3.0};
-      m[4] = { 1/3.0, 2/3.0, 1/3.0};
+      facetCenter_[0] = {   0.5,   0.5,   0.0};
+      facetCenter_[1] = {   0.0, 1/3.0, 1/3.0};
+      facetCenter_[2] = { 2/3.0, 1/3.0, 1/3.0};
+      facetCenter_[3] = { 1/3.0,   0.0, 1/3.0};
+      facetCenter_[4] = { 1/3.0, 2/3.0, 1/3.0};
+      facetCenter_[5] = { 1/3.0, 1/3.0, 1/3.0};
     }
 
     /**
@@ -67,21 +73,30 @@ namespace Dune
     template<class F, class C>
     void interpolate (const F& f, std::vector<C>& out) const
     {
-      out.resize(5);
-      for(int i=0; i<5; i++)
-        out[i] = f(m[i]).dot(n[i]) * c[i] * sign[i];
+      out.resize(6);
+      for(int i=0; i<6; i++)
+        out[i] = f(facetCenter_[i]).dot(facetNormal_[i]) * facetArea_[i] * sign_[i];
+
+      // Adjust the scaling for the triangular faces functions.
+      // The tetrahedral RT-basis is scaled rather strange:
+      // The dual basis does not evaluate the face integral
+      // of the normal component, but sqrt(2) times this integral.
+      // In order to match the basis functions, we need to rescale
+      // the triangular face functions here, too.
+      for(std::size_t i=1; i<5; ++i)
+        out[i] *= std::sqrt(2.0);
     }
 
   private:
     // Facet orientations
-    std::array<typename LB::Traits::RangeFieldType, 5> sign;
+    std::array<typename LB::Traits::RangeFieldType, 6> sign_;
     // Facet area
-    std::array<typename LB::Traits::RangeFieldType, 5> c;
+    std::array<typename LB::Traits::RangeFieldType, 6> facetArea_;
 
     // Facet normals
-    std::array<typename LB::Traits::DomainType, 5> n;
+    std::array<typename LB::Traits::DomainType, 6> facetNormal_;
     // Facet midpoints
-    std::array<typename LB::Traits::DomainType, 5> m;
+    std::array<typename LB::Traits::DomainType, 6> facetCenter_;
   };
 }
 #endif // DUNE_LOCALFUNCTIONS_RAVIARTTHOMAS0_PYRAMID_LOCALINTERPOLATION_HH

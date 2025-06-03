@@ -31,14 +31,18 @@ namespace Dune {
  * \tparam Domain Type used for domain coordinates
  * \tparam Range Type used for shape function values
  * \tparam dim Element dimension
+ * \tparam SF storage field for basis matrix [default=Range]
+ * \tparam CF compute field for basis matrix [default=Range]
  *
  * The cached finite element implementations can be obtained using get(GeometryType).
  */
-template <class Domain, class Range, int dim>
+template <class Domain, class Range, int dim,
+          class SF=Range, class CF=Range>
 class DynamicLagrangeLocalFiniteElementCache
 {
 public:
-  using FiniteElementType = LagrangeLocalFiniteElement<EquidistantPointSet, dim, Domain, Range>;
+  using PointSet = EquidistantPointSet;
+  using FiniteElementType = LagrangeLocalFiniteElement<PointSet, dim, Domain, Range, SF, CF>;
 
   //! Construct an empty cache.
   explicit DynamicLagrangeLocalFiniteElementCache (unsigned int order)

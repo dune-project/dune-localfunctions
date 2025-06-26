@@ -67,19 +67,6 @@ namespace Dune
       offset_[4][1] = {0.0, 0.0, 0.0};
       factor_[4][1] = 0.0;
 
-      // Adjust the scaling for the triangular faces functions.
-      // The tetrahedral RT-basis is scaled rather strange:
-      // The dual basis does not evaluate the face integral
-      // of the normal component, but sqrt(2) times this integral.
-      // In order to match the basis functions, we need to rescale
-      // the triangular face functions here, too.
-      for(std::size_t i=1; i<5; ++i)
-        for(std::size_t j=0; j<2; ++j)
-        {
-          offset_[i][j] /= std::sqrt(2.0);
-          factor_[i][j] /= std::sqrt(2.0);
-        }
-
       // Interior basis function associated to the interior
       // face given by the intersection of the sub-elements
       // in the plane where x[0]==x[1].

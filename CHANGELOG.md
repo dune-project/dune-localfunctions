@@ -5,6 +5,10 @@ SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 
 # Master (will become release 2.11)
 
+* The scaling of the basis functions in the `RT03DLocalFiniteElement`
+  was fixed. Now the associated degrees of freedom are the face normal
+  moments as in the classical literature.
+
 * The new class template `LocalFiniteElement<LocalBasisTraits>` provides
   a type erased wrapper for finite element implementations with value
   semantics similar to `std::function`.

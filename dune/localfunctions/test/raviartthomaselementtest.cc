@@ -140,12 +140,16 @@ int main(int argc, char** argv)
     TEST_FE(rt1cube3dlfemDedicated);
   }
 
+  // Pyramid shapefunctions are not differentiable on the plane where xi[0]=xi[1].
+  // So let's skip test points on this plane
+  auto xySkip = [](const Dune::FieldVector<double,3>& xi){return std::abs(xi[0]-xi[1]) < 1e-8;};
+
   Dune::RT0PyramidLocalFiniteElement<double,double> rt0pyramidlfemDedicated;
-  TEST_FE(rt0pyramidlfemDedicated);
+  TEST_FE4(rt0pyramidlfemDedicated, DisableNone, 0, xySkip);
   for (unsigned int s = 0; s < 32; s++)
   {
     Dune::RT0PyramidLocalFiniteElement<double,double> rt0pyramidlfemDedicated(s);
-    TEST_FE(rt0pyramidlfemDedicated);
+    TEST_FE4(rt0pyramidlfemDedicated, DisableNone, 0, xySkip);
   }
 
   Dune::RT0PrismLocalFiniteElement<double,double> rt0prismlfemDedicated;

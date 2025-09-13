@@ -48,6 +48,8 @@ dune_add_test(SOURCES test-q1.cc)
 
 dune_add_test(SOURCES test-q2.cc)
 
+dune_add_test(SOURCES test-lagrangecache.cc)
+
 dune_add_test(NAME test-lagrange1
               SOURCES test-lagrange.cc
               COMPILE_DEFINITIONS "CHECKDIM=1")

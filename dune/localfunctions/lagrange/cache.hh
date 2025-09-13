@@ -41,8 +41,7 @@ template <class Domain, class Range, int dim,
 class DynamicLagrangeLocalFiniteElementCache
 {
 public:
-  using PointSet = EquidistantPointSet;
-  using FiniteElementType = LagrangeLocalFiniteElement<PointSet, dim, Domain, Range, SF, CF>;
+  using FiniteElementType = LagrangeLocalFiniteElement<EquidistantPointSet, dim, Domain, Range, SF, CF>;
 
   //! Construct an empty cache.
   explicit DynamicLagrangeLocalFiniteElementCache (unsigned int order)

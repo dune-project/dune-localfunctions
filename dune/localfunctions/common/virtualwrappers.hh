@@ -244,7 +244,7 @@ namespace Dune
   public:
     typedef typename Interface::Traits Traits;
 
-    //! @copydoc constructor taking a LocalFiniteElementVirtualInterface implementation
+    //! Constructor taking a LocalFiniteElementVirtualInterface implementation
     LocalFiniteElementVirtualImp( const Imp &imp )
       : impl_(LocalFiniteElementCloneFactory<Imp>::clone(imp)),
         localBasisImp_(impl_->localBasis()),

@@ -27,7 +27,7 @@
 namespace Dune
 {
   /**
-   * \ingroup LocalBasisImplementation
+   * \ingroup LocalFunctionsImpl
    * \brief P1 basis in dim-d enriched by quadratic edge bubble functions and an
    *        element bubble function of order dim+1.
    *
@@ -214,7 +214,7 @@ namespace Dune
 
 
   /**
-   * \ingroup LocalBasisImplementation
+   * \ingroup LocalFunctionsImpl
    * \brief The local keys of the hierarchical basis functions with element bubble.
    *
    * This shape function set consists of three parts:

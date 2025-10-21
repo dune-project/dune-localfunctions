@@ -11,7 +11,7 @@
 namespace Dune
 {
   /**
-   * \ingroup LocalBasisImplementation
+   * \ingroup LocalFunctionsImpl
    * \brief Interpolation into the SimplexP1BubbleLocalBasis
    *
    * The coefficients `f_i` associated to the vertex DOFs are computed

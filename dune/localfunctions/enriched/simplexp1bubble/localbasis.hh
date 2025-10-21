@@ -18,7 +18,7 @@
 namespace Dune
 {
   /**
-   * \ingroup LocalBasisImplementation
+   * \ingroup LocalFunctionsImpl
    * \brief P1 basis in dim-d enriched by an (order dim+1) element bubble function.
    *
    * The shape functions are associated to the vertices and to the barycenter. The

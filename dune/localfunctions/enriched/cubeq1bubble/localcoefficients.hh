@@ -12,7 +12,7 @@
 namespace Dune
 {
   /**
-   * \ingroup LocalBasisImplementation
+   * \ingroup LocalFunctionsImpl
    * \brief The Local keys associated to the dim-d local basis functions
    *
    * The local keys represent first the vertex DOFs and then a single

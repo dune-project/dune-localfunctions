@@ -127,7 +127,7 @@ namespace Dune
     /**
      * \brief Move assignment
      *
-     * \param rhs The LocalFiniteElement to assign from
+     * \param other The LocalFiniteElement to assign from
      *
      * This will first remove the stored local finite element. Then,
      * depending of the state of the argument, `*this` will either

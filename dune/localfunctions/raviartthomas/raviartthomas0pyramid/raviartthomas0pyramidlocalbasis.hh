@@ -91,7 +91,7 @@ namespace Dune
     /**
      * \brief Evaluate all shape functions
      *
-     * \param in Position
+     * \param x Position
      * \param out return value
      */
     inline void evaluateFunction (const typename Traits::DomainType& x,
@@ -111,7 +111,7 @@ namespace Dune
     /**
      * \brief Evaluate Jacobian of all shape functions
      *
-     * \param in Position
+     * \param x Position
      * \param out return value
      */
     inline void evaluateJacobian (const typename Traits::DomainType& x,

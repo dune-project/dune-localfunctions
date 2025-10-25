@@ -14,18 +14,18 @@
 
 namespace Dune
 {
- /*
+ /**
   * `RTPreBasisFactory` provides a basis for the Raviart-Thomas function space.
   * `RaviartThomasL2InterpolationFactory` provides the linear functionals.
   *
   * `Defaultbasisfactory::create` first builds the function space and the linear functionals.
   * Then the constructor of `BasisMatrix` gets called. There the matrix
   *
-  * \begin{equation}
+  * \f[
   *   A_{i,j} := N_j(\phi_i)
-  * \end{equation}
+  * \f]
   *
-  * with linear functionals $N_j$ and basisfunctions $\phi_i$ gets assembled.
+  * with linear functionals \f$N_j\f$ and basisfunctions \f$\phi_i\f$ gets assembled.
   * Then the matrix gets inverted and is then used as a coefficient matrix for the standard monomial basis.
   *
   * For more details on the theory see the first chapter "Construction of Local Finite Element Spaces Using the Generic Reference Elements"

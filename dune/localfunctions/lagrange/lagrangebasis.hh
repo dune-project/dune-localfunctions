@@ -21,7 +21,7 @@ namespace Dune
    * \tparam dim  Dimension of reference elements
    * \tparam D    Domain field-type of the basis functions
    * \tparam R    Range field-type of the basis functions
-   * \tpapam SF   Storage field-type for basis matrix
+   * \tparam SF   Storage field-type for basis matrix
    * \tparam CF   Compute field-type for basis matrix
    **/
   template< template <class,unsigned int> class LP,

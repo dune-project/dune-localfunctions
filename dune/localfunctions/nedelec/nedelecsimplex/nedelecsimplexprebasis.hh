@@ -146,7 +146,7 @@ namespace Dune
       {
         // get dim \P_{n-1,order-1}
         int homogenTwoVariables = 0;
-        for( int w = notHomogen; w<notHomogen + homogen; w++)
+        for (unsigned int w = notHomogen; w<notHomogen + homogen; w++)
           if (val[w].z(0)==0)
             homogenTwoVariables++;
         row_ = (notHomogen*dim+homogen*(dim+2) + homogenTwoVariables)*dim;
@@ -197,7 +197,7 @@ namespace Dune
            *
            * The loop over the monomials is needed to obtain the corresponding column index.
            */
-          for (int w=homogen+notHomogen; w<val.size(); ++w)
+          for (std::size_t w=homogen+notHomogen; w<val.size(); ++w)
           {
             if (val[w] == xval*x[0])
               mat_[row+1][w] = 1.;
@@ -233,7 +233,7 @@ namespace Dune
           for (unsigned int r=0; r<dim - skipLastDim; ++r)
           {
             int index = (r+dim-1)%dim;
-            for (int w=homogen+notHomogen; w<val.size(); ++w)
+            for (std::size_t w=homogen+notHomogen; w<val.size(); ++w)
             {
               if (val[w] == xval*x[index])
                 mat_[row+r][w] = 1.;

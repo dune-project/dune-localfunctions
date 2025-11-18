@@ -85,7 +85,7 @@ namespace Dune
     {
       out.resize(5);
 
-      for(int i=0; i<size(); i++)
+      for (std::size_t i=0; i<size(); i++)
         for(int j=0; j<3; j++)
             out[i][j] = {0.0, 0.0, 0.0};
 

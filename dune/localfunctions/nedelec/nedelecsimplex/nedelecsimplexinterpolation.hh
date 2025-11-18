@@ -232,7 +232,7 @@ namespace Dune
 
       // if dimension == 2: order-1 on element
       // if dimension == 3: order-2 on element
-      int requiredOrder =  static_cast<int>(dimension==3);
+      std::size_t requiredOrder =  static_cast<std::size_t>(dimension==3);
       testBasis_ = (order > requiredOrder ? TestBasisFactory::template create< geometry >( order-1-requiredOrder ) : nullptr);
 
       const auto &refElement = ReferenceElements< Field, dimension >::general( type() );
@@ -250,7 +250,7 @@ namespace Dune
         // use the first dim-1 vertices of a face to compute the tangents
         auto vertices = refElement.subEntities(i,1,dim).begin();
         auto vertex1 = *vertices;
-        for(int j=1; j<dim;j++)
+        for(std::size_t j=1; j<dim;j++)
         {
           auto vertex2 = vertices[j];
 
@@ -616,7 +616,7 @@ namespace Dune
         typename MVal::const_iterator mIter = mVal.begin();
         for (unsigned int row = startRow; row!=endRow; ++mIter)
         {
-          for(int i=0; i<dimension-1;i++)
+          for (unsigned int i=0; i<dimension-1; i++)
           {
             auto test = *mIter*faceTangents[i];
             matrix.add(row+i,col, weight*(nedTimesNormal*test) );

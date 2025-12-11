@@ -3,7 +3,7 @@ SPDX-FileCopyrightText: Copyright © DUNE Project contributors, see file LICENSE
 SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 -->
 
-# Master (will become release 2.11)
+# Release 2.11
 
 * The scaling of the basis functions in the `RT03DLocalFiniteElement`
   was fixed. Now the associated degrees of freedom are the face normal

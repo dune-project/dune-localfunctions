@@ -160,11 +160,14 @@ namespace Dune { namespace Impl
   {
     template <class> friend class LagrangeSimplexLocalInterpolation;
 
+  public:
+
     using Base = LagrangeSimplexTraits<dim,polynomialOrder>;
     using Buffers = LagrangeSimplexLocalBasisBuffers<R,dim,polynomialOrder>;
     static constexpr bool is_static_order = Base::is_static_order;
 
-public:
+  public:
+
     constexpr LagrangeSimplexLocalBasis(int k = polynomialOrder)
       : Base(k)
       , Buffers(k)
@@ -173,7 +176,7 @@ public:
     using Base::order;
     using Base::size;
 
-private:
+  private:
 
     // Fix the first index in a multi-dimensional array to `i`. For matrices this
     // corresponds to the ith row of the matrix.

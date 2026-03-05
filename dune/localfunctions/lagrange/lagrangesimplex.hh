@@ -6,8 +6,11 @@
 #define DUNE_LOCALFUNCTIONS_LAGRANGE_LAGRANGESIMPLEX_HH
 
 #include <array>
+#include <cstddef>
 #include <numeric>
 #include <algorithm>
+#include <span>
+#include <type_traits>
 
 #include <dune/common/exceptions.hh>
 #include <dune/common/fmatrix.hh>
@@ -15,6 +18,8 @@
 #include <dune/common/hybridutilities.hh>
 #include <dune/common/math.hh>
 #include <dune/common/rangeutilities.hh>
+#include <dune/common/std/mdarray.hh>
+#include <dune/common/std/mdspan.hh>
 
 #include <dune/geometry/referenceelements.hh>
 
@@ -24,6 +29,120 @@
 
 namespace Dune { namespace Impl
 {
+  // The traits provide static or dynamic order and size information
+  template<unsigned int dim, int k>
+  struct LagrangeSimplexTraits
+  {
+    static constexpr bool is_static_order = (k>=0);
+
+    constexpr LagrangeSimplexTraits(int /*order*/ = k)
+    {
+      static_assert(k >= 0, "LagrangeSimplex: order must be non-negative");
+    }
+
+    //! \brief Polynomial order of the shape functions
+    static constexpr int order() { return k; }
+
+    /** \brief Number of shape functions
+      *
+      * See https://en.wikipedia.org/wiki/Figurate_number for an explanation of the formula
+      */
+    static constexpr unsigned int size() { return binomial(k+dim,dim); }
+  };
+
+
+  // this specialization is for the dynamic order case
+  template<unsigned int dim>
+  struct LagrangeSimplexTraits<dim,-1>
+  {
+    const int k_;
+    const unsigned int size_;
+
+    static constexpr bool is_static_order = false;
+
+    constexpr explicit LagrangeSimplexTraits(int order)
+      : k_(order)
+      , size_(binomial(order+dim,dim))
+    {
+      if (order < 0)
+        DUNE_THROW(Dune::InvalidStateException, "LagrangeSimplex: order must be non-negative");
+    }
+
+    //! \brief Polynomial order of the shape functions
+    constexpr int order() const
+    {
+      return k_;
+    }
+
+    //! \brief Number of shape functions
+    constexpr unsigned int size() const
+    {
+      return size_;
+    }
+  };
+
+  template<class R, unsigned int dim, int k>
+  struct LagrangeSimplexLocalBasisBuffers
+  {
+    LagrangeSimplexLocalBasisBuffers(int /*order*/) {}
+
+    // Buffer for Lagrange basis function evaluations, used in evaluateFunction()
+    static auto makeValueBuffer(int /*order*/)
+    {
+      using E = Std::extents<int,dim+1,k+1>;
+      using C = std::array<R,(dim+1)*(k+1)>;
+      return Std::mdarray<R,E,Std::layout_right,C>{};
+    }
+
+    // Buffer for Lagrange basis function evaluations, used in evaluateJacobian()
+    static auto makeJacobianBuffer(int /*order*/)
+    {
+      using E = Std::extents<int,dim+1,2,k+1>;
+      using C = std::array<R,(dim+1)*2*(k+1)>;
+      return Std::mdarray<R,E,Std::layout_right,C>{};
+    }
+
+    // Buffer for Lagrange basis function evaluations, used in partial()
+    template <class T, T o>
+    static auto makePartialBuffer(std::integral_constant<T,o>, int /*order*/)
+    {
+      using E = Std::extents<int,dim+1,o,k+1>;
+      using C = std::array<R,(dim+1)*o*(k+1)>;
+      return Std::mdarray<R,E,Std::layout_right,C>{};
+    }
+  };
+
+  template<class R, unsigned int dim>
+  struct LagrangeSimplexLocalBasisBuffers<R,dim,-1>
+  {
+    LagrangeSimplexLocalBasisBuffers(int order)
+      : buffer_((dim+1)*std::max<int>(2,order)*(order+1))
+    {}
+
+    mutable std::vector<R> buffer_{};
+
+    // Buffer for Lagrange basis function evaluations, used in evaluateFunction()
+    auto makeValueBuffer(int order) const
+    {
+      using E = Std::extents<int,dim+1,std::dynamic_extent>;
+      return Std::mdspan<R,E>{buffer_.data(), E(order+1)};
+    }
+
+    // Buffer for Lagrange basis function evaluations, used in evaluateJacobian()
+    auto makeJacobianBuffer(int order) const
+    {
+      using E = Std::extents<int,dim+1,2,std::dynamic_extent>;
+      return Std::mdspan<R,E>{buffer_.data(), E(order+1)};
+    }
+
+    // Buffer for Lagrange basis function evaluations, used in partial()
+    auto makePartialBuffer(int derivativeOrder, int order) const
+    {
+      using E = Std::extents<int,dim+1,std::dynamic_extent,std::dynamic_extent>;
+      return Std::mdspan<R,E>{buffer_.data(), E(derivativeOrder, order+1)};
+    }
+  };
+
    /** \brief Lagrange shape functions of arbitrary order on the reference simplex
 
      Lagrange shape functions of arbitrary order have the property that
@@ -32,11 +151,49 @@ namespace Dune { namespace Impl
      \tparam D Type to represent the field in the domain
      \tparam R Type to represent the field in the range
      \tparam dim Dimension of the domain simplex
-     \tparam k Polynomial order
+     \tparam polynomialOrder Polynomial order of the shape functions
    */
-  template<class D, class R, unsigned int dim, unsigned int k>
+  template<class D, class R, unsigned int dim, int polynomialOrder>
   class LagrangeSimplexLocalBasis
+    : public LagrangeSimplexTraits<dim,polynomialOrder>
+    , private LagrangeSimplexLocalBasisBuffers<R,dim,polynomialOrder>
   {
+    template <class> friend class LagrangeSimplexLocalInterpolation;
+
+    using Base = LagrangeSimplexTraits<dim,polynomialOrder>;
+    using Buffers = LagrangeSimplexLocalBasisBuffers<R,dim,polynomialOrder>;
+    static constexpr bool is_static_order = Base::is_static_order;
+
+public:
+    constexpr LagrangeSimplexLocalBasis(int k = polynomialOrder)
+      : Base(k)
+      , Buffers(k)
+    {}
+
+    using Base::order;
+    using Base::size;
+
+private:
+
+    // Fix the first index in a multi-dimensional array to `i`. For matrices this
+    // corresponds to the ith row of the matrix.
+    template <class I, std::size_t e0, std::size_t... ee, class C>
+    static auto slice(Std::mdarray<R,Std::extents<I,e0,ee...>,Std::layout_right,C>& L, int i)
+    {
+      return Dune::unpackIntegerSequence([&](auto... ii) {
+        return Std::mdspan<R,Std::extents<I,ee...>,Std::layout_right>{
+          L.container_data() + i * L.stride(0), L.extent(ii+1)...};
+      }, std::make_index_sequence<sizeof...(ee)>{});
+    }
+
+    template <class I, std::size_t e0, std::size_t... ee, class A>
+    static auto slice(Std::mdspan<R,Std::extents<I,e0,ee...>,Std::layout_right,A>& L, int i)
+    {
+      return Dune::unpackIntegerSequence([&](auto... ii) {
+        return Std::mdspan<R,Std::extents<I,ee...>,Std::layout_right>{
+          L.data_handle() + i * L.stride(0), L.extent(ii+1)...};
+      }, std::make_index_sequence<sizeof...(ee)>{});
+    }
 
     // Compute the rescaled barycentric coordinates of x.
     // We rescale the simplex by k and then compute the
@@ -47,11 +204,11 @@ namespace Dune { namespace Impl
     // integers satisfying the constraint sum i_j = k.
     constexpr auto barycentric(const auto& x) const
     {
-      auto b = std::array<R,dim+1>{};
-      b[dim] = k;
-      for(auto i : Dune::range(dim))
+      auto b = std::array<R, dim + 1>{};
+      b[dim] = order();
+      for (auto i : Dune::range(dim))
       {
-        b[i] = k*x[i];
+        b[i] = order() * x[i];
         b[dim] -= b[i];
       }
       return b;
@@ -61,7 +218,7 @@ namespace Dune { namespace Impl
     //
     // L_i(t) = (t-0)/(i-0) * ... * (t-(i-1))/(i-(i-1))
     //        = (t-0)*...*(t-(i-1))/(i!);
-    static constexpr void evaluateLagrangePolynomials(const R& t, auto& L)
+    static constexpr void evaluateLagrangePolynomials(const R& t, auto L, int k)
     {
       L[0] = 1;
       for (auto i : Dune::range(k))
@@ -70,23 +227,23 @@ namespace Dune { namespace Impl
 
     // Evaluate the univariate Lagrange polynomial derivatives L_i(t) for i=0,...,k
     // up to given maxDerivativeOrder.
-    static constexpr void evaluateLagrangePolynomialDerivative(const R& t, auto& LL, unsigned int maxDerivativeOrder)
+    static constexpr void evaluateLagrangePolynomialDerivative(const R& t, auto LL, unsigned int maxDerivativeOrder, int k)
     {
-      auto& L = LL[0];
+      auto L = slice(LL,0);
       L[0] = 1;
       for (auto i : Dune::range(k))
         L[i+1] = L[i] * (t - i) / (i+1);
       for(auto j : Dune::range(maxDerivativeOrder))
       {
-        auto& F = LL[j];
-        auto& DF = LL[j+1];
+        auto F = slice(LL,j);
+        auto DF = slice(LL,j+1);
         DF[0] = 0;
         for (auto i : Dune::range(k))
           DF[i+1] = (DF[i] * (t - i) + (j+1)*F[i]) / (i+1);
       }
     }
 
-    using BarycentricMultiIndex = std::array<unsigned int,dim+1>;
+    using BarycentricMultiIndex = std::array<int,dim+1>;
 
 
     // This computed the required partial derivative given by the multi-index
@@ -104,7 +261,8 @@ namespace Dune { namespace Impl
     // \f$f(x) = \prod_{j=0}^{d} L_{i_j}^{(alpha_j)}(x_j) \f$.
     static constexpr R barycentricDerivative(
         BarycentricMultiIndex beta,
-        const auto&L,
+        const auto& L,
+        int k,
         const BarycentricMultiIndex& i,
         const BarycentricMultiIndex& alpha = {})
     {
@@ -124,7 +282,8 @@ namespace Dune { namespace Impl
           leftDerivatives[j]++;
           rightDerivatives.back()++;
           beta[j]--;
-          return (barycentricDerivative(beta, L, i, leftDerivatives) - barycentricDerivative(beta, L, i, rightDerivatives))*k;
+          return (barycentricDerivative(beta, L, k, i, leftDerivatives) -
+                  barycentricDerivative(beta, L, k, i, rightDerivatives)) * k;
         }
       }
       // If there are no unprocessed derivatives we can simply evaluate
@@ -134,7 +293,7 @@ namespace Dune { namespace Impl
       // with given indices and orders.
       auto y = R(1);
       for(auto j : Dune::range(dim+1))
-        y *= L[j][alpha[j]][i[j]];
+        y *= L(j,alpha[j],i[j]);
       return y;
     }
 
@@ -142,19 +301,11 @@ namespace Dune { namespace Impl
   public:
     using Traits = LocalBasisTraits<D,dim,FieldVector<D,dim>,R,1,FieldVector<R,1>,FieldMatrix<R,1,dim> >;
 
-    /** \brief Number of shape functions
-     *
-     * See https://en.wikipedia.org/wiki/Figurate_number for an explanation of the formula
-     */
-    static constexpr unsigned int size ()
-    {
-      return binomial(k+dim,dim);
-    }
-
     //! \brief Evaluate all shape functions
     void evaluateFunction(const typename Traits::DomainType& x,
                           std::vector<typename Traits::RangeType>& out) const
     {
+      const int k = order();
       out.resize(size());
 
       // Specialization for zero-order case
@@ -179,16 +330,16 @@ namespace Dune { namespace Impl
       // Compute rescaled barycentric coordinates of x
       auto z = barycentric(x);
 
-      auto L = std::array<std::array<R,k+1>, dim+1>();
+      auto L = Buffers::makeValueBuffer(k);
       for (auto j : Dune::range(dim+1))
-        evaluateLagrangePolynomials(z[j], L[j]);
+        evaluateLagrangePolynomials(z[j], slice(L,j), k);
 
       if (dim==1)
       {
         unsigned int n = 0;
         for (auto i0 : Dune::range(k + 1))
           for (auto i1 : std::array{k - i0})
-            out[n++] = L[0][i0] * L[1][i1];
+            out[n++] = L(0,i0) * L(1,i1);
         return;
       }
       if (dim==2)
@@ -197,7 +348,7 @@ namespace Dune { namespace Impl
         for (auto i1 : Dune::range(k + 1))
           for (auto i0 : Dune::range(k - i1 + 1))
             for (auto i2 : std::array{k - i1 - i0})
-              out[n++] = L[0][i0] * L[1][i1] * L[2][i2];
+              out[n++] = L(0,i0) * L(1,i1) * L(2,i2);
         return;
       }
       if (dim==3)
@@ -207,7 +358,7 @@ namespace Dune { namespace Impl
           for (auto i1 : Dune::range(k - i2 + 1))
             for (auto i0 : Dune::range(k - i2 - i1 + 1))
               for (auto i3 : std::array{k - i2 - i1 - i0})
-                out[n++] = L[0][i0] * L[1][i1]  * L[2][i2] * L[3][i3];
+                out[n++] = L(0,i0) * L(1,i1)  * L(2,i2) * L(3,i3);
         return;
       }
 
@@ -222,6 +373,7 @@ namespace Dune { namespace Impl
     void evaluateJacobian(const typename Traits::DomainType& x,
                           std::vector<typename Traits::JacobianType>& out) const
     {
+      const int k = order();
       out.resize(size());
 
       // Specialization for k==0
@@ -246,10 +398,10 @@ namespace Dune { namespace Impl
       // Compute rescaled barycentric coordinates of x
       auto z = barycentric(x);
 
-      // L[j][m][i] is the m-th derivative of the i-th Lagrange polynomial at z[j]
-      auto L = std::array<std::array<std::array<R,k+1>, 2>, dim+1>();
+      // L(j,m,i) is the m-th derivative of the i-th Lagrange polynomial at z[j]
+      auto L = Buffers::makeJacobianBuffer(k);
       for (auto j : Dune::range(dim+1))
-        evaluateLagrangePolynomialDerivative(z[j], L[j], 1);
+        evaluateLagrangePolynomialDerivative(z[j], slice(L,j), 1, k);
 
       if (dim==1)
       {
@@ -258,7 +410,7 @@ namespace Dune { namespace Impl
         {
           for (auto i1 : std::array{k-i0})
           {
-            out[n][0][0] = (L[0][1][i0] * L[1][0][i1] - L[0][0][i0] * L[1][1][i1])*k;
+            out[n][0][0] = (L(0,1,i0) * L(1,0,i1) - L(0,0,i0) * L(1,1,i1))*k;
             ++n;
           }
         }
@@ -273,8 +425,8 @@ namespace Dune { namespace Impl
           {
             for (auto i2 : std::array{k - i1 - i0})
             {
-              out[n][0][0] = (L[0][1][i0] * L[1][0][i1] * L[2][0][i2] - L[0][0][i0] * L[1][0][i1] * L[2][1][i2])*k;
-              out[n][0][1] = (L[0][0][i0] * L[1][1][i1] * L[2][0][i2] - L[0][0][i0] * L[1][0][i1] * L[2][1][i2])*k;
+              out[n][0][0] = (L(0,1,i0) * L(1,0,i1) * L(2,0,i2) - L(0,0,i0) * L(1,0,i1) * L(2,1,i2))*k;
+              out[n][0][1] = (L(0,0,i0) * L(1,1,i1) * L(2,0,i2) - L(0,0,i0) * L(1,0,i1) * L(2,1,i2))*k;
               ++n;
             }
           }
@@ -292,9 +444,9 @@ namespace Dune { namespace Impl
             {
               for (auto i3 : std::array{k - i2 - i1 - i0})
               {
-                out[n][0][0] = (L[0][1][i0] * L[1][0][i1] * L[2][0][i2] * L[3][0][i3] - L[0][0][i0] * L[1][0][i1] * L[2][0][i2] * L[3][1][i3])*k;
-                out[n][0][1] = (L[0][0][i0] * L[1][1][i1] * L[2][0][i2] * L[3][0][i3] - L[0][0][i0] * L[1][0][i1] * L[2][0][i2] * L[3][1][i3])*k;
-                out[n][0][2] = (L[0][0][i0] * L[1][0][i1] * L[2][1][i2] * L[3][0][i3] - L[0][0][i0] * L[1][0][i1] * L[2][0][i2] * L[3][1][i3])*k;
+                out[n][0][0] = (L(0,1,i0) * L(1,0,i1) * L(2,0,i2) * L(3,0,i3) - L(0,0,i0) * L(1,0,i1) * L(2,0,i2) * L(3,1,i3))*k;
+                out[n][0][1] = (L(0,0,i0) * L(1,1,i1) * L(2,0,i2) * L(3,0,i3) - L(0,0,i0) * L(1,0,i1) * L(2,0,i2) * L(3,1,i3))*k;
+                out[n][0][2] = (L(0,0,i0) * L(1,0,i1) * L(2,1,i2) * L(3,0,i3) - L(0,0,i0) * L(1,0,i1) * L(2,0,i2) * L(3,1,i3))*k;
                 ++n;
               }
             }
@@ -309,15 +461,16 @@ namespace Dune { namespace Impl
 
     /** \brief Evaluate partial derivatives of any order of all shape functions
      *
-     * \param order Order of the partial derivatives, in the classic multi-index notation
+     * \param derivativeOrder Order of the partial derivatives, in the classic multi-index notation
      * \param in Position where to evaluate the derivatives
      * \param[out] out The desired partial derivatives
      */
-    void partial(const std::array<unsigned int,dim>& order,
+    void partial(const std::array<unsigned int,dim>& derivativeOrder,
                  const typename Traits::DomainType& in,
                  std::vector<typename Traits::RangeType>& out) const
     {
-      auto totalOrder = std::accumulate(order.begin(), order.end(), 0u);
+      const int k = order();
+      int totalOrder = std::accumulate(derivativeOrder.begin(), derivativeOrder.end(), 0u);
 
       out.resize(size());
 
@@ -342,10 +495,10 @@ namespace Dune { namespace Impl
       {
         if (totalOrder==1)
         {
-          auto direction = std::find(order.begin(), order.end(), 1);
+          auto direction = std::find(derivativeOrder.begin(), derivativeOrder.end(), 1);
           out[0] = -1;
           for (unsigned int i=0; i<dim; i++)
-            out[i+1] = (i==(direction-order.begin()));
+            out[i+1] = (i==(direction-derivativeOrder.begin()));
         }
         return;
       }
@@ -353,21 +506,26 @@ namespace Dune { namespace Impl
       // Since the required stack storage depends on the dynamic total order,
       // we need to do a dynamic to static dispatch by enumerating all supported
       // static orders.
-      auto supportedStaticOrders = Dune::range(Dune::index_constant<1>{}, Dune::index_constant<k+1>{});
-      return Dune::Hybrid::switchCases(supportedStaticOrders, totalOrder, [&](auto staticTotalOrder) {
+      auto supportedOrders = [&]{
+        if constexpr(is_static_order)
+          return Dune::range(Dune::index_constant<1>{}, Dune::index_constant<polynomialOrder+1>{});
+        else
+          return Dune::range(1, k+1);
+      }();
+      return Dune::Hybrid::switchCases(supportedOrders, totalOrder, [&](auto staticTotalOrder) {
 
         // Compute rescaled barycentric coordinates of x
         auto z = barycentric(in);
 
-        // L[j][m][i] is the m-th derivative of the i-th Lagrange polynomial at z[j]
-        auto L = std::array<std::array<std::array<R, k+1>, staticTotalOrder+1>, dim+1>();
+        // L(j,m,i) is the m-th derivative of the i-th Lagrange polynomial at z[j]
+        auto L = Buffers::makePartialBuffer(staticTotalOrder,k);
         for (auto j : Dune::range(dim))
-          evaluateLagrangePolynomialDerivative(z[j], L[j], order[j]);
-        evaluateLagrangePolynomialDerivative(z[dim], L[dim], totalOrder);
+          evaluateLagrangePolynomialDerivative(z[j], slice(L,j), derivativeOrder[j], k);
+        evaluateLagrangePolynomialDerivative(z[dim], slice(L,dim), totalOrder, k);
 
         auto barycentricOrder = BarycentricMultiIndex{};
         for (auto j : Dune::range(dim))
-          barycentricOrder[j] = order[j];
+          barycentricOrder[j] = derivativeOrder[j];
         barycentricOrder[dim] = 0;
 
         if constexpr (dim==1)
@@ -375,7 +533,7 @@ namespace Dune { namespace Impl
           unsigned int n = 0;
           for (auto i0 : Dune::range(k + 1))
             for (auto i1 : std::array{k - i0})
-              out[n++] = barycentricDerivative(barycentricOrder, L, BarycentricMultiIndex{i0, i1});
+              out[n++] = barycentricDerivative(barycentricOrder, L, k, BarycentricMultiIndex{i0, i1});
         }
         if constexpr (dim==2)
         {
@@ -383,7 +541,7 @@ namespace Dune { namespace Impl
           for (auto i1 : Dune::range(k + 1))
             for (auto i0 : Dune::range(k - i1 + 1))
               for (auto i2 : std::array{k - i1 - i0})
-                out[n++] = barycentricDerivative(barycentricOrder, L, BarycentricMultiIndex{i0, i1, i2});
+                out[n++] = barycentricDerivative(barycentricOrder, L, k, BarycentricMultiIndex{i0, i1, i2});
         }
         if constexpr (dim==3)
         {
@@ -392,15 +550,9 @@ namespace Dune { namespace Impl
             for (auto i1 : Dune::range(k - i2 + 1))
               for (auto i0 : Dune::range(k - i2 - i1 + 1))
                 for (auto i3 : std::array{k - i2 - i1 - i0})
-                  out[n++] = barycentricDerivative(barycentricOrder, L, BarycentricMultiIndex{i0, i1, i2, i3});
+                  out[n++] = barycentricDerivative(barycentricOrder, L, k, BarycentricMultiIndex{i0, i1, i2, i3});
         }
       });
-    }
-
-    //! \brief Polynomial order of the shape functions
-    static constexpr unsigned int order ()
-    {
-      return k;
     }
   };
 
@@ -409,14 +561,19 @@ namespace Dune { namespace Impl
    * \tparam dim Dimension of the reference simplex
    * \tparam k Polynomial order of the Lagrange space
    */
-  template<unsigned int dim, unsigned int k>
+  template<unsigned int dim, int polynomialOrder>
   class LagrangeSimplexLocalCoefficients
+    : public LagrangeSimplexTraits<dim,polynomialOrder>
   {
+    using Base = LagrangeSimplexTraits<dim,polynomialOrder>;
+
   public:
-    //! \brief Default constructor
-    LagrangeSimplexLocalCoefficients ()
-    : localKeys_(size())
+    //! \brief Constructor
+    LagrangeSimplexLocalCoefficients (int order = polynomialOrder)
+      : Base(order)
+      , localKeys_(Base::size())
     {
+      const int k = Base::order();
       if (k==0)
       {
         localKeys_[0] = LocalKey(0,0,0);
@@ -425,7 +582,7 @@ namespace Dune { namespace Impl
 
       if (k==1)
       {
-        for (std::size_t i=0; i<size(); i++)
+        for (std::size_t i=0; i<Base::size(); i++)
           localKeys_[i] = LocalKey(i,dim,0);
         return;
       }
@@ -434,7 +591,7 @@ namespace Dune { namespace Impl
       {
         // Order is at least 2 here
         localKeys_[0] = LocalKey(0,1,0);          // vertex dof
-        for (unsigned int i=1; i<k; i++)
+        for (int i=1; i<k; i++)
           localKeys_[i] = LocalKey(0,0,i-1);      // element dofs
         localKeys_.back() = LocalKey(1,1,0);      // vertex dof
         return;
@@ -444,8 +601,8 @@ namespace Dune { namespace Impl
       {
         int n=0;
         int c=0;
-        for (unsigned int j=0; j<=k; j++)
-          for (unsigned int i=0; i<=k-j; i++)
+        for (int j=0; j<=k; j++)
+          for (int i=0; i<=k-j; i++)
           {
             if (i==0 && j==0)
             {
@@ -499,8 +656,8 @@ namespace Dune { namespace Impl
      *   can for instance be generated from the global indices of
      *   the vertices by reducing those to the integers 0...dim
      */
-    LagrangeSimplexLocalCoefficients (const std::array<unsigned int, dim+1> vertexMap)
-    : localKeys_(size())
+    constexpr LagrangeSimplexLocalCoefficients (const std::array<unsigned int, dim+1> vertexMap)
+      : localKeys_(Base::size())
     {
       if (dim!=2 && dim!=3)
         DUNE_THROW(NotImplemented, "LagrangeSimplexLocalCoefficients only implemented for dim==2 and dim==3!");
@@ -510,8 +667,8 @@ namespace Dune { namespace Impl
 
 
     template<class VertexMap>
-    LagrangeSimplexLocalCoefficients(const VertexMap &vertexmap)
-    : localKeys_(size())
+    constexpr LagrangeSimplexLocalCoefficients(const VertexMap &vertexmap)
+      : localKeys_(Base::size())
     {
       if (dim!=2 && dim!=3)
         DUNE_THROW(NotImplemented, "LagrangeSimplexLocalCoefficients only implemented for dim==2 and dim==3!");
@@ -521,23 +678,21 @@ namespace Dune { namespace Impl
       generateLocalKeys(vertexmap_array);
     }
 
-    //! number of coefficients
-    static constexpr std::size_t size ()
-    {
-      return binomial(k+dim,dim);
-    }
-
     //! get i'th index
-    const LocalKey& localKey (std::size_t i) const
+    constexpr const LocalKey& localKey (std::size_t i) const
     {
       return localKeys_[i];
     }
 
+    using Base::order;
+    using Base::size;
+
   private:
     std::vector<LocalKey> localKeys_;
 
-    void generateLocalKeys(const std::array<unsigned int, dim+1> vertexMap)
+    constexpr void generateLocalKeys(const std::array<unsigned int, dim+1> vertexMap)
     {
+      const int k = Base::order();
       if (k==0)
       {
         localKeys_[0] = LocalKey(0,0,0);
@@ -549,8 +704,8 @@ namespace Dune { namespace Impl
         // Create default assignment
         int n=0;
         int c=0;
-        for (unsigned int j=0; j<=k; j++)
-          for (unsigned int i=0; i<=k-j; i++)
+        for (int j=0; j<=k; j++)
+          for (int i=0; i<=k-j; i++)
           {
             if (i==0 && j==0)
             {
@@ -590,7 +745,7 @@ namespace Dune { namespace Impl
         flip[0] = vertexMap[0] > vertexMap[1];
         flip[1] = vertexMap[0] > vertexMap[2];
         flip[2] = vertexMap[1] > vertexMap[2];
-        for (std::size_t i=0; i<size(); i++)
+        for (std::size_t i=0; i<Base::size(); i++)
           if (localKeys_[i].codim()==1 && flip[localKeys_[i].subEntity()])
             localKeys_[i].index(k-2-localKeys_[i].index());
 
@@ -611,13 +766,13 @@ namespace Dune { namespace Impl
       int a1 = (3*k + 12)*k + 11;
       int a2 = -3*k - 6;
       unsigned int dof_count[16] = {0};
-      unsigned int i[4];
+      int i[4];
       for (i[3] = 0; i[3] <= k; ++i[3])
         for (i[2] = 0; i[2] <= k - i[3]; ++i[2])
           for (i[1] = 0; i[1] <= k - i[2] - i[3]; ++i[1])
           {
             i[0] = k - i[1] - i[2] - i[3];
-            unsigned int j[4];
+            int j[4];
             unsigned int entity = 0;
             unsigned int codim = 0;
             for (unsigned int m = 0; m < 4; ++m)
@@ -639,9 +794,17 @@ namespace Dune { namespace Impl
    */
   template<class LocalBasis>
   class LagrangeSimplexLocalInterpolation
+    : public LocalBasis::Base
   {
-    static const int kdiv = (LocalBasis::order() == 0 ? 1 : LocalBasis::order());
+    using Base = typename LocalBasis::Base;
+
   public:
+    constexpr LagrangeSimplexLocalInterpolation () = default;
+
+    //! \brief Constructor storing a reference to the local basis
+    explicit constexpr LagrangeSimplexLocalInterpolation (const LocalBasis& localBasis)
+      : Base(localBasis)
+    {}
 
     /** \brief Evaluate a given function at the Lagrange nodes
      *
@@ -651,15 +814,15 @@ namespace Dune { namespace Impl
      * \param[out] out Array of function values
      */
     template<typename F, typename C>
-    void interpolate (const F& f, std::vector<C>& out) const
+    constexpr void interpolate (const F& f, std::vector<C>& out) const
     {
       constexpr auto dim = LocalBasis::Traits::dimDomain;
-      constexpr auto k = LocalBasis::order();
+      const int k = Base::order();
       using D = typename LocalBasis::Traits::DomainFieldType;
 
       typename LocalBasis::Traits::DomainType x;
 
-      out.resize(LocalBasis::size());
+      out.resize(Base::size());
 
       // Specialization for zero-order case
       if (k==0)
@@ -689,7 +852,7 @@ namespace Dune { namespace Impl
 
       if (dim==1)
       {
-        for (unsigned int i=0; i<k+1; i++)
+        for (int i=0; i<k+1; i++)
         {
           x[0] = ((D)i)/k;
           out[i] = f(x);
@@ -700,8 +863,8 @@ namespace Dune { namespace Impl
       if (dim==2)
       {
         int n=0;
-        for (unsigned int j=0; j<=k; j++)
-          for (unsigned int i=0; i<=k-j; i++)
+        for (int j=0; j<=k; j++)
+          for (int i=0; i<=k-j; i++)
           {
             x = { ((D)i)/k, ((D)j)/k };
             out[n] = f(x);
@@ -713,10 +876,12 @@ namespace Dune { namespace Impl
       if (dim!=3)
         DUNE_THROW(NotImplemented, "LagrangeSimplexLocalInterpolation only implemented for dim<=3!");
 
+      const int kdiv = (k==0 ? 1 : k);
+
       int n=0;
-      for (int i2 = 0; i2 <= (int)k; i2++)
-        for (int i1 = 0; i1 <= (int)k-i2; i1++)
-          for (int i0 = 0; i0 <= (int)k-i1-i2; i0++)
+      for (int i2 = 0; i2 <= k; i2++)
+        for (int i1 = 0; i1 <= k-i2; i1++)
+          for (int i0 = 0; i0 <= k-i1-i2; i0++)
           {
             x[0] = ((D)i0)/((D)kdiv);
             x[1] = ((D)i1)/((D)kdiv);
@@ -732,12 +897,12 @@ namespace Dune { namespace Impl
 
 namespace Dune
 {
-  /** \brief Lagrange finite element for simplices with arbitrary compile-time dimension and polynomial order
+  /** \brief Lagrange finite element for simplices with arbitrary compile-time dimension and static or dynamic polynomial order
    *
    * \tparam D type used for domain coordinates
    * \tparam R type used for function values
    * \tparam d dimension of the reference element
-   * \tparam k polynomial order
+   * \tparam polynomialOrder polynomial order of the shape functions (or -1 for dynamic order)
    *
    * The Lagrange basis functions \f$\phi_i\f$ of order \f$k>1\f$ on the unit simplex
    * \f$G = \{ x \in [0,1]^{d} \,|\, \sum_{j=1}^d x_j \leq 1\}\f$ are implemented as
@@ -785,51 +950,70 @@ namespace Dune
    *   L_0(t) = 1, \qquad L_{n+1}(t) = L_n(t)\frac{t-n}{n+1} \qquad n\geq 0.
    * \f]
    */
-  template<class D, class R, int d, int k>
+  template<class D, class R, int d, int polynomialOrder = -1>
   class LagrangeSimplexLocalFiniteElement
   {
   public:
     /** \brief Export number types, dimensions, etc.
      */
-    using Traits = LocalFiniteElementTraits<Impl::LagrangeSimplexLocalBasis<D,R,d,k>,
-                                            Impl::LagrangeSimplexLocalCoefficients<d,k>,
-                                            Impl::LagrangeSimplexLocalInterpolation<Impl::LagrangeSimplexLocalBasis<D,R,d,k> > >;
+    using Traits = LocalFiniteElementTraits<
+      Impl::LagrangeSimplexLocalBasis<D,R,d,polynomialOrder>,
+      Impl::LagrangeSimplexLocalCoefficients<d,polynomialOrder>,
+      Impl::LagrangeSimplexLocalInterpolation<Impl::LagrangeSimplexLocalBasis<D,R,d,polynomialOrder> > >;
 
-    /** Default-construct the finite element */
-    LagrangeSimplexLocalFiniteElement() {}
+    //! \brief Constructor for static order
+    constexpr LagrangeSimplexLocalFiniteElement()
+      : basis_()
+      , coefficients_()
+      , interpolation_(basis_)
+    {
+      static_assert(polynomialOrder >= 0, "Default constructor only allowed for static order k >= 0");
+    }
+
+    //! \brief Constructor for dynamic order
+    explicit constexpr LagrangeSimplexLocalFiniteElement(int k)
+      : basis_(k)
+      , coefficients_(k)
+      , interpolation_(basis_)
+    {
+      if (k < 0)
+        DUNE_THROW(Dune::InvalidStateException, "LagrangeSimplexLocalFiniteElement: Order k must be non-negative!");
+    }
 
     /** \brief Constructs a finite element given a vertex reordering
      * */
     template<typename VertexMap>
-    LagrangeSimplexLocalFiniteElement(const VertexMap& vertexmap)
-      : coefficients_(vertexmap)
+    explicit constexpr LagrangeSimplexLocalFiniteElement(const VertexMap& vertexmap) requires(polynomialOrder >= 0)
+      : basis_()
+      , coefficients_(vertexmap)
+      , interpolation_(basis_)
     {}
 
     /** \brief Returns the local basis, i.e., the set of shape functions
      */
-    const typename Traits::LocalBasisType& localBasis () const
+    constexpr const typename Traits::LocalBasisType& localBasis () const
     {
       return basis_;
     }
 
     /** \brief Returns the assignment of the degrees of freedom to the element subentities
      */
-    const typename Traits::LocalCoefficientsType& localCoefficients () const
+    constexpr const typename Traits::LocalCoefficientsType& localCoefficients () const
     {
       return coefficients_;
     }
 
     /** \brief Returns object that evaluates degrees of freedom
      */
-    const typename Traits::LocalInterpolationType& localInterpolation () const
+    constexpr const typename Traits::LocalInterpolationType& localInterpolation () const
     {
       return interpolation_;
     }
 
     /** \brief The number of shape functions */
-    static constexpr std::size_t size ()
+    constexpr std::size_t size () const
     {
-      return Impl::LagrangeSimplexLocalBasis<D,R,d,k>::size();
+      return basis_.size();
     }
 
     /** \brief The reference element that the local finite element is defined on
@@ -840,9 +1024,9 @@ namespace Dune
     }
 
   private:
-    Impl::LagrangeSimplexLocalBasis<D,R,d,k> basis_;
-    Impl::LagrangeSimplexLocalCoefficients<d,k> coefficients_;
-    Impl::LagrangeSimplexLocalInterpolation<Impl::LagrangeSimplexLocalBasis<D,R,d,k> > interpolation_;
+    typename Traits::LocalBasisType basis_;
+    typename Traits::LocalCoefficientsType coefficients_;
+    typename Traits::LocalInterpolationType interpolation_;
   };
 
 }        // namespace Dune

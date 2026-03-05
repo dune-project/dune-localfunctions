@@ -106,8 +106,8 @@ namespace Dune { namespace Impl
     template <class T, T o>
     static auto makePartialBuffer(std::integral_constant<T,o>, int /*order*/)
     {
-      using E = Std::extents<int,dim+1,o,k+1>;
-      using C = std::array<R,(dim+1)*o*(k+1)>;
+      using E = Std::extents<int,dim+1,o+1,k+1>;
+      using C = std::array<R,(dim+1)*(o+1)*(k+1)>;
       return Std::mdarray<R,E,Std::layout_right,C>{};
     }
   };
@@ -116,7 +116,7 @@ namespace Dune { namespace Impl
   struct LagrangeSimplexLocalBasisBuffers<R,dim,-1>
   {
     LagrangeSimplexLocalBasisBuffers(int order)
-      : buffer_((dim+1)*std::max<int>(2,order)*(order+1))
+      : buffer_((dim+1)*std::max<int>(2,order+1)*(order+1))
     {}
 
     mutable std::vector<R> buffer_{};

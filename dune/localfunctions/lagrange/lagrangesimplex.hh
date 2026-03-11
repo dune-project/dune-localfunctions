@@ -81,12 +81,21 @@ namespace Dune { namespace Impl
     }
   };
 
+
+  /** \brief Factory functions for buffers used in evaluate functions.
+
+     Specialization for static order implementation.
+
+     \tparam R Type to represent the field in the range
+     \tparam dim Dimension of the domain simplex
+     \tparam k Polynomial order of the shape functions
+  */
   template<class R, unsigned int dim, int k>
   struct LagrangeSimplexLocalBasisBuffers
   {
     LagrangeSimplexLocalBasisBuffers(int /*order*/) {}
 
-    // Buffer for Lagrange basis function evaluations, used in evaluateFunction()
+    // Buffer for the evaluation of shape function, used in evaluateFunction()
     static auto makeValueBuffer(int /*order*/)
     {
       using E = Std::extents<int,dim+1,k+1>;
@@ -94,7 +103,7 @@ namespace Dune { namespace Impl
       return Std::mdarray<R,E,Std::layout_right,C>{};
     }
 
-    // Buffer for Lagrange basis function evaluations, used in evaluateJacobian()
+    // Buffer for the evaluation of shape function Jacobians, used in evaluateJacobian()
     static auto makeJacobianBuffer(int /*order*/)
     {
       using E = Std::extents<int,dim+1,2,k+1>;
@@ -102,16 +111,24 @@ namespace Dune { namespace Impl
       return Std::mdarray<R,E,Std::layout_right,C>{};
     }
 
-    // Buffer for Lagrange basis function evaluations, used in partial()
-    template <class T, T o>
-    static auto makePartialBuffer(std::integral_constant<T,o>, int /*order*/)
+    // Buffer for the evaluation of shape function partial derivatives, used in partial()
+    template <class T, T derivativeOrder>
+    static auto makePartialBuffer(std::integral_constant<T,derivativeOrder>, int /*order*/)
     {
-      using E = Std::extents<int,dim+1,o+1,k+1>;
-      using C = std::array<R,(dim+1)*(o+1)*(k+1)>;
+      using E = Std::extents<int,dim+1,derivativeOrder+1,k+1>;
+      using C = std::array<R,(dim+1)*(derivativeOrder+1)*(k+1)>;
       return Std::mdarray<R,E,Std::layout_right,C>{};
     }
   };
 
+
+  /** \brief Factory functions for buffers used in evaluate functions.
+
+     Specialization for dynamic order implementation.
+
+     \tparam R Type to represent the field in the range
+     \tparam dim Dimension of the domain simplex
+  */
   template<class R, unsigned int dim>
   struct LagrangeSimplexLocalBasisBuffers<R,dim,-1>
   {
@@ -121,27 +138,28 @@ namespace Dune { namespace Impl
 
     mutable std::vector<R> buffer_{};
 
-    // Buffer for Lagrange basis function evaluations, used in evaluateFunction()
+    // Buffer for the evaluation of shape function, used in evaluateFunction()
     auto makeValueBuffer(int order) const
     {
       using E = Std::extents<int,dim+1,std::dynamic_extent>;
       return Std::mdspan<R,E>{buffer_.data(), E(order+1)};
     }
 
-    // Buffer for Lagrange basis function evaluations, used in evaluateJacobian()
+    // Buffer for the evaluation of shape function Jacobians, used in evaluateJacobian()
     auto makeJacobianBuffer(int order) const
     {
       using E = Std::extents<int,dim+1,2,std::dynamic_extent>;
       return Std::mdspan<R,E>{buffer_.data(), E(order+1)};
     }
 
-    // Buffer for Lagrange basis function evaluations, used in partial()
+    // Buffer for the evaluation of shape function partial derivatives, used in partial()
     auto makePartialBuffer(int derivativeOrder, int order) const
     {
       using E = Std::extents<int,dim+1,std::dynamic_extent,std::dynamic_extent>;
-      return Std::mdspan<R,E>{buffer_.data(), E(derivativeOrder, order+1)};
+      return Std::mdspan<R,E>{buffer_.data(), E(derivativeOrder+1, order+1)};
     }
   };
+
 
    /** \brief Lagrange shape functions of arbitrary order on the reference simplex
 
@@ -166,8 +184,6 @@ namespace Dune { namespace Impl
     using Buffers = LagrangeSimplexLocalBasisBuffers<R,dim,polynomialOrder>;
     static constexpr bool is_static_order = Base::is_static_order;
 
-  public:
-
     constexpr LagrangeSimplexLocalBasis(int k = polynomialOrder)
       : Base(k)
       , Buffers(k)
@@ -180,22 +196,21 @@ namespace Dune { namespace Impl
 
     // Fix the first index in a multi-dimensional array to `i`. For matrices this
     // corresponds to the ith row of the matrix.
-    template <class I, std::size_t e0, std::size_t... ee, class C>
-    static auto slice(Std::mdarray<R,Std::extents<I,e0,ee...>,Std::layout_right,C>& L, int i)
-    {
-      return Dune::unpackIntegerSequence([&](auto... ii) {
-        return Std::mdspan<R,Std::extents<I,ee...>,Std::layout_right>{
-          L.container_data() + i * L.stride(0), L.extent(ii+1)...};
-      }, std::make_index_sequence<sizeof...(ee)>{});
-    }
-
+    // Equivalent to std::submdspan(L, i, std::full_extent...)
     template <class I, std::size_t e0, std::size_t... ee, class A>
-    static auto slice(Std::mdspan<R,Std::extents<I,e0,ee...>,Std::layout_right,A>& L, int i)
+    static auto slice(Std::mdspan<R,Std::extents<I,e0,ee...>,Std::layout_right,A> L, int i)
     {
       return Dune::unpackIntegerSequence([&](auto... ii) {
         return Std::mdspan<R,Std::extents<I,ee...>,Std::layout_right>{
           L.data_handle() + i * L.stride(0), L.extent(ii+1)...};
       }, std::make_index_sequence<sizeof...(ee)>{});
+    }
+
+    // Overload for mdarray type: forward to the mdspan implementation
+    template <class I, std::size_t e0, std::size_t... ee, class C>
+    static auto slice(Std::mdarray<R,Std::extents<I,e0,ee...>,Std::layout_right,C>& L, int i)
+    {
+      return slice(L.to_mdspan(), i);
     }
 
     // Compute the rescaled barycentric coordinates of x.
@@ -207,7 +222,7 @@ namespace Dune { namespace Impl
     // integers satisfying the constraint sum i_j = k.
     constexpr auto barycentric(const auto& x) const
     {
-      auto b = std::array<R, dim + 1>{};
+      auto b = std::array<R,dim+1>{};
       b[dim] = order();
       for (auto i : Dune::range(dim))
       {
@@ -221,7 +236,7 @@ namespace Dune { namespace Impl
     //
     // L_i(t) = (t-0)/(i-0) * ... * (t-(i-1))/(i-(i-1))
     //        = (t-0)*...*(t-(i-1))/(i!);
-    static constexpr void evaluateLagrangePolynomials(const R& t, auto L, int k)
+    static constexpr void evaluateLagrangePolynomials(const R& t, auto&& L, int k)
     {
       L[0] = 1;
       for (auto i : Dune::range(k))
@@ -230,7 +245,7 @@ namespace Dune { namespace Impl
 
     // Evaluate the univariate Lagrange polynomial derivatives L_i(t) for i=0,...,k
     // up to given maxDerivativeOrder.
-    static constexpr void evaluateLagrangePolynomialDerivative(const R& t, auto LL, unsigned int maxDerivativeOrder, int k)
+    static constexpr void evaluateLagrangePolynomialDerivative(const R& t, auto&& LL, unsigned int maxDerivativeOrder, int k)
     {
       auto L = slice(LL,0);
       L[0] = 1;
@@ -264,7 +279,7 @@ namespace Dune { namespace Impl
     // \f$f(x) = \prod_{j=0}^{d} L_{i_j}^{(alpha_j)}(x_j) \f$.
     static constexpr R barycentricDerivative(
         BarycentricMultiIndex beta,
-        const auto& L,
+        const auto&L,
         int k,
         const BarycentricMultiIndex& i,
         const BarycentricMultiIndex& alpha = {})

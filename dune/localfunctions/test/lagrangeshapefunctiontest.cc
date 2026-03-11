@@ -124,6 +124,10 @@ int main (int argc, char *argv[])
       auto lfe_dynamic = LagrangeSimplexLocalFiniteElement<double,double,dim>(order);
       testSuite.check(testPk(lfe_dynamic))
         << "Lagrange property not satisfied for " << Dune::className(lfe_dynamic);
+
+      // Check that an invalid polynomial order is correctly detected
+      testSuite.checkThrow<Dune::InvalidStateException>([&]{ return LagrangeSimplexLocalFiniteElement<double,double,dim>(-1); })
+        << "Construction with invalid parameter does not throw.";
     });
   });
 

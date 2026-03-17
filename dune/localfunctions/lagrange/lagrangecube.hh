@@ -11,6 +11,7 @@
 #include <dune/common/fmatrix.hh>
 #include <dune/common/fvector.hh>
 #include <dune/common/math.hh>
+#include <dune/common/typetraits.hh>
 
 #include <dune/geometry/referenceelements.hh>
 
@@ -32,35 +33,38 @@ namespace Dune { namespace Impl
      \tparam D Type to represent the field in the domain
      \tparam R Type to represent the field in the range
      \tparam dim Dimension of the domain cube
-     \tparam k Polynomial order
+     \tparam compileTimeOrder Polynomial order; -1 means "order provided at run-time"
    */
-  template<class D, class R, unsigned int dim, unsigned int k>
+  template<class D, class R, unsigned int dim, int compileTimeOrder>
   class LagrangeCubeLocalBasis
   {
-    friend class LagrangeCubeLocalInterpolation<LagrangeCubeLocalBasis<D,R,dim,k> >;
+    friend class LagrangeCubeLocalInterpolation<LagrangeCubeLocalBasis<D,R,dim,compileTimeOrder> >;
+
+    using OrderType = std::conditional_t<(compileTimeOrder<0), unsigned int, Empty>;
+    [[no_unique_address]] OrderType runTimeOrder_;
 
     // i-th Lagrange polynomial of degree k in one dimension
-    static R p(unsigned int i, D x)
+    R p(unsigned int i, D x) const
     {
       R result(1.0);
-      for (unsigned int j=0; j<=k; j++)
-        if (j!=i) result *= (k*x-j)/((int)i-(int)j);
+      for (unsigned int j=0; j<=order(); j++)
+        if (j!=i) result *= (order()*x-j)/((int)i-(int)j);
       return result;
     }
 
     // derivative of ith Lagrange polynomial of degree k in one dimension
-    static R dp(unsigned int i, D x)
+    R dp(unsigned int i, D x) const
     {
       R result(0.0);
 
-      for (unsigned int j=0; j<=k; j++)
+      for (unsigned int j=0; j<=order(); j++)
       {
         if (j!=i)
         {
-          R prod( (k*1.0)/((int)i-(int)j) );
-          for (unsigned int l=0; l<=k; l++)
+          R prod( (order()*1.0)/((int)i-(int)j) );
+          for (unsigned int l=0; l<=order(); l++)
             if (l!=i && l!=j)
-              prod *= (k*x-l)/((int)i-(int)l);
+              prod *= (order()*x-l)/((int)i-(int)l);
           result += prod;
         }
       }
@@ -69,43 +73,43 @@ namespace Dune { namespace Impl
 
     // Second derivative of j-th Lagrange polynomial of degree k in one dimension
     // Formula and notation taken from https://en.wikipedia.org/wiki/Lagrange_polynomial#Derivatives
-    static R ddp(unsigned int j, D x)
+    R ddp(unsigned int j, D x) const
     {
       R result(0.0);
 
-      for (unsigned int i=0; i<=k; i++)
+      for (unsigned int i=0; i<=order(); i++)
       {
         if (i==j)
           continue;
 
         R sum(0);
 
-        for (unsigned int m=0; m<=k; m++)
+        for (unsigned int m=0; m<=order(); m++)
         {
           if (m==i || m==j)
             continue;
 
-          R prod( (k*1.0)/((int)j-(int)m) );
-          for (unsigned int l=0; l<=k; l++)
+          R prod( (order()*1.0)/((int)j-(int)m) );
+          for (unsigned int l=0; l<=order(); l++)
             if (l!=i && l!=j && l!=m)
-              prod *= (k*x-l)/((int)j-(int)l);
+              prod *= (order()*x-l)/((int)j-(int)l);
           sum += prod;
         }
 
-        result += sum * ( (k*1.0)/((int)j-(int)i) );
+        result += sum * ( (order()*1.0)/((int)j-(int)i) );
       }
 
       return result;
     }
 
     // Return i as a d-digit number in the (k+1)-nary system
-    static std::array<unsigned int,dim> multiindex (unsigned int i)
+    std::array<unsigned int,dim> multiindex (unsigned int i) const
     {
       std::array<unsigned int,dim> alpha;
       for (unsigned int j=0; j<dim; j++)
       {
-        alpha[j] = i % (k+1);
-        i = i/(k+1);
+        alpha[j] = i % (order()+1);
+        i = i/(order()+1);
       }
       return alpha;
     }
@@ -113,11 +117,24 @@ namespace Dune { namespace Impl
   public:
     using Traits = LocalBasisTraits<D,dim,FieldVector<D,dim>,R,1,FieldVector<R,1>,FieldMatrix<R,1,dim> >;
 
+    /** \brief Default constructor
+     */
+    constexpr LagrangeCubeLocalBasis()
+    requires (compileTimeOrder>=0)
+    {}
+
+    /** \brief Constructor with a run-time order
+     */
+    constexpr LagrangeCubeLocalBasis(unsigned int runTimeOrder)
+    requires (compileTimeOrder<0)
+    : runTimeOrder_(runTimeOrder)
+    {}
+
     /** \brief Number of shape functions
      */
-    static constexpr unsigned int size ()
+    constexpr unsigned int size () const
     {
-      return power(k+1, dim);
+      return power(order()+1, dim);
     }
 
     //! \brief Evaluate all shape functions
@@ -127,13 +144,13 @@ namespace Dune { namespace Impl
       out.resize(size());
 
       // Specialization for zero-order case
-      if (k==0)
+      if (order()==0)
       {
         out[0] = 1;
         return;
       }
 
-      if (k==1)
+      if (order()==1)
       {
         for (size_t i=0; i<size(); i++)
         {
@@ -171,15 +188,15 @@ namespace Dune { namespace Impl
     {
       out.resize(size());
 
-      // Specialization for k==0
-      if (k==0)
+      // Specialization for common case
+      if (order()==0)
       {
         std::fill(out[0][0].begin(), out[0][0].end(), 0);
         return;
       }
 
-      // Specialization for k==1
-      if (k==1)
+      // Specialization for common case
+      if (order()==1)
       {
         // Loop over all shape functions
         for (size_t i=0; i<size(); i++)
@@ -227,25 +244,25 @@ namespace Dune { namespace Impl
 
     /** \brief Evaluate partial derivatives of any order of all shape functions
      *
-     * \param order Order of the partial derivatives, in the classic multi-index notation
+     * \param partialOrders Orders of the partial derivatives, in the classic multi-index notation
      * \param in Position where to evaluate the derivatives
      * \param[out] out The desired partial derivatives
      */
-    void partial(const std::array<unsigned int,dim>& order,
+    void partial(const std::array<unsigned int,dim>& partialOrders,
                  const typename Traits::DomainType& in,
                  std::vector<typename Traits::RangeType>& out) const
     {
-      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      auto totalOrder = std::accumulate(partialOrders.begin(), partialOrders.end(), 0);
 
       out.resize(size());
 
-      if (k==0)
+      if (order()==0)
       {
         out[0] = (totalOrder==0);
         return;
       }
 
-      if (k==1)
+      if (order()==1)
       {
         if (totalOrder == 0)
         {
@@ -255,7 +272,8 @@ namespace Dune { namespace Impl
         {
           out.resize(size());
 
-          auto direction = std::distance(order.begin(), std::find(order.begin(), order.end(), 1));
+          auto direction = std::distance(partialOrders.begin(),
+                                         std::find(partialOrders.begin(), partialOrders.end(), 1));
           if (direction >= dim)
             DUNE_THROW(RangeError, "Direction of partial derivative not found!");
 
@@ -288,7 +306,7 @@ namespace Dune { namespace Impl
             // rest of the product
             for (std::size_t l=0; l<dim; l++)
             {
-              switch (order[l])
+              switch (partialOrders[l])
               {
                 case 0:
                   out[i][0] *= p(alpha[l],in[l]);
@@ -326,7 +344,7 @@ namespace Dune { namespace Impl
         // rest of the product
         for (std::size_t l=0; l<dim; l++)
         {
-          switch (order[l])
+          switch (partialOrders[l])
           {
             case 0:
               out[i][0] *= p(alpha[l],in[l]);
@@ -345,22 +363,25 @@ namespace Dune { namespace Impl
     }
 
     //! \brief Polynomial order of the shape functions
-    static constexpr unsigned int order ()
+    constexpr unsigned int order () const
     {
-      return k;
+      if constexpr (compileTimeOrder<0)
+        return runTimeOrder_;
+      else
+        return compileTimeOrder;
     }
   };
 
   /** \brief Associations of the Lagrange degrees of freedom to subentities of the reference cube
    *
    * \tparam dim Dimension of the reference cube
-   * \tparam k Polynomial order of the Lagrange space in one direction
+   * \tparam compileTimeOrder Polynomial order of the Lagrange space in one direction
    */
-  template<unsigned int dim, unsigned int k>
+  template<unsigned int dim, int compileTimeOrder>
   class LagrangeCubeLocalCoefficients
   {
-    // Return i as a d-digit number in the (k+1)-nary system
-    static std::array<unsigned int,dim> multiindex (unsigned int i)
+    // Return i as a d-digit number in the (k+1)-nary system, k the polynomial order
+    static std::array<unsigned int,dim> multiindex (unsigned int i, unsigned int k)
     {
       std::array<unsigned int,dim> alpha;
       for (unsigned int j=0; j<dim; j++)
@@ -372,7 +393,7 @@ namespace Dune { namespace Impl
     }
 
     /** \brief Set the 'subentity' field for each dof for a 1d element */
-    void setup1d(std::vector<unsigned int>& subEntity)
+    void setup1d(std::vector<unsigned int>& subEntity, unsigned int k)
     {
       assert(k>0);
 
@@ -392,7 +413,7 @@ namespace Dune { namespace Impl
       assert(power(k+1,dim)==lastIndex);
     }
 
-    void setup2d(std::vector<unsigned int>& subEntity)
+    void setup2d(std::vector<unsigned int>& subEntity, unsigned int k)
     {
       assert(k>0);
 
@@ -434,7 +455,7 @@ namespace Dune { namespace Impl
       assert(power(k+1,dim)==lastIndex);
     }
 
-    void setup3d(std::vector<unsigned int>& subEntity)
+    void setup3d(std::vector<unsigned int>& subEntity, unsigned int k)
     {
       assert(k>0);
 
@@ -537,20 +558,22 @@ namespace Dune { namespace Impl
       assert(numIndices==lastIndex);
     }
 
-  public:
-    //! \brief Default constructor
-    LagrangeCubeLocalCoefficients ()
-    : localKeys_(size())
+    /** \brief Initializes the localKeys_ array
+     */
+    void setup(unsigned int order)
     {
-      if (k==0)
+      const std::size_t size = power(order+1,dim);
+      localKeys_.resize(size);
+
+      if (order==0)
       {
         localKeys_[0] = LocalKey(0,0,0);
         return;
       }
 
-      if (k==1)
+      if (order==1)
       {
-        for (std::size_t i=0; i<size(); i++)
+        for (std::size_t i=0; i<size; i++)
           localKeys_[i] = LocalKey(i,dim,0);
         return;
       }
@@ -558,7 +581,7 @@ namespace Dune { namespace Impl
       // Now: the general case
 
       // Set up array of codimension-per-dof-number
-      std::vector<unsigned int> codim(size());
+      std::vector<unsigned int> codim(size);
 
       for (std::size_t i=0; i<codim.size(); i++)
       {
@@ -566,9 +589,9 @@ namespace Dune { namespace Impl
 
         // Codimension gets increased by 1 for each coordinate direction
         // where dof is on boundary
-        std::array<unsigned int,dim> mIdx = multiindex(i);
+        std::array<unsigned int,dim> mIdx = multiindex(i,order);
         for (unsigned int j=0; j<dim; j++)
-          if (mIdx[j]==0 or mIdx[j]==k)
+          if (mIdx[j]==0 or mIdx[j]==order)
             codim[i]++;
       }
 
@@ -577,45 +600,58 @@ namespace Dune { namespace Impl
       // To make it consecutive we interpret 'i' in the (k+1)-adic system, omit all digits
       // that correspond to axes where the dof is on the element boundary, and transform the
       // rest to the (k-1)-adic system.
-      std::vector<unsigned int> index(size());
+      std::vector<unsigned int> index(size);
 
-      for (std::size_t i=0; i<size(); i++)
+      for (std::size_t i=0; i<size; i++)
       {
         index[i] = 0;
 
-        std::array<unsigned int,dim> mIdx = multiindex(i);
+        std::array<unsigned int,dim> mIdx = multiindex(i,order);
 
         for (int j=dim-1; j>=0; j--)
-          if (mIdx[j]>0 && mIdx[j]<k)
-            index[i] = (k-1)*index[i] + (mIdx[j]-1);
+          if (mIdx[j]>0 && mIdx[j]<order)
+            index[i] = (order-1)*index[i] + (mIdx[j]-1);
       }
 
       // Set up entity and dof numbers for each (supported) dimension separately
-      std::vector<unsigned int> subEntity(size());
+      std::vector<unsigned int> subEntity(size);
 
       if (dim==1) {
 
-        setup1d(subEntity);
+        setup1d(subEntity, order);
 
       } else if (dim==2) {
 
-        setup2d(subEntity);
+        setup2d(subEntity, order);
 
       } else if (dim==3) {
 
-        setup3d(subEntity);
+        setup3d(subEntity, order);
 
       } else
-        DUNE_THROW(Dune::NotImplemented, "LagrangeCubeLocalCoefficients for order " << k << " and dim == " << dim);
+        DUNE_THROW(Dune::NotImplemented, "LagrangeCubeLocalCoefficients for order " << order << " and dim == " << dim);
 
-      for (size_t i=0; i<size(); i++)
+      for (size_t i=0; i<size; i++)
         localKeys_[i] = LocalKey(subEntity[i], codim[i], index[i]);
     }
 
-    //! number of coefficients
-    static constexpr std::size_t size ()
+  public:
+    //! \brief Default constructor
+    LagrangeCubeLocalCoefficients()
     {
-      return power(k+1,dim);
+      setup(compileTimeOrder);
+    }
+
+    //! \brief Constructor with a run-time order
+    LagrangeCubeLocalCoefficients (unsigned int runTimeOrder)
+    {
+      setup(runTimeOrder);
+    }
+
+    //! number of coefficients
+    constexpr std::size_t size () const
+    {
+      return localKeys_.size();
     }
 
     //! get i-th index
@@ -637,6 +673,11 @@ namespace Dune { namespace Impl
   {
   public:
 
+    /** \brief Constructor for a given set of shape functions */
+    LagrangeCubeLocalInterpolation(const LocalBasis& localBasis)
+    : localBasis_(&localBasis)
+    {}
+
     /** \brief Evaluate a given function at the Lagrange nodes
      *
      * \tparam F Type of function to evaluate
@@ -648,12 +689,12 @@ namespace Dune { namespace Impl
     void interpolate (const F& f, std::vector<C>& out) const
     {
       constexpr auto dim = LocalBasis::Traits::dimDomain;
-      constexpr auto k = LocalBasis::order();
+      const auto k = localBasis_->order();
       using D = typename LocalBasis::Traits::DomainFieldType;
 
       typename LocalBasis::Traits::DomainType x;
 
-      out.resize(LocalBasis::size());
+      out.resize(localBasis_->size());
 
       // Specialization for zero-order case
       if (k==0)
@@ -666,7 +707,7 @@ namespace Dune { namespace Impl
       // Specialization for first-order case
       if (k==1)
       {
-        for (unsigned int i=0; i<LocalBasis::size(); i++)
+        for (unsigned int i=0; i<localBasis_->size(); i++)
         {
           // Generate coordinate of the i-th corner of the reference cube
           for (int j=0; j<dim; j++)
@@ -678,10 +719,10 @@ namespace Dune { namespace Impl
       }
 
       // The general case
-      for (unsigned int i=0; i<LocalBasis::size(); i++)
+      for (unsigned int i=0; i<localBasis_->size(); i++)
       {
         // convert index i to multiindex
-        std::array<unsigned int,dim> alpha(LocalBasis::multiindex(i));
+        std::array<unsigned int,dim> alpha(localBasis_->multiindex(i));
 
         // Generate coordinate of the i-th Lagrange point
         for (unsigned int j=0; j<dim; j++)
@@ -690,6 +731,9 @@ namespace Dune { namespace Impl
         out[i] = f(x);
       }
     }
+
+  private:
+    const LocalBasis* localBasis_;
 
   };
 
@@ -702,17 +746,48 @@ namespace Dune
    * \tparam D Type used for domain coordinates
    * \tparam R Type used for function values
    * \tparam dim dimension of the reference element
-   * \tparam k Polynomial order in one coordinate direction
+   * \tparam compileTimeOrder Polynomial order in one coordinate direction.
+   *           The default -1 means "order provided at run-time"
    */
-  template<class D, class R, int dim, int k>
+  template<class D, class R, int dim, int compileTimeOrder=-1>
   class LagrangeCubeLocalFiniteElement
   {
   public:
     /** \brief Export number types, dimensions, etc.
      */
-    using Traits = LocalFiniteElementTraits<Impl::LagrangeCubeLocalBasis<D,R,dim,k>,
-                                            Impl::LagrangeCubeLocalCoefficients<dim,k>,
-                                            Impl::LagrangeCubeLocalInterpolation<Impl::LagrangeCubeLocalBasis<D,R,dim,k> > >;
+    using Traits = LocalFiniteElementTraits<Impl::LagrangeCubeLocalBasis<D,R,dim,compileTimeOrder>,
+                                            Impl::LagrangeCubeLocalCoefficients<dim,compileTimeOrder>,
+                                            Impl::LagrangeCubeLocalInterpolation<Impl::LagrangeCubeLocalBasis<D,R,dim,compileTimeOrder> > >;
+
+    //! \brief Constructor for static order
+    constexpr LagrangeCubeLocalFiniteElement()
+    requires(compileTimeOrder>=0)
+      : basis_()
+      , coefficients_()
+      , interpolation_(basis_)
+    {
+      static_assert(compileTimeOrder >= 0, "Default constructor only allowed for compile-time order >= 0");
+    }
+
+    //! \brief Constructor for dynamic order
+    explicit constexpr LagrangeCubeLocalFiniteElement(unsigned int runTimeOrder)
+    requires(compileTimeOrder<0)
+    : basis_(runTimeOrder)
+      , coefficients_(runTimeOrder)
+      , interpolation_(basis_)
+    {
+      if (compileTimeOrder >= 0)
+        DUNE_THROW(Dune::InvalidStateException,
+                   "LagrangeCubeLocalFiniteElement: Compile-time order must be non-negative!");
+    }
+
+    /** \brief Copy constructor
+     */
+    LagrangeCubeLocalFiniteElement(const LagrangeCubeLocalFiniteElement& other)
+    : basis_(other.basis_)
+    , coefficients_(other.coefficients_)
+    , interpolation_(basis_)
+    {}
 
     /** \brief Returns the local basis, i.e., the set of shape functions
      */
@@ -736,9 +811,9 @@ namespace Dune
     }
 
     /** \brief The number of shape functions */
-    static constexpr std::size_t size ()
+    constexpr std::size_t size () const
     {
-      return power(k+1,dim);
+      return power(basis_.order()+1,dim);
     }
 
     /** \brief The reference element that the local finite element is defined on
@@ -749,9 +824,9 @@ namespace Dune
     }
 
   private:
-    Impl::LagrangeCubeLocalBasis<D,R,dim,k> basis_;
-    Impl::LagrangeCubeLocalCoefficients<dim,k> coefficients_;
-    Impl::LagrangeCubeLocalInterpolation<Impl::LagrangeCubeLocalBasis<D,R,dim,k> > interpolation_;
+    Impl::LagrangeCubeLocalBasis<D,R,dim,compileTimeOrder> basis_;
+    Impl::LagrangeCubeLocalCoefficients<dim,compileTimeOrder> coefficients_;
+    Impl::LagrangeCubeLocalInterpolation<Impl::LagrangeCubeLocalBasis<D,R,dim,compileTimeOrder> > interpolation_;
   };
 
 }        // namespace Dune

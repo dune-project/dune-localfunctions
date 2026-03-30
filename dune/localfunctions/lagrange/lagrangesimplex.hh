@@ -30,24 +30,24 @@
 namespace Dune { namespace Impl
 {
   // The traits provide static or dynamic order and size information
-  template<unsigned int dim, int k>
+  template<unsigned int dim, int compileTimeOrder>
   struct LagrangeSimplexTraits
   {
-    static constexpr bool is_static_order = (k>=0);
+    static constexpr bool is_static_order = (compileTimeOrder >= 0);
 
-    constexpr LagrangeSimplexTraits(int /*order*/ = k)
+    constexpr LagrangeSimplexTraits(int /*runTimeOrder*/ = compileTimeOrder)
     {
-      static_assert(k >= 0, "LagrangeSimplex: order must be non-negative");
+      static_assert(compileTimeOrder >= 0, "LagrangeSimplex: order must be non-negative");
     }
 
     //! \brief Polynomial order of the shape functions
-    static constexpr int order() { return k; }
+    static constexpr unsigned int order() { return compileTimeOrder; }
 
     /** \brief Number of shape functions
       *
       * See https://en.wikipedia.org/wiki/Figurate_number for an explanation of the formula
       */
-    static constexpr unsigned int size() { return binomial(k+dim,dim); }
+    static constexpr unsigned int size() { return binomial(compileTimeOrder+dim,dim); }
   };
 
 
@@ -55,21 +55,21 @@ namespace Dune { namespace Impl
   template<unsigned int dim>
   struct LagrangeSimplexTraits<dim,-1>
   {
-    const int k_;
+    const unsigned int k_;
     const unsigned int size_;
 
     static constexpr bool is_static_order = false;
 
-    constexpr explicit LagrangeSimplexTraits(int order)
-      : k_(order)
-      , size_(binomial(order+dim,dim))
+    constexpr explicit LagrangeSimplexTraits(int runTimeOrder)
+      : k_(runTimeOrder >= 0 ? (unsigned int)(runTimeOrder) : 0u)
+      , size_(binomial(k_+dim,dim))
     {
-      if (order < 0)
+      if (runTimeOrder < 0)
         DUNE_THROW(Dune::InvalidStateException, "LagrangeSimplex: order must be non-negative");
     }
 
     //! \brief Polynomial order of the shape functions
-    constexpr int order() const
+    constexpr unsigned int order() const
     {
       return k_;
     }
@@ -169,24 +169,24 @@ namespace Dune { namespace Impl
      \tparam D Type to represent the field in the domain
      \tparam R Type to represent the field in the range
      \tparam dim Dimension of the domain simplex
-     \tparam polynomialOrder Polynomial order of the shape functions
+     \tparam compileTimeOrder Polynomial order of the shape functions
    */
-  template<class D, class R, unsigned int dim, int polynomialOrder>
+  template<class D, class R, unsigned int dim, int compileTimeOrder>
   class LagrangeSimplexLocalBasis
-    : public LagrangeSimplexTraits<dim,polynomialOrder>
-    , private LagrangeSimplexLocalBasisBuffers<R,dim,polynomialOrder>
+    : public LagrangeSimplexTraits<dim,compileTimeOrder>
+    , private LagrangeSimplexLocalBasisBuffers<R,dim,compileTimeOrder>
   {
     template <class> friend class LagrangeSimplexLocalInterpolation;
 
   public:
 
-    using Base = LagrangeSimplexTraits<dim,polynomialOrder>;
-    using Buffers = LagrangeSimplexLocalBasisBuffers<R,dim,polynomialOrder>;
+    using Base = LagrangeSimplexTraits<dim,compileTimeOrder>;
+    using Buffers = LagrangeSimplexLocalBasisBuffers<R,dim,compileTimeOrder>;
     static constexpr bool is_static_order = Base::is_static_order;
 
-    constexpr LagrangeSimplexLocalBasis(int k = polynomialOrder)
-      : Base(k)
-      , Buffers(k)
+    constexpr LagrangeSimplexLocalBasis(int runTimeOrder = compileTimeOrder)
+      : Base(runTimeOrder)
+      , Buffers(runTimeOrder)
     {}
 
     using Base::order;
@@ -526,7 +526,7 @@ namespace Dune { namespace Impl
       // static orders.
       auto supportedOrders = [&]{
         if constexpr(is_static_order)
-          return Dune::range(Dune::index_constant<1>{}, Dune::index_constant<polynomialOrder+1>{});
+          return Dune::range(Dune::index_constant<1>{}, Dune::index_constant<compileTimeOrder+1>{});
         else
           return Dune::range(1, k+1);
       }();
@@ -577,18 +577,18 @@ namespace Dune { namespace Impl
   /** \brief Associations of the Lagrange degrees of freedom to subentities of the reference simplex
    *
    * \tparam dim Dimension of the reference simplex
-   * \tparam k Polynomial order of the Lagrange space
+   * \tparam compileTimeOrder Polynomial order of the Lagrange space
    */
-  template<unsigned int dim, int polynomialOrder>
+  template<unsigned int dim, int compileTimeOrder>
   class LagrangeSimplexLocalCoefficients
-    : public LagrangeSimplexTraits<dim,polynomialOrder>
+    : public LagrangeSimplexTraits<dim,compileTimeOrder>
   {
-    using Base = LagrangeSimplexTraits<dim,polynomialOrder>;
+    using Base = LagrangeSimplexTraits<dim,compileTimeOrder>;
 
   public:
     //! \brief Constructor
-    LagrangeSimplexLocalCoefficients (int order = polynomialOrder)
-      : Base(order)
+    LagrangeSimplexLocalCoefficients (int runTimeOrder = compileTimeOrder)
+      : Base(runTimeOrder)
       , localKeys_(Base::size())
     {
       const int k = Base::order();
@@ -920,7 +920,7 @@ namespace Dune
    * \tparam D type used for domain coordinates
    * \tparam R type used for function values
    * \tparam d dimension of the reference element
-   * \tparam polynomialOrder polynomial order of the shape functions (or -1 for dynamic order)
+   * \tparam compileTimeOrder polynomial order of the shape functions (or -1 for dynamic order)
    *
    * The Lagrange basis functions \f$\phi_i\f$ of order \f$k>1\f$ on the unit simplex
    * \f$G = \{ x \in [0,1]^{d} \,|\, \sum_{j=1}^d x_j \leq 1\}\f$ are implemented as
@@ -968,40 +968,40 @@ namespace Dune
    *   L_0(t) = 1, \qquad L_{n+1}(t) = L_n(t)\frac{t-n}{n+1} \qquad n\geq 0.
    * \f]
    */
-  template<class D, class R, int d, int polynomialOrder = -1>
+  template<class D, class R, int d, int compileTimeOrder = -1>
   class LagrangeSimplexLocalFiniteElement
   {
   public:
     /** \brief Export number types, dimensions, etc.
      */
     using Traits = LocalFiniteElementTraits<
-      Impl::LagrangeSimplexLocalBasis<D,R,d,polynomialOrder>,
-      Impl::LagrangeSimplexLocalCoefficients<d,polynomialOrder>,
-      Impl::LagrangeSimplexLocalInterpolation<Impl::LagrangeSimplexLocalBasis<D,R,d,polynomialOrder> > >;
+      Impl::LagrangeSimplexLocalBasis<D,R,d,compileTimeOrder>,
+      Impl::LagrangeSimplexLocalCoefficients<d,compileTimeOrder>,
+      Impl::LagrangeSimplexLocalInterpolation<Impl::LagrangeSimplexLocalBasis<D,R,d,compileTimeOrder> > >;
 
-    //! \brief Constructor for static order
+    //! \brief Constructor for compile-time order
     constexpr LagrangeSimplexLocalFiniteElement()
       : basis_()
       , coefficients_()
       , interpolation_(basis_)
     {
-      static_assert(polynomialOrder >= 0, "Default constructor only allowed for static order k >= 0");
+      static_assert(compileTimeOrder >= 0, "Default constructor only allowed for compile-time >= 0");
     }
 
-    //! \brief Constructor for dynamic order
-    explicit constexpr LagrangeSimplexLocalFiniteElement(int k)
-      : basis_(k)
-      , coefficients_(k)
+    //! \brief Constructor for run-time order
+    explicit constexpr LagrangeSimplexLocalFiniteElement(int runTimeOrder)
+      : basis_(runTimeOrder)
+      , coefficients_(runTimeOrder)
       , interpolation_(basis_)
     {
-      if (k < 0)
-        DUNE_THROW(Dune::InvalidStateException, "LagrangeSimplexLocalFiniteElement: Order k must be non-negative!");
+      if (runTimeOrder < 0)
+        DUNE_THROW(Dune::InvalidStateException, "LagrangeSimplexLocalFiniteElement: run-time order must be non-negative!");
     }
 
     /** \brief Constructs a finite element given a vertex reordering
      * */
     template<typename VertexMap>
-    explicit constexpr LagrangeSimplexLocalFiniteElement(const VertexMap& vertexmap) requires(polynomialOrder >= 0)
+    explicit constexpr LagrangeSimplexLocalFiniteElement(const VertexMap& vertexmap) requires(compileTimeOrder >= 0)
       : basis_()
       , coefficients_(vertexmap)
       , interpolation_(basis_)

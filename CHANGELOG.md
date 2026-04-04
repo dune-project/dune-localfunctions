@@ -51,6 +51,7 @@ SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 
 * The deprecated class `PQkLocalFiniteElementCache` has been removed.
 
+
 # Release 2.10
 
 * Fixed LocalKey codim for the Crouzeix-Raviart element
@@ -68,7 +69,9 @@ SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 
 ## Deprecations and removals
 
-* `PQkLocalFiniteElementCache` is deprecated. `LagrangeLocalFiniteElementCache` is the recommended replacement. The latter implements a thread-safe get(gt) while the former does not.
+* `PQkLocalFiniteElementCache` is deprecated. `LagrangeLocalFiniteElementCache`
+  is the recommended replacement. The latter implements a thread-safe `get(gt)`
+  while the former does not.
 
 * The deprecated support for passing functions providing
   only the old `f.evaluate(x,y)` interface has been removed.
@@ -97,9 +100,11 @@ SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 * The class `LFEMatrix` is deprecated and should be replaced by `DynamicMatrix`
   from dune-common with a few interface changes.
 
+
 # Release 2.9
 
-* The implementation of the Raviart-Thomas element now also includes 0th order shape functions on prisms and pyramids.
+* The implementation of the Raviart-Thomas element now also includes 0th
+  order shape functions on prisms and pyramids.
 
 * FiniteElementCache is now copy and move assignable.
 

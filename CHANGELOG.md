@@ -12,6 +12,18 @@ SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
   shape function evaluation, which makes its usage potentially unsafe when an instance is shared
   between concurrent threads.
 
+## Deprecations and removals
+
+- Removed deprecated header `dune/localfunctions/lagrane/pq22d.hh`.
+  Use LocalFiniteElementVariant or the virtual interface directly.
+
+- Removed deprecated class `Presicion`. Use `std::numeric_limits<>::digits` instead.
+
+- Removed deprecated and empty header `dune/localfunctions/common/localinterpolation.hh`.
+
+- Removed deprecated and empty header `dune/localfunctions/utility/lfematrix.hh`.
+
+
 # Release 2.11
 
 * The scaling of the basis functions in the `RT03DLocalFiniteElement`

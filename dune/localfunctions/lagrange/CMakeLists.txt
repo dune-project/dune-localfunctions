@@ -18,7 +18,6 @@ install(FILES
   p0.hh
   pk1d.hh
   pk2d.hh
-  pq22d.hh
   pqkfactory.hh
   q1.hh
   q2.hh

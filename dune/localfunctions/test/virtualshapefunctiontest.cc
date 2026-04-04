@@ -7,8 +7,6 @@
 #include <cstddef>
 #include <iostream>
 
-#include <dune/common/deprecated.hh>
-
 #include <dune/geometry/type.hh>
 #include <dune/localfunctions/common/virtualinterface.hh>
 #include <dune/localfunctions/common/virtualwrappers.hh>
@@ -16,10 +14,6 @@
 #include <dune/localfunctions/lagrange/p0.hh>
 #include <dune/localfunctions/lagrange/lagrangesimplex.hh>
 #include <dune/localfunctions/monomial.hh>
-
-#define DUNE_DISABLE_DEPRECATION_WARNING_PQ22D
-#include <dune/localfunctions/lagrange/pq22d.hh>
-#undef DUNE_DISABLE_DEPRECATION_WARNING_PQ22D
 
 /** \file
     \brief Test the dynamically polymorphic shape function interface
@@ -145,14 +139,6 @@ int main (int argc, char *argv[])
   const Dune::P0LocalFiniteElement<double, double, 2> p0FE(Dune::GeometryTypes::cube(2));
   const Dune::LocalFiniteElementVirtualImp<Dune::P0LocalFiniteElement<double, double, 2> > p0VFE(p0FE);
   testLocalFiniteElement<LBTraits>(&p0VFE);
-
-DUNE_NO_DEPRECATED_BEGIN
-  const Dune::PQ22DLocalFiniteElement<double, double> pq2FE(Dune::GeometryTypes::cube(2));
-  const Dune::PQ22DLocalFiniteElement<double, double> pq2FE2(pq2FE);
-
-  const Dune::LocalFiniteElementVirtualImp<Dune::PQ22DLocalFiniteElement<double, double> > pq2VFE(pq2FE);
-  testLocalFiniteElement<LBTraits>(&pq2VFE);
-DUNE_NO_DEPRECATED_END
 
   const Dune::LocalFiniteElementVirtualImp<Dune::LagrangeSimplexLocalFiniteElement<double, double, 2, 1>> p1VFE;
   testLocalFiniteElement<LBTraits>(&p1VFE);

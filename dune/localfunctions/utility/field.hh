@@ -5,7 +5,6 @@
 #ifndef DUNE_LOCALFUNCTIONS_UTILITY_FIELD_HH
 #define DUNE_LOCALFUNCTIONS_UTILITY_FIELD_HH
 
-#include <dune/common/deprecated.hh>
 #include <dune/common/gmpfield.hh>
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
@@ -254,45 +253,6 @@ namespace Dune
     return f2;
   }
 
-
-  // Precision
-  // this is not a perfect solution to obtain the
-  // precision of a field - definition is not clear
-  // to be removed
-  // ---------
-
-  template <class Field>
-  struct [[deprecated("This class is deprecated and will be removed after 2.11. Use std::numeric_limits<>::digits instead")]] Precision;
-
-DUNE_NO_DEPRECATED_BEGIN
-
-  template<>
-  struct Precision< double >
-  {
-    static const unsigned int value = 64;
-  };
-
-  template<>
-  struct Precision< long double >
-  {
-    static const unsigned int value = 80;
-  };
-
-  template<>
-  struct Precision< float >
-  {
-    static const unsigned int value = 32;
-  };
-
-#if HAVE_GMP
-  template< unsigned int precision >
-  struct Precision< GMPField< precision > >
-  {
-    static const unsigned int value = precision;
-  };
-#endif
-
-DUNE_NO_DEPRECATED_END
 
   // ComputeField
   // ------------

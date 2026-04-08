@@ -117,9 +117,17 @@ int main (int argc, char *argv[])
   {
     Dune::Hybrid::forEach(std::index_sequence<1,2,3,4>{},[&](auto order)
     {
-      auto lfe = LagrangeSimplexLocalFiniteElement<double,double,dim,order>();
-      testSuite.check(testPk(lfe))
-        << "Lagrange property not satisfied for " << Dune::className(lfe);
+      auto lfe_static = LagrangeSimplexLocalFiniteElement<double,double,dim,order>();
+      testSuite.check(testPk(lfe_static))
+        << "Lagrange property not satisfied for " << Dune::className(lfe_static);
+
+      auto lfe_dynamic = LagrangeSimplexLocalFiniteElement<double,double,dim>(order);
+      testSuite.check(testPk(lfe_dynamic))
+        << "Lagrange property not satisfied for " << Dune::className(lfe_dynamic);
+
+      // Check that an invalid polynomial order is correctly detected
+      testSuite.checkThrow<Dune::InvalidStateException>([&]{ return LagrangeSimplexLocalFiniteElement<double,double,dim>(-1); })
+        << "Construction with invalid parameter does not throw.";
     });
   });
 
@@ -179,8 +187,11 @@ DUNE_NO_DEPRECATED_END
     Dune::Hybrid::forEach(std::make_index_sequence<5>{},[&](auto order)
     {
       auto diffOrder = 2;
-      auto lfe = LagrangeSimplexLocalFiniteElement<double,double,dim,order>();
-      testSuite.subTest(testVirtualLFE(lfe, DisableNone, diffOrder));
+      auto lfe_static = LagrangeSimplexLocalFiniteElement<double,double,dim,order>();
+      testSuite.subTest(testVirtualLFE(lfe_static, DisableNone, diffOrder));
+
+      auto lfe_dynamic = LagrangeSimplexLocalFiniteElement<double,double,dim>(order);
+      testSuite.subTest(testVirtualLFE(lfe_dynamic, DisableNone, diffOrder));
     });
   });
 

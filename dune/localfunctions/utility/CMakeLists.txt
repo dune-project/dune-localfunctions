@@ -11,7 +11,6 @@ install(FILES
   field.hh
   interpolationhelper.hh
   l2interpolation.hh
-  lfematrix.hh
   localfiniteelement.hh
   monomialbasis.hh
   multiindex.hh

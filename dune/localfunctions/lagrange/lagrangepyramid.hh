@@ -20,6 +20,81 @@
 
 namespace Dune { namespace Impl
 {
+
+  // The traits provide static or dynamic order and size information
+  template<int compileTimeOrder>
+  struct LagrangePyramidOrderTraits;
+
+  // The traits provide static order and size information
+  template<int compileTimeOrder>
+  requires (compileTimeOrder >= 0)
+  struct LagrangePyramidOrderTraits<compileTimeOrder>
+  {
+    static constexpr bool is_static_order = true;
+
+    constexpr LagrangePyramidOrderTraits(int /*runTimeOrder*/ = compileTimeOrder)
+    {
+      static_assert((0 <= compileTimeOrder) and (compileTimeOrder <= 2), "LagrangePyramid: Only order 0,1, and 2 are supported");
+    }
+
+    /**
+     * \brief Polynomial order of the shape functions
+     */
+    static constexpr unsigned int order() {
+      return compileTimeOrder;
+    }
+
+    /**
+     * \brief Number of shape functions
+     */
+    static constexpr std::size_t size() {
+      std::size_t result = 0;
+      for (int i=0; i<=compileTimeOrder; i++)
+        result += power(i+1,2);
+      return result;
+    }
+  };
+
+
+  // this specialization is for the dynamic order case
+  template<>
+  struct LagrangePyramidOrderTraits<-1>
+  {
+    unsigned int runTimeOrder_;
+    unsigned int size_;
+
+    static constexpr bool is_static_order = false;
+
+    constexpr explicit LagrangePyramidOrderTraits(int runTimeOrder)
+      : runTimeOrder_(runTimeOrder >= 0 ? (unsigned int)(runTimeOrder) : 0u)
+      , size_(0)
+    {
+      if ((runTimeOrder < 0) or (runTimeOrder > 2))
+        DUNE_THROW(Dune::InvalidStateException, "LagrangePyramid: Only order 0,1, and 2 are supported");
+      size_ = 0;
+      for (unsigned int i=0; i<=runTimeOrder_; i++)
+        size_ += power(i+1,2);
+    }
+
+    /**
+     * \brief Polynomial order of the shape functions
+     */
+    constexpr unsigned int order() const
+    {
+      return runTimeOrder_;
+    }
+
+    /**
+     * \brief Number of shape functions
+     */
+    constexpr std::size_t size() const
+    {
+      return size_;
+    }
+  };
+
+
+
    /** \brief Lagrange shape functions of arbitrary order on the three-dimensional reference pyramid
 
      Lagrange shape functions of arbitrary order have the property that
@@ -27,23 +102,23 @@ namespace Dune { namespace Impl
 
      \tparam D Type to represent the field in the domain
      \tparam R Type to represent the field in the range
-     \tparam k Polynomial order
+     \tparam compileTimeOrder polynomial order of the shape functions (or -1 for dynamic order)
    */
-  template<class D, class R, unsigned int k>
+  template<class D, class R, int compileTimeOrder>
   class LagrangePyramidLocalBasis
+    : public LagrangePyramidOrderTraits<compileTimeOrder>
   {
+    using OrderTraits = LagrangePyramidOrderTraits<compileTimeOrder>;
+
   public:
     using Traits = LocalBasisTraits<D,3,FieldVector<D,3>,R,1,FieldVector<R,1>,FieldMatrix<R,1,3> >;
 
-    /** \brief Number of shape functions
-     */
-    static constexpr std::size_t size ()
-    {
-      std::size_t result = 0;
-      for (unsigned int i=0; i<=k; i++)
-        result += power(i+1,2);
-      return result;
-    }
+    constexpr LagrangePyramidLocalBasis(OrderTraits orderTraits)
+      : OrderTraits(orderTraits)
+    {}
+
+    using OrderTraits::order;
+    using OrderTraits::size;
 
     //! \brief Evaluate all shape functions
     void evaluateFunction(const typename Traits::DomainType& in,
@@ -51,14 +126,13 @@ namespace Dune { namespace Impl
     {
       out.resize(size());
 
-      // Specialization for zero-order case
-      if (k==0)
+      if (order()==0)
       {
         out[0] = 1;
         return;
       }
 
-      if (k==1)
+      if (order()==1)
       {
         if(in[0] > in[1])
         {
@@ -80,7 +154,7 @@ namespace Dune { namespace Impl
         return;
       }
 
-      if (k==2)
+      if (order()==2)
       {
         // transform to reference element with base [-1,1]^2
         const R x = 2.0*in[0] + in[2] - 1.0;
@@ -139,7 +213,7 @@ namespace Dune { namespace Impl
         return;
       }
 
-      DUNE_THROW(NotImplemented, "LagrangePyramidLocalBasis::evaluateFunction for order " << k);
+      DUNE_THROW(NotImplemented, "LagrangePyramidLocalBasis::evaluateFunction for order " << order());
     }
 
     /** \brief Evaluate Jacobian of all shape functions
@@ -152,14 +226,13 @@ namespace Dune { namespace Impl
     {
       out.resize(size());
 
-      // Specialization for k==0
-      if (k==0)
+      if (order()==0)
       {
         std::fill(out[0][0].begin(), out[0][0].end(), 0);
         return;
       }
 
-      if (k==1)
+      if (order()==1)
       {
         if(in[0] > in[1])
         {
@@ -180,7 +253,7 @@ namespace Dune { namespace Impl
         return;
       }
 
-      if (k==2)
+      if (order()==2)
       {
         // transform to reference element with base [-1,1]^2
         const R x = 2.0*in[0] + in[2] - 1.0;
@@ -372,7 +445,7 @@ namespace Dune { namespace Impl
         return;
       }
 
-      DUNE_THROW(NotImplemented, "LagrangePyramidLocalBasis::evaluateJacobian for order " << k);
+      DUNE_THROW(NotImplemented, "LagrangePyramidLocalBasis::evaluateJacobian for order " << order());
     }
 
     /** \brief Evaluate partial derivatives of any order of all shape functions
@@ -395,13 +468,13 @@ namespace Dune { namespace Impl
         return;
       }
 
-      if (k==0)
+      if (OrderTraits::order()==0)
       {
         out[0] = 0;
         return;
       }
 
-      if (k==1)
+      if (OrderTraits::order()==1)
       {
         if (totalOrder == 1)
         {
@@ -484,7 +557,7 @@ namespace Dune { namespace Impl
         return;
       }
 
-      if (k==2)
+      if (OrderTraits::order()==2)
       {
         if (totalOrder == 1)
         {
@@ -616,42 +689,44 @@ namespace Dune { namespace Impl
         return;
       }
 
-      DUNE_THROW(NotImplemented, "LagrangePyramidLocalBasis::partial for order " << k);
+      DUNE_THROW(NotImplemented, "LagrangePyramidLocalBasis::partial for order " << OrderTraits::order());
     }
 
-    //! \brief Polynomial order of the shape functions
-    static constexpr unsigned int order ()
-    {
-      return k;
-    }
   };
 
   /** \brief Associations of the Lagrange degrees of freedom to subentities of the reference pyramid
    *
-   * \tparam k Polynomial order of the Lagrange space in one direction
+   * \tparam compileTimeOrder polynomial order of the shape functions (or -1 for dynamic order)
    */
-  template<unsigned int k>
+  template<int compileTimeOrder>
   class LagrangePyramidLocalCoefficients
+    : public LagrangePyramidOrderTraits<compileTimeOrder>
   {
+    using OrderTraits = LagrangePyramidOrderTraits<compileTimeOrder>;
   public:
+
+    using OrderTraits::order;
+    using OrderTraits::size;
+
     //! \brief Default constructor
-    LagrangePyramidLocalCoefficients ()
-    : localKeys_(size())
+    LagrangePyramidLocalCoefficients (OrderTraits orderTraits)
+      : OrderTraits(orderTraits)
+      , localKeys_(size())
     {
-      if (k==0)
+      if (order()==0)
       {
         localKeys_[0] = LocalKey(0,0,0);
         return;
       }
 
-      if (k==1)
+      if (order()==1)
       {
         for (std::size_t i=0; i<size(); i++)
           localKeys_[i] = LocalKey(i,3,0);
         return;
       }
 
-      if (k==2)
+      if (order()==2)
       {
         // Vertex shape functions
         localKeys_[0] = LocalKey(0,3,0);
@@ -677,17 +752,8 @@ namespace Dune { namespace Impl
       }
 
       // No general case
-      DUNE_THROW(NotImplemented, "LagrangePyramidLocalCoefficients for order " << k);
+      DUNE_THROW(NotImplemented, "LagrangePyramidLocalCoefficients for order " << order());
 
-    }
-
-    //! number of coefficients
-    static constexpr std::size_t size ()
-    {
-      std::size_t result = 0;
-      for (unsigned int i=0; i<=k; i++)
-        result += power(i+1,2);
-      return result;
     }
 
     //! get i-th index
@@ -702,12 +768,20 @@ namespace Dune { namespace Impl
 
   /** \brief Evaluate the degrees of freedom of a Lagrange basis
    *
-   * \tparam LocalBasis The corresponding set of shape functions
+   * \tparam compileTimeOrder polynomial order of the shape functions (or -1 for dynamic order)
    */
-  template<class LocalBasis>
+  template<class D, class R, int compileTimeOrder>
   class LagrangePyramidLocalInterpolation
+    : public LagrangePyramidOrderTraits<compileTimeOrder>
   {
+    using Traits = typename LagrangePyramidLocalBasis<D,R,compileTimeOrder>::Traits;
+    using OrderTraits = LagrangePyramidOrderTraits<compileTimeOrder>;
+
   public:
+
+    constexpr LagrangePyramidLocalInterpolation(OrderTraits orderTraits)
+      : OrderTraits(orderTraits)
+    {}
 
     /** \brief Evaluate a given function at the Lagrange nodes
      *
@@ -719,16 +793,16 @@ namespace Dune { namespace Impl
     template<typename F, typename C>
     void interpolate (const F& f, std::vector<C>& out) const
     {
-      constexpr auto k = LocalBasis::order();
-      using D = typename LocalBasis::Traits::DomainType;
-      using DF = typename LocalBasis::Traits::DomainFieldType;
+      auto k = OrderTraits::order();
+      using Domain = typename Traits::DomainType;
+      using DomainField = typename Traits::DomainFieldType;
 
-      out.resize(LocalBasis::size());
+      out.resize(OrderTraits::size());
 
       // Specialization for zero-order case
       if (k==0)
       {
-        auto center = ReferenceElements<DF,3>::general(GeometryTypes::pyramid).position(0,0);
+        auto center = ReferenceElements<DomainField,3>::general(GeometryTypes::pyramid).position(0,0);
         out[0] = f(center);
         return;
       }
@@ -736,9 +810,9 @@ namespace Dune { namespace Impl
       // Specialization for first-order case
       if (k==1)
       {
-        for (unsigned int i=0; i<LocalBasis::size(); i++)
+        for (unsigned int i=0; i<OrderTraits::size(); i++)
         {
-          auto vertex = ReferenceElements<DF,3>::general(GeometryTypes::pyramid).position(i,3);
+          auto vertex = ReferenceElements<DomainField,3>::general(GeometryTypes::pyramid).position(i,3);
           out[i] = f(vertex);
         }
         return;
@@ -747,20 +821,20 @@ namespace Dune { namespace Impl
       // Specialization for second-order case
       if (k==2)
       {
-        out[0]  = f( D( {0.0, 0.0, 0.0} ) );
-        out[1]  = f( D( {1.0, 0.0, 0.0} ) );
-        out[2]  = f( D( {0.0, 1.0, 0.0} ) );
-        out[3]  = f( D( {1.0, 1.0, 0.0} ) );
-        out[4]  = f( D( {0.0, 0.0, 1.0} ) );
-        out[5]  = f( D( {0.0, 0.5, 0.0} ) );
-        out[6]  = f( D( {1.0, 0.5, 0.0} ) );
-        out[7]  = f( D( {0.5, 0.0, 0.0} ) );
-        out[8]  = f( D( {0.5, 1.0, 0.0} ) );
-        out[9]  = f( D( {0.0, 0.0, 0.5} ) );
-        out[10] = f( D( {0.5, 0.0, 0.5} ) );
-        out[11] = f( D( {0.0, 0.5, 0.5} ) );
-        out[12] = f( D( {0.5, 0.5, 0.5} ) );
-        out[13] = f( D( {0.5, 0.5, 0.0} ) );
+        out[0]  = f( Domain( {0.0, 0.0, 0.0} ) );
+        out[1]  = f( Domain( {1.0, 0.0, 0.0} ) );
+        out[2]  = f( Domain( {0.0, 1.0, 0.0} ) );
+        out[3]  = f( Domain( {1.0, 1.0, 0.0} ) );
+        out[4]  = f( Domain( {0.0, 0.0, 1.0} ) );
+        out[5]  = f( Domain( {0.0, 0.5, 0.0} ) );
+        out[6]  = f( Domain( {1.0, 0.5, 0.0} ) );
+        out[7]  = f( Domain( {0.5, 0.0, 0.0} ) );
+        out[8]  = f( Domain( {0.5, 1.0, 0.0} ) );
+        out[9]  = f( Domain( {0.0, 0.0, 0.5} ) );
+        out[10] = f( Domain( {0.5, 0.0, 0.5} ) );
+        out[11] = f( Domain( {0.0, 0.5, 0.5} ) );
+        out[12] = f( Domain( {0.5, 0.5, 0.5} ) );
+        out[13] = f( Domain( {0.5, 0.5, 0.0} ) );
 
         return;
       }
@@ -778,7 +852,7 @@ namespace Dune
    *
    * \tparam D Type used for domain coordinates
    * \tparam R Type used for shape function values
-   * \tparam k Polynomial order, only orders 1 and 2 are actually implemented
+   * \tparam compileTimeOrder polynomial order of the shape functions (or -1 for dynamic order)
    *
    * Lagrange shape functions are tricky.  In the paper mentioned below, Christian Wieners states
    * "There exists no continuously differentiable conforming shape function for the pyramid
@@ -804,15 +878,40 @@ namespace Dune
    *  of the Liu et al. paper is that they should.
    *
    */
-  template<class D, class R, int k>
+  template<class D, class R, int compileTimeOrder = -1>
   class LagrangePyramidLocalFiniteElement
+    : public Impl::LagrangePyramidOrderTraits<compileTimeOrder>
   {
+    using OrderTraits = Impl::LagrangePyramidOrderTraits<compileTimeOrder>;
   public:
     /** \brief Export number types, dimensions, etc.
      */
-    using Traits = LocalFiniteElementTraits<Impl::LagrangePyramidLocalBasis<D,R,k>,
-                                            Impl::LagrangePyramidLocalCoefficients<k>,
-                                            Impl::LagrangePyramidLocalInterpolation<Impl::LagrangePyramidLocalBasis<D,R,k> > >;
+    using Traits = LocalFiniteElementTraits<Impl::LagrangePyramidLocalBasis<D,R,compileTimeOrder>,
+                                            Impl::LagrangePyramidLocalCoefficients<compileTimeOrder>,
+                                            Impl::LagrangePyramidLocalInterpolation<D,R,compileTimeOrder>>;
+
+    //! \brief Constructor for compile-time order
+    constexpr LagrangePyramidLocalFiniteElement()
+      : OrderTraits()
+      , basis_(*this)
+      , coefficients_(*this)
+      , interpolation_(*this)
+    {
+      static_assert(OrderTraits::is_static_order, "Default constructor only allowed for compile-time >= 0");
+      static_assert((0 <= compileTimeOrder) and (compileTimeOrder <= 2), "LagrangePyramid: Only order 0,1, and 2 are supported");
+    }
+
+    //! \brief Constructor for run-time order
+    explicit constexpr LagrangePyramidLocalFiniteElement(int runTimeOrder)
+      : OrderTraits(runTimeOrder)
+      , basis_(*this)
+      , coefficients_(*this)
+      , interpolation_(*this)
+    {
+      static_assert(not OrderTraits::is_static_order, "Passing a run-time order only allowed for compile-time = -1");
+      if ((runTimeOrder < 0) or (runTimeOrder > 2))
+        DUNE_THROW(Dune::InvalidStateException, "LagrangePyramid: Only run-time order 0,1, and 2 are supported");
+    }
 
     /** \brief Returns the local basis, i.e., the set of shape functions
      */
@@ -835,11 +934,7 @@ namespace Dune
       return interpolation_;
     }
 
-    /** \brief The number of shape functions */
-    static constexpr std::size_t size ()
-    {
-      return Impl::LagrangePyramidLocalBasis<D,R,k>::size();
-    }
+    using OrderTraits::size;
 
     /** \brief The reference element that the local finite element is defined on
      */
@@ -849,9 +944,9 @@ namespace Dune
     }
 
   private:
-    Impl::LagrangePyramidLocalBasis<D,R,k> basis_;
-    Impl::LagrangePyramidLocalCoefficients<k> coefficients_;
-    Impl::LagrangePyramidLocalInterpolation<Impl::LagrangePyramidLocalBasis<D,R,k> > interpolation_;
+    Impl::LagrangePyramidLocalBasis<D,R,compileTimeOrder> basis_;
+    Impl::LagrangePyramidLocalCoefficients<compileTimeOrder> coefficients_;
+    Impl::LagrangePyramidLocalInterpolation<D,R,compileTimeOrder> interpolation_;
   };
 
 }        // namespace Dune

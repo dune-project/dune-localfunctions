@@ -155,11 +155,16 @@ int main (int argc, char *argv[])
   auto p0LFE = Dune::P0LocalFiniteElement<double,double,2>(GeometryTypes::simplex(2));
   testSuite.subTest(testVirtualLFE(p0LFE, DisableNone, 0));
 
-  auto prismP1LFE = LagrangePrismLocalFiniteElement<double,double,1>();
-  testSuite.subTest(testVirtualLFE(prismP1LFE, DisableNone, 2));
+  // Prism implementations
+  Dune::Hybrid::forEach(std::index_sequence<0,1,2>{},[&](auto order)
+  {
+    auto diffOrder = (order <2) ? 2 : 1;
+    auto lfe_static = LagrangePrismLocalFiniteElement<double,double,order>();
+    testSuite.subTest(testVirtualLFE(lfe_static, DisableNone, diffOrder));
 
-  auto prismP2LFE = LagrangePrismLocalFiniteElement<double,double,2>();
-  testSuite.subTest(testVirtualLFE(prismP2LFE, DisableNone, 1));
+    auto lfe_dynamic = LagrangePrismLocalFiniteElement<double,double>(order);
+    testSuite.subTest(testVirtualLFE(lfe_dynamic, DisableNone, diffOrder));
+  });
 
   // Pyramid shapefunctions are not differentiable on the plane where xi[0]=xi[1].
   // So let's skip test points on this plane

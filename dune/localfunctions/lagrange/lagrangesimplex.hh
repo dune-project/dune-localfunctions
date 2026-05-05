@@ -55,8 +55,8 @@ namespace Dune { namespace Impl
   template<unsigned int dim>
   struct LagrangeSimplexTraits<dim,-1>
   {
-    const unsigned int k_;
-    const unsigned int size_;
+    unsigned int k_;
+    unsigned int size_;
 
     static constexpr bool is_static_order = false;
 

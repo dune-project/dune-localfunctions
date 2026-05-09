@@ -40,14 +40,16 @@ namespace Dune { namespace Impl
     /**
      * \brief Polynomial order of the shape functions
      */
-    static constexpr unsigned int order() {
+    static constexpr unsigned int order()
+    {
       return compileTimeOrder;
     }
 
     /**
      * \brief Number of shape functions
      */
-    static constexpr std::size_t size() {
+    static constexpr std::size_t size()
+    {
       std::size_t result = 0;
       for (int i=0; i<=compileTimeOrder; i++)
         result += power(i+1,2);
@@ -61,7 +63,7 @@ namespace Dune { namespace Impl
   struct LagrangePyramidOrderTraits<-1>
   {
     unsigned int runTimeOrder_;
-    unsigned int size_;
+    std::size_t size_;
 
     static constexpr bool is_static_order = false;
 
@@ -106,14 +108,20 @@ namespace Dune { namespace Impl
    */
   template<class D, class R, int compileTimeOrder>
   class LagrangePyramidLocalBasis
-    : public LagrangePyramidOrderTraits<compileTimeOrder>
+    : private LagrangePyramidOrderTraits<compileTimeOrder>
   {
     using OrderTraits = LagrangePyramidOrderTraits<compileTimeOrder>;
 
   public:
     using Traits = LocalBasisTraits<D,3,FieldVector<D,3>,R,1,FieldVector<R,1>,FieldMatrix<R,1,3> >;
 
-    constexpr LagrangePyramidLocalBasis(OrderTraits orderTraits)
+    //! Default constructor only available for static order
+    constexpr LagrangePyramidLocalBasis() requires (OrderTraits::is_static_order)
+      : OrderTraits()
+    {}
+
+    //! Constructor initializes order and size
+    explicit constexpr LagrangePyramidLocalBasis(OrderTraits orderTraits)
       : OrderTraits(orderTraits)
     {}
 
@@ -121,8 +129,8 @@ namespace Dune { namespace Impl
     using OrderTraits::size;
 
     //! \brief Evaluate all shape functions
-    void evaluateFunction(const typename Traits::DomainType& in,
-                          std::vector<typename Traits::RangeType>& out) const
+    constexpr void evaluateFunction(const typename Traits::DomainType& in,
+                                    std::vector<typename Traits::RangeType>& out) const
     {
       out.resize(size());
 
@@ -221,8 +229,8 @@ namespace Dune { namespace Impl
      * \param x Point in the reference pyramid where to evaluation the Jacobians
      * \param[out] out The Jacobians of all shape functions at the point x
      */
-    void evaluateJacobian(const typename Traits::DomainType& in,
-                          std::vector<typename Traits::JacobianType>& out) const
+    constexpr void evaluateJacobian(const typename Traits::DomainType& in,
+                                    std::vector<typename Traits::JacobianType>& out) const
     {
       out.resize(size());
 
@@ -454,11 +462,11 @@ namespace Dune { namespace Impl
      * \param in Position where to evaluate the derivatives
      * \param[out] out The desired partial derivatives
      */
-    void partial(const std::array<unsigned int,3>& order,
-                 const typename Traits::DomainType& in,
-                 std::vector<typename Traits::RangeType>& out) const
+    constexpr void partial(const std::array<unsigned int,3>& partialOrders,
+                           const typename Traits::DomainType& in,
+                           std::vector<typename Traits::RangeType>& out) const
     {
-      auto totalOrder = std::accumulate(order.begin(), order.end(), 0);
+      auto totalOrder = std::accumulate(partialOrders.begin(), partialOrders.end(), 0);
 
       out.resize(size());
 
@@ -468,17 +476,17 @@ namespace Dune { namespace Impl
         return;
       }
 
-      if (OrderTraits::order()==0)
+      if (order()==0)
       {
         out[0] = 0;
         return;
       }
 
-      if (OrderTraits::order()==1)
+      if (order()==1)
       {
         if (totalOrder == 1)
         {
-          auto const direction = std::distance(order.begin(), std::find(order.begin(), order.end(), 1));
+          auto const direction = std::distance(partialOrders.begin(), std::find(partialOrders.begin(), partialOrders.end(), 1));
           if (in[0] > in[1])
           {
             switch (direction)
@@ -539,9 +547,9 @@ namespace Dune { namespace Impl
           }
         } else if (totalOrder == 2)
         {
-          if ((order[0] == 1 && order[1] == 1) ||
-              (order[1] == 1 && order[2] == 1 && in[0] > in[1]) ||
-              (order[0] == 1 && order[2] == 1 && in[0] <=in[1]))
+          if ((partialOrders[0] == 1 && partialOrders[1] == 1) ||
+              (partialOrders[1] == 1 && partialOrders[2] == 1 && in[0] > in[1]) ||
+              (partialOrders[0] == 1 && partialOrders[2] == 1 && in[0] <=in[1]))
           {
             out = {1, -1, -1, 1, 0};
           } else
@@ -557,7 +565,7 @@ namespace Dune { namespace Impl
         return;
       }
 
-      if (OrderTraits::order()==2)
+      if (order()==2)
       {
         if (totalOrder == 1)
         {
@@ -566,7 +574,7 @@ namespace Dune { namespace Impl
           const R y = 2.0*in[1] + in[2] - 1.0;
           const R z = in[2];
 
-          auto const direction = std::distance(order.begin(), std::find(order.begin(), order.end(), 1));
+          auto const direction = std::distance(partialOrders.begin(), std::find(partialOrders.begin(), partialOrders.end(), 1));
 
           // transformation of the gradient leads to a multiplication
           // with the Jacobian [2 0 0; 0 2 0; 1 1 1]
@@ -700,16 +708,22 @@ namespace Dune { namespace Impl
    */
   template<int compileTimeOrder>
   class LagrangePyramidLocalCoefficients
-    : public LagrangePyramidOrderTraits<compileTimeOrder>
+    : private LagrangePyramidOrderTraits<compileTimeOrder>
   {
     using OrderTraits = LagrangePyramidOrderTraits<compileTimeOrder>;
+
   public:
 
     using OrderTraits::order;
     using OrderTraits::size;
 
     //! \brief Default constructor
-    LagrangePyramidLocalCoefficients (OrderTraits orderTraits)
+    LagrangePyramidLocalCoefficients () requires (OrderTraits::is_static_order)
+      : LagrangePyramidLocalCoefficients(OrderTraits())
+    {}
+
+    //! Constructor builds the local keys
+    explicit LagrangePyramidLocalCoefficients (OrderTraits orderTraits)
       : OrderTraits(orderTraits)
       , localKeys_(size())
     {
@@ -772,14 +786,19 @@ namespace Dune { namespace Impl
    */
   template<class D, class R, int compileTimeOrder>
   class LagrangePyramidLocalInterpolation
-    : public LagrangePyramidOrderTraits<compileTimeOrder>
+    : private LagrangePyramidOrderTraits<compileTimeOrder>
   {
-    using Traits = typename LagrangePyramidLocalBasis<D,R,compileTimeOrder>::Traits;
     using OrderTraits = LagrangePyramidOrderTraits<compileTimeOrder>;
+    using Traits = typename LagrangePyramidLocalBasis<D,R,compileTimeOrder>::Traits;
 
   public:
+    //! Default constructor only available for static order
+    constexpr LagrangePyramidLocalInterpolation() requires (OrderTraits::is_static_order)
+      : OrderTraits()
+    {}
 
-    constexpr LagrangePyramidLocalInterpolation(OrderTraits orderTraits)
+    //! Constructor initializes order and size
+    explicit constexpr LagrangePyramidLocalInterpolation(OrderTraits orderTraits)
       : OrderTraits(orderTraits)
     {}
 
@@ -793,7 +812,7 @@ namespace Dune { namespace Impl
     template<typename F, typename C>
     void interpolate (const F& f, std::vector<C>& out) const
     {
-      auto k = OrderTraits::order();
+      const unsigned int k = OrderTraits::order();
       using Domain = typename Traits::DomainType;
       using DomainField = typename Traits::DomainFieldType;
 
@@ -880,9 +899,10 @@ namespace Dune
    */
   template<class D, class R, int compileTimeOrder = -1>
   class LagrangePyramidLocalFiniteElement
-    : public Impl::LagrangePyramidOrderTraits<compileTimeOrder>
+    : private Impl::LagrangePyramidOrderTraits<compileTimeOrder>
   {
     using OrderTraits = Impl::LagrangePyramidOrderTraits<compileTimeOrder>;
+
   public:
     /** \brief Export number types, dimensions, etc.
      */
@@ -891,49 +911,51 @@ namespace Dune
                                             Impl::LagrangePyramidLocalInterpolation<D,R,compileTimeOrder>>;
 
     //! \brief Constructor for compile-time order
-    constexpr LagrangePyramidLocalFiniteElement()
+    constexpr LagrangePyramidLocalFiniteElement ()
       : OrderTraits()
       , basis_(*this)
       , coefficients_(*this)
       , interpolation_(*this)
     {
-      static_assert(OrderTraits::is_static_order, "Default constructor only allowed for compile-time >= 0");
+      static_assert(OrderTraits::is_static_order, "Default constructor only allowed for compile-time order >= 0");
       static_assert((0 <= compileTimeOrder) and (compileTimeOrder <= 2), "LagrangePyramid: Only order 0,1, and 2 are supported");
     }
 
     //! \brief Constructor for run-time order
-    explicit constexpr LagrangePyramidLocalFiniteElement(int runTimeOrder)
+    explicit constexpr LagrangePyramidLocalFiniteElement (int runTimeOrder)
       : OrderTraits(runTimeOrder)
       , basis_(*this)
       , coefficients_(*this)
       , interpolation_(*this)
     {
-      static_assert(not OrderTraits::is_static_order, "Passing a run-time order only allowed for compile-time = -1");
       if ((runTimeOrder < 0) or (runTimeOrder > 2))
         DUNE_THROW(Dune::InvalidStateException, "LagrangePyramid: Only run-time order 0,1, and 2 are supported");
+      if (compileTimeOrder >= 0 && compileTimeOrder != runTimeOrder)
+        DUNE_THROW(Dune::InvalidStateException, "LagrangePyramid: Compile-time order must be identical to run-time order!");
     }
 
     /** \brief Returns the local basis, i.e., the set of shape functions
      */
-    const typename Traits::LocalBasisType& localBasis () const
+    constexpr const typename Traits::LocalBasisType& localBasis () const
     {
       return basis_;
     }
 
     /** \brief Returns the assignment of the degrees of freedom to the element subentities
      */
-    const typename Traits::LocalCoefficientsType& localCoefficients () const
+    constexpr const typename Traits::LocalCoefficientsType& localCoefficients () const
     {
       return coefficients_;
     }
 
     /** \brief Returns object that evaluates degrees of freedom
      */
-    const typename Traits::LocalInterpolationType& localInterpolation () const
+    constexpr const typename Traits::LocalInterpolationType& localInterpolation () const
     {
       return interpolation_;
     }
 
+    /** \brief The number of shape functions */
     using OrderTraits::size;
 
     /** \brief The reference element that the local finite element is defined on
@@ -944,9 +966,9 @@ namespace Dune
     }
 
   private:
-    Impl::LagrangePyramidLocalBasis<D,R,compileTimeOrder> basis_;
-    Impl::LagrangePyramidLocalCoefficients<compileTimeOrder> coefficients_;
-    Impl::LagrangePyramidLocalInterpolation<D,R,compileTimeOrder> interpolation_;
+    typename Traits::LocalBasisType basis_;
+    typename Traits::LocalCoefficientsType coefficients_;
+    typename Traits::LocalInterpolationType interpolation_;
   };
 
 }        // namespace Dune

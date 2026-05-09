@@ -184,7 +184,13 @@ namespace Dune { namespace Impl
     static constexpr bool is_static_order = OrderTraits::is_static_order;
 
   public:
-    constexpr LagrangeSimplexLocalBasis(OrderTraits orderTraits)
+    //! Default constructor only available for static order
+    constexpr LagrangeSimplexLocalBasis () requires (OrderTraits::is_static_order)
+      : LagrangeSimplexLocalBasis(OrderTraits())
+    {}
+
+    //! Constructor initializes size and order and constructs an evaluation buffer
+    explicit constexpr LagrangeSimplexLocalBasis(OrderTraits orderTraits)
       : OrderTraits(orderTraits)
       , Buffers(orderTraits.order())
     {}
@@ -586,7 +592,12 @@ namespace Dune { namespace Impl
     using OrderTraits = LagrangeSimplexTraits<dim,compileTimeOrder>;
 
   public:
-    //! \brief Constructor
+    //! Default constructor only available for static order
+    LagrangeSimplexLocalCoefficients () requires (OrderTraits::is_static_order)
+      : LagrangeSimplexLocalCoefficients(OrderTraits())
+    {}
+
+    //! \brief Constructor constructs the local keys
     LagrangeSimplexLocalCoefficients (OrderTraits orderTraits)
       : OrderTraits(orderTraits)
       , localKeys_(OrderTraits::size())
@@ -674,8 +685,7 @@ namespace Dune { namespace Impl
      *   can for instance be generated from the global indices of
      *   the vertices by reducing those to the integers 0...dim
      */
-    constexpr LagrangeSimplexLocalCoefficients (const std::array<unsigned int, dim+1> vertexMap)
-    requires (OrderTraits::is_static_order)
+    constexpr LagrangeSimplexLocalCoefficients (const std::array<unsigned int, dim+1> vertexMap) requires (OrderTraits::is_static_order)
       : localKeys_(OrderTraits::size())
     {
       if (dim!=2 && dim!=3)
@@ -686,8 +696,7 @@ namespace Dune { namespace Impl
 
 
     template<std::input_iterator VertexMap>
-    constexpr LagrangeSimplexLocalCoefficients(const VertexMap &vertexmap)
-    requires (OrderTraits::is_static_order)
+    constexpr LagrangeSimplexLocalCoefficients(const VertexMap &vertexmap) requires (OrderTraits::is_static_order)
       : localKeys_(OrderTraits::size())
     {
       if (dim!=2 && dim!=3)
@@ -825,6 +834,10 @@ namespace Dune { namespace Impl
     using OrderTraits::size;
 
   public:
+    constexpr LagrangeSimplexLocalInterpolation () requires (OrderTraits::is_static_order)
+      : OrderTraits()
+    {}
+
     //! \brief Constructor storing a reference to the local basis
     explicit constexpr LagrangeSimplexLocalInterpolation (OrderTraits orderTraits)
       : OrderTraits(orderTraits)

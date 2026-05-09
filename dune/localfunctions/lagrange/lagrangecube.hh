@@ -67,8 +67,8 @@ namespace Dune { namespace Impl
   template<unsigned int dim>
   struct LagrangeCubeOrderTraits<dim,-1>
   {
-    std::size_t size_;
     unsigned int order_;
+    std::size_t size_;
 
     static constexpr bool is_static_order = false;
 
@@ -76,8 +76,8 @@ namespace Dune { namespace Impl
      * \brief Constructor computes the size and stores the order
      */
     constexpr LagrangeCubeOrderTraits (int runTimeOrder)
-      : size_(power(runTimeOrder+1, dim))
-      , order_(runTimeOrder)
+      : order_(runTimeOrder >= 0 ? (unsigned int)(runTimeOrder) : 0u)
+      , size_(power(order_+1, dim))
     {
       if (runTimeOrder < 0)
         DUNE_THROW(Dune::InvalidStateException, "LagrangeCube: run-time order must be >= 0");

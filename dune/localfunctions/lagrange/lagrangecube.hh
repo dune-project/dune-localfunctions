@@ -80,7 +80,7 @@ namespace Dune { namespace Impl
       , order_(runTimeOrder)
     {
       if (runTimeOrder < 0)
-        DUNE_THROW(Dune::InvalidStateException, "LagrangeCube: runtime-order must be >= 0");
+        DUNE_THROW(Dune::InvalidStateException, "LagrangeCube: run-time order must be >= 0");
     }
 
     /**
@@ -191,6 +191,10 @@ namespace Dune { namespace Impl
 
   public:
     using Traits = LocalBasisTraits<D,dim,FieldVector<D,dim>,R,1,FieldVector<R,1>,FieldMatrix<R,1,dim> >;
+
+    constexpr LagrangeCubeLocalBasis () requires (OrderTraits::is_static_order)
+      : OrderTraits()
+    {}
 
     /** \brief Constructor from OrderTraits
      */
@@ -441,7 +445,7 @@ namespace Dune { namespace Impl
     using OrderTraits::multiindex;
 
     /** \brief Set the 'subentity' field for each dof for a 1d element */
-    constexpr void setup1d (std::vector<unsigned int>& subEntity)
+    void setup1d (std::vector<unsigned int>& subEntity)
     {
       const unsigned int k = order();
       assert(k>0);
@@ -462,7 +466,7 @@ namespace Dune { namespace Impl
       assert(power(k+1,dim)==lastIndex);
     }
 
-    constexpr void setup2d (std::vector<unsigned int>& subEntity)
+    void setup2d (std::vector<unsigned int>& subEntity)
     {
       const unsigned int k = order();
       assert(k>0);
@@ -505,7 +509,7 @@ namespace Dune { namespace Impl
       assert(power(k+1,dim)==lastIndex);
     }
 
-    constexpr void setup3d (std::vector<unsigned int>& subEntity)
+    void setup3d (std::vector<unsigned int>& subEntity)
     {
       const unsigned int k = order();
       assert(k>0);
@@ -611,7 +615,7 @@ namespace Dune { namespace Impl
 
     /** \brief Initializes the localKeys_ array
      */
-    constexpr void setup ()
+    void setup ()
     {
       const unsigned int k = order();
       localKeys_.resize(size());
@@ -688,7 +692,7 @@ namespace Dune { namespace Impl
 
   public:
     //! \brief Default constructor
-    explicit constexpr LagrangeCubeLocalCoefficients (OrderTraits orderTraits)
+    explicit LagrangeCubeLocalCoefficients (OrderTraits orderTraits)
       : OrderTraits(orderTraits)
     {
       setup();
@@ -828,9 +832,9 @@ namespace Dune
       , interpolation_(*this)
     {
       if (runTimeOrder < 0)
-        DUNE_THROW(Dune::InvalidStateException, "LagrangeCubeLocalFiniteElement: runtime-order must be non-negative!");
+        DUNE_THROW(Dune::InvalidStateException, "LagrangeCubeLocalFiniteElement: run-time order must be non-negative!");
       if (compileTimeOrder >= 0 && compileTimeOrder != runTimeOrder)
-        DUNE_THROW(Dune::InvalidStateException, "LagrangeCubeLocalFiniteElement: Compile-time order must be identical to runtime-order!");
+        DUNE_THROW(Dune::InvalidStateException, "LagrangeCubeLocalFiniteElement: Compile-time order must be identical to run-time order!");
     }
 
     /** \brief Returns the local basis, i.e., the set of shape functions

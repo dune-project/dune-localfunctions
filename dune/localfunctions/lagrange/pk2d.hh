@@ -28,8 +28,8 @@ namespace Dune
   template<class Geometry, class RF, std::size_t k>
   class Pk2DFiniteElement {
     typedef typename Geometry::ctype DF;
-    typedef Impl::LagrangeSimplexLocalBasis<DF,RF,2,k> LocalBasis;
-    typedef Impl::LagrangeSimplexLocalInterpolation<LocalBasis> LocalInterpolation;
+    typedef Impl::LagrangeSimplexLocalBasis<DF,RF,2,int(k)> LocalBasis;
+    typedef Impl::LagrangeSimplexLocalInterpolation<DF,RF,2,int(k)> LocalInterpolation;
 
   public:
     /**
@@ -41,7 +41,7 @@ namespace Dune
           LocalInterpolation,
           typename Basis::Traits
           > Interpolation;
-      typedef Impl::LagrangeSimplexLocalCoefficients<2,k> Coefficients;
+      typedef Impl::LagrangeSimplexLocalCoefficients<2,(k)> Coefficients;
     };
 
   private:

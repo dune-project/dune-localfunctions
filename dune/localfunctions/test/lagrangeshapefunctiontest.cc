@@ -165,11 +165,17 @@ int main (int argc, char *argv[])
   // So let's skip test points on this plane
   auto xySkip = [](const FieldVector<double,3>& xi){return std::abs(xi[0]-xi[1]) < 1e-8;};
 
-  auto pyramidP1LFE = LagrangePyramidLocalFiniteElement<double,double,1>();
-  testSuite.subTest(testVirtualLFE(pyramidP1LFE, DisableNone, 1, xySkip));
 
-  auto pyramidP2LFE = LagrangePyramidLocalFiniteElement<double,double,2>();
-  testSuite.subTest(testVirtualLFE(pyramidP2LFE, DisableNone, 1, xySkip));
+  // Pyramid implementations
+  Dune::Hybrid::forEach(std::index_sequence<0,1,2>{},[&](auto order)
+  {
+    auto diffOrder = 1;
+    auto lfe_static = LagrangePyramidLocalFiniteElement<double,double,order>();
+    testSuite.subTest(testVirtualLFE(lfe_static, DisableNone, diffOrder, xySkip));
+
+    auto lfe_dynamic = LagrangePyramidLocalFiniteElement<double,double>(order);
+    testSuite.subTest(testVirtualLFE(lfe_dynamic, DisableNone, diffOrder, xySkip));
+  });
 
   // Simplex implementations
   Dune::Hybrid::forEach(std::index_sequence<1,2,3>{},[&](auto dim)

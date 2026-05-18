@@ -5,6 +5,9 @@ SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 
 # Master (will become release 2.12)
 
+- The `LagrangeLocalFiniteElementCache` now supports run-time order.
+  Setting the compile-time order template parameter to the special indicator value `-1`
+  allows to select the order at run-time by passing it as constructor argument.
 
 - The `LagrangeSimplexLocalFiniteElement`, `LagrangeCubeLocalFiniteElement`,
   `LagrangePrismLocalFiniteElement`, and   `LagrangePyramidLocalFiniteElement`

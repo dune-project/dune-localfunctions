@@ -185,7 +185,7 @@ int main (int argc, char *argv[])
     });
   });
 
-  // Cube implementations
+  // Cube implementations -- compile-time and run-time selected order
   Dune::Hybrid::forEach(std::index_sequence<1,2,3>{},[&](auto dim)
   {
     Dune::Hybrid::forEach(std::make_index_sequence<5>{},[&](auto order)
@@ -194,6 +194,16 @@ int main (int argc, char *argv[])
       auto lfe = LagrangeCubeLocalFiniteElement<double,double,dim,order>();
       testSuite.subTest(testVirtualLFE(lfe, DisableNone, diffOrder));
     });
+  });
+
+  Dune::Hybrid::forEach(std::index_sequence<1,2,3>{},[&](auto dim)
+  {
+    for (int order=0; order<5; ++order)
+    {
+      auto diffOrder = 2;
+      auto lfe = LagrangeCubeLocalFiniteElement<double,double,dim>(order);
+      testSuite.subTest(testVirtualLFE(lfe, DisableNone, diffOrder));
+    }
   });
 
   // Test the LagrangeLocalFiniteElementCache

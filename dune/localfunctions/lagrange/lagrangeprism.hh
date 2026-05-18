@@ -20,6 +20,73 @@
 
 namespace Dune { namespace Impl
 {
+
+  // The traits provide static or dynamic order and size information
+  template<int compileTimeOrder>
+  struct LagrangePrismOrderTraits;
+
+  // The traits provide static order and size information
+  template<int compileTimeOrder>
+  requires (compileTimeOrder >= 0)
+  struct LagrangePrismOrderTraits<compileTimeOrder>
+  {
+    static constexpr bool is_static_order = true;
+
+    constexpr LagrangePrismOrderTraits(int /*runTimeOrder*/ = compileTimeOrder)
+    {
+      static_assert((0 <= compileTimeOrder) and (compileTimeOrder <= 2), "LagrangePrism: Only order 0,1, and 2 are supported");
+    }
+
+    /**
+     * \brief Polynomial order of the shape functions
+     */
+    static constexpr unsigned int order() {
+      return compileTimeOrder;
+    }
+
+    /**
+     * \brief Number of shape functions
+     */
+    static constexpr std::size_t size() {
+      return binomial(compileTimeOrder+2,2) * (compileTimeOrder+1);
+    }
+  };
+
+
+  // this specialization is for the dynamic order case
+  template<>
+  struct LagrangePrismOrderTraits<-1>
+  {
+    unsigned int runTimeOrder_;
+    unsigned int size_;
+
+    static constexpr bool is_static_order = false;
+
+    constexpr explicit LagrangePrismOrderTraits(int runTimeOrder)
+      : runTimeOrder_(runTimeOrder >= 0 ? (unsigned int)(runTimeOrder) : 0u)
+      , size_(binomial(runTimeOrder+2,2) * (runTimeOrder+1))
+    {
+      if ((runTimeOrder < 0) or (runTimeOrder > 2))
+        DUNE_THROW(Dune::InvalidStateException, "LagrangePrism: Only order 0,1, and 2 are supported");
+    }
+
+    /**
+     * \brief Polynomial order of the shape functions
+     */
+    constexpr unsigned int order() const
+    {
+      return runTimeOrder_;
+    }
+
+    /**
+     * \brief Number of shape functions
+     */
+    constexpr std::size_t size() const
+    {
+      return size_;
+    }
+  };
+
    /** \brief Lagrange shape functions of arbitrary order on the three-dimensional reference prism
 
      Lagrange shape functions of arbitrary order have the property that
@@ -27,21 +94,23 @@ namespace Dune { namespace Impl
 
      \tparam D Type to represent the field in the domain
      \tparam R Type to represent the field in the range
-     \tparam k Polynomial order
+     \tparam compileTimeOrder Polynomial order of the Lagrange space in one direction (or -1 for dynamic order)
    */
-  template<class D, class R, unsigned int k>
+  template<class D, class R, int compileTimeOrder>
   class LagrangePrismLocalBasis
+    : public LagrangePrismOrderTraits<compileTimeOrder>
   {
+    using OrderTraits = LagrangePrismOrderTraits<compileTimeOrder>;
     static constexpr std::size_t dim = 3;
   public:
     using Traits = LocalBasisTraits<D,dim,FieldVector<D,dim>,R,1,FieldVector<R,1>,FieldMatrix<R,1,dim> >;
 
-    /** \brief Number of shape functions
-     */
-    static constexpr unsigned int size ()
-    {
-      return binomial(k+2,2u) * (k+1);
-    }
+    constexpr LagrangePrismLocalBasis(OrderTraits orderTraits)
+      : OrderTraits(orderTraits)
+    {}
+
+    using OrderTraits::order;
+    using OrderTraits::size;
 
     //! \brief Evaluate all shape functions
     void evaluateFunction(const typename Traits::DomainType& in,
@@ -50,13 +119,13 @@ namespace Dune { namespace Impl
       out.resize(size());
 
       // Specialization for zero-order case
-      if (k==0)
+      if (order()==0)
       {
         out[0] = 1;
         return;
       }
 
-      if (k==1)
+      if (order()==1)
       {
         out[0] = (1.0-in[0]-in[1])*(1.0-in[2]);
         out[1] = in[0]*(1-in[2]);
@@ -68,9 +137,9 @@ namespace Dune { namespace Impl
         return;
       }
 
-      if (k==2)
+      if (order()==2)
       {
-        FieldVector<R,k+1> segmentShapeFunction;
+        FieldVector<R,3> segmentShapeFunction;
         segmentShapeFunction[0] = 1 + in[2] * (-3 + 2*in[2]);
         segmentShapeFunction[1] =    in[2] * (4 - 4*in[2]);
         segmentShapeFunction[2] =    in[2] * (-1 + 2*in[2]);
@@ -116,7 +185,7 @@ namespace Dune { namespace Impl
         return;
       }
 
-      DUNE_THROW(NotImplemented, "LagrangePrismLocalBasis::evaluateFunction for order " << k);
+      DUNE_THROW(NotImplemented, "LagrangePrismLocalBasis::evaluateFunction for order " << order());
     }
 
     /** \brief Evaluate Jacobian of all shape functions
@@ -130,13 +199,13 @@ namespace Dune { namespace Impl
       out.resize(size());
 
       // Specialization for k==0
-      if (k==0)
+      if (order()==0)
       {
         std::fill(out[0][0].begin(), out[0][0].end(), 0);
         return;
       }
 
-      if (k==1)
+      if (order()==1)
       {
         out[0][0] = {in[2]-1, in[2]-1, in[0]+in[1]-1};
         out[1][0] = {1-in[2],       0,        -in[0]};
@@ -148,7 +217,7 @@ namespace Dune { namespace Impl
         return;
       }
 
-      if (k==2)
+      if (order()==2)
       {
         // Second-order shape functions on a triangle, and the first derivatives
         FieldVector<R, 6> triangleShapeFunction;
@@ -168,12 +237,12 @@ namespace Dune { namespace Impl
         triangleShapeFunctionDer[5] = {               4*in[1],                4*in[0]};
 
         // Second-order shape functions on a line, and the first derivatives
-        FieldVector<R,k+1> segmentShapeFunction;
+        FieldVector<R,3> segmentShapeFunction;
         segmentShapeFunction[0] = 1 + in[2] * (-3 + 2*in[2]);
         segmentShapeFunction[1] =     in[2] * ( 4 - 4*in[2]);
         segmentShapeFunction[2] =     in[2] * (-1 + 2*in[2]);
 
-        FieldVector<R,k+1> segmentShapeFunctionDer;
+        FieldVector<R,3> segmentShapeFunctionDer;
         segmentShapeFunctionDer[0] = -3 + 4*in[2];
         segmentShapeFunctionDer[1] =  4 - 8*in[2];
         segmentShapeFunctionDer[2] = -1 + 4*in[2];
@@ -259,7 +328,7 @@ namespace Dune { namespace Impl
         return;
       }
 
-      DUNE_THROW(NotImplemented, "LagrangePrismLocalBasis::evaluateJacobian for order " << k);
+      DUNE_THROW(NotImplemented, "LagrangePrismLocalBasis::evaluateJacobian for order " << order());
     }
 
     /** \brief Evaluate partial derivatives of any order of all shape functions
@@ -283,14 +352,14 @@ namespace Dune { namespace Impl
       }
 
       // Specialization for zero-order finite elements
-      if (k==0)
+      if (OrderTraits::order()==0)
       {
         out[0] = 0;
         return;
       }
 
       // Specialization for first-order finite elements
-      if (k==1)
+      if (OrderTraits::order()==1)
       {
         if (totalOrder == 1)
         {
@@ -353,7 +422,7 @@ namespace Dune { namespace Impl
       }
 
       // Specialization for second-order finite elements
-      if (k==2)
+      if (OrderTraits::order()==2)
       {
         if (totalOrder == 1)
         {
@@ -370,7 +439,7 @@ namespace Dune { namespace Impl
             triangleShapeFunctionDerX[4] =                -4*in[1];
             triangleShapeFunctionDerX[5] =                 4*in[1];
 
-            FieldVector<R,k+1> segmentShapeFunction;
+            FieldVector<R,3> segmentShapeFunction;
             segmentShapeFunction[0] = 1 + in[2] * (-3 + 2*in[2]);
             segmentShapeFunction[1] =     in[2] * ( 4 - 4*in[2]);
             segmentShapeFunction[2] =     in[2] * (-1 + 2*in[2]);
@@ -405,7 +474,7 @@ namespace Dune { namespace Impl
             triangleShapeFunctionDerY[4] =  4 - 4* in[0] - 8*in[1];
             triangleShapeFunctionDerY[5] =      4* in[0];
 
-            FieldVector<R,k+1> segmentShapeFunction;
+            FieldVector<R,3> segmentShapeFunction;
             segmentShapeFunction[0] = 1 + in[2] * (-3 + 2*in[2]);
             segmentShapeFunction[1] =     in[2] * ( 4 - 4*in[2]);
             segmentShapeFunction[2] =     in[2] * (-1 + 2*in[2]);
@@ -440,7 +509,7 @@ namespace Dune { namespace Impl
             triangleShapeFunction[4] = 4*in[1] * (1 - in[0] - in[1]);
             triangleShapeFunction[5] = 4*in[0]*in[1];
 
-            FieldVector<R,k+1> segmentShapeFunctionDer;
+            FieldVector<R,3> segmentShapeFunctionDer;
             segmentShapeFunctionDer[0] = -3 + 4*in[2];
             segmentShapeFunctionDer[1] =  4 - 8*in[2];
             segmentShapeFunctionDer[2] = -1 + 4*in[2];
@@ -475,42 +544,44 @@ namespace Dune { namespace Impl
         return;
       }
 
-      DUNE_THROW(NotImplemented, "LagrangePrismLocalBasis::partial not implemented for order " << k);
+      DUNE_THROW(NotImplemented, "LagrangePrismLocalBasis::partial not implemented for order " << OrderTraits::order());
     }
 
-    //! \brief Polynomial order of the shape functions
-    static constexpr unsigned int order ()
-    {
-      return k;
-    }
   };
 
   /** \brief Associations of the Lagrange degrees of freedom to subentities of the reference prism
    *
-   * \tparam k Polynomial order of the Lagrange space in one direction
+   * \tparam compileTimeOrder Polynomial order of the Lagrange space in one direction (or -1 for dynamic order)
    */
-  template<unsigned int k>
+  template<int compileTimeOrder>
   class LagrangePrismLocalCoefficients
+    : public LagrangePrismOrderTraits<compileTimeOrder>
   {
+    using OrderTraits = LagrangePrismOrderTraits<compileTimeOrder>;
   public:
+
+    using OrderTraits::order;
+    using OrderTraits::size;
+
     //! \brief Default constructor
-    LagrangePrismLocalCoefficients ()
-    : localKeys_(size())
+    LagrangePrismLocalCoefficients (OrderTraits orderTraits)
+      : OrderTraits(orderTraits)
+      , localKeys_(size())
     {
-      if (k==0)
+      if (order()==0)
       {
         localKeys_[0] = LocalKey(0,0,0);
         return;
       }
 
-      if (k==1)
+      if (order()==1)
       {
         for (std::size_t i=0; i<size(); i++)
           localKeys_[i] = LocalKey(i,3,0);
         return;
       }
 
-      if (k==2)
+      if (order()==2)
       {
         // Vertex shape functions
         localKeys_[0] = LocalKey(0,3,0);
@@ -540,15 +611,15 @@ namespace Dune { namespace Impl
       }
 
       // Now: the general case
-      DUNE_THROW(NotImplemented, "LagrangePrismLocalCoefficients not implemented for order " << k);
+      DUNE_THROW(NotImplemented, "LagrangePrismLocalCoefficients not implemented for order " << order());
 
     }
 
-    //! number of coefficients
-    static constexpr std::size_t size ()
-    {
-      return binomial(k+2,2u) * (k+1);
-    }
+    LagrangePrismLocalCoefficients ()
+    requires(OrderTraits::is_static_order)
+      : LagrangePrismLocalCoefficients(OrderTraits())
+    {}
+
 
     //! get i-th index
     const LocalKey& localKey (std::size_t i) const
@@ -562,12 +633,19 @@ namespace Dune { namespace Impl
 
   /** \brief Evaluate the degrees of freedom of a Lagrange basis
    *
-   * \tparam LocalBasis The corresponding set of shape functions
+   * \tparam compileTimeOrder Polynomial order of the Lagrange space in one direction (or -1 for dynamic order)
    */
-  template<class LocalBasis>
+  template<class D, class R, int compileTimeOrder>
   class LagrangePrismLocalInterpolation
+    : public LagrangePrismOrderTraits<compileTimeOrder>
   {
+    using Traits = typename LagrangePrismLocalBasis<D,R,compileTimeOrder>::Traits;
+    using OrderTraits = LagrangePrismOrderTraits<compileTimeOrder>;
   public:
+
+    constexpr LagrangePrismLocalInterpolation(OrderTraits orderTraits)
+      : OrderTraits(orderTraits)
+    {}
 
     /** \brief Evaluate a given function at the Lagrange nodes
      *
@@ -579,17 +657,17 @@ namespace Dune { namespace Impl
     template<typename F, typename C>
     void interpolate (const F& f, std::vector<C>& out) const
     {
-      constexpr auto dim = LocalBasis::Traits::dimDomain;
-      constexpr auto k = LocalBasis::order();
-      using D = typename LocalBasis::Traits::DomainType;
-      using DF = typename LocalBasis::Traits::DomainFieldType;
+      constexpr auto dim = Traits::dimDomain;
+      auto k = OrderTraits::order();
+      using Domain = typename Traits::DomainType;
+      using DomainField = typename Traits::DomainFieldType;
 
-      out.resize(LocalBasis::size());
+      out.resize(OrderTraits::size());
 
       // Specialization for zero-order case
       if (k==0)
       {
-        auto center = ReferenceElements<DF,dim>::general(GeometryTypes::prism).position(0,0);
+        auto center = ReferenceElements<DomainField,dim>::general(GeometryTypes::prism).position(0,0);
         out[0] = f(center);
         return;
       }
@@ -597,9 +675,9 @@ namespace Dune { namespace Impl
       // Specialization for first-order case
       if (k==1)
       {
-        for (unsigned int i=0; i<LocalBasis::size(); i++)
+        for (unsigned int i=0; i<OrderTraits::size(); i++)
         {
-          auto vertex = ReferenceElements<DF,3>::general(GeometryTypes::prism).position(i,3);
+          auto vertex = ReferenceElements<DomainField,3>::general(GeometryTypes::prism).position(i,3);
           out[i] = f(vertex);
         }
         return;
@@ -607,24 +685,24 @@ namespace Dune { namespace Impl
 
       if (k==2)
       {
-        out[0]  = f( D( {0.0, 0.0, 0.0} ) );
-        out[1]  = f( D( {1.0, 0.0, 0.0} ) );
-        out[2]  = f( D( {0.0, 1.0, 0.0} ) );
-        out[3]  = f( D( {0.0, 0.0, 1.0} ) );
-        out[4]  = f( D( {1.0, 0.0, 1.0} ) );
-        out[5]  = f( D( {0.0, 1.0, 1.0} ) );
-        out[6]  = f( D( {0.0, 0.0, 0.5} ) );
-        out[7]  = f( D( {1.0, 0.0, 0.5} ) );
-        out[8]  = f( D( {0.0, 1.0, 0.5} ) );
-        out[9]  = f( D( {0.5, 0.0, 0.0} ) );
-        out[10] = f( D( {0.0, 0.5, 0.0} ) );
-        out[11] = f( D( {0.5, 0.5, 0.0} ) );
-        out[12] = f( D( {0.5, 0.0, 1.0} ) );
-        out[13] = f( D( {0.0, 0.5, 1.0} ) );
-        out[14] = f( D( {0.5, 0.5, 1.0} ) );
-        out[15] = f( D( {0.5, 0.0, 0.5} ) );
-        out[16] = f( D( {0.0, 0.5, 0.5} ) );
-        out[17] = f( D( {0.5, 0.5, 0.5} ) );
+        out[0]  = f( Domain( {0.0, 0.0, 0.0} ) );
+        out[1]  = f( Domain( {1.0, 0.0, 0.0} ) );
+        out[2]  = f( Domain( {0.0, 1.0, 0.0} ) );
+        out[3]  = f( Domain( {0.0, 0.0, 1.0} ) );
+        out[4]  = f( Domain( {1.0, 0.0, 1.0} ) );
+        out[5]  = f( Domain( {0.0, 1.0, 1.0} ) );
+        out[6]  = f( Domain( {0.0, 0.0, 0.5} ) );
+        out[7]  = f( Domain( {1.0, 0.0, 0.5} ) );
+        out[8]  = f( Domain( {0.0, 1.0, 0.5} ) );
+        out[9]  = f( Domain( {0.5, 0.0, 0.0} ) );
+        out[10] = f( Domain( {0.0, 0.5, 0.0} ) );
+        out[11] = f( Domain( {0.5, 0.5, 0.0} ) );
+        out[12] = f( Domain( {0.5, 0.0, 1.0} ) );
+        out[13] = f( Domain( {0.0, 0.5, 1.0} ) );
+        out[14] = f( Domain( {0.5, 0.5, 1.0} ) );
+        out[15] = f( Domain( {0.5, 0.0, 0.5} ) );
+        out[16] = f( Domain( {0.0, 0.5, 0.5} ) );
+        out[17] = f( Domain( {0.5, 0.5, 0.5} ) );
 
         return;
       }
@@ -642,17 +720,43 @@ namespace Dune
    *
    * \tparam D Type used for domain coordinates
    * \tparam R Type used for function values
-   * \tparam k Polynomial order
+   * \tparam compileTimeOrder Polynomial order of the Lagrange space in one direction (or -1 for dynamic order)
    */
-  template<class D, class R, int k>
+  template<class D, class R, int compileTimeOrder = -1>
   class LagrangePrismLocalFiniteElement
+    : public Impl::LagrangePrismOrderTraits<compileTimeOrder>
   {
+    using OrderTraits = Impl::LagrangePrismOrderTraits<compileTimeOrder>;
   public:
+
     /** \brief Export number types, dimensions, etc.
      */
-    using Traits = LocalFiniteElementTraits<Impl::LagrangePrismLocalBasis<D,R,k>,
-                                            Impl::LagrangePrismLocalCoefficients<k>,
-                                            Impl::LagrangePrismLocalInterpolation<Impl::LagrangePrismLocalBasis<D,R,k> > >;
+    using Traits = LocalFiniteElementTraits<Impl::LagrangePrismLocalBasis<D,R,compileTimeOrder>,
+                                            Impl::LagrangePrismLocalCoefficients<compileTimeOrder>,
+                                            Impl::LagrangePrismLocalInterpolation<D,R,compileTimeOrder> >;
+
+    //! \brief Constructor for compile-time order
+    constexpr LagrangePrismLocalFiniteElement()
+      : OrderTraits()
+      , basis_(*this)
+      , coefficients_(*this)
+      , interpolation_(*this)
+    {
+      static_assert(OrderTraits::is_static_order, "Default constructor only allowed for compile-time >= 0");
+      static_assert((0 <= compileTimeOrder) and (compileTimeOrder <= 2), "LagrangePrism: Only order 0,1, and 2 are supported");
+    }
+
+    //! \brief Constructor for run-time order
+    explicit constexpr LagrangePrismLocalFiniteElement(int runTimeOrder)
+      : OrderTraits(runTimeOrder)
+      , basis_(*this)
+      , coefficients_(*this)
+      , interpolation_(*this)
+    {
+      static_assert(not OrderTraits::is_static_order, "Passing a run-time order only allowed for compile-time = -1");
+      if ((runTimeOrder < 0) or (runTimeOrder > 2))
+        DUNE_THROW(Dune::InvalidStateException, "LagrangePrism: Only run-time order 0,1, and 2 are supported");
+    }
 
     /** \brief Returns the local basis, i.e., the set of shape functions
      */
@@ -675,12 +779,6 @@ namespace Dune
       return interpolation_;
     }
 
-    /** \brief The number of shape functions */
-    static constexpr std::size_t size ()
-    {
-      return binomial(k+2,2) * (k+1);
-    }
-
     /** \brief The reference element that the local finite element is defined on
      */
     static constexpr GeometryType type ()
@@ -689,9 +787,9 @@ namespace Dune
     }
 
   private:
-    Impl::LagrangePrismLocalBasis<D,R,k> basis_;
-    Impl::LagrangePrismLocalCoefficients<k> coefficients_;
-    Impl::LagrangePrismLocalInterpolation<Impl::LagrangePrismLocalBasis<D,R,k> > interpolation_;
+    Impl::LagrangePrismLocalBasis<D,R,compileTimeOrder> basis_;
+    Impl::LagrangePrismLocalCoefficients<compileTimeOrder> coefficients_;
+    Impl::LagrangePrismLocalInterpolation<D,R,compileTimeOrder> interpolation_;
   };
 
 }        // namespace Dune

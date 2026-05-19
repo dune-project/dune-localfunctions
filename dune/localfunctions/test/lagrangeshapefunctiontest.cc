@@ -218,14 +218,43 @@ int main (int argc, char *argv[])
   });
 
   // Test the LagrangeLocalFiniteElementCache
-  auto lagrangeLFECache = LagrangeLocalFiniteElementCache<double,double,2,2>();
-  testSuite.subTest(testVirtualLFE(lagrangeLFECache.get(GeometryTypes::simplex(2))));
-  testSuite.subTest(testVirtualLFE(lagrangeLFECache.get(GeometryTypes::cube(2))));
 
-  // Test whether asking the cache for an element of the wrong dimension throws an exception
-  testSuite.checkThrow([&]{
-    lagrangeLFECache.get(GeometryTypes::simplex(1));
-  }) << "LagrangeLocalFiniteElementCache does not throw for non-existing element";
+  Dune::Hybrid::forEach(std::index_sequence<1,2,3>{},[&](auto dim)
+  {
+    Dune::Hybrid::forEach(std::index_sequence<0,1,2,3>{},[&](auto order)
+    {
+      Dune::Hybrid::forEach(std::integer_sequence<int, order, -1>{}, [&](auto compileTimeOrder)
+      {
+
+        auto lagrangeLFECache = LagrangeLocalFiniteElementCache<double,double,dim,compileTimeOrder>(order);
+        testSuite.subTest(testVirtualLFE(lagrangeLFECache.get(GeometryTypes::simplex(dim))));
+        testSuite.subTest(testVirtualLFE(lagrangeLFECache.get(GeometryTypes::cube(dim))));
+
+        // Check special geometry types for dim=3, only implemented for order <=2
+        if constexpr ((dim==3) and (order<=2))
+        {
+          testSuite.subTest(testVirtualLFE(lagrangeLFECache.get(GeometryTypes::pyramid), DisableNone, 1, xySkip));
+          testSuite.subTest(testVirtualLFE(lagrangeLFECache.get(GeometryTypes::prism), DisableNone, 1, xySkip));
+        }
+
+        // Check is an exception is thrown for non-existing geometry types
+        testSuite.checkThrow([&]{
+          lagrangeLFECache.get(GeometryTypes::simplex(dim+1));
+        }) << "LagrangeLocalFiniteElementCache does not throw for non-existing element";
+
+        if constexpr ((dim==3) and (order>2))
+        {
+          testSuite.checkThrow([&]{
+            lagrangeLFECache.get(GeometryTypes::pyramid);
+          }) << "LagrangeLocalFiniteElementCache does not throw for non-existing element";
+          testSuite.checkThrow([&]{
+            lagrangeLFECache.get(GeometryTypes::prism);
+          }) << "LagrangeLocalFiniteElementCache does not throw for non-existing element";
+        }
+
+      });
+    });
+  });
 
   return testSuite.exit();
 }

@@ -5,20 +5,17 @@ SPDX-License-Identifier: LicenseRef-GPL-2.0-only-with-DUNE-exception
 
 # Master (will become release 2.12)
 
-- Add `LagrangePrismLocalFiniteElement` with dynamic order, by generalizing the existing
-  static order implementation. The polynomial order of the shape functions is passed as constructor
-  parameter instead of a template parameter (which is implicitly set to `-1` as an indicator for the
-  dynamic polynomial order).
+- The `LagrangeLocalFiniteElementCache` now supports run-time order.
+  Setting the compile-time order template parameter to the special indicator value `-1`
+  allows to select the order at run-time by passing it as constructor argument.
 
-- Add `LagrangePyramidLocalFiniteElement` with dynamic order, by generalizing the existing
-  static order implementation. The polynomial order of the shape functions is passed as constructor
-  parameter instead of a template parameter (which is implicitly set to `-1` as an indicator for the
-  dynamic polynomial order).
-
-- Add `LagrangeSimplexLocalFiniteElement` with dynamic order, by generalizing the existing
-  static order implementation. The polynomial order of the shape functions is passed as constructor
-  parameter instead of a template parameter (which is implicitly set to `-1` as an indicator for the
-  dynamic polynomial order). The dynamic implementation uses internally a mutable buffer during the
+- The `LagrangeSimplexLocalFiniteElement`, `LagrangeCubeLocalFiniteElement`,
+  `LagrangePrismLocalFiniteElement`, and   `LagrangePyramidLocalFiniteElement`
+  implementations now support run-time order, by generalizing the existing
+  compile-time order implementations.
+  Setting the compile-time order template parameter to the special indicator value `-1`
+  allows to select the order at run-time by passing it as constructor argument.
+  For the simplex-variant the run-time order implementation uses an internal mutable buffer during the
   shape function evaluation, which makes its usage potentially unsafe when an instance is shared
   between concurrent threads.
 

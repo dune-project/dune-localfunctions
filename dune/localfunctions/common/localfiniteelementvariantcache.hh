@@ -5,6 +5,7 @@
 #ifndef DUNE_LOCALFUNCTIONS_COMMON_LOCALFINITEELEMENTVARIANTCACHE_HH
 #define DUNE_LOCALFUNCTIONS_COMMON_LOCALFINITEELEMENTVARIANTCACHE_HH
 
+#include <limits>
 #include <vector>
 #include <tuple>
 #include <utility>
@@ -53,6 +54,12 @@ namespace Impl {
  * LocalFiniteElement implementation. Each entry is an std::pair consisting of the
  * index of the implementation and a callable object that creates a corresponding
  * LocalFiniteElement implementation.
+ * If the index within such a pair is `std::numeric_limits<IndexType>::max()`, then
+ * the respective callable is ignored and no LocalFiniteElement is stored.
+ * This may be used to disable certain LocalFiniteElement implementations in the tuple
+ * depending on run-time data (e.g. the `LagrangePyramidLocalFiniteElement` has
+ * to be disabled if the order provided at run-time exceeds the maximal implemented
+ * order two).
  *
  * The constructor forwards all arguments to the base class.
  *
@@ -101,6 +108,9 @@ public:
   {
     Dune::Hybrid::forEach(getImplementations(), [&,this](auto feImpl) {
       auto implIndex = feImpl.first;
+      constexpr auto unusedIndex = std::numeric_limits<decltype(implIndex)>::max();
+      if (implIndex == unusedIndex)
+        return;
       if (cache_.size() < implIndex+1)
         cache_.resize(implIndex+1);
       cache_[implIndex] = feImpl.second();

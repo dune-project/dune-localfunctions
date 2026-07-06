@@ -12,6 +12,7 @@
 #include <dune/common/typeutilities.hh>
 #include <dune/common/std/type_traits.hh>
 #include <dune/common/overloadset.hh>
+#include <dune/common/typelist.hh>
 
 #include <dune/geometry/type.hh>
 
@@ -125,7 +126,7 @@ namespace Impl {
     }
 
   private:
-    std::variant<std::monostate, const Implementations*...> impl_;
+    Dune::UniqueTypes_t<std::variant, std::monostate, const Implementations*...> impl_;
     std::size_t size_;
     std::size_t order_;
   };
@@ -169,7 +170,7 @@ namespace Impl {
     }
 
   private:
-    std::variant<std::monostate, const Implementations*...> impl_;
+    Dune::UniqueTypes_t<std::variant, std::monostate, const Implementations*...> impl_;
     std::size_t size_;
   };
 
@@ -197,7 +198,7 @@ namespace Impl {
     }
 
   private:
-    std::variant<std::monostate, const Implementations*...> impl_;
+    Dune::UniqueTypes_t<std::variant, std::monostate, const Implementations*...> impl_;
   };
 
 } // namespace Impl
@@ -215,8 +216,9 @@ namespace Impl {
    * Notice that this prepends std::monostate to the Implementations
    * list for the internally stored std::variant such that
    * LocalFiniteElementVariant can be empty and is default-constructible.
+   * Furthermore duplicate types are automatically filtered out.
    * As a consequence providing std::monostate manually to
-   * LocalFiniteElementVariant is neither necessary nor allowed.
+   * LocalFiniteElementVariant is not necessary but allowed.
    * Access to the stored implementation is internally implemented
    * using std::visit(). To avoid multiple trivial std::visit()
    * calls, the results of size(), order(), and type() are cached
@@ -411,7 +413,7 @@ namespace Impl {
     }
 
   private:
-    std::variant<std::monostate, Implementations...> impl_;
+    Dune::UniqueTypes_t<std::variant, std::monostate, Implementations...> impl_;
     std::size_t size_;
     GeometryType geometryType_;
     LocalBasis localBasis_;

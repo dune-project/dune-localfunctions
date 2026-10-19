@@ -21,6 +21,8 @@
 // Raviart Thomas type elements
 #include <dune/localfunctions/raviartthomas.hh>
 
+#include <dune/localfunctions/common/rangecast.hh>
+
 #include "test-localfe.hh"
 
 
@@ -74,7 +76,7 @@ bool checkTraceOrder(const FE& fe, int order, double tol)
         };
         double mismatch = 0;
         for(auto [x, dummy] : sampleRule)
-          mismatch = std::max(mismatch, double(fabs(fe_i(x) - fe_i_interpolated(x))));
+          mismatch = std::max(mismatch, double(fabs(Dune::Impl::rangeCast(fe_i(x)) - Dune::Impl::rangeCast(fe_i_interpolated(x)))));
         if (mismatch > tol)
         {
           std::cout

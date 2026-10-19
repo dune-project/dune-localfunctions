@@ -13,6 +13,7 @@
 #include <dune/geometry/referenceelements.hh>
 
 #include <dune/localfunctions/common/localbasis.hh>
+#include <dune/localfunctions/common/rangecast.hh>
 
 namespace Dune
 {
@@ -52,7 +53,7 @@ namespace Dune
       for( int i = 0; i < size; ++i )
       {
         const DomainType &x = referenceElement.position( i, 1 );
-        out[ i ] = f(x);
+        out[ i ] = Impl::rangeCast(f(x));
       }
     }
 

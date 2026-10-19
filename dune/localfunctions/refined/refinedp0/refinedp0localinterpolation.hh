@@ -6,6 +6,7 @@
 #define DUNE_REFINED_P0_LOCALINTERPOLATION_HH
 
 #include <dune/localfunctions/refined/refinedp0/refinedp0localbasis.hh>
+#include <dune/localfunctions/common/rangecast.hh>
 
 namespace Dune
 {
@@ -42,7 +43,7 @@ namespace Dune
       out.resize(interpolationPoints_.size());
       for (size_t i = 0; i < out.size(); ++i)
       {
-        out[i] = f(interpolationPoints_[i]);
+        out[i] = Impl::rangeCast(f(interpolationPoints_[i]));
       }
     }
 
@@ -84,7 +85,7 @@ namespace Dune
       out.resize(interpolationPoints_.size());
       for (size_t i = 0; i < out.size(); ++i)
       {
-        out[i] = f(interpolationPoints_[i]);
+        out[i] = Impl::rangeCast(f(interpolationPoints_[i]));
       }
     }
 

@@ -11,6 +11,8 @@
 #include <dune/common/fvector.hh>
 #include <dune/common/fmatrix.hh>
 
+#include <dune/localfunctions/common/rangecast.hh>
+
 namespace Dune
 {
 
@@ -47,7 +49,7 @@ namespace Dune
         for (int j=0; j<dim; j++)
           x[j] = (i & (1<<j)) ? 1.0 : 0.0;
 
-        q1Coefficients[i] = f(x);
+        q1Coefficients[i] = Impl::rangeCast(f(x));
 
       }
 

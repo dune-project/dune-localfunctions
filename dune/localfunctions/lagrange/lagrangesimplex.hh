@@ -27,6 +27,7 @@
 #include <dune/localfunctions/common/localbasis.hh>
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include <dune/localfunctions/common/localkey.hh>
+#include <dune/localfunctions/common/rangecast.hh>
 
 namespace Dune { namespace Impl
 {
@@ -860,7 +861,7 @@ namespace Dune { namespace Impl
       if (k==0)
       {
         auto center = ReferenceElements<D,dim>::simplex().position(0,0);
-        out[0] = f(center);
+        out[0] = Impl::rangeCast(f(center));
         return;
       }
 
@@ -871,7 +872,7 @@ namespace Dune { namespace Impl
       {
         // vertex 0
         std::fill(x.begin(), x.end(), 0);
-        out[0] = f(x);
+        out[0] = Impl::rangeCast(f(x));
 
         // remaining vertices
         for (unsigned int i=0; i<dim; i++)
@@ -879,7 +880,7 @@ namespace Dune { namespace Impl
           for (unsigned int j=0; j<dim; j++)
             x[j] = (i==j);
 
-          out[i+1] = f(x);
+          out[i+1] = Impl::rangeCast(f(x));
         }
         return;
       }
@@ -889,7 +890,7 @@ namespace Dune { namespace Impl
         for (int i=0; i<k+1; i++)
         {
           x[0] = ((D)i)/k;
-          out[i] = f(x);
+          out[i] = Impl::rangeCast(f(x));
         }
         return;
       }
@@ -901,7 +902,7 @@ namespace Dune { namespace Impl
           for (int i=0; i<=k-j; i++)
           {
             x = { ((D)i)/k, ((D)j)/k };
-            out[n] = f(x);
+            out[n] = Impl::rangeCast(f(x));
             n++;
           }
         return;
@@ -920,7 +921,7 @@ namespace Dune { namespace Impl
             x[0] = ((D)i0)/((D)kdiv);
             x[1] = ((D)i1)/((D)kdiv);
             x[2] = ((D)i2)/((D)kdiv);
-            out[n] = f(x);
+            out[n] = Impl::rangeCast(f(x));
             n++;
           }
     }

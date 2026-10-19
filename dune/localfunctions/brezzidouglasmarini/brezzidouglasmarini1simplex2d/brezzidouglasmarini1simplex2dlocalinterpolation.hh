@@ -85,7 +85,7 @@ namespace Dune
 
       for (typename Dune::QuadratureRule<Scalar,1>::const_iterator it=rule.begin(); it!=rule.end(); ++it)
       {
-        Scalar qPos = it->position();
+        Scalar qPos = it->position()[0];
         typename LB::Traits::DomainType localPos;
 
         localPos[0] = qPos;

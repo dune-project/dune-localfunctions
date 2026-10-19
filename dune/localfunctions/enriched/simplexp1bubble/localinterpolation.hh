@@ -8,6 +8,8 @@
 #include <type_traits>
 #include <vector>
 
+#include <dune/localfunctions/common/rangecast.hh>
+
 namespace Dune
 {
   /**
@@ -46,26 +48,25 @@ namespace Dune
      * \param[out] out  The interpolation coefficients `{f_i...,f_b}` are stored
      *                  in this output vector.
      **/
-    template<class F, class C,
-      class R = std::invoke_result_t<F, DomainType>,
-      std::enable_if_t<std::is_convertible_v<R, C>, int> = 0>
+    template<class F, class C>
+    requires ( requires (const F& f, const DomainType& x, C& y){ y = Impl::rangeCast(f(x)); } )
     static constexpr void interpolate (const F& f, std::vector<C>& out)
     {
       out.resize(numVertices+1);
 
       // vertices
       DomainType x(0);
-      out[0] = f(x);
+      out[0] = Impl::rangeCast(f(x));
 
       for (int i = 0; i < dim; ++i) {
         x = 0;
         x[i] = 1;
-        out[i+1] = f(x);
+        out[i+1] = Impl::rangeCast(f(x));
       }
 
       // element bubble
       x = 1.0/(dim+1);
-      R y = f(x);
+      auto y = Impl::rangeCast(f(x));
 
       // evaluate the other shape functions in x and subtract this value
       std::vector<RangeType> sfValues;
@@ -73,7 +74,7 @@ namespace Dune
 
       out[numVertices] = y;
       for (int i = 0; i < numVertices; ++i)
-        out[numVertices] -= out[i]*sfValues[i];
+        out[numVertices] -= out[i]*sfValues[i][0];
     }
   };
 

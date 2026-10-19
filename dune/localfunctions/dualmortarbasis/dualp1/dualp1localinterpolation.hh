@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include <dune/localfunctions/common/rangecast.hh>
+
 namespace Dune
 {
   /**
@@ -31,14 +33,14 @@ namespace Dune
       // vertex 0
       for (int i=0; i<dim; i++)
         x[i] = 0;
-      p1Interpolation[0] = f(x);
+      p1Interpolation[0] = Impl::rangeCast(f(x));
 
       // remaining vertices
       for (int i=0; i<dim; i++) {
         for (int j=0; j<dim; j++)
           x[j] = (i==j);
 
-        p1Interpolation[i+1] = f(x);
+        p1Interpolation[i+1] = Impl::rangeCast(f(x));
 
       }
 

@@ -18,6 +18,7 @@
 #include <dune/localfunctions/common/localbasis.hh>
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include <dune/localfunctions/common/localkey.hh>
+#include <dune/localfunctions/common/rangecast.hh>
 
 namespace Dune { namespace Impl
 {
@@ -752,7 +753,7 @@ namespace Dune { namespace Impl
       if (k==0)
       {
         auto center = ReferenceElements<D,dim>::cube().position(0,0);
-        out[0] = f(center);
+        out[0] = Impl::rangeCast(f(center));
         return;
       }
 
@@ -767,7 +768,7 @@ namespace Dune { namespace Impl
           for (unsigned int j=0; j<dim; j++)
             x[j] = (i & (1<<j)) ? 1.0 : 0.0;
 
-          out[i] = f(x);
+          out[i] = Impl::rangeCast(f(x));
         }
         return;
       }
@@ -782,7 +783,7 @@ namespace Dune { namespace Impl
         for (unsigned int j=0; j<dim; j++)
           x[j] = (1.0*alpha[j])/k;
 
-        out[i] = f(x);
+        out[i] = Impl::rangeCast(f(x));
       }
     }
   };

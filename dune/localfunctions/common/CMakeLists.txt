@@ -11,6 +11,7 @@ install(FILES
   localfiniteelementvariant.hh
   localfiniteelementvariantcache.hh
   localtoglobaladaptors.hh
+  rangecast.hh
   virtualinterface.hh
   virtualwrappers.hh
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dune/localfunctions/common)

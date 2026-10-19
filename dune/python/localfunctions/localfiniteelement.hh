@@ -8,6 +8,7 @@
 #include <dune/common/visibility.hh>
 #include <dune/localfunctions/common/localkey.hh>
 #include <dune/localfunctions/common/virtualinterface.hh>
+#include <dune/python/common/typeregistry.hh>
 
 namespace Dune {
 namespace Python {
@@ -38,7 +39,12 @@ DUNE_EXPORT auto registerLocalBasis(pybind11::handle scope)
 
 DUNE_EXPORT auto registerLocalKey(pybind11::handle scope)
 {
-  static auto cls = pybind11::class_<LocalKey>(scope, "LocalKey");
+  // static auto cls = pybind11::class_<LocalKey>(scope, "LocalKey");
+  auto [cls,newlyInserted] = insertClass<LocalKey>(scope, "LocalKey",
+        GenerateTypeName("Dune::LocalKey"),IncludeFiles{"dune/localfunctions/common/localkey.hh"}
+        );
+  if (!newlyInserted)
+    return cls;
 
   cls.def_property_readonly("subEntity", &LocalKey::subEntity);
   cls.def_property_readonly("codim", &LocalKey::codim);

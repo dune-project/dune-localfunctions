@@ -17,6 +17,7 @@
 #include <dune/localfunctions/common/localbasis.hh>
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include <dune/localfunctions/common/localkey.hh>
+#include <dune/localfunctions/common/rangecast.hh>
 
 namespace Dune { namespace Impl
 {
@@ -169,7 +170,7 @@ namespace Dune { namespace Impl
       // Evaluate at the facet midpoints
       auto refSimplex = ReferenceElements<typename LocalBasis::Traits::DomainFieldType,dim>::simplex();
       for (int i=0; i<refSimplex.size(1); i++)
-        out[i] = f(refSimplex.template geometry<1>(i).center());
+        out[i] = Impl::rangeCast(f(refSimplex.template geometry<1>(i).center()));
     }
   };
 

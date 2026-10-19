@@ -17,6 +17,7 @@
 #include <dune/localfunctions/common/localbasis.hh>
 #include <dune/localfunctions/common/localfiniteelementtraits.hh>
 #include <dune/localfunctions/common/localkey.hh>
+#include <dune/localfunctions/common/rangecast.hh>
 
 namespace Dune { namespace Impl
 {
@@ -466,6 +467,7 @@ namespace Dune { namespace Impl
                            const typename Traits::DomainType& in,
                            std::vector<typename Traits::RangeType>& out) const
     {
+      using RF = typename Traits::RangeType;
       auto totalOrder = std::accumulate(partialOrders.begin(), partialOrders.end(), 0);
 
       out.resize(size());
@@ -551,15 +553,15 @@ namespace Dune { namespace Impl
               (partialOrders[1] == 1 && partialOrders[2] == 1 && in[0] > in[1]) ||
               (partialOrders[0] == 1 && partialOrders[2] == 1 && in[0] <=in[1]))
           {
-            out = {1, -1, -1, 1, 0};
+            out = {RF(1), RF(-1), RF(-1), RF(1), RF(0)};
           } else
           {
-            out = {0, 0, 0, 0, 0};
+            out = {RF(0), RF(0), RF(0), RF(0), RF(0)};
           }
 
         } else
         {
-          out = {0, 0, 0, 0, 0};
+          out = {RF(0), RF(0), RF(0), RF(0), RF(0)};
         }
 
         return;
@@ -822,7 +824,7 @@ namespace Dune { namespace Impl
       if (k==0)
       {
         auto center = ReferenceElements<DomainField,3>::general(GeometryTypes::pyramid).position(0,0);
-        out[0] = f(center);
+        out[0] = Impl::rangeCast(f(center));
         return;
       }
 
@@ -832,7 +834,7 @@ namespace Dune { namespace Impl
         for (unsigned int i=0; i<OrderTraits::size(); i++)
         {
           auto vertex = ReferenceElements<DomainField,3>::general(GeometryTypes::pyramid).position(i,3);
-          out[i] = f(vertex);
+          out[i] = Impl::rangeCast(f(vertex));
         }
         return;
       }
@@ -840,20 +842,20 @@ namespace Dune { namespace Impl
       // Specialization for second-order case
       if (k==2)
       {
-        out[0]  = f( Domain( {0.0, 0.0, 0.0} ) );
-        out[1]  = f( Domain( {1.0, 0.0, 0.0} ) );
-        out[2]  = f( Domain( {0.0, 1.0, 0.0} ) );
-        out[3]  = f( Domain( {1.0, 1.0, 0.0} ) );
-        out[4]  = f( Domain( {0.0, 0.0, 1.0} ) );
-        out[5]  = f( Domain( {0.0, 0.5, 0.0} ) );
-        out[6]  = f( Domain( {1.0, 0.5, 0.0} ) );
-        out[7]  = f( Domain( {0.5, 0.0, 0.0} ) );
-        out[8]  = f( Domain( {0.5, 1.0, 0.0} ) );
-        out[9]  = f( Domain( {0.0, 0.0, 0.5} ) );
-        out[10] = f( Domain( {0.5, 0.0, 0.5} ) );
-        out[11] = f( Domain( {0.0, 0.5, 0.5} ) );
-        out[12] = f( Domain( {0.5, 0.5, 0.5} ) );
-        out[13] = f( Domain( {0.5, 0.5, 0.0} ) );
+        out[0]  = Impl::rangeCast( f( Domain( {0.0, 0.0, 0.0} ) ) );
+        out[1]  = Impl::rangeCast( f( Domain( {1.0, 0.0, 0.0} ) ) );
+        out[2]  = Impl::rangeCast( f( Domain( {0.0, 1.0, 0.0} ) ) );
+        out[3]  = Impl::rangeCast( f( Domain( {1.0, 1.0, 0.0} ) ) );
+        out[4]  = Impl::rangeCast( f( Domain( {0.0, 0.0, 1.0} ) ) );
+        out[5]  = Impl::rangeCast( f( Domain( {0.0, 0.5, 0.0} ) ) );
+        out[6]  = Impl::rangeCast( f( Domain( {1.0, 0.5, 0.0} ) ) );
+        out[7]  = Impl::rangeCast( f( Domain( {0.5, 0.0, 0.0} ) ) );
+        out[8]  = Impl::rangeCast( f( Domain( {0.5, 1.0, 0.0} ) ) );
+        out[9]  = Impl::rangeCast( f( Domain( {0.0, 0.0, 0.5} ) ) );
+        out[10] = Impl::rangeCast( f( Domain( {0.5, 0.0, 0.5} ) ) );
+        out[11] = Impl::rangeCast( f( Domain( {0.0, 0.5, 0.5} ) ) );
+        out[12] = Impl::rangeCast( f( Domain( {0.5, 0.5, 0.5} ) ) );
+        out[13] = Impl::rangeCast( f( Domain( {0.5, 0.5, 0.0} ) ) );
 
         return;
       }

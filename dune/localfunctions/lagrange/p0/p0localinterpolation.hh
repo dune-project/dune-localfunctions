@@ -8,6 +8,8 @@
 #include <vector>
 #include <dune/geometry/referenceelements.hh>
 
+#include <dune/localfunctions/common/rangecast.hh>
+
 
 namespace Dune
 {
@@ -33,7 +35,7 @@ namespace Dune
       DomainType x = Dune::ReferenceElements<DF,dim>::general(gt_).position(0,0);
 
       out.resize(1);
-      out[0] = f(x);
+      out[0] = Impl::rangeCast(f(x));
     }
 
   private:

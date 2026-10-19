@@ -118,7 +118,7 @@ namespace Dune
     massMat = 0;
 
     // and the integrals of the lagrange shape functions
-    std::vector<Dune::FieldVector<R,1> > integral(size);
+    std::vector<R> integral(size);
     for (int i=0; i<size; i++)
       integral[i] = 0;
 
@@ -132,7 +132,7 @@ namespace Dune
       D weight = quad[pt].weight();
 
       for (int k=0; k<size; k++) {
-        integral[k] += q1Values[k]*weight;
+        integral[k] += q1Values[k][0]*weight;
 
         for (int l=0; l<=k; l++)
           massMat[k][l] += weight*(q1Values[k]*q1Values[l]);
@@ -187,7 +187,7 @@ namespace Dune
       const auto& geometry = refElement.template geometry<1>(i);
 
       // and the integrals of the lagrange shape functions
-      std::vector<Dune::FieldVector<R,1> > integral(size/2);
+      std::vector<R> integral(size/2);
       for (int k=0; k<size/2; k++)
         integral[k] = 0;
 
@@ -203,7 +203,7 @@ namespace Dune
 
         for (int k=0; k<refElement.size(i,1,dim); k++) {
           int row = refElement.subEntity(i,1,k,dim);
-          integral[k] += q1Values[row]*weight;
+          integral[k] += q1Values[row][0]*weight;
 
           for (int l=0; l<refElement.size(i,1,dim); l++) {
             int col = refElement.subEntity(i,1,l,dim);

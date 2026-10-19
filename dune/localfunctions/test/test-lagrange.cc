@@ -53,7 +53,7 @@ bool test(const Basis &basis, const Points &points, bool verbose)
     bool first = true;
     for( unsigned int i = 0; i < y.size(); ++i )
     {
-      if( fabs( y[ i ] - double( i == index ) ) > 1e-10 )
+      if( fabs( y[ i ][ 0 ] - double( i == index ) ) > 1e-10 )
       {
         if (first) {
           std::cout << "ERROR: "
@@ -66,7 +66,7 @@ bool test(const Basis &basis, const Points &points, bool verbose)
         }
         if (1)
           std::cout << "         y[ " << i << " ] = " << y[ i ] << " "
-                    << "         error : " << fabs( y[ i ] - double( i == index ) )
+                    << "         error : " << fabs( y[ i ][ 0 ] - double( i == index ) )
                     << std::endl;
         ret = false;
       }

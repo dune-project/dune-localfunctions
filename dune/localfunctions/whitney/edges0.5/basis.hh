@@ -119,8 +119,8 @@ namespace Dune {
       for(std::size_t i = 0; i < s; i++) {
         const std::size_t i0 = refelem.subEntity(i,dim-1,0,dim);
         const std::size_t i1 = refelem.subEntity(i,dim-1,1,dim);
-        out[i].axpy( p1v[i0], p1j[i1][0]);
-        out[i].axpy(-p1v[i1], p1j[i0][0]);
+        out[i].axpy( p1v[i0][0], p1j[i1][0]);
+        out[i].axpy(-p1v[i1][0], p1j[i0][0]);
         out[i] *= edgel[i];
       }
     }

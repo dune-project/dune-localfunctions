@@ -65,7 +65,7 @@ namespace Dune
 
       for (auto&& qp : rule1)
       {
-        Scalar qPos = qp.position();
+        Scalar qPos = qp.position()[0];
         typename LB::Traits::DomainType localPos;
 
         localPos = {0.0, qPos};

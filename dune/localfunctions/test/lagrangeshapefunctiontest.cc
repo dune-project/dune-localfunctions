@@ -79,7 +79,7 @@ bool testPk(const FE& local_fe)
 
     local_fe.localBasis().evaluateFunction(pos, values);
     for (unsigned i = 0; i < values.size(); ++i)
-      if (std::abs(values[i] - double(i==n)) > epsilon)
+      if (std::abs(values[i][0] - double(i==n)) > epsilon)
       {
         std::cerr << "Bug in shape function in local finite element type"
                   << typeid(FE).name() << std::endl;

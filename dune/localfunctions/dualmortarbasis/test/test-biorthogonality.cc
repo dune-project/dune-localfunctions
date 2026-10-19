@@ -54,7 +54,7 @@ bool testBiorthogonality(const DualLfe& dualLfe, const LagrangeLfe& lagrangeLfe)
     // check if the values sum up to one
     double unity = 0;
     for (unsigned int l=0; l<numDualBasFct; l++)
-      unity += dualValues[l];
+      unity += dualValues[l][0];
     if (fabs(unity -1) > TOL)
       std::cout<<"Dual basis functions don't sum up to 1\n";
 
@@ -62,7 +62,7 @@ bool testBiorthogonality(const DualLfe& dualLfe, const LagrangeLfe& lagrangeLfe)
 
     for (unsigned int k=0; k<numLagBasFct; k++) {
 
-      integralLagrange[k] += lagrangeValues[k]*weight;
+      integralLagrange[k] += lagrangeValues[k][0]*weight;
 
       for (unsigned int l=0; l<numDualBasFct; l++)
         mixedMassMat[k][l] += weight*(lagrangeValues[k]*dualValues[l]);
@@ -141,7 +141,7 @@ bool testFaceBiorthogonality(const DualLfe& dualLfe, const LagrangeLfe& lagrange
 
       for (unsigned int k=0; k<numLagBasFct; k++) {
 
-        integralLagrange[k] += lagrangeValues[k]*weight;
+        integralLagrange[k] += lagrangeValues[k][0]*weight;
 
         for (unsigned int l=0; l<numDualBasFct; l++)
           mixedMassMat[k][l] += weight*(lagrangeValues[k]*dualValues[l]);

@@ -69,7 +69,7 @@ namespace Dune
         out[i+1]    = in[i];
         out.back() *= in[i];
       }
-      out.back() *= out[0];
+      out.back() *= out[0][0];
     }
 
     //! Evaluate Jacobian of all shape functions
@@ -77,7 +77,7 @@ namespace Dune
                                             std::vector<JacobianType>& out)
     {
       out.resize(size());
-      RangeType tmp = 1;
+      R tmp = 1;
       for (int i = 0; i < dim; ++i) {
         out[0][0][i] = -1;
         for (int j = 0; j < dim; ++j)
@@ -112,7 +112,7 @@ namespace Dune
           d += i * order[i];
 
         out[0] = -1;
-        RangeType tmp = 1;
+        R tmp = 1;
         for (int j = 0; j < dim; ++j) {
           out[j+1] = (d == j);
           tmp -= in[j];

@@ -52,7 +52,7 @@ namespace Impl {
    */
   template<class X, int n>
   requires(n>1)
-  const X& rangeCast(const Dune::FieldVector<X, n>& x)
+  const Dune::FieldVector<X, n>& rangeCast(const Dune::FieldVector<X, n>& x)
   {
     return x;
   }
